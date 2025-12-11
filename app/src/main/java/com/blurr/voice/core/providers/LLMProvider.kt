@@ -31,7 +31,7 @@ enum class LLMProvider(
         displayName = "Groq",
         baseUrl = "https://api.groq.com/openai/v1",
         supportsStreaming = true,
-        supportsVision = false,
+        supportsVision = true,  // Groq supports vision via llama-3.2-90b-vision-preview and other vision models
         supportsSTT = true,
         supportsTTS = false
     ),
