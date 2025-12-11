@@ -708,7 +708,7 @@ class MainActivity : BaseNavigationActivity() {
         }
 
         withContext(Dispatchers.IO) {
-            val db = Firebase.firestore
+            // Firebase removed: val db = <removed>
             try {
                 val userDocRef = db.collection("users").document(uid)
                 userDocRef.update("plan", "pro").await()
@@ -772,7 +772,7 @@ class MainActivity : BaseNavigationActivity() {
                         }
                     }
                 
-//                val db = Firebase.firestore
+//                Firebase removed
 //                val docRef = db.collection("settings").document("freemium")
 //
 //                docRef.get().addOnSuccessListener { document ->

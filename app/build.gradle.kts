@@ -155,7 +155,8 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("com.android.billingclient:billing-ktx:7.0.0")
 
-    // Appwrite SDK
+    // Appwrite SDK - explicitly add platform dependency for OkHttp BOM to fix AGP 8.9.2 resolution
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
     implementation(libs.appwrite.sdk)
 }
 

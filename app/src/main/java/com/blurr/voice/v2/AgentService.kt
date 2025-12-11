@@ -273,8 +273,7 @@ class AgentService : Service() {
     }
 
     /**
-     * Tracks the task start in Firebase by appending it to the user's task history array.
-     * This method is inspired by FreemiumManager's Firebase operations.
+     * Tracks the task start in Appwrite by appending it to the user's task history array.
      */
     private suspend fun trackTaskStart(task: String) {
         val uid = com.blurr.voice.data.AppwriteDb.getCurrentUserIdOrNull()
@@ -302,7 +301,7 @@ class AgentService : Service() {
     }
 
     /**
-     * Updates the task completion status in Firebase.
+     * Updates the task completion status in Appwrite.
      * Since Firestore doesn't support updating array elements directly,
      * we'll add a new completion entry to track the result.
      */

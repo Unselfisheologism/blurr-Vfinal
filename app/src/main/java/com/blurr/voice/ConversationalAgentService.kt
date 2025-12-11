@@ -1140,7 +1140,7 @@ class ConversationalAgentService : Service() {
         }
         /* analytics removed */
         
-        // Track conversation end in Firebase
+        // Track conversation end in Appwrite
 
         trackConversationEnd(endReason)
         
@@ -1179,7 +1179,7 @@ class ConversationalAgentService : Service() {
         }
         /* analytics removed */
         
-        // Track conversation end in Firebase
+        // Track conversation end in Appwrite
         trackConversationEnd("instant")
         
         Log.d("ConvAgent", "Instant shutdown triggered by user.")
@@ -1204,8 +1204,8 @@ class ConversationalAgentService : Service() {
     }
 
     /**
-     * Firebase tracking removed in Phase 0.
-     * This method is inspired by AgentService's Firebase operations.
+     * Tracks conversation start in Appwrite.
+     * This method is inspired by AgentService's task tracking operations.
      */
     private fun trackConversationStart() {
         val currentUser = auth.currentUser
@@ -1235,10 +1235,10 @@ class ConversationalAgentService : Service() {
                 // Append the conversation to the user's conversationHistory array
                 com.blurr.voice.data.AppwriteDb.appendToUserArrayField(uid, "conversationHistory", conversationEntry)
 
-                Log.d("ConvAgent", "Successfully tracked conversation start in Firebase for user ${currentUser.uid}: $conversationId")
+                Log.d("ConvAgent", "Tracked conversation start for user $uid: $conversationId")
             } catch (e: Exception) {
-                Log.e("ConvAgent", "Failed to track conversation start in Firebase", e)
-                // Don't fail the conversation if Firebase tracking fails
+                Log.e("ConvAgent", "Failed to track conversation start", e)
+                // Don't fail the conversation if tracking fails
             }
         }
     }
@@ -1267,15 +1267,15 @@ class ConversationalAgentService : Service() {
                 // Append the message to the user's messageHistory array
                 com.blurr.voice.data.AppwriteDb.appendToUserArrayField(uid, "messageHistory", messageEntry)
 
-                Log.d("ConvAgent", "Successfully tracked message in Firebase: $role - ${message.take(50)}...")
+                Log.d("ConvAgent", "Tracked message: $role - ${message.take(50)}...")
             } catch (e: Exception) {
-                Log.e("ConvAgent", "Failed to track message in Firebase", e)
+                Log.e("ConvAgent", "Failed to track message", e)
             }
         }
     }
 
     /**
-     * Updates the conversation completion status in Firebase.
+     * Updates the conversation completion status in Appwrite.
      * Fire and forget operation.
      */
     private fun trackConversationEnd(endReason: String, tasksRequested: Int = 0, tasksExecuted: Int = 0) {
@@ -1302,9 +1302,9 @@ class ConversationalAgentService : Service() {
                 // Append the completion status to the user's conversationHistory array
                 com.blurr.voice.data.AppwriteDb.appendToUserArrayField(uid, "conversationHistory", completionEntry)
 
-                Log.d("ConvAgent", "Successfully tracked conversation end in Firebase: $conversationId ($endReason)")
+                Log.d("ConvAgent", "Tracked conversation end: $conversationId ($endReason)")
             } catch (e: Exception) {
-                Log.e("ConvAgent", "Failed to track conversation end in Firebase", e)
+                Log.e("ConvAgent", "Failed to track conversation end", e)
             }
         }
     */
