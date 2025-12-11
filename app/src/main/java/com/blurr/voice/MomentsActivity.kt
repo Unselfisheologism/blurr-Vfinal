@@ -6,24 +6,20 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.blurr.voice.data.AppwriteDb
 import com.blurr.voice.data.TaskHistoryItem
 import com.blurr.voice.utilities.Logger
-import com.google.firebase.Firebase
-import com.google.firebase.Timestamp
-import com.google.firebase.auth.auth
-import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
+import java.time.Instant
+import java.util.Date
 
 class MomentsActivity : BaseNavigationActivity() {
     
     private lateinit var recyclerView: RecyclerView
     private lateinit var emptyState: LinearLayout
     private lateinit var adapter: MomentsAdapter
-    private val db = Firebase.firestore
-    private val auth = Firebase.auth
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,47 +44,45 @@ class MomentsActivity : BaseNavigationActivity() {
     }
     
     private fun loadTaskHistory() {
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            showEmptyState()
-            return
-        }
-        
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                val document = db.collection("users").document(currentUser.uid).get().await()
-                if (document.exists()) {
-                    val taskHistoryData = document.get("taskHistory") as? List<Map<String, Any>>
-                    if (taskHistoryData != null && taskHistoryData.isNotEmpty()) {
-                        val taskHistory = taskHistoryData.mapNotNull { taskData ->
-                            try {
-                                TaskHistoryItem(
-                                    task = taskData["task"] as? String ?: "",
-                                    status = taskData["status"] as? String ?: "",
-                                    startedAt = taskData["startedAt"] as? Timestamp,
-                                    completedAt = taskData["completedAt"] as? Timestamp,
-                                    success = taskData["success"] as? Boolean,
-                                    errorMessage = taskData["errorMessage"] as? String
-                                )
-                            } catch (e: Exception) {
-                                Logger.e("MomentsActivity", "Error parsing task history item", e)
-                                null
-                            }
-                        }
-                        
-                        // Sort by startedAt in descending order (most recent first)
-                        val sortedTaskHistory = taskHistory.sortedByDescending { 
-                            it.startedAt?.toDate() ?: java.util.Date(0)
-                        }
-                        
-                        if (sortedTaskHistory.isNotEmpty()) {
-                            showTaskHistory(sortedTaskHistory)
-                        } else {
-                            showEmptyState()
-                        }
-                    } else {
-                        showEmptyState()
+                val uid = AppwriteDb.getCurrentUserIdOrNull()
+                if (uid == null) {
+                    showEmptyState()
+                    return@launch
+                }
+                val doc = AppwriteDb.getUserDocumentOrNull(uid)
+                if (doc == null) {
+                    showEmptyState()
+                    return@launch
+                }
+                val taskHistoryData = doc.data["taskHistory"] as? List<Map<String, Any>>
+                if (taskHistoryData.isNullOrEmpty()) {
+                    showEmptyState()
+                    return@launch
+                }
+                val history = taskHistoryData.mapNotNull { map ->
+                    try {
+                        val startedAtStr = map["startedAt"] as? String
+                        val completedAtStr = map["completedAt"] as? String
+                        val startedAt = startedAtStr?.let { runCatching { Date.from(Instant.parse(it)) }.getOrNull() }
+                        val completedAt = completedAtStr?.let { runCatching { Date.from(Instant.parse(it)) }.getOrNull() }
+                        TaskHistoryItem(
+                            task = map["task"] as? String ?: "",
+                            status = map["status"] as? String ?: "",
+                            startedAt = startedAt,
+                            completedAt = completedAt,
+                            success = (map["success"] as? Boolean),
+                            errorMessage = map["errorMessage"] as? String
+                        )
+                    } catch (e: Exception) {
+                        Logger.e("MomentsActivity", "Error parsing task history item", e)
+                        null
                     }
+                }.sortedByDescending { it.startedAt ?: Date(0) }
+
+                if (history.isNotEmpty()) {
+                    showTaskHistory(history)
                 } else {
                     showEmptyState()
                 }

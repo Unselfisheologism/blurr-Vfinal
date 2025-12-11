@@ -6,10 +6,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.gms.google-services")
     alias(libs.plugins.ksp)
     id("org.jetbrains.kotlin.plugin.serialization") version "2.2.10"
-    id("com.google.firebase.crashlytics")
 
 }
 
@@ -43,6 +41,10 @@ android {
     val googlecloudProxyURLKey = localProperties.getProperty("GCLOUD_PROXY_URL_KEY") ?: ""
     val revenueCatSDK = localProperties.getProperty("REVENUE_CAT_PUBLIC_URL") ?: ""
     val revenueCatApiKey = localProperties.getProperty("REVENUECAT_API_KEY") ?: ""
+    val appwriteProjectId = localProperties.getProperty("APPWRITE_PROJECT_ID") ?: "675543c70014022067d7" // Default/Placeholder
+    val appwriteDatabaseId = localProperties.getProperty("APPWRITE_DATABASE_ID") ?: "" // REQUIRED: set in local.properties
+    val appwriteUsersCollectionId = localProperties.getProperty("APPWRITE_USERS_COLLECTION_ID") ?: "" // REQUIRED
+    val appwriteTasksCollectionId = localProperties.getProperty("APPWRITE_TASKS_COLLECTION_ID") ?: "" // REQUIRED
 
     val debugSha1 = "D0:A1:49:03:FD:B5:37:DF:B5:36:51:B1:66:AE:70:11:E2:59:08:33"
 
@@ -56,6 +58,9 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // Common build config fields - applies to all build types
+         buildConfigField("String", "APPWRITE_DATABASE_ID", "\"$appwriteDatabaseId\"")
+         buildConfigField("String", "APPWRITE_USERS_COLLECTION_ID", "\"$appwriteUsersCollectionId\"")
+         buildConfigField("String", "APPWRITE_TASKS_COLLECTION_ID", "\"$appwriteTasksCollectionId\"")
         buildConfigField("String", "GEMINI_API_KEYS", "\"$apiKeys\"")
         buildConfigField("String", "TAVILY_API", "\"$tavilyApiKeys\"")
         buildConfigField("String", "MEM0_API", "\"$mem0ApiKey\"")
@@ -72,14 +77,12 @@ android {
         buildConfigField("String", "GCLOUD_PROXY_URL", "\"$googlecloudProxyURL\"")
         buildConfigField("String", "GCLOUD_PROXY_URL_KEY", "\"$googlecloudProxyURLKey\"")
         buildConfigField("boolean", "ENABLE_LOGGING", "true")
+        buildConfigField("String", "APPWRITE_PROJECT_ID", "\"$appwriteProjectId\"")
 
     }
 
     buildTypes {
         release {
-            firebaseCrashlytics {
-                nativeSymbolUploadEnabled = true
-            }
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -139,30 +142,21 @@ dependencies {
     // Porcupine Wake Word Engine
     implementation("ai.picovoice:porcupine-android:3.0.2")
 
-    implementation("com.google.firebase:firebase-analytics")
-
     // Room database dependencies
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
     // Import the Firebase BoM
-    implementation(platform(libs.firebase.bom))
-
-    implementation(libs.firebase.config)
-
 
     // Add the dependency for the Firebase Authentication library
-    implementation(libs.firebase.auth)
-
     // Add the dependency for the Google Play services library
     implementation(libs.play.services.auth)
 
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-crashlytics-ndk")
-    implementation("com.google.firebase:firebase-functions")
-    implementation(libs.firebase.firestore)
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("com.android.billingclient:billing-ktx:7.0.0")
+
+    // Appwrite SDK
+    implementation(libs.appwrite.sdk)
 }
 
 // Task to increment version for release builds

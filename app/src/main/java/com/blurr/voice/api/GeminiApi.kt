@@ -8,9 +8,6 @@ import com.blurr.voice.MyApplication
 import com.blurr.voice.utilities.ApiKeyManager
 import com.google.ai.client.generativeai.type.ImagePart
 import com.google.ai.client.generativeai.type.TextPart
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.delay
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -40,8 +37,6 @@ object GeminiApi {
         .readTimeout(90, TimeUnit.SECONDS)
         .writeTimeout(60, TimeUnit.SECONDS)
         .build()
-    val db = Firebase.firestore
-
 
     suspend fun generateContent(
         chat: List<Pair<String, List<Any>>>,
@@ -136,8 +131,7 @@ object GeminiApi {
                         responseBody = responseBody,
                         status = "pass",
                     )
-                    logToFirestore(logData)
-
+                    // Firebase logging removed (Phase 0)
 
                     return parsedResponse
                 }
@@ -173,8 +167,7 @@ object GeminiApi {
                     responseBody = null,
                     error = e.message
                 )
-                logToFirestore(logData)
-
+                // Firebase logging removed (Phase 0)
                 attempts++
                 if (attempts < maxRetry) {
                     val delayTime = 1000L * attempts
@@ -297,7 +290,8 @@ object GeminiApi {
             Log.e("GeminiApi", "Failed to save log to file", e)
         }
     }
-    private fun logToFirestore(logData: Map<String, Any?>) {
+    // Firebase logging removed (Phase 0)
+    /*
         // Create a unique and descriptive ID from the timestamp and prompt
         val timestamp = System.currentTimeMillis()
         val promptSnippet = (logData["prompt"] as? String)?.take(40) ?: "log"
@@ -365,7 +359,7 @@ object GeminiApi {
         error: String? = null
     ): Map<String, Any?> {
         return mapOf(
-            "timestamp" to FieldValue.serverTimestamp(), // Use server time
+            "timestamp" to java.time.format.DateTimeFormatter.ISO_INSTANT.format(java.time.Instant.now()),
             "status" to status,
             "attempt" to attempt,
             "model" to modelName,

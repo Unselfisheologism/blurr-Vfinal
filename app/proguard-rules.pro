@@ -46,8 +46,6 @@
 # Firestore uses reflection to map documents to objects. 
 # If you use .toObject(Class.class), those classes MUST be kept (covered in Section 2).
 -keepattributes InnerClasses
--dontwarn com.google.firebase.**
-
 # ----------------------------------------------------------------------------
 # 5. Native Libraries (Picovoice)
 # ----------------------------------------------------------------------------

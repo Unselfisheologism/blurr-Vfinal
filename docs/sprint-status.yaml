@@ -1,0 +1,114 @@
+# generated: 2025-12-10
+# project: Blurr Mobile AI Super-Assistant
+# project_key: blurr
+# tracking_system: file-system
+# story_location: docs/stories
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - drafted: Story file created in stories folder
+#   - ready-for-dev: Draft approved and story context created
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - completed: Retrospective has been done
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically drafts next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2025-12-10
+project: Blurr Mobile AI Super-Assistant
+project_key: blurr
+tracking_system: file-system
+story_location: docs/stories
+
+development_status:
+  # Epic 0: Phone Automation (Existing)
+  epic-0: done
+  epic-0-retrospective: optional
+
+  # Epic 1: BYOK Foundation
+  epic-1: in-progress
+  1-1-appwrite-auth-migration: review
+  1-2-encrypted-api-key-storage: backlog
+  1-3-add-openrouter-api-key: backlog
+  1-4-add-multiple-provider-keys: backlog
+  1-5-view-provider-balance: backlog
+  1-6-model-selection: backlog
+  1-7-low-balance-alerts: backlog
+  1-8-conversation-history: backlog
+  1-9-error-handling-recovery: backlog
+  epic-1-retrospective: optional
+
+  # Epic 2: BYOK Voice Interaction
+  epic-2: backlog
+  2-1-stt-integration-whisper: backlog
+  2-2-tts-integration: backlog
+  2-3-voice-settings: backlog
+  epic-2-retrospective: optional
+
+  # Epic 3: Ultra-Generalist AI Agent
+  epic-3: backlog
+  3-1-unified-chat-ui: backlog
+  3-2-tool-orchestration-engine: backlog
+  3-3-web-search-tool: backlog
+  3-4-image-generation-tool: backlog
+  3-5-video-media-tools: backlog
+  3-6-tool-registry-reusable-tools: backlog
+  3-7-mcp-client-integration: backlog
+  3-8-document-generation: backlog
+  epic-3-retrospective: optional
+
+  # Epic 4: Google Workspace Integration
+  epic-4: backlog
+  4-1-google-oauth-flow: backlog
+  4-2-gmail-integration: backlog
+  4-3-calendar-integration: backlog
+  4-4-drive-integration: backlog
+  4-5-sheets-helper: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5: AI-Native Applications
+  epic-5: backlog
+  5-1-ai-text-editor: backlog
+  5-2-ai-spreadsheets: backlog
+  5-3-ai-daw-music: backlog
+  5-4-ai-video-editor: backlog
+  5-5-ai-media-generator: backlog
+  5-6-ai-learning-platform: backlog
+  epic-5-retrospective: optional
+
+  # Epic 6: Workflow Automation
+  epic-6: backlog
+  6-1-workflow-builder-ui: backlog
+  6-2-schedule-trigger: backlog
+  6-3-event-triggers: backlog
+  6-4-background-execution: backlog
+  6-5-import-export-n8n: backlog
+  epic-6-retrospective: optional
+
+  # Epic 7: Subscription & Monetization
+  epic-7: backlog
+  7-1-free-tier-limits: backlog
+  7-2-pro-subscription: backlog
+  7-3-god-mode-subscription: backlog
+  7-4-usage-tracking: backlog
+  epic-7-retrospective: optional

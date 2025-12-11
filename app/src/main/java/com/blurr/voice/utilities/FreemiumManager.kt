@@ -1,117 +1,92 @@
 package com.blurr.voice.utilities
 
-import android.util.Log
 import com.android.billingclient.api.BillingClient
-import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.QueryPurchasesParams
-import com.android.billingclient.api.queryPurchasesAsync
 import com.blurr.voice.MyApplication
-import com.google.firebase.Firebase
-import com.google.firebase.Timestamp
-import com.google.firebase.auth.auth
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.firestore
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withTimeoutOrNull
-import java.util.Calendar
+import com.blurr.voice.data.AppwriteDb
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 class FreemiumManager {
-
-    private val db = Firebase.firestore
-    private val auth = Firebase.auth
     private val billingClient: BillingClient = MyApplication.billingClient
 
     companion object {
-        const val DAILY_TASK_LIMIT = 15 // Set your daily task limit here
-        private const val PRO_SKU = "pro" // The SKU for the pro subscription
+        const val DAILY_TASK_LIMIT = 15
+        private const val PRO_PLAN = "pro"
+        private val ISO_INSTANT: DateTimeFormatter = DateTimeFormatter.ISO_INSTANT.withZone(ZoneOffset.UTC)
     }
 
-    suspend fun getDeveloperMessage(): String {
-        return try {
-            val document = db.collection("settings").document("freemium").get().await()
-            document.getString("developerMessage") ?: ""
-        } catch (e: Exception) {
-            Log.e("FreemiumManager", "Error fetching developer message from Firestore.", e)
-            ""
-        }
-    }
-    suspend fun isUserSubscribed(): Boolean {
-        val currentUser = auth.currentUser ?: return false // If not logged in, not pro
-        return try {
-            val document = db.collection("users").document(currentUser.uid).get().await()
-            if (document.exists()) {
-                val plan = document.getString("plan")
-                plan == "pro"
-            } else {
-                false // Document doesn't exist, so user can't be pro
-            }
-        } catch (e: Exception) {
-            Logger.e("FreemiumManager", "Error checking user plan from Firestore", e)
-            false // In case of error, default to not pro
-        }
+    suspend fun getDeveloperMessage(): String = withContext(Dispatchers.IO) {
+        // Optional: Implement a settings collection. For now, return empty to match previous behavior.
+        ""
     }
 
+    suspend fun isUserSubscribed(): Boolean = withContext(Dispatchers.IO) {
+        val uid = AppwriteDb.getCurrentUserIdOrNull() ?: return@withContext false
+        val doc = AppwriteDb.getUserDocumentOrNull(uid) ?: return@withContext false
+        val plan = (doc.data["plan"] as? String) ?: return@withContext false
+        plan.equals(PRO_PLAN, ignoreCase = true)
+    }
 
-
-    suspend fun provisionUserIfNeeded() {
-        val currentUser = auth.currentUser ?: return
-        val userDocRef = db.collection("users").document(currentUser.uid)
-
-        try {
-            val document = userDocRef.get().await()
-            if (!document.exists()) {
-                Logger.d("FreemiumManager", "Provisioning new user: ${currentUser.uid}")
-                val newUser = hashMapOf(
-                    "email" to currentUser.email,
-                    "plan" to "free",
-                    "createdAt" to FieldValue.serverTimestamp()
-                )
-                userDocRef.set(newUser).await()
-            }
-        } catch (e: Exception) {
-            Logger.e("FreemiumManager", "Error provisioning user", e)
+    suspend fun provisionUserIfNeeded() = withContext(Dispatchers.IO) {
+        val uid = AppwriteDb.getCurrentUserIdOrNull() ?: return@withContext
+        val existing = AppwriteDb.getUserDocumentOrNull(uid)
+        if (existing == null) {
+            val now = ISO_INSTANT.format(Instant.now())
+            val initial = mapOf(
+                "plan" to "free",
+                "createdAt" to now,
+                "tasksRemaining" to DAILY_TASK_LIMIT,
+                "tasksResetAt" to now
+            )
+            AppwriteDb.createUserDocument(uid, initial)
         }
     }
 
-    suspend fun getTasksRemaining(): Long? {
-        if (isUserSubscribed()) return Long.MAX_VALUE
-        val currentUser = auth.currentUser ?: return null
-        return try {
-            val document = db.collection("users").document(currentUser.uid).get().await()
-            document.getLong("tasksRemaining")
-        } catch (e: Exception) {
-            Logger.e("FreemiumManager", "Error fetching tasks remaining", e)
-            null
+    private suspend fun ensureDailyReset(uid: String) {
+        val doc = AppwriteDb.getUserDocumentOrNull(uid) ?: return
+        val resetAtStr = doc.data["tasksResetAt"] as? String
+        val lastResetDay = resetAtStr?.let { runCatching { Instant.parse(it) }.getOrNull() }?.atZone(ZoneOffset.UTC)?.toLocalDate()
+        val today = Instant.now().atZone(ZoneOffset.UTC).toLocalDate()
+        if (lastResetDay == null || lastResetDay.isBefore(today)) {
+            val now = ISO_INSTANT.format(Instant.now())
+            val update = mapOf(
+                "tasksRemaining" to DAILY_TASK_LIMIT,
+                "tasksResetAt" to now
+            )
+            AppwriteDb.updateUserDocument(uid, update)
         }
     }
 
-    suspend fun canPerformTask(): Boolean {
-        if (isUserSubscribed()) return true
-        val currentUser = auth.currentUser ?: return false
-
-        return try {
-            val document = db.collection("users").document(currentUser.uid).get().await()
-            val tasksRemaining = document.getLong("tasksRemaining") ?: 0
-            Logger.d("FreemiumManager", "User has $tasksRemaining tasks remaining today.")
-            tasksRemaining > 0
-        } catch (e: Exception) {
-            Logger.e("FreemiumManager", "Error fetching user task count", e)
-            false
-        }
+    suspend fun getTasksRemaining(): Long? = withContext(Dispatchers.IO) {
+        val uid = AppwriteDb.getCurrentUserIdOrNull() ?: return@withContext null
+        ensureDailyReset(uid)
+        val doc = AppwriteDb.getUserDocumentOrNull(uid) ?: return@withContext null
+        (doc.data["tasksRemaining"] as? Number)?.toLong()
     }
 
-    suspend fun decrementTaskCount() {
-        if (isUserSubscribed()) return
-        val currentUser = auth.currentUser ?: return
+    suspend fun canPerformTask(): Boolean = withContext(Dispatchers.IO) {
+        val uid = AppwriteDb.getCurrentUserIdOrNull() ?: return@withContext true
+        ensureDailyReset(uid)
+        if (isUserSubscribed()) return@withContext true
+        val remaining = getTasksRemaining() ?: return@withContext true
+        remaining > 0
+    }
 
-        val userDocRef = db.collection("users").document(currentUser.uid)
-        
-        try {
-            userDocRef.update("tasksRemaining", FieldValue.increment(-1)).await()
-            Logger.d("FreemiumManager", "Successfully decremented task count for user ${currentUser.uid}.")
-        } catch (e: Exception) {
-            Logger.e("FreemiumManager", "Failed to decrement task count.", e)
-        }
+    suspend fun decrementTaskCount() = withContext(Dispatchers.IO) {
+        val uid = AppwriteDb.getCurrentUserIdOrNull() ?: return@withContext
+        ensureDailyReset(uid)
+        if (isUserSubscribed()) return@withContext
+        val doc = AppwriteDb.getUserDocumentOrNull(uid) ?: return@withContext
+        val current = (doc.data["tasksRemaining"] as? Number)?.toLong() ?: DAILY_TASK_LIMIT.toLong()
+        val next = (current - 1).coerceAtLeast(0)
+        val now = ISO_INSTANT.format(Instant.now())
+        val update = mapOf(
+            "tasksRemaining" to next,
+            "tasksResetAt" to now // mark last modification; keeps rolling
+        )
+        AppwriteDb.updateUserDocument(uid, update)
     }
 }

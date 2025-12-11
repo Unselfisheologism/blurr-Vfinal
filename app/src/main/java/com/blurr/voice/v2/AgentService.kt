@@ -25,11 +25,6 @@ import com.blurr.voice.v2.llm.GeminiApi
 import com.blurr.voice.v2.message_manager.MemoryManager
 import com.blurr.voice.v2.perception.Perception
 import com.blurr.voice.v2.perception.SemanticParser
-import com.google.firebase.Firebase
-import com.google.firebase.Timestamp
-import com.google.firebase.auth.auth
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -66,10 +61,7 @@ class AgentService : Service() {
     private lateinit var actionExecutor: ActionExecutor
     private lateinit var overlayManager: OverlayManager
 
-    // Firebase instances for task tracking
-    private val db = Firebase.firestore
-    private val auth = Firebase.auth
-
+    // Firebase tracking removed (Phase 0)
     companion object {
         private const val NOTIFICATION_CHANNEL_ID = "AgentServiceChannelV2"
         private const val NOTIFICATION_ID = 14
@@ -200,7 +192,7 @@ class AgentService : Service() {
 
             try {
                 Log.i(TAG, "Executing task: $task")
-                trackTaskInFirebase(task)
+                trackTaskStart(task)
                 agent.run(task)
                 trackTaskCompletion(task, true)
                 Log.i(TAG, "Task completed successfully: $task")
@@ -284,32 +276,28 @@ class AgentService : Service() {
      * Tracks the task start in Firebase by appending it to the user's task history array.
      * This method is inspired by FreemiumManager's Firebase operations.
      */
-    private suspend fun trackTaskInFirebase(task: String) {
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            Log.w(TAG, "Cannot track task, user is not logged in.")
+    private suspend fun trackTaskStart(task: String) {
+        val uid = com.blurr.voice.data.AppwriteDb.getCurrentUserIdOrNull()
+        if (uid == null) {
+            Log.w(TAG, "Cannot track task start, user is not logged in.")
             return
         }
 
         try {
-            val taskEntry = hashMapOf(
+            val now = java.time.Instant.now()
+            val taskEntry = mapOf(
                 "task" to task,
                 "status" to "started",
-                "startedAt" to Timestamp.now(),
+                "startedAt" to java.time.format.DateTimeFormatter.ISO_INSTANT.format(now),
                 "completedAt" to null,
                 "success" to null,
                 "errorMessage" to null
             )
-
-            // Append the task to the user's taskHistory array
-            db.collection("users").document(currentUser.uid)
-                .update("taskHistory", FieldValue.arrayUnion(taskEntry))
-                .await()
-
-            Log.d(TAG, "Successfully tracked task start in Firebase for user ${currentUser.uid}: $task")
+            com.blurr.voice.data.AppwriteDb.appendToUserArrayField(uid, "taskHistory", taskEntry)
+            Log.d(TAG, "Tracked task start for user $uid: $task")
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to track task in Firebase", e)
-            // Don't fail the task execution if Firebase tracking fails
+            Log.e(TAG, "Failed to track task start", e)
+            // Don't fail the task execution if tracking fails
         }
     }
 
@@ -319,30 +307,27 @@ class AgentService : Service() {
      * we'll add a new completion entry to track the result.
      */
     private suspend fun trackTaskCompletion(task: String, success: Boolean, errorMessage: String? = null) {
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
+        val uid = com.blurr.voice.data.AppwriteDb.getCurrentUserIdOrNull()
+        if (uid == null) {
             Log.w(TAG, "Cannot track task completion, user is not logged in.")
             return
         }
 
         try {
-            val completionEntry = hashMapOf(
+            val now = java.time.Instant.now()
+            val completionEntry = mapOf(
                 "task" to task,
                 "status" to if (success) "completed" else "failed",
-//                "startedAt" to null, // This is a completion entry, not a start entry
-                "completedAt" to Timestamp.now(),
+                "startedAt" to null,
+                "completedAt" to java.time.format.DateTimeFormatter.ISO_INSTANT.format(now),
                 "success" to success,
                 "errorMessage" to errorMessage
             )
 
-            // Append the completion status to the user's taskHistory array
-            db.collection("users").document(currentUser.uid)
-                .update("taskHistory", FieldValue.arrayUnion(completionEntry))
-                .await()
-
-            Log.d(TAG, "Successfully tracked task completion in Firebase for user ${currentUser.uid}: $task (success: $success)")
+            com.blurr.voice.data.AppwriteDb.appendToUserArrayField(uid, "taskHistory", completionEntry)
+            Log.d(TAG, "Tracked task completion for user $uid: $task (success: $success)")
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to track task completion in Firebase", e)
+            Log.e(TAG, "Failed to track task completion", e)
         }
     }
 }

@@ -44,17 +44,10 @@ import com.blurr.voice.utilities.UserProfileManager
 import com.blurr.voice.utilities.VisualFeedbackManager
 import com.blurr.voice.v2.AgentService
 import com.google.ai.client.generativeai.type.TextPart
-import com.google.firebase.Firebase
-import com.google.firebase.Timestamp
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.analytics
-import com.google.firebase.auth.auth
-import com.google.firebase.firestore.FieldValue
 import com.blurr.voice.utilities.ServicePermissionManager
 import com.blurr.voice.utilities.PandaStateManager
 import com.blurr.voice.v2.perception.Perception
 import com.blurr.voice.v2.perception.SemanticParser
-import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -98,15 +91,11 @@ class ConversationalAgentService : Service() {
     private val memoryManager by lazy { MemoryManager.getInstance(this) }
     private val usedMemories = mutableSetOf<String>() // Track memories already used in this conversation
     private var hasHeardFirstUtterance = false // Track if we've received the first user utterance
-    private lateinit var firebaseAnalytics: FirebaseAnalytics
     private val eyes by lazy { Eyes(this) }
     private lateinit var perception: Perception
 
     
-    // Firebase instances for conversation tracking
-    private val db = Firebase.firestore
-    private val auth = Firebase.auth
-    private var conversationId: String? = null // Track current conversation session
+    // Firebase tracking removed (Phase 0)    private var conversationId: String? = null // Track current conversation session
 
 
     companion object {
@@ -122,11 +111,9 @@ class ConversationalAgentService : Service() {
         super.onCreate()
         Log.d("ConvAgent", "Service onCreate")
         
-        // Initialize Firebase Analytics
-        firebaseAnalytics = Firebase.analytics
         
         // Track service creation
-        firebaseAnalytics.logEvent("conversational_agent_started", null)
+        /* analytics removed */
         
         isRunning = true
         createNotificationChannel()
@@ -179,7 +166,7 @@ class ConversationalAgentService : Service() {
         Log.d("ConvAgent", "Entering Text Mode. Stopping STT/TTS.")
         
         // Track text mode activation
-        firebaseAnalytics.logEvent("text_mode_activated", null)
+        /* analytics removed */
         
         isTextModeActive = true
         pandaStateManager.setState(PandaState.IDLE)
@@ -232,7 +219,7 @@ class ConversationalAgentService : Service() {
         }
 
         // Track conversation initiation
-        firebaseAnalytics.logEvent("conversation_initiated", null)
+        /* analytics removed */
         trackConversationStart()
 
         // Skip greeting and start listening immediately
@@ -514,7 +501,7 @@ class ConversationalAgentService : Service() {
 
             conversationHistory = addResponse("user", userInput, conversationHistory)
             
-            // Track user message in Firebase
+            // Track user message in Appwrite
             trackMessage("user", userInput, "input")
 
             // Track user input
@@ -523,11 +510,11 @@ class ConversationalAgentService : Service() {
                 putInt("input_length", userInput.length)
                 putBoolean("is_command", userInput.equals("stop", ignoreCase = true) || userInput.equals("exit", ignoreCase = true))
             }
-            firebaseAnalytics.logEvent("user_input_processed", inputBundle)
+            /* analytics removed */
 
             try {
                 if (userInput.equals("stop", ignoreCase = true) || userInput.equals("exit", ignoreCase = true)) {
-                    firebaseAnalytics.logEvent("conversation_ended_by_command", null)
+                    /* analytics removed */
                     trackMessage("model", "Goodbye!", "farewell")
                     gracefulShutdown("Goodbye!", "command")
                     return@launch
@@ -546,10 +533,10 @@ class ConversationalAgentService : Service() {
                             putString("task_instruction", decision.instruction.take(100)) // Limit length for analytics
                             putBoolean("agent_already_running", AgentService.isRunning)
                         }
-                        firebaseAnalytics.logEvent("task_requested", taskBundle)
+                        /* analytics removed */
                         
                         if (AgentService.isRunning) {
-                            firebaseAnalytics.logEvent("task_rejected_agent_busy", null)
+                            /* analytics removed */
                             val busyMessage = "I'm already working on '${AgentService.currentTask}'. Please let me finish that first, or you can ask me to stop it."
                             speakAndThenListen(busyMessage)
                             conversationHistory = addResponse("model", busyMessage, conversationHistory)
@@ -581,7 +568,7 @@ class ConversationalAgentService : Service() {
                                         putInt("clarification_attempt", clarificationAttempts + 1)
                                         putInt("questions_count", questions.size)
                                     }
-                                    firebaseAnalytics.logEvent("task_clarification_needed", clarificationBundle)
+                                    /* analytics removed */
                                     
                                     clarificationAttempts++
                                     displayClarificationQuestions(questions)
@@ -605,7 +592,7 @@ class ConversationalAgentService : Service() {
                                     )
                                     
                                     // Track task execution
-                                    firebaseAnalytics.logEvent("task_executed", taskBundle)
+                                    /* analytics removed */
                                     
                                     val originalInstruction = decision.instruction
                                     AgentService.start(applicationContext, originalInstruction)
@@ -619,7 +606,7 @@ class ConversationalAgentService : Service() {
                                 )
                                 
                                 // Track max clarification attempts reached
-                                firebaseAnalytics.logEvent("task_executed_max_clarification", taskBundle)
+                                /* analytics removed */
                                 
                                 AgentService.start(applicationContext, decision.instruction)
                                 trackMessage("model", decision.reply, "task_confirmation")
@@ -629,7 +616,7 @@ class ConversationalAgentService : Service() {
                             Log.w("ConvAgent", "User has no tasks remaining. Denying request.")
                             
                             // Track freemium limit reached
-                            firebaseAnalytics.logEvent("task_rejected_freemium_limit", null)
+                            /* analytics removed */
                             
                             val upgradeMessage = "Hey! You've used all your free tasks for the month. Please upgrade in the app to unlock more. We can still talk in voice mode."
                             conversationHistory = addResponse("model", upgradeMessage, conversationHistory)
@@ -644,7 +631,7 @@ class ConversationalAgentService : Service() {
                         val killTaskBundle = android.os.Bundle().apply {
                             putBoolean("task_was_running", AgentService.isRunning)
                         }
-                        firebaseAnalytics.logEvent("kill_task_requested", killTaskBundle)
+                        /* analytics removed */
                         
                         if (AgentService.isRunning) {
                             AgentService.stop(applicationContext)
@@ -662,11 +649,11 @@ class ConversationalAgentService : Service() {
                             putBoolean("conversation_ended", decision.shouldEnd)
                             putInt("reply_length", decision.reply.length)
                         }
-                        firebaseAnalytics.logEvent("conversational_reply", replyBundle)
+                        /* analytics removed */
                         
                         if (decision.shouldEnd) {
                             Log.d("ConvAgent", "Model decided to end the conversation.")
-                            firebaseAnalytics.logEvent("conversation_ended_by_model", null)
+                            /* analytics removed */
                             trackMessage("model", decision.reply, "farewell")
                             gracefulShutdown(decision.reply, "model_ended")
                         } else {
@@ -688,7 +675,7 @@ class ConversationalAgentService : Service() {
                     putString("error_message", e.message?.take(100) ?: "Unknown error")
                     putString("error_type", e.javaClass.simpleName)
                 }
-                firebaseAnalytics.logEvent("input_processing_error", errorBundle)
+                /* analytics removed */
                 
                 speakAndThenListen("closing voice mode")
             }
@@ -1151,7 +1138,7 @@ class ConversationalAgentService : Service() {
             putInt("clarification_attempts", clarificationAttempts)
             putInt("stt_error_attempts", sttErrorAttempts)
         }
-        firebaseAnalytics.logEvent("conversation_ended_gracefully", shutdownBundle)
+        /* analytics removed */
         
         // Track conversation end in Firebase
 
@@ -1190,7 +1177,7 @@ class ConversationalAgentService : Service() {
             putInt("clarification_attempts", clarificationAttempts)
             putInt("stt_error_attempts", sttErrorAttempts)
         }
-        firebaseAnalytics.logEvent("conversation_ended_instantly", instantShutdownBundle)
+        /* analytics removed */
         
         // Track conversation end in Firebase
         trackConversationEnd("instant")
@@ -1217,24 +1204,24 @@ class ConversationalAgentService : Service() {
     }
 
     /**
-     * Tracks the conversation start in Firebase by creating a new conversation entry.
+     * Firebase tracking removed in Phase 0.
      * This method is inspired by AgentService's Firebase operations.
      */
     private fun trackConversationStart() {
         val currentUser = auth.currentUser
-        if (currentUser == null) {
+        if (uid == null) {
             Log.w("ConvAgent", "Cannot track conversation, user is not logged in.")
             return
         }
 
         // Generate a unique conversation ID
-        conversationId = "${System.currentTimeMillis()}_${currentUser.uid.take(8)}"
+        conversationId = "${System.currentTimeMillis()}_${uid.take(8)}"
 
         serviceScope.launch {
             try {
-                val conversationEntry = hashMapOf(
+                val conversationEntry = mapOf(
                     "conversationId" to conversationId,
-                    "startedAt" to Timestamp.now(),
+                    "startedAt" to java.time.format.DateTimeFormatter.ISO_INSTANT.format(java.time.Instant.now()),
                     "endedAt" to null,
                     "messageCount" to 0,
                     "textModeUsed" to false,
@@ -1246,9 +1233,7 @@ class ConversationalAgentService : Service() {
                 )
 
                 // Append the conversation to the user's conversationHistory array
-                db.collection("users").document(currentUser.uid)
-                    .update("conversationHistory", FieldValue.arrayUnion(conversationEntry))
-                    .await()
+                com.blurr.voice.data.AppwriteDb.appendToUserArrayField(uid, "conversationHistory", conversationEntry)
 
                 Log.d("ConvAgent", "Successfully tracked conversation start in Firebase for user ${currentUser.uid}: $conversationId")
             } catch (e: Exception) {
@@ -1270,19 +1255,17 @@ class ConversationalAgentService : Service() {
 
         serviceScope.launch {
             try {
-                val messageEntry = hashMapOf(
+                val messageEntry = mapOf(
                     "conversationId" to conversationId,
                     "role" to role, // "user" or "model"
                     "message" to message.take(500), // Limit message length for storage
                     "messageType" to messageType, // "text", "task", "clarification"
-                    "timestamp" to Timestamp.now(),
+                    "timestamp" to java.time.format.DateTimeFormatter.ISO_INSTANT.format(java.time.Instant.now()),
                     "inputMode" to if (isTextModeActive) "text" else "voice"
                 )
 
                 // Append the message to the user's messageHistory array
-                db.collection("users").document(currentUser.uid)
-                    .update("messageHistory", FieldValue.arrayUnion(messageEntry))
-                    .await()
+                com.blurr.voice.data.AppwriteDb.appendToUserArrayField(uid, "messageHistory", messageEntry)
 
                 Log.d("ConvAgent", "Successfully tracked message in Firebase: $role - ${message.take(50)}...")
             } catch (e: Exception) {
@@ -1303,9 +1286,9 @@ class ConversationalAgentService : Service() {
 
         serviceScope.launch {
             try {
-                val completionEntry = hashMapOf(
+                val completionEntry = mapOf(
                     "conversationId" to conversationId,
-                    "endedAt" to Timestamp.now(),
+                    "endedAt" to java.time.format.DateTimeFormatter.ISO_INSTANT.format(java.time.Instant.now()),
                     "messageCount" to conversationHistory.size,
                     "textModeUsed" to isTextModeActive,
                     "clarificationAttempts" to clarificationAttempts,
@@ -1317,23 +1300,20 @@ class ConversationalAgentService : Service() {
                 )
 
                 // Append the completion status to the user's conversationHistory array
-                db.collection("users").document(currentUser.uid)
-                    .update("conversationHistory", FieldValue.arrayUnion(completionEntry))
-                    .await()
+                com.blurr.voice.data.AppwriteDb.appendToUserArrayField(uid, "conversationHistory", completionEntry)
 
                 Log.d("ConvAgent", "Successfully tracked conversation end in Firebase: $conversationId ($endReason)")
             } catch (e: Exception) {
                 Log.e("ConvAgent", "Failed to track conversation end in Firebase", e)
             }
         }
-    }
+    */
 
     override fun onDestroy() {
         super.onDestroy()
         Log.d("ConvAgent", "Service onDestroy")
         
         overlayManager.stopObserving()
-        firebaseAnalytics.logEvent("conversational_agent_destroyed", null)
         
         // Track conversation end if not already tracked
         if (conversationId != null) {

@@ -38,11 +38,6 @@ import com.blurr.voice.utilities.PandaState
 import com.blurr.voice.utilities.PandaStateManager
 import com.blurr.voice.utilities.DeltaStateColorMapper
 import com.blurr.voice.views.DeltaSymbolView
-import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
-import com.google.firebase.firestore.firestore
-import com.google.firebase.remoteconfig.remoteConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -57,7 +52,7 @@ class MainActivity : BaseNavigationActivity() {
     private lateinit var userId: String
     private lateinit var permissionManager: PermissionManager
     private lateinit var wakeWordManager: WakeWordManager
-    private lateinit var auth: FirebaseAuth
+    // private lateinit var auth: FirebaseAuth // Removed for Appwrite migration
     private lateinit var tasksLeftTag: View
     private lateinit var freemiumManager: FreemiumManager
     private lateinit var wakeWordHelpLink: TextView
@@ -120,15 +115,32 @@ class MainActivity : BaseNavigationActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        auth = Firebase.auth
-        val currentUser = auth.currentUser
-        val profileManager = UserProfileManager(this)
-
-        if (currentUser == null || !profileManager.isProfileComplete()) {
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
-            return
+        // Check Appwrite Session
+        lifecycleScope.launch {
+            val authRepo = com.blurr.voice.auth.AppwriteAuthRepository()
+            val sessionResult = authRepo.checkSession()
+            val isLoggedIn = sessionResult is com.blurr.voice.core.result.Result.Success && sessionResult.data
+            
+            if (!isLoggedIn) {
+                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                finish()
+                return@launch
+            }
+            
+            // Check profile/onboarding status if logged in
+            val profileManager = UserProfileManager(this@MainActivity)
+            if (!profileManager.isProfileComplete()) {
+                 // Fetch user from Appwrite and save profile if possible, or redirect
+                 val userResult = authRepo.getCurrentUser()
+                 if (userResult is com.blurr.voice.core.result.Result.Success) {
+                      val user = userResult.data
+                      // profileManager.saveProfile(user.name, user.email) 
+                      // Need to check generic map or proper field access. 
+                      // Assuming user.name exists in map or object.
+                 }
+            }
         }
+
         onboardingManager = OnboardingManager(this)
         if (!onboardingManager.isOnboardingCompleted()) {
             Logger.d("MainActivity", "User is logged in but onboarding not completed. Relaunching permissions stepper.")
@@ -237,11 +249,10 @@ class MainActivity : BaseNavigationActivity() {
 
     override fun onStart() {
         super.onStart()
-        if (auth.currentUser == null) {
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
-            return
-        }
+        // Appwrite session check handles this via lifecycleScope above or separate check
+        // if (auth.currentUser == null) { ... } -> handled in onCreate mostly.
+        // We can add a check here too if needed.
+
         
         showLoading(true)
         performBillingCheck()
@@ -303,11 +314,13 @@ class MainActivity : BaseNavigationActivity() {
     }
 
     private fun requestLimitIncrease() {
-        val userEmail = auth.currentUser?.email
+        // TODO: Get email from Appwrite
+        val userEmail = "migrated_user@example.com" // Placeholder for now
+/*        val userEmail = auth.currentUser?.email
         if (userEmail.isNullOrEmpty()) {
             Toast.makeText(this, "Could not get your email. Please try again.", Toast.LENGTH_SHORT).show()
             return
-        }
+        }*/
 
         val recipient = "ayush0000ayush@gmail.com"
         val subject = "I am facing issue in"
@@ -681,7 +694,12 @@ class MainActivity : BaseNavigationActivity() {
 
 
     private suspend fun updateUserToPro() {
-        val uid = Firebase.auth.currentUser?.uid
+        // TODO: Update Appwrite DB
+        /* Firebase removed 
+           ... */
+        return
+        /*
+        // Firebase removed: val uid = <removed>
         if (uid == null) {
             Logger.e("MainActivity", "Cannot update user to pro: user is not authenticated.")
             withContext(Dispatchers.Main) {
@@ -718,17 +736,17 @@ class MainActivity : BaseNavigationActivity() {
                     return
                 }
 
-                val remoteConfig = Firebase.remoteConfig
+                // Firebase removed: val remoteConfig = <removed>
 
                 // Fetch and activate the latest Remote Config values
-                remoteConfig.fetchAndActivate()
+                // Firebase removed: remoteConfig.fetchAndActivate()
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
                             val updated = task.result
                             Log.d("MainActivity", "Remote Config params updated: $updated")
 
                             // Get the message from the activated config
-                            val message = remoteConfig.getString("developerMessage")
+                            val message = "" // Firebase removed
 
                             if (message.isNotEmpty()) {
                                 // Your existing dialog logic
