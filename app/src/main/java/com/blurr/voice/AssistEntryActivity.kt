@@ -22,18 +22,15 @@ class AssistEntryActivity : Activity() {
     }
 
     private fun handleAssistLaunch(intent: Intent?) {
-        Log.d("AssistEntryActivity", "Assistant invoked via ACTION_ASSIST, intent=$intent")
+        Log.d("AssistEntryActivity", "Assistant invoked via ACTION_ASSIST (home button long press)")
 
-        // If agent already running, you can signal it to focus/show UI instead of starting again
-        if (!ConversationalAgentService.isRunning) {
-            val serviceIntent = Intent(this, ConversationalAgentService::class.java).apply {
-                action = "com.blurr.voice.ACTION_START_FROM_ASSIST"
-                putExtra("source", "assist_gesture")       // optional metadata
-            }
-            ContextCompat.startForegroundService(this, serviceIntent)
-        } else {
-            // e.g., tell the service to bring its overlay/mic UI to front
-            sendBroadcast(Intent("com.blurr.voice.ACTION_SHOW_OVERLAY"))
+        // Launch Ultra-Generalist Agent Chat UI
+        val chatIntent = Intent(this, com.blurr.voice.ui.agent.AgentChatActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra("source", "home_button_long_press")
         }
+        startActivity(chatIntent)
+        
+        Log.d("AssistEntryActivity", "Launched AgentChatActivity")
     }
 }

@@ -124,6 +124,39 @@ class UniversalLLMService(private val context: Context) {
     }
     
     /**
+     * Generates chat completion from simple message format (for agent use)
+     * 
+     * @param messages List of (role, content) pairs
+     * @param images Optional images
+     * @param temperature Temperature setting
+     * @param maxTokens Max tokens in response
+     * @param options Advanced options
+     * @return Generated text or null
+     */
+    suspend fun generateChatCompletion(
+        messages: List<Pair<String, String>>,
+        images: List<Bitmap> = emptyList(),
+        temperature: Double = 0.7,
+        maxTokens: Int = 4096,
+        options: OpenRouterRequestOptions? = null
+    ): String? {
+        // Validate configuration
+        val (isValid, errorMessage) = keyManager.validateConfiguration()
+        if (!isValid) {
+            Log.e(TAG, "Configuration invalid: $errorMessage")
+            return null
+        }
+        
+        val provider = keyManager.getSelectedProvider()!!
+        val apiKey = keyManager.getApiKey(provider)!!
+        val model = keyManager.getSelectedModel(provider)!!
+        
+        // Create API client and make request
+        val api = OpenAICompatibleAPI(provider, apiKey, model)
+        return api.generateChatCompletion(messages, images, temperature, maxTokens, options)
+    }
+    
+    /**
      * Generates structured JSON output (for function calling, data extraction)
      */
     suspend fun generateStructuredContent(

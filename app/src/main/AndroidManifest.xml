@@ -97,6 +97,15 @@
             android:label="onboarding"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Blurr" />
+        
+        <!-- Ultra-Generalist Agent Chat UI -->
+        <activity
+            android:name=".ui.agent.AgentChatActivity"
+            android:exported="false"
+            android:label="Ultra-Generalist Agent"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Blurr"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".PermissionsActivity"
             android:exported="false"
