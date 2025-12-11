@@ -45,6 +45,7 @@ class SettingsActivity : BaseNavigationActivity() {
     private lateinit var textGetPicovoiceKeyLink: TextView
     private lateinit var wakeWordButton: TextView
     private lateinit var buttonSignOut: Button
+    private lateinit var buttonBYOKSettings: Button
     private lateinit var wakeWordManager: WakeWordManager
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
@@ -110,6 +111,7 @@ class SettingsActivity : BaseNavigationActivity() {
         editWakeWordKey = findViewById(R.id.editWakeWordKey)
         wakeWordButton = findViewById(R.id.wakeWordButton)
         buttonSignOut = findViewById(R.id.buttonSignOut)
+        buttonBYOKSettings = findViewById(R.id.buttonBYOKSettings)
 
         editUserName = findViewById(R.id.editUserName)
         editUserEmail = findViewById(R.id.editUserEmail)
@@ -185,6 +187,11 @@ class SettingsActivity : BaseNavigationActivity() {
 
         buttonSignOut.setOnClickListener {
             showSignOutConfirmationDialog()
+        }
+        
+        buttonBYOKSettings.setOnClickListener {
+            val intent = Intent(this, com.blurr.voice.ui.BYOKSettingsActivity::class.java)
+            startActivity(intent)
         }
     }
 

@@ -6,7 +6,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import com.blurr.voice.v2.actions.ActionExecutor
 import com.blurr.voice.v2.fs.FileSystem
-import com.blurr.voice.v2.llm.GeminiApi
+import com.blurr.voice.core.providers.UniversalLLMService
 import com.blurr.voice.v2.llm.GeminiMessage
 import com.blurr.voice.v2.message_manager.MemoryManager
 import com.blurr.voice.v2.perception.Perception
@@ -34,7 +34,7 @@ class Agent(
     private val settings: AgentSettings,
     private val memoryManager: MemoryManager,
     private val perception: Perception,
-    private val llmApi: GeminiApi,
+    private val llmApi: UniversalLLMService,
     private val actionExecutor: ActionExecutor,
     private val fileSystem: FileSystem,
     private val context: Context

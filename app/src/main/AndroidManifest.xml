@@ -86,6 +86,12 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Blurr" />
         <activity
+            android:name=".ui.BYOKSettingsActivity"
+            android:exported="false"
+            android:label="BYOK Settings"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Blurr" />
+        <activity
             android:name=".OnboardingPermissionsActivity"
             android:exported="false"
             android:label="onboarding"

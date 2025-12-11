@@ -1,9 +1,15 @@
-# This is a template for local.properties
-# Copy this file to local.properties and add your actual Picovoice access key
+## This file must *NOT* be checked into Version Control Systems,
+# as it contains information specific to your local configuration.
 
-# Add your Picovoice access key here
-# Get it from: https://console.picovoice.ai/
-PICOVOICE_ACCESS_KEY=your_actual_access_key_here
+# Phase 0: API keys are now managed via BYOK Settings in the app
+# No developer API keys needed in local.properties
+# Users configure their own keys through Settings → API Keys (BYOK)
 
-# Other Android SDK properties (these are usually auto-generated)
-# sdk.dir=/path/to/your/android/sdk 
+# Appwrite configuration (still needed for backend)
+APPWRITE_PROJECT_ID=your_project_id
+APPWRITE_DATABASE_ID=your_database_id
+APPWRITE_USERS_COLLECTION_ID=your_users_collection_id
+APPWRITE_TASKS_COLLECTION_ID=your_tasks_collection_id
+
+# SDK location (automatically set by Android Studio)
+sdk.dir=/path/to/Android/sdk

@@ -11,7 +11,9 @@ lifecycleRuntimeKtx = "2.9.0"
 activityCompose = "1.10.1"
 composeBom = "2024.09.00"
 appcompat = "1.7.0"
-generativeai = "0.9.0"
+# Phase 0: Removed (now using BYOK)
+# generativeai = "0.9.0"
+securityCrypto = "1.1.0-alpha06"
 playServicesAuth = "21.4.0"
 playServicesBasement = "18.9.0"
 appwrite = "5.0.0"
@@ -34,7 +36,9 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
+# Phase 0: Removed (now using BYOK)
+# generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
+security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 play-services-basement = { module = "com.google.android.gms:play-services-basement", version.ref = "playServicesBasement" }
 appwrite-sdk = { group = "io.appwrite", name = "sdk-for-android", version.ref = "appwrite" }

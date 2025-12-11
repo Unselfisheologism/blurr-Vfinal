@@ -13,7 +13,6 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.blurr.voice.R
-import com.blurr.voice.utilities.ApiKeyManager
 import com.blurr.voice.api.Eyes
 import com.blurr.voice.api.Finger
 import com.blurr.voice.overlay.OverlayDispatcher
@@ -21,7 +20,7 @@ import com.blurr.voice.utilities.VisualFeedbackManager
 import com.blurr.voice.overlay.OverlayManager
 import com.blurr.voice.v2.actions.ActionExecutor
 import com.blurr.voice.v2.fs.FileSystem
-import com.blurr.voice.v2.llm.GeminiApi
+import com.blurr.voice.core.providers.UniversalLLMService
 import com.blurr.voice.v2.message_manager.MemoryManager
 import com.blurr.voice.v2.perception.Perception
 import com.blurr.voice.v2.perception.SemanticParser
@@ -57,7 +56,7 @@ class AgentService : Service() {
     private lateinit var fileSystem: FileSystem
     private lateinit var memoryManager: MemoryManager
     private lateinit var perception: Perception
-    private lateinit var llmApi: GeminiApi
+    private lateinit var llmApi: UniversalLLMService
     private lateinit var actionExecutor: ActionExecutor
     private lateinit var overlayManager: OverlayManager
 
@@ -119,11 +118,20 @@ class AgentService : Service() {
         fileSystem = FileSystem(this,)
         memoryManager = MemoryManager(this, "", fileSystem, settings)
         perception = Perception(Eyes(this), SemanticParser())
-        llmApi = GeminiApi(
-            "gemini-2.5-flash",
-            apiKeyManager = ApiKeyManager,
-            maxRetry = 10
-        )
+        llmApi = UniversalLLMService(this)
+        
+        // Check BYOK configuration
+        if (!llmApi.isConfigured()) {
+            Log.e(TAG, "LLM service not configured. Please set up API keys.")
+            android.widget.Toast.makeText(
+                this,
+                "Please configure API keys in Settings → API Keys (BYOK)",
+                android.widget.Toast.LENGTH_LONG
+            ).show()
+            stopSelf()
+            return
+        }
+        
         actionExecutor = ActionExecutor(Finger(this))
         agent = Agent(
             settings,

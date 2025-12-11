@@ -1,7 +1,7 @@
 package com.blurr.voice.agents
 
 import android.content.Context
-import com.blurr.voice.api.GeminiApi
+import com.blurr.voice.core.providers.UniversalLLMService
 import com.google.ai.client.generativeai.type.TextPart
 import org.json.JSONObject
 import kotlinx.coroutines.Dispatchers
@@ -45,13 +45,17 @@ class ClarificationAgent {
             // For this specific task, we only need to send our structured prompt.
             val apiChat = listOf("user" to listOf(TextPart(prompt)))
 
-            // 3. Call the Gemini API.
-            val responseJson = withContext(Dispatchers.IO) {
-                GeminiApi.generateContent(
-                    chat = apiChat,
-                    modelName = "gemini-1.5-flash-latest", // Using a fast, modern model for this task.
-                    context = context
+            // 3. Call the Universal LLM Service.
+            val llmService = UniversalLLMService(context)
+            if (!llmService.isConfigured()) {
+                return ClarificationResult(
+                    status = "ERROR",
+                    questions = listOf("Please configure API keys in Settings → API Keys (BYOK)")
                 )
+            }
+            
+            val responseJson = withContext(Dispatchers.IO) {
+                llmService.generateContent(chat = apiChat)
             }
             Log.d("ClarificationAgent", "Clarification API Response: $responseJson")
 

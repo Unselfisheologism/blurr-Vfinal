@@ -16,8 +16,10 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
 import com.blurr.voice.BuildConfig
-import com.blurr.voice.api.GoogleTts
-import com.blurr.voice.api.TTSVoice
+// TODO: Migrate to UniversalTTSService (Phase 0 - BYOK voice)
+// import com.blurr.voice.api.GoogleTts
+// import com.blurr.voice.api.TTSVoice
+import com.blurr.voice.core.providers.UniversalTTSService
 import com.blurr.voice.overlay.OverlayDispatcher
 import com.blurr.voice.overlay.OverlayManager
 import com.blurr.voice.overlay.OverlayPriority

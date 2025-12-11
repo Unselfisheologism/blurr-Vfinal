@@ -32,4 +32,8 @@
     <color name="delta_processing">#2196F3</color>  <!-- Blue - thinking/processing -->
     <color name="delta_speaking">#4CAF50</color>    <!-- Green - speaking -->
     <color name="delta_error">#F44336</color>       <!-- Red - error state -->
+    
+    <!-- BYOK Settings colors -->
+    <color name="background_dark">#0D0D2E</color>
+    <color name="card_background">#1A1A3E</color>
 </resources>

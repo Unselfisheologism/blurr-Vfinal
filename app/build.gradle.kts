@@ -28,14 +28,9 @@ android {
     namespace = "com.blurr.voice"
     compileSdk = 35
 
-    // Common API keys and configuration - extracted to avoid duplication
-    val apiKeys = localProperties.getProperty("GEMINI_API_KEYS") ?: ""
+    // Phase 0: API keys now managed via BYOK Settings in the app
     val tavilyApiKeys = localProperties.getProperty("TAVILY_API") ?: ""
     val mem0ApiKey = localProperties.getProperty("MEM0_API") ?: ""
-    val picovoiceApiKey = localProperties.getProperty("PICOVOICE_ACCESS_KEY") ?: ""
-    val googleTtsApiKey = localProperties.getProperty("GOOGLE_TTS_API_KEY") ?: ""
-    val googlecloudGatewayPicovoice =
-        localProperties.getProperty("GCLOUD_GATEWAY_PICOVOICE_KEY") ?: ""
     val googlecloudGatewayURL = localProperties.getProperty("GCLOUD_GATEWAY_URL") ?: ""
     val googlecloudProxyURL = localProperties.getProperty("GCLOUD_PROXY_URL") ?: ""
     val googlecloudProxyURLKey = localProperties.getProperty("GCLOUD_PROXY_URL_KEY") ?: ""
@@ -61,18 +56,11 @@ android {
          buildConfigField("String", "APPWRITE_DATABASE_ID", "\"$appwriteDatabaseId\"")
          buildConfigField("String", "APPWRITE_USERS_COLLECTION_ID", "\"$appwriteUsersCollectionId\"")
          buildConfigField("String", "APPWRITE_TASKS_COLLECTION_ID", "\"$appwriteTasksCollectionId\"")
-        buildConfigField("String", "GEMINI_API_KEYS", "\"$apiKeys\"")
+        // Phase 0: Removed hard-coded API keys (GEMINI_API_KEYS, GOOGLE_TTS_API_KEY, PICOVOICE_ACCESS_KEY)
         buildConfigField("String", "TAVILY_API", "\"$tavilyApiKeys\"")
         buildConfigField("String", "MEM0_API", "\"$mem0ApiKey\"")
-        buildConfigField("String", "PICOVOICE_ACCESS_KEY", "\"$picovoiceApiKey\"")
         buildConfigField("boolean", "ENABLE_DIRECT_APP_OPENING", "true")
         buildConfigField("boolean", "SPEAK_INSTRUCTIONS", "true")
-        buildConfigField("String", "GOOGLE_TTS_API_KEY", "\"$googleTtsApiKey\"")
-        buildConfigField(
-            "String",
-            "GCLOUD_GATEWAY_PICOVOICE_KEY",
-            "\"$googlecloudGatewayPicovoice\""
-        )
         buildConfigField("String", "GCLOUD_GATEWAY_URL", "\"$googlecloudGatewayURL\"")
         buildConfigField("String", "GCLOUD_PROXY_URL", "\"$googlecloudProxyURL\"")
         buildConfigField("String", "GCLOUD_PROXY_URL_KEY", "\"$googlecloudProxyURLKey\"")
@@ -121,7 +109,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.appcompat)
-    implementation(libs.generativeai)
+    // Phase 0: Removed Gemini SDK (now using BYOK with UniversalLLMService)
+    // implementation(libs.generativeai)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -139,8 +128,11 @@ dependencies {
     // https://mvnrepository.com/artifact/androidx.test.uiautomator/uiautomator
     implementation("androidx.test.uiautomator:uiautomator:2.3.0")
 
-    // Porcupine Wake Word Engine
-    implementation("ai.picovoice:porcupine-android:3.0.2")
+    // Porcupine Wake Word Engine - TODO: Remove after BYOK voice implementation
+    // implementation("ai.picovoice:porcupine-android:3.0.2")
+    
+    // EncryptedSharedPreferences for secure key storage
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
     // Room database dependencies
     implementation("androidx.room:room-runtime:2.6.1")

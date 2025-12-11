@@ -1,7 +1,8 @@
 package com.blurr.voice.utilities
 
 import android.graphics.Bitmap
-import com.blurr.voice.api.GeminiApi
+import com.blurr.voice.core.providers.UniversalLLMService
+import android.content.Context
 import com.google.ai.client.generativeai.type.ImagePart
 import com.google.ai.client.generativeai.type.TextPart
 
@@ -51,8 +52,14 @@ fun addResponsePrePost(
 }
 
 suspend fun getReasoningModelApiResponse(
+    context: Context,
     chat: List<Pair<String, List<Any>>>,
 ): String? {
-    return GeminiApi.generateContent(chat) // MODIFIED: Pass agent state
+    val llmService = UniversalLLMService(context)
+    if (!llmService.isConfigured()) {
+        android.util.Log.e("LLMHelper", "LLM service not configured")
+        return null
+    }
+    return llmService.generateContent(chat)
 }
 
