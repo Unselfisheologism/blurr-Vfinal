@@ -92,6 +92,12 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Blurr" />
         <activity
+            android:name=".ui.tools.ToolSelectionActivity"
+            android:exported="false"
+            android:label="Tool Selection"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Blurr" />
+        <activity
             android:name=".OnboardingPermissionsActivity"
             android:exported="false"
             android:label="onboarding"

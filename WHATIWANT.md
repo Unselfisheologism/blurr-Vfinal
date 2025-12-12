@@ -45,14 +45,14 @@ This is a bring-your-own-API-key (OpenRouter or AIMLAPI.com) mobile app that tur
 
 **Phase 1 (MVP Launch – Next 3-5 Weeks) – Ultra-Generalist Agent + Core Tools**
 - Implement full support for MCP (Model Context Protocol) as a client to enable future-proof tool access.
-- Add built-in fallback tools:
+- Add built-in tools:
   - Web search / deep research (Tavily, Exa, SerpAPI – user key)
-  - Multimodal generation (images, video, music, 3D) via OpenRouter/AIMLAPI
+  - Multimodal generation (images, video, audio, music, 3D) via OpenRouter/AIMLAPI
   - Google Workspace integration (OAuth)
   - PowerPoint, PDF, infographic generation and export
   - Full phone control using existing Blurr capabilities
 - Build the central "Ultra-Generalist AI Agent" 1-chat UI that can orchestrate all tools and perform complex tasks (research, generate media, create documents, control phone, execute workflows, etc.).
-- Add "Save as Reusable Tool" for custom prompt+tool chains.
+- Add tool selection UI to enable/disable built-in tools.
 
 **Phase 2 (Next 6-10 Weeks) – AI-Native Agents & Apps**
 - Begin building the suite of AI-native agents/apps (these will be separate screens/modes accessible from the main assistant or home screen):

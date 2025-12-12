@@ -19,6 +19,9 @@ class MCPClient(
 ) {
     private val servers = mutableMapOf<String, MCPServer>()
     private val tools = mutableMapOf<String, MCPTool>()
+    private val toolPreferences by lazy { 
+        com.blurr.voice.data.ToolPreferences(context) 
+    }
     
     companion object {
         private const val TAG = "MCPClient"
@@ -89,9 +92,23 @@ class MCPClient(
     }
     
     /**
-     * Get all available tools from all connected servers
+     * Get all available tools from all connected servers (only enabled)
      */
     fun getAllTools(): List<Tool> {
+        return tools.entries.mapNotNull { (key, mcpTool) ->
+            if (!toolPreferences.isToolEnabled(key)) {
+                return@mapNotNull null
+            }
+            val serverName = key.substringBefore(":")
+            val server = servers[serverName]
+            server?.let { MCPToolAdapter(mcpTool, it) }
+        }
+    }
+    
+    /**
+     * Get all available tools regardless of enabled state (for UI)
+     */
+    fun getAllToolsRaw(): List<Tool> {
         return tools.entries.mapNotNull { (key, mcpTool) ->
             val serverName = key.substringBefore(":")
             val server = servers[serverName]
@@ -100,17 +117,21 @@ class MCPClient(
     }
     
     /**
-     * Describe all available MCP tools
+     * Describe all available MCP tools (only enabled)
      * Returns a formatted string for LLM system prompts
      */
     fun describeTools(): String {
-        if (tools.isEmpty()) {
+        val enabledTools = tools.filter { (key, _) -> 
+            toolPreferences.isToolEnabled(key) 
+        }
+        
+        if (enabledTools.isEmpty()) {
             return "No MCP tools available."
         }
         
         return buildString {
             appendLine("MCP Tools:")
-            tools.forEach { (key, tool) ->
+            enabledTools.forEach { (key, tool) ->
                 appendLine("- $key: ${tool.description}")
             }
         }

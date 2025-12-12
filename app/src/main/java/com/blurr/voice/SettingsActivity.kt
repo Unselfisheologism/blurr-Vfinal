@@ -193,6 +193,12 @@ class SettingsActivity : BaseNavigationActivity() {
             val intent = Intent(this, com.blurr.voice.ui.BYOKSettingsActivity::class.java)
             startActivity(intent)
         }
+        
+        // Add Tool Selection button click listener (if button exists in layout)
+        findViewById<Button?>(R.id.buttonToolSelection)?.setOnClickListener {
+            val intent = Intent(this, com.blurr.voice.ui.tools.ToolSelectionActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun setupAutoSavingListeners() {

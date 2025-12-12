@@ -14,14 +14,19 @@ class ToolRegistry(
     private val context: Context
 ) {
     private val tools = mutableMapOf<String, Tool>()
+    private val toolPreferences by lazy { 
+        com.blurr.voice.data.ToolPreferences(context) 
+    }
     
     companion object {
         private const val TAG = "ToolRegistry"
     }
     
     init {
-        // Built-in tools will be registered here as they're implemented
-        Log.d(TAG, "ToolRegistry initialized")
+        // Register built-in tools
+        registerTool(PerplexitySonarTool(context))
+        
+        Log.d(TAG, "ToolRegistry initialized with ${tools.size} built-in tools")
     }
     
     /**
@@ -48,9 +53,21 @@ class ToolRegistry(
     }
     
     /**
-     * Get tool by name
+     * Get tool by name (only if enabled)
      */
     fun getTool(name: String): Tool? {
+        val tool = tools[name]
+        return if (tool != null && toolPreferences.isToolEnabled(name)) {
+            tool
+        } else {
+            null
+        }
+    }
+    
+    /**
+     * Get tool by name (regardless of enabled state)
+     */
+    fun getToolRaw(name: String): Tool? {
         return tools[name]
     }
     
@@ -59,6 +76,15 @@ class ToolRegistry(
      */
     fun getAllTools(): List<Tool> {
         return tools.values.toList()
+    }
+    
+    /**
+     * Get all enabled tools (filtered by user preferences)
+     */
+    fun getEnabledTools(): List<Tool> {
+        return tools.values.filter { tool ->
+            toolPreferences.isToolEnabled(tool.name)
+        }
     }
     
     /**
@@ -83,28 +109,30 @@ class ToolRegistry(
     }
     
     /**
-     * Describe all tools for LLM system prompt
+     * Describe all enabled tools for LLM system prompt
      * Returns formatted string with tool names and descriptions
      */
     fun describeTools(): String {
-        if (tools.isEmpty()) {
+        val enabledTools = getEnabledTools()
+        if (enabledTools.isEmpty()) {
             return "No built-in tools available."
         }
         
         return buildString {
             appendLine("Built-in Tools:")
-            tools.values.forEach { tool ->
+            enabledTools.forEach { tool ->
                 appendLine("- ${tool.name}: ${tool.description}")
             }
         }
     }
     
     /**
-     * Get detailed tool descriptions
+     * Get detailed tool descriptions (only enabled tools)
      */
     fun getDetailedDescriptions(): String {
+        val enabledTools = getEnabledTools()
         return buildString {
-            tools.values.forEach { tool ->
+            enabledTools.forEach { tool ->
                 appendLine("Tool: ${tool.name}")
                 appendLine("Description: ${tool.description}")
                 if (tool.parameters.isNotEmpty()) {
@@ -123,7 +151,7 @@ class ToolRegistry(
      * Convert all tools to FunctionTool list for LLM function calling
      */
     fun toFunctionTools(): List<FunctionTool> {
-        return tools.values.map { it.toFunctionTool() }
+        return getEnabledTools().map { it.toFunctionTool() }
     }
     
     /**
