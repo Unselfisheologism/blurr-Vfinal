@@ -46,6 +46,19 @@ fun AgentChatScreen(
         }
     }
     
+    // Show question dialog if agent has a question
+    uiState.pendingQuestion?.let { question ->
+        AgentQuestionDialog(
+            question = question,
+            onOptionSelected = { selectedOption ->
+                viewModel.respondToQuestion(selectedOption)
+            },
+            onDismiss = {
+                viewModel.dismissQuestion()
+            }
+        )
+    }
+    
     Scaffold(
         topBar = {
             TopAppBar(
@@ -485,4 +498,100 @@ fun ChatInputBar(
             }
         }
     }
+}
+
+@Composable
+fun AgentQuestionDialog(
+    question: com.blurr.voice.agents.UserQuestion,
+    onOptionSelected: (Int) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(32.dp)
+            )
+        },
+        title = {
+            Text(
+                text = "?? AI has a question",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Question text
+                Text(
+                    text = question.question,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                
+                // Context (if provided)
+                question.context?.let { context ->
+                    Text(
+                        text = context,
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        lineHeight = 20.sp
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                // Options
+                question.options.forEachIndexed { index, option ->
+                    val isDefault = question.defaultOption == index
+                    
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { onOptionSelected(index) },
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isDefault) {
+                                MaterialTheme.colorScheme.primaryContainer
+                            } else {
+                                MaterialTheme.colorScheme.surfaceVariant
+                            }
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = option,
+                                fontSize = 15.sp,
+                                fontWeight = if (isDefault) FontWeight.SemiBold else FontWeight.Normal,
+                                modifier = Modifier.weight(1f)
+                            )
+                            
+                            if (isDefault) {
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "?",
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }

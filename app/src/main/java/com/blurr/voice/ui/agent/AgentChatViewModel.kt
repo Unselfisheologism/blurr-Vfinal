@@ -6,6 +6,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.blurr.voice.agents.AgentFactory
 import com.blurr.voice.agents.ConversationManager
+import com.blurr.voice.agents.DefaultUserConfirmationHandler
+import com.blurr.voice.agents.UserQuestion
 import com.blurr.voice.data.models.Message
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,6 +23,7 @@ class AgentChatViewModel(application: Application) : AndroidViewModel(applicatio
     
     private val agent = AgentFactory.getAgent(application)
     private val conversationManager = ConversationManager(application)
+    private val confirmationHandler: DefaultUserConfirmationHandler?
     
     private val _uiState = MutableStateFlow(AgentChatUiState())
     val uiState: StateFlow<AgentChatUiState> = _uiState.asStateFlow()
@@ -33,6 +36,17 @@ class AgentChatViewModel(application: Application) : AndroidViewModel(applicatio
     }
     
     init {
+        // Get the confirmation handler from AgentFactory
+        confirmationHandler = AgentFactory.getConfirmationHandler()
+        
+        // Set up question listener
+        confirmationHandler?.onQuestionPending = { question ->
+            Log.d(TAG, "Agent has a question: ${question.question}")
+            _uiState.value = _uiState.value.copy(
+                pendingQuestion = question
+            )
+        }
+        
         loadOrCreateConversation()
     }
     
@@ -165,6 +179,28 @@ class AgentChatViewModel(application: Application) : AndroidViewModel(applicatio
             toolProgress = progress
         )
     }
+    
+    /**
+     * Respond to agent's question
+     */
+    fun respondToQuestion(selectedOption: Int) {
+        Log.d(TAG, "User responded to question with option: $selectedOption")
+        
+        // Clear the pending question from UI
+        _uiState.value = _uiState.value.copy(pendingQuestion = null)
+        
+        // Send response to confirmation handler
+        confirmationHandler?.respondToQuestion(selectedOption)
+    }
+    
+    /**
+     * Dismiss question dialog (cancel operation)
+     */
+    fun dismissQuestion() {
+        Log.d(TAG, "User dismissed question dialog")
+        // For now, just respond with option 0 (default)
+        respondToQuestion(0)
+    }
 }
 
 /**
@@ -175,5 +211,6 @@ data class AgentChatUiState(
     val isProcessing: Boolean = false,
     val currentTool: String? = null,
     val toolProgress: Float = 0f,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val pendingQuestion: UserQuestion? = null  // Agent's question to user
 )

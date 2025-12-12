@@ -209,14 +209,23 @@ class InfographicTool : Tool {
 
 ---
 
-### Story 4.11: Google OAuth Integration
-**Story ID**: STORY-4.11  
+### Story 4.13: Google OAuth Integration (Hybrid Approach - Part 1)
+**Story ID**: STORY-4.13  
 **Priority**: P0  
 **Estimate**: 2 days  
 **Dependencies**: None  
+**Architecture**: Hybrid (Google OAuth FREE + Composio for other tools)
 
 #### Description
-Implement Google OAuth 2.0 authentication for Workspace API access.
+Implement Google OAuth 2.0 authentication for FREE Workspace API access using user credentials (not project credentials).
+
+**Cost Strategy**: 
+- Google Workspace (Gmail, Calendar, Drive): Users sign in with their Google account
+- Uses THEIR quotas (250 units/sec per user, 1M queries/day per user)
+- **Cost: $0** regardless of user count ✅
+- Covers 80% of integration usage for FREE
+
+**This is Part 1 of the Hybrid Integration Strategy. Part 2 (Story 4.14) adds Composio for 2,000+ other tools.**
 
 #### Acceptance Criteria
 - [ ] OAuth login flow using Google Sign-In
@@ -280,14 +289,133 @@ class GoogleAuthManager(private val context: Context) {
 
 ---
 
-### Story 4.12: Gmail Tool
-**Story ID**: STORY-4.12  
+### Story 4.14: Composio Integration (Hybrid Approach - Part 2)
+**Story ID**: STORY-4.14  
 **Priority**: P0  
-**Estimate**: 2 days  
-**Dependencies**: Story 4.11  
+**Estimate**: 1 day  
+**Dependencies**: Story 4.13  
 
 #### Description
-Implement Gmail tool for reading and composing emails.
+Integrate Composio SDK for 2,000+ tool integrations (Notion, Asana, Linear, Slack, Jira, GitHub, etc.).
+
+**Cost Strategy**:
+- Composio Scale Plan: $499/month (includes 5M calls)
+- Expected usage: 2M calls/month (non-Google tools = 20% of usage)
+- **Cost: $499/month = $6,000/year** ✅
+- Covers Notion, Asana, Linear, and 2,000+ other tools
+
+**Combined Cost (Story 4.13 + 4.14)**:
+- Google Workspace: $0/year (OAuth user credentials)
+- Composio: $6,000/year
+- **Total: $6,000/year** ✅
+- vs DIY: $266,000/year (98% savings!)
+
+#### Acceptance Criteria
+- [ ] Composio SDK integrated
+- [ ] ComposioIntegrationManager created
+- [ ] Can connect to Notion, Asana, Linear
+- [ ] OAuth handled by Composio
+- [ ] Automatic token refresh
+- [ ] 2,000+ integrations available
+
+#### Technical Details
+**Files to Create**:
+- `app/src/main/java/com/blurr/voice/integrations/ComposioIntegrationManager.kt`
+- `app/src/main/java/com/blurr/voice/tools/composio/ComposioTool.kt`
+
+**Dependencies**:
+Add to `build.gradle.kts`:
+```kotlin
+dependencies {
+    // Composio SDK
+    implementation("dev.composio:composio-android:1.0.0") // Check actual version
+    // OR use REST API directly
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+}
+```
+
+**Sign up**: https://composio.dev (Scale Plan recommended)
+
+```kotlin
+class ComposioIntegrationManager(
+    private val context: Context,
+    private val apiKey: String
+) {
+    private val composioClient = ComposioClient(apiKey)
+    
+    suspend fun connectIntegration(
+        userId: String,
+        integrationName: String // "notion", "asana", "linear"
+    ): Result<ConnectedAccount> {
+        // Composio handles OAuth flow
+        return composioClient.initiateConnection(userId, integrationName)
+    }
+    
+    suspend fun executeAction(
+        connectedAccountId: String,
+        appName: String,
+        actionName: String,
+        params: Map<String, Any>
+    ): Result<Any> {
+        return composioClient.executeAction(
+            connectedAccountId,
+            appName,
+            actionName,
+            params
+        )
+    }
+    
+    suspend fun listAvailableIntegrations(): List<Integration> {
+        return composioClient.listIntegrations()
+    }
+}
+
+class ComposioTool(
+    private val composioManager: ComposioIntegrationManager
+) : Tool {
+    override val name = "composio_integration"
+    override val description = "Access 2,000+ integrations (Notion, Asana, Linear, etc.)"
+    
+    override suspend fun execute(params: Map<String, Any>): ToolResult {
+        val appName = params["app"] as String // "notion", "asana", etc.
+        val action = params["action"] as String
+        val connectedAccountId = params["connected_account_id"] as String
+        
+        val result = composioManager.executeAction(
+            connectedAccountId,
+            appName,
+            action,
+            params
+        )
+        
+        return if (result.isSuccess) {
+            ToolResult.success(name, result.getOrNull().toString())
+        } else {
+            ToolResult.error(name, result.exceptionOrNull()?.message ?: "Unknown error")
+        }
+    }
+}
+```
+
+#### Testing
+- [ ] Connect to Notion
+- [ ] Connect to Asana
+- [ ] Connect to Linear
+- [ ] Execute action via Composio
+- [ ] List available integrations
+- [ ] OAuth flow works
+
+---
+
+### Story 4.15: Gmail Tool (FREE via OAuth)
+**Story ID**: STORY-4.15  
+**Priority**: P0  
+**Estimate**: 1 day  
+**Dependencies**: Story 4.13  
+
+#### Description
+Implement Gmail tool for reading and composing emails using user's OAuth credentials (FREE).
 
 #### Acceptance Criteria
 - [ ] GmailTool implements Tool interface
@@ -373,14 +501,16 @@ class GmailTool(
 
 ---
 
-### Story 4.13: Google Calendar Tool
-**Story ID**: STORY-4.13  
+### Story 4.16: Google Calendar & Drive Tools (FREE via OAuth)
+**Story ID**: STORY-4.16  
 **Priority**: P1  
 **Estimate**: 1 day  
-**Dependencies**: Story 4.11  
+**Dependencies**: Story 4.13  
 
 #### Description
-Implement Google Calendar tool for reading and creating events.
+Implement Google Calendar and Drive tools using user's OAuth credentials (FREE).
+
+**Note**: These use the same FREE OAuth approach as Gmail (Story 4.15).
 
 #### Acceptance Criteria
 - [ ] GoogleCalendarTool implements Tool interface
@@ -405,37 +535,16 @@ implementation("com.google.apis:google-api-services-calendar:v3-rev20220715-2.0.
 
 ---
 
-### Story 4.14: Google Drive Tool
-**Story ID**: STORY-4.14  
-**Priority**: P1  
-**Estimate**: 2 days  
-**Dependencies**: Story 4.11  
+#### Additional Acceptance Criteria (Calendar)
+- [ ] Can list upcoming events
+- [ ] Can create new calendar events
+- [ ] Can search events by query
 
-#### Description
-Implement Google Drive tool for file operations.
-
-#### Acceptance Criteria
-- [ ] GoogleDriveTool implements Tool interface
+#### Additional Acceptance Criteria (Drive)
 - [ ] Can list files in Drive
 - [ ] Can upload files to Drive
 - [ ] Can download files from Drive
 - [ ] Can search files by name
-- [ ] Returns file metadata
-
-#### Technical Details
-**Files to Create**:
-- `app/src/main/java/com/blurr/voice/tools/google/GoogleDriveTool.kt`
-
-**Dependencies**:
-```kotlin
-implementation("com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0")
-```
-
-#### Testing
-- [ ] List Drive files
-- [ ] Upload file to Drive
-- [ ] Download file from Drive
-- [ ] Search files
 
 ---
 
@@ -503,14 +612,17 @@ class PhoneControlTool(
 ## Epic Acceptance Criteria
 
 ✅ **Document Generation**:
-- [ ] PDF generation working
-- [ ] PowerPoint generation working
+- [ ] PDF generation working (Story 4.10 - Already COMPLETE)
+- [ ] PowerPoint generation working (Story 4.11 - Already COMPLETE)
+- [ ] Infographic generation working (Story 4.12 - Already COMPLETE)
 - [ ] Generated documents open correctly
 
-✅ **Google Workspace**:
-- [ ] OAuth login works
-- [ ] Gmail read/compose functional
-- [ ] Calendar and Drive basics working
+✅ **Hybrid Integration Strategy** (NEW):
+- [ ] Google OAuth works (Story 4.13) - **Cost: $0/year** ✅
+- [ ] Composio integrated (Story 4.14) - **Cost: $6,000/year** ✅
+- [ ] Gmail, Calendar, Drive via OAuth (Stories 4.15-4.16) - **FREE**
+- [ ] 2,000+ integrations available via Composio
+- [ ] **Total Cost: $6,000/year vs $266,000/year DIY (98% savings!)** 🎉
 
 ✅ **Phone Control**:
 - [ ] Phone control tool wraps existing service
@@ -518,4 +630,26 @@ class PhoneControlTool(
 
 ---
 
-**Total Estimate**: 14 developer-days (~2 weeks with buffer)
+## Integration Architecture Summary
+
+### Hybrid Approach (Best of Both Worlds)
+
+**Google Workspace (80% of usage) - FREE**:
+- Users sign in with their Google account (OAuth)
+- Uses THEIR quotas (not yours)
+- Gmail, Calendar, Drive - $0 cost
+- Stories 4.13, 4.15, 4.16
+
+**Everything Else (20% of usage) - Composio**:
+- Notion, Asana, Linear, Slack, Jira, GitHub, and 2,000+ tools
+- Composio handles OAuth for all
+- $499/month = $6,000/year
+- Story 4.14
+
+**Total Annual Cost**: $6,000  
+**vs DIY**: $266,000/year  
+**Savings**: 98% (or $260,000/year!)
+
+---
+
+**Total Estimate**: 7 developer-days (~1.5 weeks)

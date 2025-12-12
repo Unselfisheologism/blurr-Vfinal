@@ -13,6 +13,7 @@ import com.blurr.voice.tools.ToolRegistry
 object AgentFactory {
     
     private var cachedAgent: UltraGeneralistAgent? = null
+    private var cachedConfirmationHandler: DefaultUserConfirmationHandler? = null
     
     /**
      * Create or get cached agent instance
@@ -24,11 +25,23 @@ object AgentFactory {
     }
     
     /**
+     * Get the confirmation handler (for UI to connect to)
+     */
+    fun getConfirmationHandler(): DefaultUserConfirmationHandler? {
+        return cachedConfirmationHandler
+    }
+    
+    /**
      * Create new agent instance
      */
     fun createAgent(context: Context): UltraGeneralistAgent {
         val llmService = UniversalLLMService(context)
-        val toolRegistry = ToolRegistry(context)
+        
+        // Create confirmation handler for ask_user tool
+        val confirmationHandler = DefaultUserConfirmationHandler()
+        cachedConfirmationHandler = confirmationHandler
+        val toolRegistry = ToolRegistry(context, confirmationHandler)
+        
         val mcpClient = MCPClient(context)
         val conversationManager = ConversationManager(context)
         
@@ -46,5 +59,6 @@ object AgentFactory {
      */
     fun clearCache() {
         cachedAgent = null
+        cachedConfirmationHandler = null
     }
 }

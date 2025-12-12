@@ -35,7 +35,15 @@ class ToolRegistry(
         registerTool(PhoneControlTool(context))
         
         // Python shell (unlimited flexibility)
-        registerTool(PythonShellTool(context))
+        registerTool(PythonShellTool(context))  // Keep for backward compatibility
+        
+        // Unified shell (Python + JavaScript) - Phase 2: Story 4.12
+        registerTool(UnifiedShellTool(context))
+        
+        // Infographic generation (AI or D3.js) - Phase 3: Story 4.12
+        confirmationHandler?.let {
+            registerTool(GenerateInfographicTool(context, it))
+        }
         
         // Web search & research
         registerTool(PerplexitySonarTool(context))

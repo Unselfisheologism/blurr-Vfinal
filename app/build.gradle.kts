@@ -180,6 +180,20 @@ dependencies {
     // Appwrite SDK - explicitly add platform dependency for OkHttp BOM to fix AGP 8.9.2 resolution
     implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
     implementation(libs.appwrite.sdk)
+    
+    // JavaScript execution engine (Phase 2: Story 4.12 - Multi-language shell)
+    implementation("org.mozilla:rhino:1.7.14")
+    
+    // Google OAuth & APIs (Story 4.13-4.16 - Hybrid Integration Strategy)
+    // FREE for unlimited users via user OAuth!
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("com.google.api-client:google-api-client-android:2.2.0")
+    implementation("com.google.http-client:google-http-client-gson:1.43.3")
+    
+    // Google Workspace APIs (Gmail, Calendar, Drive)
+    implementation("com.google.apis:google-api-services-gmail:v1-rev20220404-2.0.0")
+    implementation("com.google.apis:google-api-services-calendar:v3-rev20220715-2.0.0")
+    implementation("com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0")
 }
 
 // Task to increment version for release builds
