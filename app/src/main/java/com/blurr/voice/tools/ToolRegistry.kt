@@ -25,6 +25,9 @@ class ToolRegistry(
     init {
         // Register built-in tools
         
+        // Phone control (UI automation)
+        registerTool(PhoneControlTool(context))
+        
         // Web search & research
         registerTool(PerplexitySonarTool(context))
         
