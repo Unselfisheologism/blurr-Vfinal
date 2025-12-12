@@ -72,25 +72,10 @@ android {
             abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
         }
         
-        python {
-            version = "3.8"
-            
-            // Pre-installed core libraries (instant execution)
-            pip {
-                install("ffmpeg-python==0.2.0")
-                install("Pillow==10.0.0")
-                install("pypdf==3.17.0")
-                install("python-pptx==0.6.21")  // Story 4.11: PowerPoint generation
-                install("python-docx==1.1.0")
-                install("openpyxl==3.1.2")
-                install("pandas==2.0.3")
-                install("numpy==1.24.3")
-                install("requests==2.31.0")
-            }
-            
-            // Enable dynamic package installation
-            buildPython("python3.8")
-        }
+        // TODO: Chaquopy python DSL configuration - needs proper Kotlin DSL setup
+        // Python configuration is handled by the Chaquopy plugin
+        // For now, Python packages are installed at runtime via pip
+        // Pre-installed packages: ffmpeg-python, Pillow, pypdf, python-pptx, python-docx, openpyxl, pandas, numpy, requests
 
     }
 
@@ -194,6 +179,10 @@ dependencies {
     implementation("com.google.apis:google-api-services-gmail:v1-rev20220404-2.0.0")
     implementation("com.google.apis:google-api-services-calendar:v3-rev20220715-2.0.0")
     implementation("com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0")
+    
+    // JavaMail for Gmail MIME message creation (Story 4.15)
+    implementation("com.sun.mail:android-mail:1.6.7")
+    implementation("com.sun.mail:android-activation:1.6.7")
 }
 
 // Task to increment version for release builds

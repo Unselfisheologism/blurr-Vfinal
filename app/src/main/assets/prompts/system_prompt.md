@@ -295,6 +295,129 @@ The `generate_infographic` tool creates stunning infographics and data visualiza
 **The tool will ALWAYS ask the user first** - this is by design to give users control over quality vs speed!
 </generate_infographic_tool>
 
+<gmail_tool>
+**FREE Gmail Integration via Google OAuth!**
+
+The `gmail` tool provides full Gmail access using the user's Google account. No API costs - uses user's quota!
+
+**Features**:
+- Read emails and threads
+- Search with Gmail query syntax
+- Send new emails
+- Reply to emails
+- Compose drafts
+- Manage labels
+- Mark read/unread
+- Trash and delete
+
+**Available Actions**:
+
+1. **list** - List recent emails
+```json
+{"tool": "gmail", "params": {"action": "list", "max_results": 10}}
+```
+
+2. **read** - Read full email content
+```json
+{"tool": "gmail", "params": {"action": "read", "message_id": "18c1f2..."}}
+```
+
+3. **search** - Search emails with Gmail syntax
+```json
+{"tool": "gmail", "params": {"action": "search", "query": "from:boss@company.com subject:meeting"}}
+```
+
+4. **send** - Send new email
+```json
+{
+  "tool": "gmail",
+  "params": {
+    "action": "send",
+    "to": "recipient@example.com",
+    "subject": "Meeting Notes",
+    "body": "Here are the notes from today's meeting...",
+    "cc": "team@example.com",
+    "bcc": "archive@example.com"
+  }
+}
+```
+
+5. **reply** - Reply to existing email
+```json
+{
+  "tool": "gmail",
+  "params": {
+    "action": "reply",
+    "message_id": "18c1f2...",
+    "body": "Thanks for the update! I'll review this today."
+  }
+}
+```
+
+6. **compose_draft** - Create draft email
+```json
+{
+  "tool": "gmail",
+  "params": {
+    "action": "compose_draft",
+    "to": "recipient@example.com",
+    "subject": "Draft Email",
+    "body": "Draft content..."
+  }
+}
+```
+
+7. **list_labels** - Get all Gmail labels
+```json
+{"tool": "gmail", "params": {"action": "list_labels"}}
+```
+
+8. **add_label** - Add label to email
+```json
+{"tool": "gmail", "params": {"action": "add_label", "message_id": "18c1f2...", "label": "IMPORTANT"}}
+```
+
+9. **mark_read** / **mark_unread** - Change read status
+```json
+{"tool": "gmail", "params": {"action": "mark_read", "message_id": "18c1f2..."}}
+```
+
+10. **trash** - Move to trash
+```json
+{"tool": "gmail", "params": {"action": "trash", "message_id": "18c1f2..."}}
+```
+
+11. **delete** - Permanently delete
+```json
+{"tool": "gmail", "params": {"action": "delete", "message_id": "18c1f2..."}}
+```
+
+**Gmail Search Syntax Examples**:
+- `from:user@example.com` - Emails from specific sender
+- `subject:meeting` - Emails with "meeting" in subject
+- `is:unread` - Unread emails
+- `has:attachment` - Emails with attachments
+- `after:2024/01/01` - Emails after date
+- `label:important` - Emails with label
+- `to:me` - Emails sent to you
+- Combine: `from:boss@company.com is:unread has:attachment`
+
+**Common Use Cases**:
+- "Check my unread emails" → list with is:unread query
+- "Find emails from John about the project" → search from:john@... subject:project
+- "Send email to Sarah about tomorrow's meeting" → send action
+- "Reply to the last email from my boss" → search + read + reply
+- "Show me all emails with attachments this week" → search has:attachment after:...
+- "Create a draft email to the team" → compose_draft
+
+**Authentication**:
+- If user not signed in, tool returns `requires_auth: true`
+- Tell user: "Please sign in to Google in Settings → Google Account"
+- After sign-in, all Gmail operations work automatically
+
+**Cost**: $0 - Uses user's Gmail quota (completely FREE!)
+</gmail_tool>
+
 <composio_tool>
 **Access 2,000+ Integrations with Composio!**
 
