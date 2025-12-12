@@ -418,6 +418,298 @@ The `gmail` tool provides full Gmail access using the user's Google account. No 
 **Cost**: $0 - Uses user's Gmail quota (completely FREE!)
 </gmail_tool>
 
+<google_calendar_tool>
+**FREE Google Calendar Integration!**
+
+The `google_calendar` tool provides full calendar management using the user's Google account.
+
+**Features**:
+- List upcoming events
+- Create meetings and events
+- Update schedules
+- Check availability (free/busy)
+- Manage multiple calendars
+- Quick add with natural language
+
+**Available Actions**:
+
+1. **list_events** - List upcoming events
+```json
+{
+  "tool": "google_calendar",
+  "params": {
+    "action": "list_events",
+    "max_results": 10,
+    "time_min": "2024-01-15T00:00:00-08:00"
+  }
+}
+```
+
+2. **get_event** - Get event details
+```json
+{
+  "tool": "google_calendar",
+  "params": {
+    "action": "get_event",
+    "event_id": "abc123..."
+  }
+}
+```
+
+3. **create_event** - Create new event/meeting
+```json
+{
+  "tool": "google_calendar",
+  "params": {
+    "action": "create_event",
+    "summary": "Team Meeting",
+    "start_time": "2024-01-15T10:00:00-08:00",
+    "end_time": "2024-01-15T11:00:00-08:00",
+    "location": "Conference Room A",
+    "attendees": "john@company.com,sarah@company.com",
+    "reminders": "10,30"
+  }
+}
+```
+
+4. **update_event** - Update existing event
+```json
+{
+  "tool": "google_calendar",
+  "params": {
+    "action": "update_event",
+    "event_id": "abc123...",
+    "summary": "Updated Meeting Title",
+    "start_time": "2024-01-15T14:00:00-08:00"
+  }
+}
+```
+
+5. **delete_event** - Delete event
+```json
+{
+  "tool": "google_calendar",
+  "params": {
+    "action": "delete_event",
+    "event_id": "abc123..."
+  }
+}
+```
+
+6. **list_calendars** - Show all calendars
+```json
+{
+  "tool": "google_calendar",
+  "params": {"action": "list_calendars"}
+}
+```
+
+7. **check_availability** - Check if time slot is free
+```json
+{
+  "tool": "google_calendar",
+  "params": {
+    "action": "check_availability",
+    "time_min": "2024-01-15T10:00:00-08:00",
+    "time_max": "2024-01-15T12:00:00-08:00"
+  }
+}
+```
+
+8. **quick_add** - Natural language event creation
+```json
+{
+  "tool": "google_calendar",
+  "params": {
+    "action": "quick_add",
+    "text": "Team meeting tomorrow at 2pm"
+  }
+}
+```
+
+**Common Use Cases**:
+- "What's on my calendar today?" → list_events with today's date range
+- "Schedule a meeting with John tomorrow at 2pm" → create_event
+- "Am I free this afternoon?" → check_availability
+- "Cancel my 3pm meeting" → search + delete_event
+- "Move my morning meeting to 2pm" → update_event
+- "Add team meeting next Monday at 10am" → quick_add
+
+**Cost**: $0 - Uses user's Calendar quota (completely FREE!)
+</google_calendar_tool>
+
+<google_drive_tool>
+**FREE Google Drive Integration!**
+
+The `google_drive` tool provides full file management using the user's Google account.
+
+**Features**:
+- Upload and download files
+- Search and organize files
+- Share files and folders
+- Create folders
+- Move, copy, rename files
+- Manage permissions
+
+**Available Actions**:
+
+1. **list_files** - List files in Drive
+```json
+{
+  "tool": "google_drive",
+  "params": {
+    "action": "list_files",
+    "max_results": 10,
+    "folder_only": false
+  }
+}
+```
+
+2. **search** - Search files with query
+```json
+{
+  "tool": "google_drive",
+  "params": {
+    "action": "search",
+    "query": "name contains 'report' and mimeType contains 'pdf'"
+  }
+}
+```
+
+3. **get_file** - Get file details
+```json
+{
+  "tool": "google_drive",
+  "params": {
+    "action": "get_file",
+    "file_id": "1abc..."
+  }
+}
+```
+
+4. **upload_file** - Upload file to Drive
+```json
+{
+  "tool": "google_drive",
+  "params": {
+    "action": "upload_file",
+    "local_path": "/path/to/file.pdf",
+    "name": "Report.pdf",
+    "parent_id": "folder_id"
+  }
+}
+```
+
+5. **create_folder** - Create new folder
+```json
+{
+  "tool": "google_drive",
+  "params": {
+    "action": "create_folder",
+    "name": "Project Files",
+    "parent_id": "parent_folder_id"
+  }
+}
+```
+
+6. **download_file** - Download file from Drive
+```json
+{
+  "tool": "google_drive",
+  "params": {
+    "action": "download_file",
+    "file_id": "1abc...",
+    "local_path": "/path/to/save/file.pdf"
+  }
+}
+```
+
+7. **share** - Share file with someone
+```json
+{
+  "tool": "google_drive",
+  "params": {
+    "action": "share",
+    "file_id": "1abc...",
+    "email": "colleague@company.com",
+    "role": "reader"
+  }
+}
+```
+
+8. **delete** - Delete file (moves to trash)
+```json
+{
+  "tool": "google_drive",
+  "params": {
+    "action": "delete",
+    "file_id": "1abc..."
+  }
+}
+```
+
+9. **move** - Move file to different folder
+```json
+{
+  "tool": "google_drive",
+  "params": {
+    "action": "move",
+    "file_id": "1abc...",
+    "parent_id": "new_folder_id"
+  }
+}
+```
+
+10. **copy** - Copy file
+```json
+{
+  "tool": "google_drive",
+  "params": {
+    "action": "copy",
+    "file_id": "1abc...",
+    "new_name": "Copy of File"
+  }
+}
+```
+
+11. **rename** - Rename file
+```json
+{
+  "tool": "google_drive",
+  "params": {
+    "action": "rename",
+    "file_id": "1abc...",
+    "new_name": "New File Name.pdf"
+  }
+}
+```
+
+**Drive Search Query Examples**:
+- `name contains 'report'` - Files with "report" in name
+- `mimeType contains 'pdf'` - PDF files only
+- `mimeType = 'application/vnd.google-apps.folder'` - Folders only
+- `'parent_folder_id' in parents` - Files in specific folder
+- `modifiedTime > '2024-01-01T00:00:00'` - Modified after date
+- `fullText contains 'budget'` - Full-text search
+- Combine: `name contains 'report' and mimeType contains 'pdf'`
+
+**Share Roles**:
+- `reader` - Can view only
+- `writer` - Can edit
+- `commenter` - Can comment
+- `owner` - Full control
+
+**Common Use Cases**:
+- "Find my latest reports" → search with name/date filters
+- "Upload this file to Drive" → upload_file
+- "Share document with Sarah" → share with email
+- "Create a folder for the project" → create_folder
+- "Download the Q4 report" → search + download_file
+- "Move files to archive folder" → move
+
+**Cost**: $0 - Uses user's Drive quota (completely FREE!)
+</google_drive_tool>
+
 <composio_tool>
 **Access 2,000+ Integrations with Composio!**
 
