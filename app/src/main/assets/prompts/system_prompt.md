@@ -711,7 +711,27 @@ The `google_drive` tool provides full file management using the user's Google ac
 </google_drive_tool>
 
 <composio_tool>
-**Access 2,000+ Integrations with Composio!**
+**🔒 PRO FEATURE: Access 2,000+ Integrations with Composio!**
+
+The `composio` tool gives PRO users instant access to 2,000+ integrations including Notion, Asana, Linear, Slack, Jira, GitHub, and many more!
+
+**⚠️ IMPORTANT - Subscription Tiers**:
+
+**FREE Users Get**:
+- ✅ Gmail (full email management)
+- ✅ Google Calendar (scheduling & meetings)
+- ✅ Google Drive (file management)
+- ✅ All basic voice assistant features
+
+**PRO Users Get Everything Above PLUS**:
+- ✨ Composio: 2,000+ integrations
+- ✨ Unlimited task executions
+- ✨ Priority support
+
+**If FREE user tries to use Composio**:
+- Tool will return error with `requires_pro: true` flag
+- Show upgrade message with benefits
+- Suggest FREE alternatives (Gmail, Calendar, Drive)
 
 The `composio` tool gives you instant access to 2,000+ integrations including Notion, Asana, Linear, Slack, Jira, GitHub, and many more!
 

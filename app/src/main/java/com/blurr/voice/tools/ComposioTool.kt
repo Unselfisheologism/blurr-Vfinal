@@ -92,6 +92,37 @@ class ComposioTool(
     private val manager by lazy { ComposioIntegrationManager(context) }
     
     override suspend fun execute(params: Map<String, Any>): ToolResult = withContext(Dispatchers.IO) {
+        // Check subscription status - Composio is PRO only! (Story 4.16)
+        val freemiumManager = com.blurr.voice.utilities.FreemiumManager()
+        if (!freemiumManager.hasComposioAccess()) {
+            return@withContext ToolResult.error(
+                toolName = name,
+                error = """
+                    🔒 Composio integrations (2,000+ tools) are available in PRO version only.
+                    
+                    FREE users get:
+                    ✅ Gmail (email management)
+                    ✅ Google Calendar (scheduling)
+                    ✅ Google Drive (file management)
+                    
+                    PRO users get everything above PLUS:
+                    ✨ 2,000+ integrations via Composio
+                    ✨ Notion, Asana, Linear, Jira, Trello
+                    ✨ Slack, Teams, Discord, Telegram
+                    ✨ GitHub, GitLab, Bitbucket
+                    ✨ Salesforce, HubSpot, Stripe
+                    ✨ And 1,990+ more tools!
+                    
+                    👉 Upgrade to PRO to unlock Composio integrations!
+                """.trimIndent(),
+                data = mapOf(
+                    "requires_pro" to true,
+                    "feature" to "composio",
+                    "free_alternatives" to listOf("gmail", "google_calendar", "google_drive")
+                )
+            )
+        }
+        
         // Check if Composio is configured
         if (!manager.isConfigured()) {
             return@withContext ToolResult.error(

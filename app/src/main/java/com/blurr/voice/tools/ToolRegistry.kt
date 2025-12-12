@@ -45,14 +45,16 @@ class ToolRegistry(
             registerTool(GenerateInfographicTool(context, it))
         }
         
-        // Composio integrations (2,000+ tools) - Story 4.14
-        registerTool(ComposioTool(context))
-        
-        // Google Workspace integrations - FREE! (Story 4.13 + 4.15 + 4.16)
+        // Google Workspace integrations - FREE for all users! (Story 4.13 + 4.15 + 4.16)
         val googleAuthManager = com.blurr.voice.auth.GoogleAuthManager(context)
         registerTool(com.blurr.voice.tools.google.GmailTool(context, googleAuthManager))
         registerTool(com.blurr.voice.tools.google.GoogleCalendarTool(context, googleAuthManager))
         registerTool(com.blurr.voice.tools.google.GoogleDriveTool(context, googleAuthManager))
+        
+        // Composio integrations (2,000+ tools) - PRO ONLY! (Story 4.14 + 4.16)
+        // Note: Actual gating happens at execution time via ComposioTool.execute()
+        // Tool is always registered so it appears in listings, but throws paywall error when used by free users
+        registerTool(ComposioTool(context))
         
         // Web search & research
         registerTool(PerplexitySonarTool(context))

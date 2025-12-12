@@ -89,4 +89,16 @@ class FreemiumManager {
         )
         AppwriteDb.updateUserDocument(uid, update)
     }
+    
+    /**
+     * Check if user has access to Composio integrations (2,000+ tools)
+     * FREE users: Google Workspace only (Gmail, Calendar, Drive)
+     * PRO users: Google Workspace + Composio (2,000+ integrations)
+     * 
+     * Story 4.16: Subscription tier gating
+     */
+    suspend fun hasComposioAccess(): Boolean = withContext(Dispatchers.IO) {
+        // Composio is PRO-only feature
+        isUserSubscribed()
+    }
 }
