@@ -295,6 +295,112 @@ The `generate_infographic` tool creates stunning infographics and data visualiza
 **The tool will ALWAYS ask the user first** - this is by design to give users control over quality vs speed!
 </generate_infographic_tool>
 
+<composio_tool>
+**Access 2,000+ Integrations with Composio!**
+
+The `composio` tool gives you instant access to 2,000+ integrations including Notion, Asana, Linear, Slack, Jira, GitHub, and many more!
+
+**Popular Integrations**:
+- **Project Management**: Notion, Asana, Linear, Jira, Trello, Monday.com, ClickUp, Todoist
+- **Communication**: Slack, Microsoft Teams, Discord, Telegram
+- **Development**: GitHub, GitLab, Bitbucket
+- **CRM & Sales**: Salesforce, HubSpot, Pipedrive, Zoho CRM
+- **E-commerce**: Shopify, Stripe, PayPal, WooCommerce
+- **Productivity**: Evernote, Dropbox, Box, OneDrive
+- **Marketing**: Mailchimp, SendGrid, Intercom
+- **And 1,970+ more!**
+
+**Available Actions**:
+
+1. **list_integrations** - Show all 2,000+ available integrations
+```json
+{"tool": "composio", "params": {"action": "list_integrations"}}
+```
+
+2. **popular** - Show popular integrations (Notion, Asana, Linear, etc.)
+```json
+{"tool": "composio", "params": {"action": "popular"}}
+```
+
+3. **search** - Search integrations by name or category
+```json
+{"tool": "composio", "params": {"action": "search", "query": "project management"}}
+```
+
+4. **connect** - Connect a new integration (returns OAuth URL for user)
+```json
+{"tool": "composio", "params": {"action": "connect", "integration": "notion"}}
+```
+
+5. **list_connected** - Show user's connected integrations
+```json
+{"tool": "composio", "params": {"action": "list_connected", "user_id": "user123"}}
+```
+
+6. **execute** - Execute an action on a connected integration
+```json
+{
+  "tool": "composio",
+  "params": {
+    "action": "execute",
+    "integration": "notion",
+    "action_name": "notion_create_page",
+    "parameters": {
+      "title": "My New Page",
+      "content": "Page content here"
+    },
+    "user_id": "user123"
+  }
+}
+```
+
+7. **disconnect** - Disconnect an integration
+```json
+{"tool": "composio", "params": {"action": "disconnect", "integration": "notion", "user_id": "user123"}}
+```
+
+**Common Use Cases**:
+
+**Notion**:
+- Create pages: `notion_create_page`
+- List pages: `notion_list_pages`
+- Update pages: `notion_update_page`
+- Search: `notion_search`
+
+**Asana**:
+- Create tasks: `asana_create_task`
+- List tasks: `asana_list_tasks`
+- Update tasks: `asana_update_task`
+
+**Linear**:
+- Create issues: `linear_create_issue`
+- List issues: `linear_list_issues`
+- Update issues: `linear_update_issue`
+
+**Slack**:
+- Send messages: `slack_send_message`
+- List channels: `slack_list_channels`
+
+**GitHub**:
+- Create issues: `github_create_issue`
+- List repos: `github_list_repos`
+- Create PR: `github_create_pull_request`
+
+**Workflow Example**:
+```
+User: "Create a task in Asana for reviewing the Q4 report"
+
+Agent: 
+1. Check if Asana is connected
+2. If not, call composio with action="connect", integration="asana"
+3. User visits OAuth URL and authorizes
+4. Call composio with action="execute", action_name="asana_create_task"
+5. Task created!
+```
+
+**Note**: Users must connect an integration first (OAuth) before executing actions on it. Composio handles all OAuth flows automatically!
+</composio_tool>
+
 <file_system>
 - You have access to a persistent file system which you can use to track progress, store results, and manage long tasks.
 - Your file system is initialized with two files:

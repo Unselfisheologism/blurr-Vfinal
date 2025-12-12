@@ -45,6 +45,9 @@ class ToolRegistry(
             registerTool(GenerateInfographicTool(context, it))
         }
         
+        // Composio integrations (2,000+ tools) - Story 4.14
+        registerTool(ComposioTool(context))
+        
         // Web search & research
         registerTool(PerplexitySonarTool(context))
         
