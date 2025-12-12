@@ -24,7 +24,16 @@ class ToolRegistry(
     
     init {
         // Register built-in tools
+        
+        // Web search & research
         registerTool(PerplexitySonarTool(context))
+        
+        // Media generation tools
+        registerTool(ImageGenerationTool(context))
+        registerTool(VideoGenerationTool(context))
+        registerTool(AudioGenerationTool(context))
+        registerTool(MusicGenerationTool(context))
+        registerTool(Model3DGenerationTool(context))
         
         Log.d(TAG, "ToolRegistry initialized with ${tools.size} built-in tools")
     }

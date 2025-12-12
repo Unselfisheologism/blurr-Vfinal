@@ -389,10 +389,12 @@ app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt          (+2 lines)
 - ✅ Story 4.1: Web Search (Tavily → Sonar)
 - ✅ Story 4.2: Exa Search (consolidated into 4.1)
 - ✅ Story 4.3: SerpAPI (consolidated into 4.1)
-- ❌ Story 4.4: Image Generation
-- ❌ Story 4.5: Video Generation
-- ❌ Story 4.6: Music Generation
-- ❌ Story 4.7: API Key Management UI
+- ⏳ Story 4.4: Image Generation
+- ⏳ Story 4.5: Video Generation
+- ⏳ Story 4.6: Audio Generation (TTS)
+- ⏳ Story 4.7: Music Generation
+- ⏳ Story 4.8: 3D Model Generation
+- ⏳ Story 4.9: API Key Management UI
 
 ### Remaining: 14/22 stories (64%)
 

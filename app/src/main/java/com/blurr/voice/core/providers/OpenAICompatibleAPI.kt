@@ -736,4 +736,215 @@ class OpenAICompatibleAPI(
             null
         }
     }
+    
+    /**
+     * Generate image using provider's image generation API
+     */
+    suspend fun generateImage(requestBody: JSONObject): String? = withContext(Dispatchers.IO) {
+        try {
+            val url = "${provider.baseUrl}/images/generations"
+            val request = Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer $apiKey")
+                .addHeader("Content-Type", "application/json")
+                .post(requestBody.toString().toRequestBody("application/json".toMediaType()))
+                .build()
+            
+            val response = client.newCall(request).execute()
+            
+            if (response.isSuccessful) {
+                response.body?.string()
+            } else {
+                Log.e(TAG, "Image generation failed: ${response.code} ${response.message}")
+                null
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error generating image", e)
+            null
+        }
+    }
+    
+    /**
+     * Generate video (async) - returns job ID
+     */
+    suspend fun generateVideo(requestBody: JSONObject): String? = withContext(Dispatchers.IO) {
+        try {
+            val url = "${provider.baseUrl}/video/generations"
+            val request = Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer $apiKey")
+                .addHeader("Content-Type", "application/json")
+                .post(requestBody.toString().toRequestBody("application/json".toMediaType()))
+                .build()
+            
+            val response = client.newCall(request).execute()
+            
+            if (response.isSuccessful) {
+                response.body?.string()
+            } else {
+                Log.e(TAG, "Video generation failed: ${response.code}")
+                null
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error generating video", e)
+            null
+        }
+    }
+    
+    /**
+     * Check video generation status
+     */
+    suspend fun checkVideoStatus(jobId: String): String? = withContext(Dispatchers.IO) {
+        try {
+            val url = "${provider.baseUrl}/video/generations/$jobId"
+            val request = Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer $apiKey")
+                .get()
+                .build()
+            
+            val response = client.newCall(request).execute()
+            
+            if (response.isSuccessful) {
+                response.body?.string()
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error checking video status", e)
+            null
+        }
+    }
+    
+    /**
+     * Generate audio/TTS
+     */
+    suspend fun generateAudio(requestBody: JSONObject): String? = withContext(Dispatchers.IO) {
+        try {
+            val url = "${provider.baseUrl}/audio/speech"
+            val request = Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer $apiKey")
+                .addHeader("Content-Type", "application/json")
+                .post(requestBody.toString().toRequestBody("application/json".toMediaType()))
+                .build()
+            
+            val response = client.newCall(request).execute()
+            
+            if (response.isSuccessful) {
+                // Audio APIs typically return binary data directly
+                response.body?.string()
+            } else {
+                Log.e(TAG, "Audio generation failed: ${response.code}")
+                null
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error generating audio", e)
+            null
+        }
+    }
+    
+    /**
+     * Generate music (async) - returns job ID
+     */
+    suspend fun generateMusic(requestBody: JSONObject): String? = withContext(Dispatchers.IO) {
+        try {
+            val url = "${provider.baseUrl}/music/generations"
+            val request = Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer $apiKey")
+                .addHeader("Content-Type", "application/json")
+                .post(requestBody.toString().toRequestBody("application/json".toMediaType()))
+                .build()
+            
+            val response = client.newCall(request).execute()
+            
+            if (response.isSuccessful) {
+                response.body?.string()
+            } else {
+                Log.e(TAG, "Music generation failed: ${response.code}")
+                null
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error generating music", e)
+            null
+        }
+    }
+    
+    /**
+     * Check music generation status
+     */
+    suspend fun checkMusicStatus(jobId: String): String? = withContext(Dispatchers.IO) {
+        try {
+            val url = "${provider.baseUrl}/music/generations/$jobId"
+            val request = Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer $apiKey")
+                .get()
+                .build()
+            
+            val response = client.newCall(request).execute()
+            
+            if (response.isSuccessful) {
+                response.body?.string()
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error checking music status", e)
+            null
+        }
+    }
+    
+    /**
+     * Generate 3D model (async) - returns job ID
+     */
+    suspend fun generate3DModel(requestBody: JSONObject): String? = withContext(Dispatchers.IO) {
+        try {
+            val url = "${provider.baseUrl}/3d/generations"
+            val request = Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer $apiKey")
+                .addHeader("Content-Type", "application/json")
+                .post(requestBody.toString().toRequestBody("application/json".toMediaType()))
+                .build()
+            
+            val response = client.newCall(request).execute()
+            
+            if (response.isSuccessful) {
+                response.body?.string()
+            } else {
+                Log.e(TAG, "3D model generation failed: ${response.code}")
+                null
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error generating 3D model", e)
+            null
+        }
+    }
+    
+    /**
+     * Check 3D model generation status
+     */
+    suspend fun check3DModelStatus(jobId: String): String? = withContext(Dispatchers.IO) {
+        try {
+            val url = "${provider.baseUrl}/3d/generations/$jobId"
+            val request = Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer $apiKey")
+                .get()
+                .build()
+            
+            val response = client.newCall(request).execute()
+            
+            if (response.isSuccessful) {
+                response.body?.string()
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error checking 3D model status", e)
+            null
+        }
+    }
 }

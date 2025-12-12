@@ -216,84 +216,106 @@ Uses existing OpenRouter/AIMLAPI image generation endpoints
 ---
 
 ### Story 4.5: Video Generation Tool
-**Story ID**: STORY-4.5  
-**Priority**: P1  
-**Estimate**: 2 days  
-**Dependencies**: Story 3.2  
 
-#### Description
-Implement video generation tool using Kling/Runway models via providers.
+**Goal**: Generate videos using available video generation models from the configured provider
 
-#### Acceptance Criteria
-- [ ] VideoGenerationTool implements Tool interface
-- [ ] Supports text-to-video generation
-- [ ] Uses BYOK provider
-- [ ] Handles async generation (polling for completion)
-- [ ] Downloads video when ready
-- [ ] Shows generation progress
+**Acceptance Criteria**:
+- [ ] Support text-to-video generation
+- [ ] Support image-to-video generation
+- [ ] Support video style customization
+- [ ] Check provider support for video models
+- [ ] Handle providers without video support gracefully
+- [ ] Return video URL or file path
 
-#### Technical Details
-**Files to Create**:
-- `app/src/main/java/com/blurr/voice/tools/generation/VideoGenerationTool.kt`
+#### Parameters
+- `prompt`: Video description
+- `duration`: Video length in seconds
+- `style`: Video style (realistic, animated, etc.)
+- `aspect_ratio`: Video aspect ratio
+- `image_input`: Optional starting image
 
-```kotlin
-class VideoGenerationTool : Tool {
-    override suspend fun execute(params: Map<String, Any>, context: List<ToolResult>): ToolResult {
-        val prompt = params["prompt"] as String
-        
-        // Start async generation
-        val jobId = startVideoGeneration(prompt)
-        
-        // Poll for completion
-        while (!isComplete(jobId)) {
-            delay(5000)
-            // Update progress in UI
-        }
-        
-        val videoUrl = getVideoUrl(jobId)
-        val localPath = downloadVideo(videoUrl)
-        
-        return ToolResult.success(name, mapOf("video_path" to localPath))
-    }
-}
-```
-
-#### Testing
-- [ ] Start video generation
-- [ ] Poll for completion
-- [ ] Download completed video
-- [ ] Handle generation failures
+#### Provider Support
+- **OpenRouter**: No video models
+- **AIMLAPI**: Runway, Luma, Kling models
+- **Others**: Very limited support
 
 ---
 
-### Story 4.6: Music Generation Tool
-**Story ID**: STORY-4.6  
-**Priority**: P1  
-**Estimate**: 2 days  
-**Dependencies**: Story 3.2  
+### Story 4.6: Audio Generation Tool (Text-to-Speech)
 
-#### Description
-Implement music/audio generation tool using Suno/Udio via providers.
+**Goal**: Generate audio/speech using TTS models from the configured provider
 
-#### Acceptance Criteria
-- [ ] MusicGenerationTool implements Tool interface
-- [ ] Supports text-to-music generation
-- [ ] Supports style/genre parameters
-- [ ] Handles async generation
-- [ ] Downloads audio file when ready
+**Acceptance Criteria**:
+- [ ] Support text-to-speech generation
+- [ ] Check provider support for TTS/audio models
+- [ ] Support voice selection (different voices)
+- [ ] Support multiple providers (OpenRouter, AIMLAPI, Groq)
+- [ ] Handle speed, pitch controls
+- [ ] Return audio file URL or path
 
-#### Technical Details
-**Files to Create**:
-- `app/src/main/java/com/blurr/voice/tools/generation/MusicGenerationTool.kt`
+#### Parameters
+- `text`: Text to convert to speech
+- `voice`: Voice selection (e.g., alloy, echo, fable, onyx, nova, shimmer)
+- `speed`: Speech speed (0.25 to 4.0)
+- `language`: Optional language code
 
-#### Testing
-- [ ] Generate music from prompt
-- [ ] Download audio file
-- [ ] Play audio in app
+#### Provider Support
+- **OpenRouter**: OpenAI TTS models
+- **AIMLAPI**: ElevenLabs, OpenAI, Azure TTS models
+- **Groq**: Limited TTS support
 
 ---
 
-### Story 4.7: API Key Management UI
+### Story 4.7: Music Generation Tool
+
+**Goal**: Generate music using available music generation models from the configured provider
+
+**Acceptance Criteria**:
+- [ ] Support text-to-music generation
+- [ ] Check provider support for music models
+- [ ] Support genre and style selection
+- [ ] Support duration control
+- [ ] Handle providers without music models gracefully
+- [ ] Return audio file URL or path
+
+#### Parameters
+- `prompt`: Music description
+- `genre`: Music genre
+- `mood`: Mood/emotion
+- `duration`: Music length in seconds
+- `instrumental`: Whether to include vocals
+
+#### Provider Support
+- **AIMLAPI**: Suno, Udio models
+- **Others**: Very limited support
+
+---
+
+### Story 4.8: 3D Model Generation Tool
+
+**Goal**: Generate 3D models using available 3D generation APIs
+
+**Acceptance Criteria**:
+- [ ] Support text-to-3D generation
+- [ ] Support image-to-3D generation
+- [ ] Check provider support for 3D models
+- [ ] Handle providers without 3D support (most don't have it)
+- [ ] Return 3D model file (GLB, OBJ, etc.)
+
+#### Parameters
+- `prompt`: 3D model description
+- `image_input`: Optional reference image
+- `format`: Output format (glb, obj, fbx)
+- `quality`: Model quality/detail level
+
+#### Provider Support
+- **OpenRouter**: No 3D models
+- **AIMLAPI**: May have Meshy or similar 3D APIs
+- **Others**: Very limited support
+
+---
+
+### Story 4.9: API Key Management UI
 **Story ID**: STORY-4.7  
 **Priority**: P0  
 **Estimate**: 1 day  

@@ -137,6 +137,142 @@
                 android:enabled="false"/>
         </LinearLayout>
 
+        <!-- Test Connection Button -->
+        <Button
+            android:id="@+id/test_connection_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Test Connection"
+            android:backgroundTint="@color/teal_200"
+            android:textColor="@color/black"
+            android:layout_marginBottom="16dp"
+            android:enabled="false"/>
+
+        <!-- View Models Button -->
+        <Button
+            android:id="@+id/view_models_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="View Available Models"
+            android:backgroundTint="@color/purple_200"
+            android:textColor="@color/black"
+            android:layout_marginBottom="16dp"
+            android:enabled="false"/>
+
+        <!-- Connection Status Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/connection_status_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/card_background"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/connection_status_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Connection Status"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:id="@+id/connection_status_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="14sp"
+                    android:textColor="@color/white"
+                    android:fontFamily="monospace"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Provider Capabilities Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/provider_capabilities_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/card_background"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Provider Capabilities"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:layout_marginBottom="12dp"/>
+
+                <TextView
+                    android:id="@+id/provider_capabilities_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="14sp"
+                    android:textColor="@color/white"
+                    android:fontFamily="monospace"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Available Models Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/available_models_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/card_background"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Available Models"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:id="@+id/available_models_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="13sp"
+                    android:textColor="@color/white"
+                    android:fontFamily="monospace"
+                    android:maxLines="20"
+                    android:scrollbars="vertical"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Voice Capabilities Info -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
