@@ -11,7 +11,8 @@ import com.blurr.voice.core.providers.FunctionTool
  * MCP tools are managed separately by MCPClient.
  */
 class ToolRegistry(
-    private val context: Context
+    private val context: Context,
+    private val confirmationHandler: com.blurr.voice.agents.UserConfirmationHandler? = null
 ) {
     private val tools = mutableMapOf<String, Tool>()
     private val toolPreferences by lazy { 
@@ -25,8 +26,16 @@ class ToolRegistry(
     init {
         // Register built-in tools
         
+        // User interaction
+        if (confirmationHandler != null) {
+            registerTool(AskUserTool(context, confirmationHandler))
+        }
+        
         // Phone control (UI automation)
         registerTool(PhoneControlTool(context))
+        
+        // Python shell (unlimited flexibility)
+        registerTool(PythonShellTool(context))
         
         // Web search & research
         registerTool(PerplexitySonarTool(context))

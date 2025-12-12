@@ -8,7 +8,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     id("org.jetbrains.kotlin.plugin.serialization") version "2.2.10"
-
+    id("com.chaquo.python")
 }
 
 val localProperties = Properties()
@@ -66,6 +66,31 @@ android {
         buildConfigField("String", "GCLOUD_PROXY_URL_KEY", "\"$googlecloudProxyURLKey\"")
         buildConfigField("boolean", "ENABLE_LOGGING", "true")
         buildConfigField("String", "APPWRITE_PROJECT_ID", "\"$appwriteProjectId\"")
+        
+        // Chaquopy Python configuration
+        ndk {
+            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
+        }
+        
+        python {
+            version = "3.8"
+            
+            // Pre-installed core libraries (instant execution)
+            pip {
+                install("ffmpeg-python==0.2.0")
+                install("Pillow==10.0.0")
+                install("pypdf==3.17.0")
+                install("python-pptx==0.6.21")  // Story 4.11: PowerPoint generation
+                install("python-docx==1.1.0")
+                install("openpyxl==3.1.2")
+                install("pandas==2.0.3")
+                install("numpy==1.24.3")
+                install("requests==2.31.0")
+            }
+            
+            // Enable dynamic package installation
+            buildPython("python3.8")
+        }
 
     }
 
@@ -135,6 +160,9 @@ dependencies {
     
     // EncryptedSharedPreferences for secure key storage
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    
+    // FFmpeg for Android (native binary for video/audio processing)
+    implementation("com.arthenica:ffmpeg-kit-full:5.1")
 
     // Room database dependencies
     implementation("androidx.room:room-runtime:2.6.1")
