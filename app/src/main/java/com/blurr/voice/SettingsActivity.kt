@@ -112,6 +112,9 @@ class SettingsActivity : BaseNavigationActivity() {
         wakeWordButton = findViewById(R.id.wakeWordButton)
         buttonSignOut = findViewById(R.id.buttonSignOut)
         buttonBYOKSettings = findViewById(R.id.buttonBYOKSettings)
+        
+        // Initialize Workflow Editor button
+        val buttonWorkflowEditor = findViewById<Button>(R.id.buttonWorkflowEditor)
 
         editUserName = findViewById(R.id.editUserName)
         editUserEmail = findViewById(R.id.editUserEmail)
@@ -191,6 +194,12 @@ class SettingsActivity : BaseNavigationActivity() {
         
         buttonBYOKSettings.setOnClickListener {
             val intent = Intent(this, com.blurr.voice.ui.BYOKSettingsActivity::class.java)
+            startActivity(intent)
+        }
+        
+        // Workflow Editor button click listener
+        findViewById<Button>(R.id.buttonWorkflowEditor).setOnClickListener {
+            val intent = Intent(this, WorkflowEditorActivity::class.java)
             startActivity(intent)
         }
         

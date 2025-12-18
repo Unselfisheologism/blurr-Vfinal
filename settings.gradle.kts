@@ -23,4 +23,9 @@ dependencyResolutionManagement {
 
 rootProject.name = "blurr"
 include(":app")
+
+// Flutter workflow editor module
+setBinding(Binding(settings))
+include(":flutter_workflow_editor")
+project(":flutter_workflow_editor").projectDir = File("flutter_workflow_editor/.android/Flutter")
  

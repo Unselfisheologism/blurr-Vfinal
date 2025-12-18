@@ -66,6 +66,9 @@ class ToolRegistry(
         registerTool(MusicGenerationTool(context))
         registerTool(Model3DGenerationTool(context))
         
+        // Workflow management - Enables AI to create and manage n8n-style workflows
+        registerTool(WorkflowTool(context))
+        
         Log.d(TAG, "ToolRegistry initialized with ${tools.size} built-in tools")
     }
     
@@ -239,5 +242,6 @@ object ToolCategories {
     const val DOCUMENT = "document"
     const val GOOGLE = "google"
     const val PHONE = "phone"
+    const val WORKFLOW = "workflow"
     const val CUSTOM = "custom"
 }

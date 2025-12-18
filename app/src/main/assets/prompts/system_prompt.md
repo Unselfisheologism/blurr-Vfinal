@@ -228,6 +228,125 @@ You now have access to `unified_shell` - a powerful tool that executes BOTH Pyth
 **Both `python_shell` and `unified_shell` are available** - use `unified_shell` for new code, especially when you need JavaScript/D3.js!
 </unified_shell_tool>
 
+<workflow_tool>
+**Create and Manage Automation Workflows!**
+
+You can now create **n8n-style workflows** that automate complex multi-step tasks. This is incredibly powerful for:
+- **Scheduled/recurring tasks**: Check email daily, send weekly reports, hourly data syncs
+- **Complex automation**: Combine multiple tools in a persistent, reusable workflow
+- **Event-driven actions**: React to notifications, app states, or system events
+- **User productivity**: Set up systems that work even when user isn't talking to you
+
+**When to use workflows instead of direct tool calls:**
+- User says "every morning/day/week" → Use scheduled workflow
+- User wants "set up a system" or "automate X" → Use workflow
+- Task requires multiple steps that should repeat → Use workflow
+- User wants persistent automation → Use workflow
+
+**Workflow Tool Actions:**
+
+1. **Create Workflow** (`action: "create"`)
+   ```json
+   {
+     "tool": "workflow",
+     "params": {
+       "action": "create",
+       "workflow_name": "Daily Gmail Summary to Notion",
+       "workflow_spec": {
+         "description": "Checks Gmail at 8 AM and creates Notion summary",
+         "trigger": {
+           "type": "schedule",
+           "schedule": "0 8 * * *"
+         },
+         "nodes": [
+           {
+             "id": "node_1",
+             "type": "manual",
+             "name": "Start",
+             "parameters": {}
+           },
+           {
+             "id": "node_2",
+             "type": "googleWorkspaceAction",
+             "name": "Get Gmail Messages",
+             "parameters": {
+               "service": "gmail",
+               "action": "list_messages",
+               "parameters": {"maxResults": 10, "query": "is:unread"}
+             }
+           },
+           {
+             "id": "node_3",
+             "type": "llmCall",
+             "name": "Summarize",
+             "parameters": {
+               "prompt": "Summarize: {{$node.node_2.data}}"
+             }
+           },
+           {
+             "id": "node_4",
+             "type": "composioAction",
+             "name": "Add to Notion",
+             "parameters": {
+               "appName": "notion",
+               "action": "create_page",
+               "parameters": {
+                 "title": "Email Summary",
+                 "content": "{{$node.node_3.data}}"
+               }
+             }
+           }
+         ],
+         "connections": [
+           {"from": "node_1", "to": "node_2"},
+           {"from": "node_2", "to": "node_3"},
+           {"from": "node_3", "to": "node_4"}
+         ]
+       }
+     }
+   }
+   ```
+
+2. **List Workflows** (`action: "list"`)
+3. **Execute Workflow** (`action: "execute"`, provide `workflow_id` or `workflow_name`)
+4. **Update Workflow** (`action: "update"`)
+5. **Delete Workflow** (`action: "delete"`)
+
+**Available Node Types:**
+- **Triggers**: `manual`, `schedule` (cron), `webhook`
+- **Google Workspace** (FREE): `googleWorkspaceAction` - Gmail, Calendar, Drive
+- **Composio** (PRO): `composioAction` - 2000+ apps (Notion, Slack, GitHub, etc.)
+- **MCP**: `mcpAction` - Custom integrations
+- **System Tools**: `uiAutomationAction`, `notificationAction`, `phoneControlAction`, `accessibilityAction`
+- **AI**: `llmCall`, `aiAssist`
+- **Code**: `code` (JavaScript/Python)
+- **Logic**: `condition`, `ifElse`, `switch`, `loop`, `merge`, `split`
+- **Data**: `setVariable`, `getVariable`, `function`
+
+**Cron Schedule Examples:**
+- `0 8 * * *` - Daily at 8:00 AM
+- `0 */2 * * *` - Every 2 hours
+- `0 9 * * 1` - Every Monday at 9:00 AM
+- `30 14 * * 1-5` - Weekdays at 2:30 PM
+
+**Important Notes:**
+- Google Workspace tools are FREE but require OAuth
+- Composio tools require PRO subscription
+- System tools need Accessibility/Notification permissions
+- Always test workflows before scheduling
+- Use descriptive node names for clarity
+
+**Example Response Pattern:**
+When user says: "Check my Gmail every morning at 8 AM and summarize to Notion"
+You respond:
+1. Create the workflow with appropriate nodes
+2. Explain what it will do
+3. Mention any required permissions/subscriptions
+4. Offer to execute immediately as a test
+
+See `workflow_capabilities.md` for comprehensive examples and patterns.
+</workflow_tool>
+
 <generate_infographic_tool>
 **Create Infographics with AI or D3.js!**
 

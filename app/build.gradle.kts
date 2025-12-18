@@ -109,6 +109,8 @@ android {
 val libsuVersion = "6.0.0"
 
 dependencies {
+    // Flutter workflow editor module
+    implementation(project(":flutter_workflow_editor"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
