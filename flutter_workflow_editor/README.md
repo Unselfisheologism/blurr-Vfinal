@@ -1,334 +1,288 @@
-# Flutter Workflow Editor Module
+# Flutter Workflow Editor
 
-A fully-featured n8n-like node-based workflow editor for mobile, built with Flutter and designed for the Blurr Voice AI Assistant app.
+**Advanced, original node-based workflow automation system for mobile AI super assistant**
 
-## Features
+Built with [fl_nodes](https://github.com/WilliamKarolDiCioccio/fl_nodes) as the core rendering engine, this is a custom, mobile-optimized visual workflow editor designed specifically for the Blurr AI assistant app.
 
-### ✅ Complete n8n Feature Parity
-- **Triggers**: Manual, Schedule (Pro), Webhook (Pro)
-- **Actions**: Composio (2,000+ integrations), MCP servers, Google Workspace, HTTP requests, Code execution
-- **System Tools**: UI automation, notification access, phone control (Blurr's unique capabilities)
-  - UI Automation: Tap, swipe, scroll, type, screenshot, and more
-  - Notification Access: Read and manage Android notifications
-  - Phone Control: Open apps, navigate system settings, get screen hierarchy
-- **Logic**: If/Else, Switch, Loop, Merge, Split
-- **Data**: Variables, Functions, Expressions (Jinja-like syntax)
-- **Error Handling**: Error triggers and handlers
-- **AI Features**: AI-assisted node creation (Pro), LLM calls
-- **Execution**: Real-time workflow execution with live logs
-- **Storage**: Save/load workflows locally
-- **Export/Import**: JSON format
+## 🎯 Features
 
-### 🎨 Mobile-Optimized UI
-- **Vertical Layout**: Top-to-bottom node flow (mobile-friendly)
-- **Touch Gestures**: Pinch-to-zoom, pan, drag-and-drop
-- **Responsive**: Adapts to portrait/landscape
-- **Interactive Canvas**: Smooth connections, auto-layout
-- **Node Palette**: Categorized, searchable node library
-- **Inspector Panel**: Edit node properties in real-time
-- **Execution Panel**: Live logs and results
+### Core Capabilities
+- ✅ **Vertical top-to-bottom flow** - Mobile-optimized layout
+- ✅ **Rich node types** - 20+ specialized nodes for automation
+- ✅ **Unified Shell integration** - Execute Python/JavaScript code directly
+- ✅ **Composio integration** - Call user-connected tools dynamically
+- ✅ **MCP server integration** - Connect to Model Context Protocol servers
+- ✅ **Full execution engine** - Async, stateful, error handling
+- ✅ **Mobile-first UX** - Touch-optimized with pinch-zoom, drag, pan
+- ✅ **Real-time logs** - Live execution monitoring
+- ✅ **Undo/Redo** - Full history management
+- ✅ **Pro features** - Scheduling, templates, advanced nodes
 
-### 🔗 Native Integration
-- **Platform Channels**: Kotlin/Swift bridge for native communication
-- **Composio Integration**: Access user's connected tools
-- **MCP Integration**: Execute MCP server requests
-- **Google Workspace**: OAuth-based Gmail, Calendar, Drive integration
-- **System Tools**: Direct access to Accessibility Service and Notification Listener
-- **Pro Features**: Feature flags for subscription tiers
-- **State Sync**: Seamless with native app state
+### Node Types
 
-### 🎯 Pro Feature Gating
-- **Free**: Manual triggers, basic actions, local storage
-- **Pro**: Scheduled triggers, webhooks, AI assist, team collaboration
+#### Triggers
+- Manual Trigger - Start workflows manually
+- Schedule (Pro) - Cron-based scheduling
+- Webhook (Pro) - HTTP webhook triggers
 
-## Architecture
+#### Actions
+- **Unified Shell** - Execute Python/JavaScript with dynamic packages
+- HTTP Request - Make REST API calls
+- Composio Action - Call connected integrations
+- MCP Action - Execute MCP server tools
+
+#### Logic
+- IF/ELSE - Conditional branching
+- Switch - Multiple condition routing
+- Loop - Iterate over collections
+- Merge - Combine execution paths
+
+#### Data
+- Set Variable - Store workflow data
+- Get Variable - Retrieve stored data
+- Transform Data - Map and convert data
+- Function - Execute expressions
+
+#### System (Blurr-specific)
+- Phone Control - Call, SMS, device functions
+- Notification - System notifications
+- UI Automation - Accessibility-based automation
+
+#### AI
+- AI Assistant - Call ultra-generalist agent
+- LLM Call - Direct LLM API calls
+
+#### Error Handling
+- Error Handler - Catch and handle errors
+- Retry - Retry failed operations
+
+## 🏗️ Architecture
 
 ```
 flutter_workflow_editor/
 ├── lib/
-│   ├── main.dart                      # Entry point
-│   ├── workflow_editor_screen.dart    # Main screen
-│   ├── models/                        # Data models
-│   │   ├── workflow.dart
-│   │   ├── workflow_node.dart
-│   │   ├── workflow_connection.dart
-│   │   ├── composio_tool.dart
-│   │   ├── mcp_server.dart
-│   │   ├── google_workspace_tool.dart
-│   │   └── system_tool.dart
-│   ├── state/                         # State management
-│   │   ├── workflow_state.dart
-│   │   └── app_state.dart
-│   ├── services/                      # Business logic
-│   │   ├── execution_engine.dart
-│   │   ├── storage_service.dart
-│   │   ├── vertical_layout_engine.dart
-│   │   └── platform_bridge.dart
-│   ├── widgets/                       # UI components
-│   │   ├── workflow_canvas.dart
-│   │   ├── node_widget.dart
-│   │   ├── node_palette.dart
-│   │   ├── node_inspector.dart
-│   │   ├── toolbar.dart
-│   │   └── execution_panel.dart
-│   └── integration/                   # Native bridges
-│       └── kotlin_bridge.kt
-└── pubspec.yaml
+│   ├── main.dart                           # Entry point
+│   ├── workflow_editor_screen.dart         # Main screen
+│   │
+│   ├── core/                               # Core systems
+│   │   └── vertical_layout_adapter.dart    # Vertical layout engine
+│   │
+│   ├── models/                             # Data models
+│   │   ├── node_definitions.dart           # Node type definitions
+│   │   ├── fl_node_prototypes.dart         # FL Nodes prototypes
+│   │   ├── workflow.dart                   # Workflow model
+│   │   ├── workflow_node.dart              # Node model
+│   │   └── workflow_connection.dart        # Connection model
+│   │
+│   ├── nodes/                              # Node implementations
+│   │   ├── unified_shell_node.dart         # Code execution node
+│   │   ├── composio_node.dart              # Composio integration
+│   │   ├── mcp_node.dart                   # MCP integration
+│   │   └── logic_nodes.dart                # Logic node types
+│   │
+│   ├── services/                           # Business logic
+│   │   ├── workflow_execution_engine.dart  # Execution orchestration
+│   │   ├── platform_bridge.dart            # Native communication
+│   │   ├── storage_service.dart            # Persistence
+│   │   └── vertical_layout_engine.dart     # Layout management
+│   │
+│   ├── state/                              # State management
+│   │   ├── app_state.dart                  # Global app state
+│   │   └── workflow_state.dart             # Workflow state
+│   │
+│   └── widgets/                            # UI components
+│       ├── fl_workflow_canvas.dart         # FL Nodes canvas
+│       ├── node_palette.dart               # Node selector
+│       ├── node_inspector.dart             # Property editor
+│       ├── toolbar.dart                    # Top toolbar
+│       └── execution_panel.dart            # Logs/output panel
+│
+└── pubspec.yaml                            # Dependencies
 ```
 
-## Integration Guide
+## 🚀 Getting Started
 
-### Android (Kotlin)
+### Prerequisites
 
-1. **Add Flutter module to your project**:
-```gradle
+```yaml
+# Add to your main app's pubspec.yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  fl_nodes:
+    git:
+      url: https://github.com/WilliamKarolDiCioccio/fl_nodes.git
+```
+
+### Integration into Android App
+
+#### 1. Add Flutter Module to settings.gradle.kts
+
+```kotlin
 // settings.gradle.kts
 setBinding(Binding(settings))
-include(":flutter_workflow_editor")
-project(":flutter_workflow_editor").projectDir = File("../flutter_workflow_editor/.android")
+include(":app")
+includeBuild("flutter_workflow_editor") {
+    dependencySubstitution {
+        substitute(module("com.blurr:flutter_workflow_editor"))
+            .using(project(":"))
+    }
+}
 ```
 
-2. **Create FlutterFragment**:
-```kotlin
-// In your Activity
-import io.flutter.embedding.android.FlutterFragment
+#### 2. Setup Method Channel Handler
 
-class WorkflowEditorActivity : AppCompatActivity() {
+```kotlin
+// In your MainActivity or Application class
+import com.blurr.voice.workflow.WorkflowEditorHandler
+
+class MainActivity : FlutterActivity() {
+    private lateinit var workflowHandler: WorkflowEditorHandler
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        val flutterEngine = FlutterEngineCache.getInstance()
-            .get("workflow_editor_engine") ?: createFlutterEngine()
-        
-        // Create bridge
-        val bridge = flutterEngine.createWorkflowEditorBridge(this)
-        
-        // Add FlutterFragment
-        supportFragmentManager
-            .beginTransaction()
-            .add(R.id.container, FlutterFragment.withCachedEngine("workflow_editor_engine").build())
-            .commit()
-    }
-    
-    private fun createFlutterEngine(): FlutterEngine {
-        val engine = FlutterEngine(this)
-        engine.dartExecutor.executeDartEntrypoint(
-            DartExecutor.DartEntrypoint.createDefault()
+        // Initialize workflow handler
+        workflowHandler = WorkflowEditorHandler(
+            context = this,
+            unifiedShellTool = unifiedShellTool,
+            composioClient = composioClient,
+            composioManager = composioIntegrationManager,
+            mcpClient = mcpClient
         )
-        FlutterEngineCache.getInstance().put("workflow_editor_engine", engine)
-        return engine
+        
+        // Register method channel
+        MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, "workflow_editor")
+            .setMethodCallHandler(workflowHandler)
     }
 }
 ```
 
-3. **Add to AndroidManifest.xml**:
-```xml
-<activity
-    android:name=".WorkflowEditorActivity"
-    android:theme="@style/Theme.AppCompat"
-    android:configChanges="orientation|keyboardHidden|screenSize" />
+#### 3. Launch Workflow Editor
+
+```kotlin
+// Launch as FlutterFragment
+val flutterFragment = FlutterFragment.createDefault()
+
+supportFragmentManager
+    .beginTransaction()
+    .add(R.id.fragment_container, flutterFragment)
+    .commit()
+
+// Or launch as FlutterActivity
+val intent = FlutterActivity
+    .withNewEngine()
+    .initialRoute("/workflow_editor")
+    .build(this)
+
+startActivity(intent)
 ```
 
-### iOS (Swift) - Future
+## 📱 Usage
 
-```swift
-// Similar pattern using FlutterViewController
+### Creating a Workflow
+
+1. **Add Trigger Node** - Drag a trigger from the palette
+2. **Add Action Nodes** - Chain actions vertically
+3. **Connect Nodes** - Drag from output to input ports
+4. **Configure Nodes** - Use inspector to set parameters
+5. **Run Workflow** - Click Run button to execute
+
+### Using Unified Shell Node
+
+The Unified Shell node exposes the app's powerful code execution capabilities:
+
+```python
+# Example: Python data processing
+import pandas as pd
+import json
+
+# Input data from previous node
+data = json.loads(input_data)
+
+# Process with pandas
+df = pd.DataFrame(data)
+result = df.describe().to_json()
+
+# Output to next node
+print(result)
 ```
 
-## Usage Examples
+```javascript
+// Example: JavaScript API call
+const axios = require('axios');
 
-### Creating a Simple Workflow
-
-```dart
-// The user interacts with the UI:
-// 1. Drag "Manual Trigger" from palette
-// 2. Drag "Composio Action" node
-// 3. Connect them by dragging from output port to input port
-// 4. Select Composio node, configure in inspector:
-//    - Tool: "Gmail"
-//    - Action: "send_email"
-//    - Parameters: {"to": "user@example.com", "subject": "Test"}
-// 5. Click "Execute" in toolbar
-// 6. View results in execution panel
-```
-
-### Programmatic Access
-
-```dart
-// In your Flutter code
-final workflowState = context.read<WorkflowState>();
-
-// Create workflow
-await workflowState.initialize();
-
-// Add nodes
-workflowState.addNode(
-  WorkflowNode(
-    id: uuid.v4(),
-    name: 'Send Email',
-    type: NodeType.composioAction,
-    parameters: {
-      'tool': 'gmail',
-      'action': 'send_email',
-      'parameters': {'to': 'user@example.com'},
-    },
-  ),
-);
-
-// Execute
-await workflowState.executeWorkflow();
-
-// Access results
-final results = workflowState.executionResults;
-```
-
-## Node Types Reference
-
-### Triggers
-- **Manual**: User-initiated execution
-- **Schedule** (Pro): Cron-based scheduling
-- **Webhook** (Pro): HTTP webhook triggers
-
-### Actions
-- **Composio Action**: Execute any Composio integration (2,000+ tools)
-- **MCP Action**: Execute MCP server requests
-- **HTTP Request**: Make API calls
-- **Code**: Run JavaScript/Python code
-
-### Logic
-- **If/Else**: Conditional branching
-- **Switch**: Multi-way branching
-- **Loop**: Iterate over arrays
-- **Merge**: Combine multiple inputs
-- **Split**: Divide execution paths
-
-### Data
-- **Set Variable**: Store data
-- **Get Variable**: Retrieve data
-- **Function**: Transform data
-
-### AI
-- **AI Assist** (Pro): Generate nodes from natural language
-- **LLM Call**: Call language models
-
-### Error Handling
-- **Error Handler**: Catch and handle errors
-- **Error Trigger**: Trigger on specific errors
-
-## Expression Syntax
-
-Use `{{ }}` for dynamic values:
-
-```
-# Access node output
-{{ node.send_email.messageId }}
-
-# Access variables
-{{ myVariable }}
-
-# Conditions
-{{ node.output.status }} == "success"
-
-# Loop variables
-{{ item }}
-{{ index }}
-```
-
-## Performance Optimization
-
-- **Lazy Loading**: Nodes rendered only when visible
-- **Debounced Updates**: State changes batched
-- **Canvas Virtualization**: Large workflows optimized
-- **Execution Throttling**: Prevent excessive API calls
-
-## Pro Features
-
-Gated behind subscription:
-- Schedule triggers (cron)
-- Webhook triggers
-- AI-assisted node creation
-- Team collaboration (future)
-- Workflow sharing (future)
-- Advanced error handling
-- Unlimited executions
-
-Check in code:
-```dart
-if (appState.hasFeature('scheduled_triggers')) {
-  // Show schedule node
+async function fetchData() {
+    const response = await axios.get('https://api.example.com/data');
+    return response.data;
 }
+
+const result = await fetchData();
+console.log(JSON.stringify(result));
 ```
 
-## Documentation
+## 🔧 Platform Channel API
 
-- [Integration Guide](./INTEGRATION_GUIDE.md) - Detailed integration steps with Android/iOS
-- [System Tools Integration Guide](./SYSTEM_TOOLS_INTEGRATION_GUIDE.md) - UI automation, notifications, and phone control
-- [System Tools Examples](./SYSTEM_TOOLS_EXAMPLES.md) - Practical workflow examples using system tools
-- [Google Workspace Integration](./GOOGLE_WORKSPACE_INTEGRATION.md) - OAuth setup and usage
-- [Deployment Guide](./DEPLOYMENT.md) - Production deployment steps
-- [Testing Guide](./TESTING_GUIDE.md) - Testing strategies
+### Methods Available
 
-## Development
+```dart
+// Unified Shell
+executeUnifiedShell(code, language, timeout, inputs)
 
-### Run standalone (for testing)
+// Composio
+getComposioTools()
+executeComposioAction(toolId, actionId, parameters)
+
+// MCP
+getMCPServers()
+executeMCPTool(serverId, toolId, parameters)
+
+// HTTP
+executeHttpRequest(url, method, headers, body)
+
+// Workflow Management
+saveWorkflow(workflowId, workflowData)
+loadWorkflow(workflowId)
+listWorkflows()
+exportWorkflow(workflowId)
+importWorkflow(workflowJson)
+scheduleWorkflow(workflowId, cronExpression, enabled)
+```
+
+## 🧪 Testing
+
 ```bash
+# Run Flutter tests
 cd flutter_workflow_editor
+flutter test
+
+# Run in standalone mode
 flutter run
 ```
 
-### Build for production
-```bash
-flutter build aar  # Android
-flutter build ios-framework  # iOS
-```
+## 📦 Building
 
-### Generate JSON serialization
 ```bash
+# Generate JSON serialization code
 flutter pub run build_runner build
+
+# Build AAR for Android
+flutter build aar
+
+# Build as module
+flutter build apk --release
 ```
 
-## Testing
+## 📄 License
 
-```bash
-# Unit tests
-flutter test
+Proprietary - Part of Blurr AI Assistant
 
-# Widget tests
-flutter test test/widgets/
+## 🙏 Acknowledgments
 
-# Integration tests
-flutter test integration_test/
-```
+- **fl_nodes** - Core node rendering engine
+- **Composio** - Integration platform
+- **MCP** - Model Context Protocol
 
-## Troubleshooting
+---
 
-### Issue: Platform channel not working
-- Ensure FlutterEngine is initialized before creating bridge
-- Check method channel name matches on both sides
-
-### Issue: Composio tools not loading
-- Verify user is signed in to Composio in native app
-- Check FreemiumManager.hasComposioAccess() returns true
-
-### Issue: Vertical layout not working
-- Verify VerticalLayoutEngine is being called
-- Check node positions (y-axis should increment)
-
-### Issue: Nodes not rendering
-- Check if workflow is loaded: `workflowState.currentWorkflow != null`
-- Verify nodes have valid positions (x, y)
-
-## Contributing
-
-1. Follow Flutter style guide
-2. Add tests for new features
-3. Update documentation
-4. Keep mobile performance in mind
-
-## License
-
-Proprietary - Part of Blurr Voice AI Assistant
-
-## Contact
-
-For issues or questions, contact the Blurr development team.
+**Built with ❤️ for mobile workflow automation**

@@ -1,5 +1,5 @@
 name: workflow_editor
-description: N8N-like workflow editor module for AI super assistant
+description: Advanced node-based workflow editor for AI super assistant (powered by fl_nodes)
 version: 1.0.0
 publish_to: 'none'
 
@@ -11,16 +11,26 @@ dependencies:
   flutter:
     sdk: flutter
   
+  # Core node editor engine
+  fl_nodes:
+    git:
+      url: https://github.com/WilliamKarolDiCioccio/fl_nodes.git
+      ref: main
+  
   # State management
   provider: ^6.1.1
+  riverpod: ^2.4.9
+  flutter_riverpod: ^2.4.9
   
   # Local storage
   shared_preferences: ^2.2.2
   hive: ^2.2.3
   hive_flutter: ^1.1.0
+  path_provider: ^2.1.1
   
   # JSON handling
   json_annotation: ^4.8.1
+  freezed_annotation: ^2.4.1
   
   # UUID generation
   uuid: ^4.3.3
@@ -32,17 +42,51 @@ dependencies:
   flutter_svg: ^2.0.9
   dotted_border: ^2.1.0
   animations: ^2.0.11
+  flutter_colorpicker: ^1.0.3
+  font_awesome_flutter: ^10.6.0
+  
+  # Code editor for Unified Shell node
+  flutter_code_editor: ^0.3.0
+  flutter_highlight: ^0.7.0
+  highlight: ^0.7.0
+  
+  # Expression parser for data transformation
+  expressions: ^0.2.5+1
+  
+  # HTTP for webhook/API nodes
+  http: ^1.1.2
+  dio: ^5.4.0
+  
+  # Cron parser for scheduling
+  cron: ^0.5.1
+  
+  # File picker for import/export
+  file_picker: ^6.1.1
+  
+  # Collection utilities
+  collection: ^1.18.0
+  
+  # Async utilities
+  async: ^2.11.0
+  rxdart: ^0.27.7
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^2.4.8
   json_serializable: ^6.7.1
+  freezed: ^2.4.5
   flutter_lints: ^3.0.1
 
 flutter:
   uses-material-design: true
   
+  fonts:
+    - family: JetBrainsMono
+      fonts:
+        - asset: packages/flutter_code_editor/fonts/JetBrainsMono-Regular.ttf
+  
   assets:
     - assets/icons/
     - assets/templates/
+    - assets/node_icons/

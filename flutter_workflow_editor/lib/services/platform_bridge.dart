@@ -1,276 +1,331 @@
-/// Platform bridge for communication with native Kotlin/Swift code
+/// Platform bridge for native communication
+/// Connects Flutter workflow editor to native Android functionality
 library;
 
 import 'package:flutter/services.dart';
-import '../models/composio_tool.dart';
-import '../models/mcp_server.dart';
+import 'dart:convert';
 
+/// Main platform bridge for communicating with native Android
 class PlatformBridge {
-  static const MethodChannel _channel = MethodChannel('com.blurr.workflow_editor');
+  static const MethodChannel _channel = MethodChannel('workflow_editor');
   
-  // Callback for workflow loaded from native
-  void Function(Map<String, dynamic> workflow, bool autoExecute)? _workflowLoadHandler;
-  
-  PlatformBridge() {
-    // Setup method call handler for callbacks from native
-    _channel.setMethodCallHandler(_handleMethodCall);
-  }
-  
-  /// Handle method calls from native code
-  Future<dynamic> _handleMethodCall(MethodCall call) async {
-    switch (call.method) {
-      case 'loadWorkflowFromNative':
-        final workflow = (call.arguments['workflow'] as Map).cast<String, dynamic>();
-        final autoExecute = call.arguments['autoExecute'] as bool? ?? false;
-        
-        // Call the registered handler
-        _workflowLoadHandler?.call(workflow, autoExecute);
-        return true;
-        
-      default:
-        throw MissingPluginException('Method ${call.method} not implemented');
-    }
-  }
-  
-  /// Set handler for workflow loaded from native
-  void setWorkflowLoadHandler(void Function(Map<String, dynamic>, bool) handler) {
-    _workflowLoadHandler = handler;
-  }
-
-  /// Get Pro subscription status
-  Future<bool> getProStatus() async {
+  /// Test platform communication
+  Future<String> getPlatformVersion() async {
     try {
-      final result = await _channel.invokeMethod<bool>('getProStatus');
-      return result ?? false;
-    } on PlatformException catch (e) {
-      print('Error getting Pro status: ${e.message}');
-      return false;
+      final String version = await _channel.invokeMethod('getPlatformVersion');
+      return version;
+    } catch (e) {
+      throw PlatformException(code: 'PLATFORM_ERROR', message: e.toString());
     }
   }
-
-  /// Get connected Composio tools
-  Future<List<ComposioTool>> getComposioTools() async {
+  
+  /// Execute code via Unified Shell
+  Future<Map<String, dynamic>> executeUnifiedShell({
+    required String code,
+    required String language,
+    int timeout = 30,
+    Map<String, dynamic>? inputs,
+  }) async {
     try {
-      final result = await _channel.invokeMethod<List>('getComposioTools');
-      if (result == null) return [];
-
-      return result.map((json) => ComposioTool.fromJson(json as Map<String, dynamic>)).toList();
-    } on PlatformException catch (e) {
-      print('Error getting Composio tools: ${e.message}');
-      return [];
+      final result = await _channel.invokeMethod('executeUnifiedShell', {
+        'code': code,
+        'language': language,
+        'timeout': timeout,
+        'inputs': inputs ?? {},
+      });
+      
+      return Map<String, dynamic>.from(result as Map);
+    } catch (e) {
+      throw PlatformException(
+        code: 'SHELL_EXECUTION_ERROR',
+        message: 'Failed to execute shell: $e',
+      );
     }
   }
-
-  /// Get connected MCP servers
-  Future<List<McpServer>> getMcpServers() async {
+  
+  /// Get available Composio tools
+  Future<List<Map<String, dynamic>>> getComposioTools() async {
     try {
-      final result = await _channel.invokeMethod<List>('getMcpServers');
-      if (result == null) return [];
-
-      return result.map((json) => McpServer.fromJson(json as Map<String, dynamic>)).toList();
-    } on PlatformException catch (e) {
-      print('Error getting MCP servers: ${e.message}');
-      return [];
+      final result = await _channel.invokeMethod('getComposioTools');
+      return List<Map<String, dynamic>>.from(
+        (result as List).map((e) => Map<String, dynamic>.from(e as Map))
+      );
+    } catch (e) {
+      throw PlatformException(
+        code: 'COMPOSIO_ERROR',
+        message: 'Failed to get Composio tools: $e',
+      );
     }
   }
-
+  
   /// Execute Composio action
   Future<Map<String, dynamic>> executeComposioAction({
     required String toolId,
-    required String actionName,
+    required String actionId,
     required Map<String, dynamic> parameters,
   }) async {
     try {
-      final result = await _channel.invokeMethod<Map>('executeComposioAction', {
+      final result = await _channel.invokeMethod('executeComposioAction', {
         'toolId': toolId,
-        'actionName': actionName,
+        'actionId': actionId,
         'parameters': parameters,
       });
-
-      return result?.cast<String, dynamic>() ?? {};
-    } on PlatformException catch (e) {
-      throw Exception('Composio action failed: ${e.message}');
+      
+      return Map<String, dynamic>.from(result as Map);
+    } catch (e) {
+      throw PlatformException(
+        code: 'COMPOSIO_ACTION_ERROR',
+        message: 'Failed to execute Composio action: $e',
+      );
     }
   }
-
-  /// Execute MCP request
-  Future<Map<String, dynamic>> executeMcpRequest({
+  
+  /// Get available MCP servers
+  Future<List<Map<String, dynamic>>> getMCPServers() async {
+    try {
+      final result = await _channel.invokeMethod('getMCPServers');
+      return List<Map<String, dynamic>>.from(
+        (result as List).map((e) => Map<String, dynamic>.from(e as Map))
+      );
+    } catch (e) {
+      throw PlatformException(
+        code: 'MCP_ERROR',
+        message: 'Failed to get MCP servers: $e',
+      );
+    }
+  }
+  
+  /// Execute MCP tool
+  Future<Map<String, dynamic>> executeMCPTool({
     required String serverId,
-    required String method,
-    required Map<String, dynamic> params,
-  }) async {
-    try {
-      final result = await _channel.invokeMethod<Map>('executeMcpRequest', {
-        'serverId': serverId,
-        'method': method,
-        'params': params,
-      });
-
-      return result?.cast<String, dynamic>() ?? {};
-    } on PlatformException catch (e) {
-      throw Exception('MCP request failed: ${e.message}');
-    }
-  }
-
-  /// Save workflow to native storage
-  Future<void> saveWorkflow(Map<String, dynamic> workflow) async {
-    try {
-      await _channel.invokeMethod('saveWorkflow', {'workflow': workflow});
-    } on PlatformException catch (e) {
-      throw Exception('Failed to save workflow: ${e.message}');
-    }
-  }
-
-  /// Load workflow from native storage
-  Future<Map<String, dynamic>?> loadWorkflow(String workflowId) async {
-    try {
-      final result = await _channel.invokeMethod<Map>('loadWorkflow', {
-        'workflowId': workflowId,
-      });
-
-      return result?.cast<String, dynamic>();
-    } on PlatformException catch (e) {
-      print('Error loading workflow: ${e.message}');
-      return null;
-    }
-  }
-
-  /// Get list of saved workflows
-  Future<List<Map<String, dynamic>>> getWorkflows() async {
-    try {
-      final result = await _channel.invokeMethod<List>('getWorkflows');
-      if (result == null) return [];
-
-      return result.map((item) => (item as Map).cast<String, dynamic>()).toList();
-    } on PlatformException catch (e) {
-      print('Error getting workflows: ${e.message}');
-      return [];
-    }
-  }
-
-  /// Show native upgrade dialog for Pro features
-  Future<void> showProUpgradeDialog(String feature) async {
-    try {
-      await _channel.invokeMethod('showProUpgradeDialog', {
-        'feature': feature,
-      });
-    } on PlatformException catch (e) {
-      print('Error showing upgrade dialog: ${e.message}');
-    }
-  }
-
-  /// Get Google authentication status
-  Future<bool> getGoogleAuthStatus() async {
-    try {
-      final result = await _channel.invokeMethod<bool>('getGoogleAuthStatus');
-      return result ?? false;
-    } on PlatformException catch (e) {
-      print('Error getting Google auth status: ${e.message}');
-      return false;
-    }
-  }
-
-  /// Trigger Google OAuth authentication
-  Future<bool> authenticateGoogle() async {
-    try {
-      final result = await _channel.invokeMethod<bool>('authenticateGoogle');
-      return result ?? false;
-    } on PlatformException catch (e) {
-      print('Error authenticating Google: ${e.message}');
-      return false;
-    }
-  }
-
-  /// Execute Google Workspace action
-  Future<Map<String, dynamic>> executeGoogleWorkspaceAction({
-    required String service,
-    required String actionName,
-    required Map<String, dynamic> parameters,
-  }) async {
-    try {
-      final result = await _channel.invokeMethod<Map>('executeGoogleWorkspaceAction', {
-        'service': service,
-        'actionName': actionName,
-        'parameters': parameters,
-      });
-
-      return result?.cast<String, dynamic>() ?? {};
-    } on PlatformException catch (e) {
-      throw Exception('Google Workspace action failed: ${e.message}');
-    }
-  }
-
-  /// Get available system tools (UI automation, notifications, etc.)
-  Future<List<Map<String, dynamic>>> getSystemTools() async {
-    try {
-      final result = await _channel.invokeMethod<List>('getSystemTools');
-      if (result == null) return [];
-
-      return result.map((item) => (item as Map).cast<String, dynamic>()).toList();
-    } on PlatformException catch (e) {
-      print('Error getting system tools: ${e.message}');
-      return [];
-    }
-  }
-
-  /// Execute system-level tool (UI automation, notification, etc.)
-  Future<Map<String, dynamic>> executeSystemTool({
     required String toolId,
     required Map<String, dynamic> parameters,
   }) async {
     try {
-      final result = await _channel.invokeMethod<Map>('executeSystemTool', {
+      final result = await _channel.invokeMethod('executeMCPTool', {
+        'serverId': serverId,
         'toolId': toolId,
         'parameters': parameters,
       });
-
-      return result?.cast<String, dynamic>() ?? {};
-    } on PlatformException catch (e) {
-      throw Exception('System tool execution failed: ${e.message}');
+      
+      return Map<String, dynamic>.from(result as Map);
+    } catch (e) {
+      throw PlatformException(
+        code: 'MCP_TOOL_ERROR',
+        message: 'Failed to execute MCP tool: $e',
+      );
     }
   }
-
-  /// Check if Accessibility Service is enabled
-  Future<bool> checkAccessibilityStatus() async {
+  
+  /// Execute HTTP request
+  Future<Map<String, dynamic>> executeHttpRequest({
+    required String url,
+    required String method,
+    Map<String, String>? headers,
+    dynamic body,
+  }) async {
     try {
-      final result = await _channel.invokeMethod<bool>('checkAccessibilityStatus');
-      return result ?? false;
-    } on PlatformException catch (e) {
-      print('Error checking accessibility status: ${e.message}');
+      final result = await _channel.invokeMethod('executeHttpRequest', {
+        'url': url,
+        'method': method,
+        'headers': headers ?? {},
+        'body': body,
+      });
+      
+      return Map<String, dynamic>.from(result as Map);
+    } catch (e) {
+      throw PlatformException(
+        code: 'HTTP_ERROR',
+        message: 'Failed to execute HTTP request: $e',
+      );
+    }
+  }
+  
+  /// Control phone functions
+  Future<Map<String, dynamic>> executePhoneControl({
+    required String action,
+    required Map<String, dynamic> parameters,
+  }) async {
+    try {
+      final result = await _channel.invokeMethod('executePhoneControl', {
+        'action': action,
+        'parameters': parameters,
+      });
+      
+      return Map<String, dynamic>.from(result as Map);
+    } catch (e) {
+      throw PlatformException(
+        code: 'PHONE_CONTROL_ERROR',
+        message: 'Failed to execute phone control: $e',
+      );
+    }
+  }
+  
+  /// Send notification
+  Future<void> sendNotification({
+    required String title,
+    required String message,
+    String? channelId,
+    Map<String, dynamic>? extras,
+  }) async {
+    try {
+      await _channel.invokeMethod('sendNotification', {
+        'title': title,
+        'message': message,
+        'channelId': channelId ?? 'workflow_notifications',
+        'extras': extras ?? {},
+      });
+    } catch (e) {
+      throw PlatformException(
+        code: 'NOTIFICATION_ERROR',
+        message: 'Failed to send notification: $e',
+      );
+    }
+  }
+  
+  /// Call AI assistant
+  Future<Map<String, dynamic>> callAIAssistant({
+    required String prompt,
+    Map<String, dynamic>? context,
+  }) async {
+    try {
+      final result = await _channel.invokeMethod('callAIAssistant', {
+        'prompt': prompt,
+        'context': context ?? {},
+      });
+      
+      return Map<String, dynamic>.from(result as Map);
+    } catch (e) {
+      throw PlatformException(
+        code: 'AI_ASSISTANT_ERROR',
+        message: 'Failed to call AI assistant: $e',
+      );
+    }
+  }
+  
+  /// Save workflow
+  Future<void> saveWorkflow({
+    required String workflowId,
+    required Map<String, dynamic> workflowData,
+  }) async {
+    try {
+      await _channel.invokeMethod('saveWorkflow', {
+        'workflowId': workflowId,
+        'workflowData': jsonEncode(workflowData),
+      });
+    } catch (e) {
+      throw PlatformException(
+        code: 'SAVE_ERROR',
+        message: 'Failed to save workflow: $e',
+      );
+    }
+  }
+  
+  /// Load workflow
+  Future<Map<String, dynamic>?> loadWorkflow(String workflowId) async {
+    try {
+      final result = await _channel.invokeMethod('loadWorkflow', {
+        'workflowId': workflowId,
+      });
+      
+      if (result == null) return null;
+      
+      return Map<String, dynamic>.from(jsonDecode(result as String) as Map);
+    } catch (e) {
+      throw PlatformException(
+        code: 'LOAD_ERROR',
+        message: 'Failed to load workflow: $e',
+      );
+    }
+  }
+  
+  /// List saved workflows
+  Future<List<Map<String, dynamic>>> listWorkflows() async {
+    try {
+      final result = await _channel.invokeMethod('listWorkflows');
+      return List<Map<String, dynamic>>.from(
+        (result as List).map((e) => Map<String, dynamic>.from(e as Map))
+      );
+    } catch (e) {
+      throw PlatformException(
+        code: 'LIST_ERROR',
+        message: 'Failed to list workflows: $e',
+      );
+    }
+  }
+  
+  /// Schedule workflow (Pro feature)
+  Future<void> scheduleWorkflow({
+    required String workflowId,
+    required String cronExpression,
+    bool enabled = true,
+  }) async {
+    try {
+      await _channel.invokeMethod('scheduleWorkflow', {
+        'workflowId': workflowId,
+        'cronExpression': cronExpression,
+        'enabled': enabled,
+      });
+    } catch (e) {
+      throw PlatformException(
+        code: 'SCHEDULE_ERROR',
+        message: 'Failed to schedule workflow: $e',
+      );
+    }
+  }
+  
+  /// Check if user has Pro subscription
+  Future<bool> hasProSubscription() async {
+    try {
+      final result = await _channel.invokeMethod('hasProSubscription');
+      return result as bool;
+    } catch (e) {
       return false;
     }
   }
-
-  /// Check if Notification Listener is enabled
-  Future<bool> checkNotificationListenerStatus() async {
+  
+  /// Export workflow to JSON
+  Future<String> exportWorkflow(String workflowId) async {
     try {
-      final result = await _channel.invokeMethod<bool>('checkNotificationListenerStatus');
-      return result ?? false;
-    } on PlatformException catch (e) {
-      print('Error checking notification listener status: ${e.message}');
-      return false;
+      final result = await _channel.invokeMethod('exportWorkflow', {
+        'workflowId': workflowId,
+      });
+      
+      return result as String;
+    } catch (e) {
+      throw PlatformException(
+        code: 'EXPORT_ERROR',
+        message: 'Failed to export workflow: $e',
+      );
     }
   }
-
-  /// Request Accessibility Service permission
-  Future<bool> requestAccessibilityPermission() async {
+  
+  /// Import workflow from JSON
+  Future<String> importWorkflow(String workflowJson) async {
     try {
-      final result = await _channel.invokeMethod<bool>('requestAccessibilityPermission');
-      return result ?? false;
-    } on PlatformException catch (e) {
-      print('Error requesting accessibility permission: ${e.message}');
-      return false;
+      final result = await _channel.invokeMethod('importWorkflow', {
+        'workflowJson': workflowJson,
+      });
+      
+      return result as String; // Returns new workflow ID
+    } catch (e) {
+      throw PlatformException(
+        code: 'IMPORT_ERROR',
+        message: 'Failed to import workflow: $e',
+      );
     }
   }
-
-  /// Request Notification Listener permission
-  Future<bool> requestNotificationListenerPermission() async {
+  
+  /// Get workflow templates
+  Future<List<Map<String, dynamic>>> getWorkflowTemplates() async {
     try {
-      final result = await _channel.invokeMethod<bool>('requestNotificationListenerPermission');
-      return result ?? false;
-    } on PlatformException catch (e) {
-      print('Error requesting notification listener permission: ${e.message}');
-      return false;
+      final result = await _channel.invokeMethod('getWorkflowTemplates');
+      return List<Map<String, dynamic>>.from(
+        (result as List).map((e) => Map<String, dynamic>.from(e as Map))
+      );
+    } catch (e) {
+      // Return empty list if templates not available
+      return [];
     }
   }
 }

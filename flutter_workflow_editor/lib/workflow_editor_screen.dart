@@ -4,7 +4,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'widgets/workflow_canvas.dart';
+import 'widgets/fl_workflow_canvas.dart';
 import 'widgets/node_palette.dart';
 import 'widgets/node_inspector.dart';
 import 'widgets/toolbar.dart';
@@ -74,7 +74,7 @@ class _WorkflowEditorScreenState extends State<WorkflowEditorScreen> {
                   Expanded(
                     child: Stack(
                       children: [
-                        const WorkflowCanvas(),
+                        const FlWorkflowCanvas(),
                         
                         // Execution panel overlay (bottom sheet style)
                         if (_showExecutionPanel)
