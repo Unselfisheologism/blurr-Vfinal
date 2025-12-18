@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'workflow_editor_screen.dart';
 import 'state/workflow_state.dart';
 import 'state/app_state.dart';
+import 'text_editor/text_editor_screen.dart';
 
 void main() {
   runApp(const WorkflowEditorApp());
@@ -23,7 +24,7 @@ class WorkflowEditorApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => WorkflowState()),
       ],
       child: MaterialApp(
-        title: 'Workflow Editor',
+        title: 'Blurr AI Apps',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           useMaterial3: true,
@@ -39,7 +40,23 @@ class WorkflowEditorApp extends StatelessWidget {
             brightness: Brightness.dark,
           ),
         ),
-        home: const WorkflowEditorScreen(),
+        // Route configuration for AI-native apps
+        initialRoute: '/',
+        routes: {
+          '/': (context) => const WorkflowEditorScreen(),
+          '/text_editor': (context) => const TextEditorScreen(),
+          '/text_editor_template': (context) => const TextEditorScreen(startWithTemplate: true),
+        },
+        onGenerateRoute: (settings) {
+          // Handle dynamic routes with parameters
+          if (settings.name?.startsWith('/text_editor/') ?? false) {
+            final documentId = settings.name!.replaceFirst('/text_editor/', '');
+            return MaterialPageRoute(
+              builder: (context) => TextEditorScreen(documentId: documentId),
+            );
+          }
+          return null;
+        },
       ),
     );
   }

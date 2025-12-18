@@ -147,32 +147,62 @@ This document maps existing components to new AI-native apps, maximizing code re
 ## Flutter Module Usage
 
 ### Scope
-**ONLY App #3 (Media Canvas)** uses Flutter module.
+**ALL 6 AI-NATIVE APPS** use Flutter module for rich, interactive UIs.
 
-### Rationale
-- Flutter module exists for **workflow visual editor** (fl_nodes package)
-- fl_nodes provides node-based canvas UI (drag-drop, connections)
-- Media Canvas needs node-based interface for multimodal workflows
-- All other apps are standard Android UIs → use Kotlin/Compose
+### Rationale (Revised Architecture)
+- Flutter provides excellent cross-platform UI capabilities
+- Rich text editing (flutter_quill), custom UIs, and advanced interactions
+- Consistent user experience across all AI-native apps
+- Reuse of Flutter theming, widgets, and state management
+- All apps will be Flutter screens within the embedded module
+- Kotlin host activities provide native integration points
 
-### Flutter Module Extension Plan
+### Flutter Module Extension Plan (Revised for All Apps)
 
 ```
 flutter_workflow_editor/lib/
 ├── workflow_editor_screen.dart           # Existing - workflow editor
-├── models/
-│   ├── workflow.dart                     # Existing
-│   ├── workflow_node.dart                # Existing
-│   ├── node_definitions.dart             # Existing - extend with media nodes
-│   └── media_node_definitions.dart       # NEW - Image/Video/Audio/Music/3D nodes
-├── nodes/
-│   ├── unified_shell_node.dart           # Existing
-│   ├── composio_node.dart                # Existing
-│   ├── mcp_node.dart                     # Existing
-│   └── media_nodes.dart                  # NEW - Media-specific nodes
-└── services/
-    ├── workflow_execution_engine.dart    # Existing - extend for media tools
-    └── platform_bridge.dart              # Existing - Kotlin-Flutter bridge
+├── text_editor/                          # NEW - App #1: Text Editor
+│   ├── text_editor_screen.dart
+│   ├── widgets/
+│   │   ├── ai_toolbar.dart
+│   │   └── document_list.dart
+│   ├── models/
+│   │   └── document.dart
+│   └── services/
+│       ├── document_service.dart
+│       └── ai_assistant_service.dart
+├── spreadsheets/                         # NEW - App #2: Spreadsheets
+│   ├── spreadsheets_screen.dart
+│   ├── widgets/
+│   └── services/
+├── media_canvas/                         # NEW - App #3: Media Canvas
+│   ├── media_canvas_screen.dart
+│   ├── media_node_definitions.dart
+│   └── media_nodes.dart
+├── daw/                                  # NEW - App #4: DAW
+│   ├── daw_screen.dart
+│   ├── widgets/
+│   └── services/
+├── learning/                             # NEW - App #5: Learning Platform
+│   ├── learning_screen.dart
+│   ├── widgets/
+│   └── services/
+├── video_editor/                         # NEW - App #6: Video Editor
+│   ├── video_editor_screen.dart
+│   ├── widgets/
+│   └── services/
+├── models/                               # Existing + shared models
+│   ├── workflow.dart
+│   ├── workflow_node.dart
+│   └── node_definitions.dart
+├── nodes/                                # Existing workflow nodes
+│   ├── unified_shell_node.dart
+│   ├── composio_node.dart
+│   └── mcp_node.dart
+└── services/                             # Shared services
+    ├── workflow_execution_engine.dart
+    └── platform_bridge.dart              # Extended for all apps
 ```
 
 ### New Media Nodes to Add
@@ -186,42 +216,55 @@ flutter_workflow_editor/lib/
 8. **ComposeNode**: Multiple inputs → Combined output
 9. **ExportNode**: Save output to gallery/storage
 
-### Kotlin Wrapper Activity
+### Kotlin Wrapper Activities (All Apps)
+
+Each app has a dedicated Kotlin Activity that hosts its Flutter screen:
 
 ```kotlin
-// app/src/main/kotlin/com/blurr/voice/apps/mediacanvas/MediaCanvasActivity.kt
-
-class MediaCanvasActivity : AppCompatActivity() {
+// app/src/main/kotlin/com/blurr/voice/apps/texteditor/TextEditorActivity.kt
+class TextEditorActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // Embed Flutter view with media canvas configuration
         val flutterEngine = FlutterEngineCache.getInstance()
             .get(FLUTTER_ENGINE_ID) ?: createFlutterEngine()
         
         val flutterView = FlutterView(this)
         flutterView.attachToFlutterEngine(flutterEngine)
         
-        // Configure method channel for tool execution
-        setupToolBridge(flutterEngine)
+        // Navigate to text editor route
+        flutterEngine.navigationChannel.pushRoute("/text_editor")
+        
+        // Set up AI assistance channel
+        setupAIAssistanceChannel(flutterEngine)
         
         setContentView(flutterView)
     }
     
-    private fun setupToolBridge(engine: FlutterEngine) {
-        MethodChannel(engine.dartExecutor.binaryMessenger, "media_canvas/tools")
+    private fun setupAIAssistanceChannel(engine: FlutterEngine) {
+        MethodChannel(engine.dartExecutor.binaryMessenger, "ai_assistance")
             .setMethodCallHandler { call, result ->
                 when (call.method) {
-                    "executeMediaTool" -> {
-                        val toolName = call.argument<String>("toolName")
-                        val params = call.argument<Map<String, Any>>("params")
-                        executeToolAsync(toolName, params, result)
+                    "processRequest" -> {
+                        val text = call.argument<String>("text")
+                        val instruction = call.argument<String>("instruction")
+                        processAIRequest(text, instruction, result)
+                    }
+                    "checkProAccess" -> {
+                        result.success(proGatingManager.isProUser())
                     }
                     else -> result.notImplemented()
                 }
             }
     }
 }
+
+// Similar activities for other apps:
+// - SpreadsheetsActivity.kt
+// - MediaCanvasActivity.kt
+// - DAWActivity.kt
+// - LearningPlatformActivity.kt
+// - VideoEditorActivity.kt
 ```
 
 ---
