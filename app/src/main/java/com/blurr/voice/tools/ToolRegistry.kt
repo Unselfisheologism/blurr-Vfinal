@@ -69,6 +69,9 @@ class ToolRegistry(
         // Workflow management - Enables AI to create and manage n8n-style workflows
         registerTool(WorkflowTool(context))
         
+        // Spreadsheet editor - AI-native spreadsheet generation and editing (Epic 3)
+        registerTool(SpreadsheetTool(context))
+        
         Log.d(TAG, "ToolRegistry initialized with ${tools.size} built-in tools")
     }
     

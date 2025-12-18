@@ -203,6 +203,22 @@ class PlatformBridge {
     }
   }
   
+  /// Execute agent task (generic AI task execution for spreadsheet operations)
+  Future<Map<String, dynamic>> executeAgentTask(String prompt) async {
+    try {
+      final result = await _channel.invokeMethod('executeAgentTask', {
+        'prompt': prompt,
+      });
+      
+      return Map<String, dynamic>.from(result as Map);
+    } catch (e) {
+      throw PlatformException(
+        code: 'AGENT_TASK_ERROR',
+        message: 'Failed to execute agent task: $e',
+      );
+    }
+  }
+  
   /// Save workflow
   Future<void> saveWorkflow({
     required String workflowId,

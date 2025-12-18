@@ -8,6 +8,8 @@ import 'workflow_editor_screen.dart';
 import 'state/workflow_state.dart';
 import 'state/app_state.dart';
 import 'text_editor/text_editor_screen.dart';
+import 'spreadsheet_editor/spreadsheet_editor_screen.dart';
+import 'spreadsheet_editor/state/spreadsheet_state.dart';
 
 void main() {
   runApp(const WorkflowEditorApp());
@@ -22,6 +24,7 @@ class WorkflowEditorApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AppState()),
         ChangeNotifierProvider(create: (_) => WorkflowState()),
+        ChangeNotifierProvider(create: (_) => SpreadsheetState()),
       ],
       child: MaterialApp(
         title: 'Blurr AI Apps',
@@ -46,6 +49,7 @@ class WorkflowEditorApp extends StatelessWidget {
           '/': (context) => const WorkflowEditorScreen(),
           '/text_editor': (context) => const TextEditorScreen(),
           '/text_editor_template': (context) => const TextEditorScreen(startWithTemplate: true),
+          '/spreadsheet_editor': (context) => const SpreadsheetEditorScreen(),
         },
         onGenerateRoute: (settings) {
           // Handle dynamic routes with parameters
@@ -53,6 +57,12 @@ class WorkflowEditorApp extends StatelessWidget {
             final documentId = settings.name!.replaceFirst('/text_editor/', '');
             return MaterialPageRoute(
               builder: (context) => TextEditorScreen(documentId: documentId),
+            );
+          }
+          if (settings.name?.startsWith('/spreadsheet_editor/') ?? false) {
+            final documentId = settings.name!.replaceFirst('/spreadsheet_editor/', '');
+            return MaterialPageRoute(
+              builder: (context) => SpreadsheetEditorScreen(documentId: documentId),
             );
           }
           return null;
