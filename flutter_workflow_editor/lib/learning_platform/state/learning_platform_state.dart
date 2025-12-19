@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 
 import '../models/document_item.dart';
+import '../models/learning_trail.dart';
 import '../services/learning_platform_service.dart';
 import '../services/learning_storage_service.dart';
 
@@ -32,8 +33,14 @@ class LearningPlatformState extends ChangeNotifier {
   List<DocumentItem> _documents = const [];
   List<DocumentItem> get documents => _documents;
 
+  List<LearningTrail> _trails = const [];
+  List<LearningTrail> get trails => _trails;
+
   DocumentItem? _selected;
   DocumentItem? get selected => _selected;
+
+  LearningTrail? _selectedTrail;
+  LearningTrail? get selectedTrail => _selectedTrail;
 
   Future<void> initialize() async {
     if (_initialized) return;
@@ -43,6 +50,7 @@ class LearningPlatformState extends ChangeNotifier {
       await _storage.initialize();
       _isProUser = await _platform.checkProAccess();
       await refreshDocuments();
+      await refreshTrails();
       _initialized = true;
     } catch (e) {
       _lastError = e.toString();
@@ -67,8 +75,25 @@ class LearningPlatformState extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> refreshTrails() async {
+    final trails = await _storage.listTrails();
+    _trails = trails;
+
+    if (_selectedTrail != null) {
+      final stillExists = trails.any((t) => t.id == _selectedTrail!.id);
+      _selectedTrail = stillExists ? trails.firstWhere((t) => t.id == _selectedTrail!.id) : null;
+    }
+
+    notifyListeners();
+  }
+
   void selectDocument(DocumentItem? doc) {
     _selected = doc;
+    notifyListeners();
+  }
+
+  void selectTrail(LearningTrail? trail) {
+    _selectedTrail = trail;
     notifyListeners();
   }
 
@@ -88,6 +113,133 @@ class LearningPlatformState extends ChangeNotifier {
       _selected = null;
     }
     await refreshDocuments();
+  }
+
+  // Trails
+
+  Future<void> upsertTrail(LearningTrail trail) async {
+    await _storage.saveTrail(trail);
+    await refreshTrails();
+
+    if (_selectedTrail?.id == trail.id) {
+      _selectedTrail = trail;
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteTrail(String trailId) async {
+    await _storage.deleteTrail(trailId);
+    if (_selectedTrail?.id == trailId) {
+      _selectedTrail = null;
+    }
+    await refreshTrails();
+  }
+
+  Future<LearningTrail> createQuickTrailForSelectedDocument() async {
+    final doc = _requireSelectedWithContent();
+    _enforceTrailLimit();
+
+    final now = DateTime.now();
+    final trail = LearningTrail(
+      id: now.millisecondsSinceEpoch.toString(),
+      title: 'Quick Study: ${doc.title}',
+      steps: [
+        LearningTrailStep(
+          id: 's1',
+          title: 'Generate summary',
+          activityType: LearningActivityType.summary,
+          documentId: doc.id,
+        ),
+        LearningTrailStep(
+          id: 's2',
+          title: 'Generate study guide',
+          activityType: LearningActivityType.studyGuide,
+          documentId: doc.id,
+        ),
+        LearningTrailStep(
+          id: 's3',
+          title: 'Take a quiz',
+          activityType: LearningActivityType.quiz,
+          documentId: doc.id,
+        ),
+        LearningTrailStep(
+          id: 's4',
+          title: 'Review flashcards',
+          activityType: LearningActivityType.flashcards,
+          documentId: doc.id,
+        ),
+      ],
+      currentStepIndex: 0,
+      createdAt: now,
+      updatedAt: now,
+      lastRunAt: null,
+    );
+
+    await upsertTrail(trail);
+    selectTrail(trail);
+    return trail;
+  }
+
+  Future<void> resetTrailProgress(String trailId) async {
+    final trail = _trails.firstWhere((t) => t.id == trailId);
+    final updated = trail.copyWith(
+      currentStepIndex: 0,
+      updatedAt: DateTime.now(),
+      lastRunAt: null,
+    );
+    await upsertTrail(updated);
+  }
+
+  /// Runs the next step of a trail and advances progress.
+  ///
+  /// Returns the step that was executed (or null if trail completed).
+  Future<LearningTrailStep?> runNextTrailStep(String trailId) async {
+    final trail = _trails.firstWhere((t) => t.id == trailId);
+    final step = trail.nextStep;
+    if (step == null) return null;
+
+    final doc = _documents.firstWhere((d) => d.id == step.documentId);
+    selectDocument(doc);
+
+    switch (step.activityType) {
+      case LearningActivityType.summary:
+        await generateSummary();
+        break;
+      case LearningActivityType.studyGuide:
+        await generateStudyGuide();
+        break;
+      case LearningActivityType.quiz:
+        await generateQuiz();
+        break;
+      case LearningActivityType.flashcards:
+        await generateFlashcards();
+        break;
+      case LearningActivityType.audioOverview:
+        await generateAudioOverview();
+        break;
+      case LearningActivityType.infographic:
+        await generateInfographic(topic: doc.title);
+        break;
+      case LearningActivityType.chatQuestion:
+        final prompt = step.chatPrompt?.trim();
+        if (prompt == null || prompt.isEmpty) {
+          throw StateError('This trail step has no chat prompt.');
+        }
+        await sendChatMessage(prompt);
+        break;
+      default:
+        throw StateError('Unknown trail activity type: ${step.activityType}');
+    }
+
+    final updated = trail.copyWith(
+      currentStepIndex: trail.currentStepIndex + 1,
+      updatedAt: DateTime.now(),
+      lastRunAt: DateTime.now(),
+    );
+
+    await upsertTrail(updated);
+    selectTrail(updated);
+    return step;
   }
 
   Future<DocumentItem> createNote({required String title, required String content}) async {
@@ -275,7 +427,12 @@ class LearningPlatformState extends ChangeNotifier {
     }
   }
 
-  Future<void> generateInfographic({required String topic, String style = 'professional'}) async {
+  Future<void> generateInfographic({
+    required String topic,
+    String style = 'professional',
+    String method = 'd3js',
+    String? data,
+  }) async {
     final doc = _requireSelected();
     if (!_isProUser) {
       throw StateError('Infographics are a Pro feature.');
@@ -283,7 +440,12 @@ class LearningPlatformState extends ChangeNotifier {
 
     _setBusy(true);
     try {
-      final path = await _platform.generateInfographic(topic: topic, style: style);
+      final path = await _platform.generateInfographic(
+        topic: topic,
+        style: style,
+        method: method,
+        data: data,
+      );
       if (path.trim().isEmpty) return;
 
       final updated = doc.copyWith(
@@ -353,6 +515,14 @@ class LearningPlatformState extends ChangeNotifier {
     if (_isProUser) return;
     if (_documents.length >= freeDocumentLimit) {
       throw StateError('Free tier supports up to $freeDocumentLimit documents. Upgrade to Pro for unlimited.');
+    }
+  }
+
+  void _enforceTrailLimit() {
+    const freeTrailLimit = 1;
+    if (_isProUser) return;
+    if (_trails.length >= freeTrailLimit) {
+      throw StateError('Free tier supports up to $freeTrailLimit learning trail. Upgrade to Pro for more.');
     }
   }
 

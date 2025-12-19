@@ -13,6 +13,7 @@ import 'widgets/document_library_widget.dart';
 import 'widgets/flashcards_widget.dart';
 import 'widgets/quiz_widget.dart';
 import 'widgets/study_content_widget.dart';
+import 'widgets/trails_widget.dart';
 
 /// NotebookLM-inspired AI-native learning hub.
 ///
@@ -90,13 +91,14 @@ class _LearningHubScreenState extends State<LearningHubScreen> {
           Expanded(
             child: IndexedStack(
               index: _tabIndex,
-              children: const [
-                DocumentLibraryWidget(),
-                StudyContentWidget(),
-                QuizWidget(),
-                FlashcardsWidget(),
-                AudioOverviewWidget(),
-                ChatInterfaceWidget(),
+              children: [
+                const DocumentLibraryWidget(),
+                const StudyContentWidget(),
+                const QuizWidget(),
+                const FlashcardsWidget(),
+                const AudioOverviewWidget(),
+                const ChatInterfaceWidget(),
+                TrailsWidget(onNavigateToTab: (i) => setState(() => _tabIndex = i)),
               ],
             ),
           ),
@@ -112,6 +114,7 @@ class _LearningHubScreenState extends State<LearningHubScreen> {
           NavigationDestination(icon: Icon(Icons.style_outlined), label: 'Cards'),
           NavigationDestination(icon: Icon(Icons.graphic_eq_outlined), label: 'Audio'),
           NavigationDestination(icon: Icon(Icons.chat_bubble_outline), label: 'Chat'),
+          NavigationDestination(icon: Icon(Icons.route_outlined), label: 'Trails'),
         ],
       ),
     );
