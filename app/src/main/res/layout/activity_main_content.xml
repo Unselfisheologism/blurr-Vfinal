@@ -10,7 +10,7 @@
         android:id="@+id/loading_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#80000000"
+        android:background="#80000"
         android:gravity="center"
         android:orientation="vertical"
         android:visibility="gone">
@@ -53,278 +53,341 @@
             android:padding="16dp">
 
 
+        <!-- Central delta symbol container -->
+        <LinearLayout
+            android:id="@+id/center_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical">
 
-            <!-- Central delta symbol container -->
-            <LinearLayout
-                android:id="@+id/center_content"
+            <com.blurr.voice.views.DeltaSymbolView
+                android:id="@+id/delta_symbol"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:id="@+id/status_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:layout_marginTop="24dp"
+                android:text="Ready"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
+        </LinearLayout>
 
-                <com.blurr.voice.views.DeltaSymbolView
-                    android:id="@+id/delta_symbol"
-                    android:layout_width="250dp"
-                    android:layout_height="250dp"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="16dp"/>
+        <!-- Spacer to push remaining content to bottom -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/btn_set_default_assistant"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/rounded_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="Set as Default Assistant"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
+
+        <!-- Action Tabs Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="24dp"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <!-- First Row of Action Tabs -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="8dp">
 
                 <TextView
-                    android:id="@+id/status_text"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/wakeWordHelpLink"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="24dp"
-                    android:text="Ready"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <!-- Spacer to push remaining content to bottom -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/btn_set_default_assistant"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/rounded_button"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:padding="12dp"
-                android:text="Set as Default Assistant"
-                android:textColor="@android:color/black"
-                android:textSize="16sp" />
-
-            <!-- Action Tabs Section -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="24dp"
-                android:orientation="vertical"
-                android:gravity="center">
-
-                <!-- First Row of Action Tabs -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="4dp"
+                    android:background="@drawable/rounded_button"
+                    android:textColor="@color/black"                        android:clickable="true"
+                    android:focusable="true"
                     android:gravity="center"
-                    android:layout_marginBottom="8dp">
+                    android:padding="12dp"
+                    android:text="How to wake up Panda"
+                    android:textSize="12sp" />
 
-                    <TextView
-                        android:id="@+id/wakeWordHelpLink"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="4dp"
-                        android:background="@drawable/rounded_button"
-                        android:textColor="@color/black"                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center"
-                        android:padding="12dp"
-                        android:text="How to wake up Panda"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/increase_limits_link"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="4dp"
-                        android:background="@drawable/rounded_button"
-                        android:textColor="@color/black"                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center"
-                        android:padding="12dp"
-                        android:text="Email Developer"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
-
-                <!-- Second Row of Action Tabs -->
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/increase_limits_link"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/disclaimer_link"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="4dp"
-                        android:background="@drawable/rounded_button"
-                        android:textColor="@color/black"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center"
-                        android:padding="12dp"
-                        android:text="Disclaimer"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/examples_link"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="4dp"
-                        android:background="@drawable/rounded_button"
-                        android:textColor="@color/black"                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center"
-                        android:padding="12dp"
-                        android:text="Make panda do something"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:background="@drawable/rounded_button"
+                    android:textColor="@color/black"                        android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:text="Email Developer"
+                    android:textSize="12sp" />
 
             </LinearLayout>
 
-            <!-- Status Tags Section -->
+            <!-- Second Row of Action Tabs -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
                 android:orientation="horizontal"
                 android:gravity="center">
 
-                <!-- Pro Subscription Tag -->
-                <LinearLayout
-                    android:id="@+id/pro_subscription_tag"
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/disclaimer_link"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/status_tag_background"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
-                    android:visibility="gone">
+                    android:layout_weight="1"
+                    android:layout_marginEnd="4dp"
+                    android:background="@drawable/rounded_button"
+                    android:textColor="@color/black"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:text="Disclaimer"
+                    android:textSize="12sp" />
 
-                    <ImageView
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:layout_marginEnd="4dp"
-                        android:src="@drawable/ic_check_circle"
-                        android:tint="#4CAF50" />
-
-                    <TextView
-                        android:id="@+id/billing_status_textview"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Pro Active"
-                        android:textColor="#BDBDBD"
-                        android:textSize="10sp"
-                        tools:text="Pro Active"
-                        tools:visibility="visible" />
-
-                </LinearLayout>
-
-                <!-- Permissions Tag -->
-                <LinearLayout
-                    android:id="@+id/permissions_tag"
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/examples_link"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/status_tag_background"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
-                    android:visibility="gone">
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:background="@drawable/rounded_button"
+                    android:textColor="@color/black"                        android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:text="Make panda do something"
+                    android:textSize="12sp" />
 
-                    <ImageView
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:layout_marginEnd="4dp"
-                        android:src="@drawable/ic_check_circle"
-                        android:tint="#4CAF50" />
+            </LinearLayout>
+            
+            <!-- Third Row of Action Tabs - Adding AI-native app buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="8dp">
 
-                    <TextView
-                        android:id="@+id/permissions_status_tag"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="All Permissions"
-                        android:textColor="#BDBDBD"
-                        android:textSize="10sp"
-                        tools:text="All Permissions"
-                        tools:visibility="visible" />
-
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:id="@+id/tasks_left_tag"
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/text_editor_link"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/status_tag_background"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
-                    tools:visibility="visible">
+                    android:layout_weight="1"
+                    android:layout_marginEnd="4dp"
+                    android:background="@drawable/rounded_button"
+                    android:textColor="@color/black"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:text="📝 Text Editor"
+                    android:textSize="12sp" />
 
-                    <ImageView
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:layout_marginEnd="4dp"
-                        android:src="@drawable/outline_hourglass_bottom_24"
-                        android:tint="#4CAF50"  />
+                <TextView
+                    android:id="@+id/spreadsheet_editor_link"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:background="@drawable/rounded_button"
+                    android:textColor="@color/black"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:text="📊 Spreadsheet Editor"
+                    android:textSize="12sp" />
 
-                    <TextView
-                        android:id="@+id/tasks_left_tag_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="#BDBDBD"
-                        android:textSize="10sp"
-                        tools:text="15 Tasks Left" />
+            </LinearLayout>
+            
+            <!-- Fourth Row of Action Tabs - DAW button -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="8dp">
 
-                </LinearLayout>
-
+                <TextView
+                    android:id="@+id/daw_editor_link"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/rounded_button"
+                    android:textColor="@color/black"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:text="🎵 Music Studio"
+                    android:textSize="12sp" />
 
             </LinearLayout>
 
-            <!-- Essential element: "Free tasks left" text - preserved with existing styling -->
-            <TextView
-                android:id="@+id/tasks_remaining_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="24dp"
-                android:padding="20dp"
-                android:textColor="#BDBDBD"
-                android:textSize="16sp"
-                android:visibility="gone"
-                tools:text="15 Free Tasks Remaining"
-                tools:visibility="visible" />
+        </LinearLayout>
 
-            <TextView
-                android:id="@+id/developer_message_textview"
+        <!-- Status Tags Section -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <!-- Pro Subscription Tag -->
+            <LinearLayout
+                android:id="@+id/pro_subscription_tag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="16dp"
-                android:padding="8dp"
-                android:textColor="#BDBDBD"
-                android:textSize="12sp"
-                android:visibility="gone" />
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/status_tag_background"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginEnd="4dp"
+                    android:src="@drawable/ic_check_circle"
+                    android:tint="#4CAF50" />
+
+                <TextView
+                    android:id="@+id/billing_status_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pro Active"
+                    android:textColor="#BDBDBD"
+                    android:textSize="10sp"
+                    tools:text="Pro Active"
+                    tools:visibility="visible" />
+
+            </LinearLayout>
+
+            <!-- Permissions Tag -->
+            <LinearLayout
+                android:id="@+id/permissions_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/status_tag_background"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginEnd="4dp"
+                    android:src="@drawable/ic_check_circle"
+                    android:tint="#4CAF50" />
+
+                <TextView
+                    android:id="@+id/permissions_status_tag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="All Permissions"
+                    android:textColor="#BDBD"
+                    android:textSize="10sp"
+                    tools:text="All Permissions"
+                    tools:visibility="visible" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/tasks_left_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/status_tag_background"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                tools:visibility="visible">
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginEnd="4dp"
+                    android:src="@drawable/outline_hourglass_bottom_24"
+                    android:tint="#4CAF50"  />
+
+                <TextView
+                    android:id="@+id/tasks_left_tag_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#BDBDBD"
+                    android:textSize="10sp"
+                    tools:text="15 Tasks Left" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <!-- Essential element: "Free tasks left" text - preserved with existing styling -->
+        <TextView
+            android:id="@+id/tasks_remaining_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="24dp"
+            android:padding="20dp"
+            android:textColor="#BDBDBD"
+            android:textSize="16sp"
+            android:visibility="gone"
+            tools:text="15 Free Tasks Remaining"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/developer_message_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:padding="8dp"
+            android:textColor="#BDBDBD"
+            android:textSize="12sp"
+            android:visibility="gone" />
 
         </LinearLayout>
 

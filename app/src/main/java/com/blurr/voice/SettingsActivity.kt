@@ -25,6 +25,9 @@ import com.blurr.voice.utilities.SpeechCoordinator
 import com.blurr.voice.utilities.VoicePreferenceManager
 import com.blurr.voice.utilities.UserProfileManager
 import com.blurr.voice.utilities.WakeWordManager
+import com.blurr.voice.apps.daw.DawEditorLauncher
+import com.blurr.voice.apps.texteditor.TextEditorLauncher
+import com.blurr.voice.apps.spreadsheets.SpreadsheetEditorLauncher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -46,6 +49,7 @@ class SettingsActivity : BaseNavigationActivity() {
     private lateinit var wakeWordButton: TextView
     private lateinit var buttonSignOut: Button
     private lateinit var buttonBYOKSettings: Button
+
     private lateinit var wakeWordManager: WakeWordManager
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
@@ -113,8 +117,12 @@ class SettingsActivity : BaseNavigationActivity() {
         buttonSignOut = findViewById(R.id.buttonSignOut)
         buttonBYOKSettings = findViewById(R.id.buttonBYOKSettings)
         
-        // Initialize Workflow Editor button
+        // Initialize buttons
         val buttonWorkflowEditor = findViewById<Button>(R.id.buttonWorkflowEditor)
+        val buttonMediaCanvas = findViewById<Button>(R.id.buttonMediaCanvas)
+        val buttonDawEditor = findViewById<Button>(R.id.buttonDawEditor)
+        val buttonTextEditor = findViewById<Button>(R.id.buttonTextEditor)
+        val buttonSpreadsheetEditor = findViewById<Button>(R.id.buttonSpreadsheetEditor)
 
         editUserName = findViewById(R.id.editUserName)
         editUserEmail = findViewById(R.id.editUserEmail)
@@ -204,11 +212,26 @@ class SettingsActivity : BaseNavigationActivity() {
         }
         
         // Media Canvas button (Epic 4)
-        findViewById<Button?>(R.id.buttonMediaCanvas)?.setOnClickListener {
+        findViewById<Button>(R.id.buttonMediaCanvas).setOnClickListener {
             val intent = Intent(this, MediaCanvasActivity::class.java)
             startActivity(intent)
         }
         
+        // DAW Editor button (Epic 5)
+        findViewById<Button>(R.id.buttonDawEditor).setOnClickListener {
+            DawEditorLauncher.launchNewProject(this)
+        }
+        
+        // Text Editor button
+        findViewById<Button>(R.id.buttonTextEditor).setOnClickListener {
+            TextEditorLauncher.launchNewDocument(this)
+        }
+        
+        // Spreadsheet Editor button
+        findViewById<Button>(R.id.buttonSpreadsheetEditor).setOnClickListener {
+            SpreadsheetEditorLauncher.launchNewSpreadsheet(this)
+        }
+
         // Add Tool Selection button click listener (if button exists in layout)
         findViewById<Button?>(R.id.buttonToolSelection)?.setOnClickListener {
             val intent = Intent(this, com.blurr.voice.ui.tools.ToolSelectionActivity::class.java)
@@ -219,7 +242,7 @@ class SettingsActivity : BaseNavigationActivity() {
     private fun setupAutoSavingListeners() {
         var isInitialLoad = true
 
-        ttsVoicePicker.setOnValueChangedListener { _, _, newVal ->
+        ttsVoicePicker.setOnValueChangedListener { _, newVal ->
             val selectedVoice = availableVoices[newVal]
             saveSelectedVoice(selectedVoice)
 

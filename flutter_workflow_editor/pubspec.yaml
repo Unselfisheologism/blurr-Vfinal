@@ -99,6 +99,16 @@ dependencies:
   
   # Excel file operations
   open_file: ^3.3.2
+  
+  # Audio packages for DAW (Epic 5)
+  audio_waveforms: ^1.0.5
+  just_audio: ^0.9.36
+  flutter_soloud: ^2.3.2
+  
+  # Audio file handling
+  audioplayers: ^5.2.1
+  record: ^5.0.4
+  permission_handler: ^11.3.0
 
 dev_dependencies:
   flutter_test:

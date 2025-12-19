@@ -49,6 +49,8 @@ import io.flutter.embedding.engine.dart.DartExecutor
 import io.flutter.plugin.common.MethodChannel
 import com.blurr.voice.workflow.WorkflowEditorHandler
 import io.flutter.embedding.android.FlutterActivity
+import com.blurr.voice.apps.texteditor.TextEditorLauncher
+import com.blurr.voice.apps.spreadsheets.SpreadsheetEditorLauncher
 
 class MainActivity : BaseNavigationActivity() {
 
@@ -329,6 +331,21 @@ class MainActivity : BaseNavigationActivity() {
             launchWorkflowEditor()
             true
         }
+        
+        // Add DAW editor button
+        findViewById<TextView>(R.id.daw_editor_link).setOnClickListener {
+            launchDawEditor()
+        }
+
+        // Add Text Editor button
+        findViewById<TextView>(R.id.text_editor_link).setOnClickListener {
+            launchTextEditor()
+        }
+
+        // Add Spreadsheet Editor button
+        findViewById<TextView>(R.id.spreadsheet_editor_link).setOnClickListener {
+            launchSpreadsheetEditor()
+        }
     }
 
     private fun requestLimitIncrease() {
@@ -340,7 +357,7 @@ class MainActivity : BaseNavigationActivity() {
             return
         }*/
 
-        val recipient = "ayush0000ayush@gmail.com"
+        val recipient = "ayush000ayush@gmail.com"
         val subject = "I am facing issue in"
         val body = "Hello,\n\nI am facing issue for my account: $userEmail\n <issue-content>.... \n\nThank you."
 
@@ -488,6 +505,50 @@ class MainActivity : BaseNavigationActivity() {
         } catch (e: Exception) {
             Logger.e("MainActivity", "Failed to launch workflow editor", e)
             Toast.makeText(this, "Failed to open workflow editor", Toast.LENGTH_SHORT).show()
+        }
+    }
+    
+    /**
+     * Launch the DAW editor
+     */
+    fun launchDawEditor(projectName: String? = null) {
+        try {
+            val intent = Intent(this, DawEditorActivity::class.java)
+            projectName?.let {
+                intent.putExtra("project_name", it)
+            }
+            
+            startActivity(intent)
+            Logger.d("MainActivity", "Launched DAW editor")
+        } catch (e: Exception) {
+            Logger.e("MainActivity", "Failed to launch DAW editor", e)
+            Toast.makeText(this, "Failed to open DAW editor", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /**
+     * Launch the Text Editor
+     */
+    fun launchTextEditor() {
+        try {
+            TextEditorLauncher.launchNewDocument(this)
+            Logger.d("MainActivity", "Launched Text Editor")
+        } catch (e: Exception) {
+            Logger.e("MainActivity", "Failed to launch Text Editor", e)
+            Toast.makeText(this, "Failed to open Text Editor", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /**
+     * Launch the Spreadsheet Editor
+     */
+    fun launchSpreadsheetEditor() {
+        try {
+            SpreadsheetEditorLauncher.launchNewSpreadsheet(this)
+            Logger.d("MainActivity", "Launched Spreadsheet Editor")
+        } catch (e: Exception) {
+            Logger.e("MainActivity", "Failed to launch Spreadsheet Editor", e)
+            Toast.makeText(this, "Failed to open Spreadsheet Editor", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -853,38 +914,38 @@ class MainActivity : BaseNavigationActivity() {
                         }
                     }
                 
-//                Firebase removed
-//                val docRef = db.collection("settings").document("freemium")
-//
-//                docRef.get().addOnSuccessListener { document ->
-//                    if (document != null && document.exists()) {
-//                        val message = document.getString("developerMessage")
-//                        if (!message.isNullOrEmpty()) {
-//                            val dialog = AlertDialog.Builder(this@MainActivity)
-//                                .setTitle("Message from Developer")
-//                                .setMessage(message)
-//                                .setPositiveButton("OK") { dialogInterface, _ ->
-//                                    dialogInterface.dismiss()
-//                                    // Increment the display count after user dismisses
-//                                    val editor = sharedPrefs.edit()
-//                                    editor.putInt("developer_message_count", displayCount + 1)
-//                                    editor.apply()
-//                                    Logger.d("MainActivity", "Developer message display count updated to ${displayCount + 1}")
-//                                }
-//                                .show()
-//                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
-//                                ContextCompat.getColor(this@MainActivity, R.color.black)
-//                            )
-//                            Logger.d("MainActivity", "Developer message displayed in dialog")
-//                        } else {
-//                            Logger.d("MainActivity", "Developer message is empty")
-//                        }
-//                    } else {
-//                        Logger.d("MainActivity", "Developer message document does not exist")
-//                    }
-//                }.addOnFailureListener { exception ->
-//                    Logger.e("MainActivity", "Error fetching developer message", exception)
-//                }
+ //                Firebase removed
+ //                val docRef = db.collection("settings").document("freemium")
+ //
+ //                docRef.get().addOnSuccessListener { document ->
+ //                    if (document != null && document.exists()) {
+ //                        val message = document.getString("developerMessage")
+ //                        if (!message.isNullOrEmpty()) {
+ //                            val dialog = AlertDialog.Builder(this@MainActivity)
+ //                                .setTitle("Message from Developer")
+ //                                .setMessage(message)
+ //                                .setPositiveButton("OK") { dialogInterface, _ ->
+ //                                    dialogInterface.dismiss()
+ //                                    // Increment the display count after user dismisses
+ //                                    val editor = sharedPrefs.edit()
+ //                                    editor.putInt("developer_message_count", displayCount + 1)
+ //                                    editor.apply()
+ //                                    Logger.d("MainActivity", "Developer message display count updated to ${displayCount + 1}")
+ //                                }
+ //                                .show()
+ //                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+ //                                ContextCompat.getColor(this@MainActivity, R.color.black)
+ //                            )
+ //                            Logger.d("MainActivity", "Developer message displayed in dialog")
+ //                        } else {
+ //                            Logger.d("MainActivity", "Developer message is empty")
+ //                        }
+ //                    } else {
+ //                        Logger.d("MainActivity", "Developer message document does not exist")
+ //                    }
+ //                }.addOnFailureListener { exception ->
+ //                    Logger.e("MainActivity", "Error fetching developer message", exception)
+ //                }
             } catch (e: Exception) {
                 Logger.e("MainActivity", "Exception in displayDeveloperMessage", e)
             }

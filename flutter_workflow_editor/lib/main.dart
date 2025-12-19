@@ -12,6 +12,8 @@ import 'spreadsheet_editor/spreadsheet_editor_screen.dart';
 import 'spreadsheet_editor/state/spreadsheet_state.dart';
 import 'media_canvas/media_canvas_screen.dart';
 import 'media_canvas/state/canvas_state.dart';
+import 'daw_editor/daw_editor_screen.dart';
+import 'daw_editor/state/daw_state.dart';
 
 void main() {
   runApp(const WorkflowEditorApp());
@@ -28,6 +30,7 @@ class WorkflowEditorApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => WorkflowState()),
         ChangeNotifierProvider(create: (_) => SpreadsheetState()),
         ChangeNotifierProvider(create: (_) => CanvasState()),
+        ChangeNotifierProvider(create: (_) => DawState.empty()), // Add DawState provider
       ],
       child: MaterialApp(
         title: 'Blurr AI Apps',
@@ -54,6 +57,7 @@ class WorkflowEditorApp extends StatelessWidget {
           '/text_editor_template': (context) => const TextEditorScreen(startWithTemplate: true),
           '/spreadsheet_editor': (context) => const SpreadsheetEditorScreen(),
           '/media_canvas': (context) => const MediaCanvasScreen(),
+          '/daw_editor': (context) => const DawEditorScreen(), // Add DAW route
         },
         onGenerateRoute: (settings) {
           // Handle dynamic routes with parameters
@@ -73,6 +77,12 @@ class WorkflowEditorApp extends StatelessWidget {
             final documentId = settings.name!.replaceFirst('/media_canvas/', '');
             return MaterialPageRoute(
               builder: (context) => MediaCanvasScreen(documentId: documentId),
+            );
+          }
+          if (settings.name?.startsWith('/daw_editor/') ?? false) {
+            final projectName = settings.name!.replaceFirst('/daw_editor/', '');
+            return MaterialPageRoute(
+              builder: (context) => DawEditorScreen(projectName: projectName),
             );
           }
           return null;

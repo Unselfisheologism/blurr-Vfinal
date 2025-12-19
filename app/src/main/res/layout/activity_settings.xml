@@ -59,7 +59,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Voice &amp; Speech"
+                android:text="Voice & Speech"
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:fontFamily="@font/playfair_display"
@@ -71,7 +71,7 @@
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="12dp"
                 android:text="@string/select_default_tts_voice"
-                android:textColor="#888888"
+                android:textColor="#88888"
                 android:textSize="14sp" />
 
             <FrameLayout
@@ -104,7 +104,7 @@
                 android:textSize="16sp"
                 android:fontFamily="@font/oxanium"
                 app:thumbTint="@color/accent"
-                app:trackTint="#555555" />
+                app:trackTint="#5555" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -166,7 +166,7 @@
 
                 android:inputType="text"
                 android:padding="12dp"
-                android:textColor="#CECECE"
+                android:textColor="#CECE"
                 android:textColorHint="#888888" />
 
 
@@ -215,7 +215,7 @@
                 android:hint="Your name"
                 android:inputType="textPersonName"
                 android:padding="12dp"
-                android:textColor="#CECECE"
+                android:textColor="#CECE"
                 android:textColorHint="#888888" />
 
             <EditText
@@ -228,26 +228,26 @@
                 android:inputType="textEmailAddress"
                 android:padding="12dp"
                 android:enabled="false"
-                android:textColor="#CECECE"
-                android:textColorHint="#888888" />
+                android:textColor="#CE"
+                android:textColorHint="#88888" />
 
             <TextView
                 android:id="@+id/textProfileDisclaimer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="This email will not be verified or stored by us. Please enter an accurate email so we don’t have to spend money to onboard you. We treat different emails as different users."
+                android:text="This email will not be verified or stored by us. Please enter an accurate email so we don't have to spend money to onboard you. We treat different emails as different users."
                 android:textColor="#888888"
                 android:textSize="12sp" />
 
-<!--            <Button-->
-<!--                android:id="@+id/buttonSaveProfile"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginTop="12dp"-->
-<!--                android:background="@drawable/btn_with_border"-->
-<!--                android:text="Save Profile"-->
-<!--                android:textColor="@android:color/white" />-->
+ <!--            <Button-->
+ <!--                android:id="@+id/buttonSaveProfile"-->
+ <!--                android:layout_width="match_parent"-->
+ <!--                android:layout_height="wrap_content"-->
+ <!--                android:layout_marginTop="12dp"-->
+ <!--                android:background="@drawable/btn_with_border"-->
+ <!--                android:text="Save Profile"-->
+ <!--                android:textColor="@android:color/white"-->
 
         </LinearLayout>
 
@@ -297,6 +297,39 @@
                 android:layout_marginTop="8dp"
                 android:background="@drawable/btn_with_border"
                 android:text="🎨 AI Media Canvas"
+                android:textColor="@android:color/white" />
+            
+            <!-- DAW Editor Button (Epic 5) -->
+            <Button
+                android:id="@+id/buttonDawEditor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/btn_with_border"
+                android:text="🎵 AI DAW Studio"
+                android:textColor="@android:color/white" />
+
+            <!-- Text Editor Button -->
+            <Button
+                android:id="@+id/buttonTextEditor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/btn_with_border"
+                android:text="📝 AI Text Editor"
+                android:textColor="@android:color/white" />
+
+            <!-- Spreadsheet Editor Button -->
+            <Button
+                android:id="@+id/buttonSpreadsheetEditor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/btn_with_border"
+                android:text="📈 AI Spreadsheet Editor"
                 android:textColor="@android:color/white" />
 
             <Button
