@@ -185,7 +185,7 @@
 
             </LinearLayout>
             
-            <!-- Third Row of Action Tabs - Adding AI-native app buttons -->
+            <!-- Third Row of Action Tabs - AI-native app buttons -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -198,7 +198,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginEnd="4dp"
+                    android:layout_marginEnd="2dp"
                     android:background="@drawable/rounded_button"
                     android:textColor="@color/black"
                     android:clickable="true"
@@ -206,14 +206,15 @@
                     android:gravity="center"
                     android:padding="12dp"
                     android:text="📝 Text Editor"
-                    android:textSize="12sp" />
+                    android:textSize="11sp" />
 
                 <TextView
                     android:id="@+id/spreadsheet_editor_link"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="4dp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
                     android:background="@drawable/rounded_button"
                     android:textColor="@color/black"
                     android:clickable="true"
@@ -221,7 +222,22 @@
                     android:gravity="center"
                     android:padding="12dp"
                     android:text="📊 Spreadsheet Editor"
-                    android:textSize="12sp" />
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:id="@+id/learning_platform_link"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="2dp"
+                    android:background="@drawable/rounded_button"
+                    android:textColor="@color/black"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:text="🎓 Learning Hub"
+                    android:textSize="11sp" />
 
             </LinearLayout>
             
