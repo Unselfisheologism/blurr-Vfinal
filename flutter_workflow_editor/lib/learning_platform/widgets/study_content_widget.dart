@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 import '../state/learning_platform_state.dart';
@@ -40,11 +43,85 @@ class StudyContentWidget extends StatelessWidget {
               : const Text('No study guide yet.'),
         ),
         _Section(
+          title: 'Infographic',
+          subtitle: (doc.infographicFilePath?.trim().isNotEmpty == true)
+              ? null
+              : state.isProUser
+                  ? 'Tap “Infographic” to generate a visual overview.'
+                  : 'Infographics are a Pro feature.',
+          child: (doc.infographicFilePath?.trim().isNotEmpty == true)
+              ? _InfographicPreview(path: doc.infographicFilePath!)
+              : const Text('No infographic yet.'),
+        ),
+        _Section(
           title: 'Source text',
           subtitle: '${doc.wordCount} words • ${doc.charCount} chars',
           child: SelectableText(doc.content),
         ),
       ],
+    );
+  }
+}
+
+class _InfographicPreview extends StatelessWidget {
+  final String path;
+
+  const _InfographicPreview({required this.path});
+
+  @override
+  Widget build(BuildContext context) {
+    final file = File(path);
+
+    return FutureBuilder<bool>(
+      future: file.exists(),
+      builder: (context, snapshot) {
+        final exists = snapshot.data ?? false;
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (!exists) {
+          return const Text('Infographic file not found.');
+        }
+
+        final lower = path.toLowerCase();
+        final Widget preview = lower.endsWith('.svg')
+            ? SvgPicture.file(file, fit: BoxFit.contain)
+            : Image.file(file, fit: BoxFit.contain);
+
+        return InkWell(
+          onTap: () {
+            showDialog<void>(
+              context: context,
+              builder: (context) {
+                return Dialog(
+                  insetPadding: const EdgeInsets.all(16),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: InteractiveViewer(
+                      minScale: 0.5,
+                      maxScale: 4,
+                      child: preview,
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+          child: AspectRatio(
+            aspectRatio: 4 / 3,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: preview,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

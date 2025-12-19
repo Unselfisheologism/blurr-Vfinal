@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.blurr.voice.core.providers.UniversalLLMService
 import com.blurr.voice.core.providers.UniversalTTSService
+import com.blurr.voice.tools.GenerateInfographicTool
 import com.blurr.voice.utilities.FreemiumManager
 import com.chaquo.python.Python
 import io.flutter.embedding.engine.FlutterEngine
@@ -215,6 +216,8 @@ Answer using ONLY the document above. If the answer is not in the document, say 
                 "generateInfographic" -> {
                     val topic = call.argument<String>("topic") ?: ""
                     val style = call.argument<String>("style") ?: "professional"
+                    val method = call.argument<String>("method") ?: GenerateInfographicTool.METHOD_D3JS
+                    val data = call.argument<String>("data")
 
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
@@ -226,31 +229,35 @@ Answer using ONLY the document above. If the answer is not in the document, say 
                                 return@launch
                             }
 
-                            // Lightweight: ask the LLM for a self-contained SVG.
-                            val svg = llmService.generateChatCompletion(
-                                messages = listOf(
-                                    "system" to "You generate concise, mobile-friendly infographics as SVG.",
-                                    "user" to """Create a self-contained SVG infographic about: "$topic".
-Style: $style.
+                            val tool = GenerateInfographicTool(context, confirmationHandler = null)
 
-Return ONLY the raw <svg>...</svg> markup (no Markdown fences)."""
-                                ),
-                                temperature = 0.3,
-                                maxTokens = 1800
-                            ) ?: ""
+                            val params = mutableMapOf<String, Any>(
+                                "topic" to topic,
+                                "style" to style,
+                                "method" to method
+                            )
 
-                            val normalized = svg.trim()
-                            if (!normalized.startsWith("<svg")) {
+                            if (!data.isNullOrBlank()) {
+                                params["data"] = data
+                            }
+
+                            val toolResult = tool.execute(params, emptyList())
+                            if (!toolResult.success) {
                                 withContext(Dispatchers.Main) {
-                                    result.error("INFOGRAPHIC_ERROR", "Model did not return SVG", null)
+                                    result.error("INFOGRAPHIC_ERROR", toolResult.error, null)
                                 }
                                 return@launch
                             }
 
-                            val file = File(context.cacheDir, "infographic_${System.currentTimeMillis()}.svg")
-                            file.writeText(normalized)
+                            val filePath = toolResult.getDataAsMap()?.get("file_path")?.toString() ?: ""
+                            if (filePath.isBlank()) {
+                                withContext(Dispatchers.Main) {
+                                    result.error("INFOGRAPHIC_ERROR", "Infographic tool did not return a file path", null)
+                                }
+                                return@launch
+                            }
 
-                            withContext(Dispatchers.Main) { result.success(file.absolutePath) }
+                            withContext(Dispatchers.Main) { result.success(filePath) }
                         } catch (e: Exception) {
                             Log.e(TAG, "Infographic generation failed", e)
                             withContext(Dispatchers.Main) { result.error("INFOGRAPHIC_ERROR", e.message, null) }

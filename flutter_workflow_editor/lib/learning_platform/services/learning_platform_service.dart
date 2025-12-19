@@ -88,10 +88,14 @@ class LearningPlatformService {
   Future<String> generateInfographic({
     required String topic,
     String style = 'professional',
+    String method = 'd3js',
+    String? data,
   }) async {
     final result = await _channel.invokeMethod('generateInfographic', {
       'topic': topic,
       'style': style,
+      'method': method,
+      'data': data,
     });
     return (result as String?) ?? '';
   }
