@@ -50,6 +50,9 @@ class _WorkflowEditorScreenState extends State<WorkflowEditorScreen> {
               showPalette: _showPalette,
               showInspector: _showInspector,
               showExecutionPanel: _showExecutionPanel,
+              onLearningHub: () {
+                Navigator.pushNamed(context, '/learning_hub');
+              },
             ),
             
             // Main content area

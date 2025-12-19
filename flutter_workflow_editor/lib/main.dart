@@ -14,6 +14,7 @@ import 'media_canvas/media_canvas_screen.dart';
 import 'media_canvas/state/canvas_state.dart';
 import 'daw_editor/daw_editor_screen.dart';
 import 'daw_editor/state/daw_state.dart';
+import 'learning_hub_screen.dart';
 
 void main() {
   runApp(const WorkflowEditorApp());
@@ -58,6 +59,7 @@ class WorkflowEditorApp extends StatelessWidget {
           '/spreadsheet_editor': (context) => const SpreadsheetEditorScreen(),
           '/media_canvas': (context) => const MediaCanvasScreen(),
           '/daw_editor': (context) => const DawEditorScreen(), // Add DAW route
+          '/learning_hub': (context) => const LearningHubScreen(), // Add Learning Hub route
         },
         onGenerateRoute: (settings) {
           // Handle dynamic routes with parameters
