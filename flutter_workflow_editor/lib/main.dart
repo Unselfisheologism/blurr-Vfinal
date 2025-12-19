@@ -14,6 +14,8 @@ import 'media_canvas/media_canvas_screen.dart';
 import 'media_canvas/state/canvas_state.dart';
 import 'daw_editor/daw_editor_screen.dart';
 import 'daw_editor/state/daw_state.dart';
+import 'learning_platform/learning_hub_screen.dart';
+import 'learning_platform/state/learning_platform_state.dart';
 
 void main() {
   runApp(const WorkflowEditorApp());
@@ -30,7 +32,8 @@ class WorkflowEditorApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => WorkflowState()),
         ChangeNotifierProvider(create: (_) => SpreadsheetState()),
         ChangeNotifierProvider(create: (_) => CanvasState()),
-        ChangeNotifierProvider(create: (_) => DawState.empty()), // Add DawState provider
+        ChangeNotifierProvider(create: (_) => DawState.empty()),
+        ChangeNotifierProvider(create: (_) => LearningPlatformState()),
       ],
       child: MaterialApp(
         title: 'Blurr AI Apps',
@@ -57,7 +60,8 @@ class WorkflowEditorApp extends StatelessWidget {
           '/text_editor_template': (context) => const TextEditorScreen(startWithTemplate: true),
           '/spreadsheet_editor': (context) => const SpreadsheetEditorScreen(),
           '/media_canvas': (context) => const MediaCanvasScreen(),
-          '/daw_editor': (context) => const DawEditorScreen(), // Add DAW route
+          '/daw_editor': (context) => const DawEditorScreen(),
+          '/learning_hub': (context) => const LearningHubScreen(),
         },
         onGenerateRoute: (settings) {
           // Handle dynamic routes with parameters
