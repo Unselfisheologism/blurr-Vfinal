@@ -10,6 +10,8 @@ import 'state/app_state.dart';
 import 'text_editor/text_editor_screen.dart';
 import 'spreadsheet_editor/spreadsheet_editor_screen.dart';
 import 'spreadsheet_editor/state/spreadsheet_state.dart';
+import 'media_canvas/media_canvas_screen.dart';
+import 'media_canvas/state/canvas_state.dart';
 
 void main() {
   runApp(const WorkflowEditorApp());
@@ -25,6 +27,7 @@ class WorkflowEditorApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AppState()),
         ChangeNotifierProvider(create: (_) => WorkflowState()),
         ChangeNotifierProvider(create: (_) => SpreadsheetState()),
+        ChangeNotifierProvider(create: (_) => CanvasState()),
       ],
       child: MaterialApp(
         title: 'Blurr AI Apps',
@@ -50,6 +53,7 @@ class WorkflowEditorApp extends StatelessWidget {
           '/text_editor': (context) => const TextEditorScreen(),
           '/text_editor_template': (context) => const TextEditorScreen(startWithTemplate: true),
           '/spreadsheet_editor': (context) => const SpreadsheetEditorScreen(),
+          '/media_canvas': (context) => const MediaCanvasScreen(),
         },
         onGenerateRoute: (settings) {
           // Handle dynamic routes with parameters
@@ -63,6 +67,12 @@ class WorkflowEditorApp extends StatelessWidget {
             final documentId = settings.name!.replaceFirst('/spreadsheet_editor/', '');
             return MaterialPageRoute(
               builder: (context) => SpreadsheetEditorScreen(documentId: documentId),
+            );
+          }
+          if (settings.name?.startsWith('/media_canvas/') ?? false) {
+            final documentId = settings.name!.replaceFirst('/media_canvas/', '');
+            return MaterialPageRoute(
+              builder: (context) => MediaCanvasScreen(documentId: documentId),
             );
           }
           return null;

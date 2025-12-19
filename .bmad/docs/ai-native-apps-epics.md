@@ -161,57 +161,63 @@ This document organizes the AI-Native Apps implementation into epics aligned wit
 
 ---
 
-## Epic 4: AI-Native Multimodal Media Gen Canvas (Priority 3)
+**Epic 4: AI-Native Multimodal Media Gen Canvas (Priority 3)**
 
-**Goal**: Create visual workflow builder for multimodal media generation
+**Goal**: Create a visual workflow builder for multimodal media generation, blending an infinite canvas for layer-based composition with AI-assisted prompting and team collaboration features.
 
-**Value**: Showcases unified tool ecosystem, unique creative experience
+**Value**: Showcases unified tool ecosystem, unique creative experience—users can generate and compose images/videos/audio/music/3d-renders in a Jaaz-like "magic canvas" with Refly-inspired AI piloting for smart suggestions.
 
-### Stories
+**Inspired Summaries**:
+- **From Jaaz (Frontend)**: Use concepts from CanvasExcali.tsx (Excalidraw integration for infinite canvas with drawing/zoom) and CanvasMagicGenerator.tsx (AI prompt bar for generating images/videos via comfyUI workflows, with pop-bar containers for magic tools). Layer management like VideoElement.tsx (draggable video embeds with playback).
+- **From Jaaz (Backend)**: Draw from langgraph_service/agent_manager.py (agent configs for image_designer/video_designer, stream processing for AI gen) and comfyui_execution.py (workflow execution for multimodal gen).
+- **From Refly (Canvas/AI)**: Incorporate pilot-engine.service.ts patterns (intent analysis for AI-assisted node creation, DTOs for canvas state) and copilot.service.ts (prompt-based generation with tool calls).
+- **From Refly (Collab)**: Add collab.gateway.ts ideas (WebSocket for real-time sharing, service for multi-user edits).
+
+**Stories**
 
 #### Story 4.1: Flutter Module Extension for Media Nodes
-- Extend Flutter workflow editor with media node definitions
-- Create node types: Image Gen, Video Gen, Audio Gen, Music Gen, 3D Gen
-- Add Transform nodes (style transfer, upscale)
-- Implement Compose/Export nodes
+- Extend Flutter workflow editor with media node definitions (e.g., inspired by Jaaz's comfyUI workflows for image/video gen nodes).
+- Create node types: Image Gen, Video Gen, Audio Gen, Music Gen, 3D Gen.
+- Add Transform nodes (style transfer, upscale, like Jaaz's magic tools).
+- Implement Compose/Export nodes (similar to Refly's canvas DTO handling).
 
 #### Story 4.2: Kotlin Wrapper Activity
-- Create `MediaCanvasActivity` as Flutter container
-- Implement Flutter-Kotlin bridge for tool execution
-- Add navigation integration (bottom nav)
-- Handle back press and lifecycle
+- Create `MediaCanvasActivity` as Flutter container.
+- Implement Flutter-Kotlin bridge for tool execution (e.g., call agent like Refly's pilot-engine).
+- Add navigation integration (bottom nav).
+- Handle back press and lifecycle.
 
 #### Story 4.3: Node Configuration & Execution
-- Implement parameter configuration UI per node
-- Create workflow execution engine (sequential node processing)
-- Add progress indicators for generation tasks
-- Implement result preview for each node
+- Implement parameter configuration UI per node (prompt inputs like Jaaz's CanvasMagicGenerator).
+- Create workflow execution engine (sequential node processing, inspired by Jaaz's langgraph configs).
+- Add progress indicators for generation tasks (stream updates like Refly's copilot tool calls).
+- Implement result preview for each node.
 
 #### Story 4.4: Agent-Assisted Workflow Building
-- Add chat interface for workflow suggestions
-- Implement "Build workflow from prompt" feature
-- Add auto-connection suggestions
-- Enable parameter optimization by agent
+- Add chat interface for workflow suggestions (like Refly's intent analysis in pilot.service).
+- Implement "Build workflow from prompt" feature (similar to Jaaz's comfyui_execution for AI-driven gen).
+- Add auto-connection suggestions.
+- Enable parameter optimization by agent.
 
 #### Story 4.5: Templates & Workflow Management
-- Create 5 workflow templates (social post, album art, animation, etc.)
-- Implement save/load workflows (JSON serialization)
-- Add workflow list view
-- Enable workflow sharing/export
+- Create 5 workflow templates (social post, album art, animation, etc., inspired by Jaaz's asset workflows).
+- Implement save/load workflows (JSON serialization, like Refly's knowledge parsers).
+- Add workflow list view.
+- Enable workflow sharing/export.
 
 #### Story 4.6: Pro Features & Custom Nodes
-- Implement advanced model selection per node (Pro)
-- Add execution limits (free: 20/day, Pro: unlimited)
-- Enable custom node creation (Python/JS scripting) for Pro
-- Add workflow marketplace concept (Pro)
+- Implement advanced model selection per node (Pro, like Jaaz's model configs).
+- Add execution limits (free: 20/day, Pro: unlimited).
+- Enable custom node creation (Python/JS scripting) for Pro (inspired by Refly's mcp-server tools).
+- Add workflow marketplace concept (Pro, with collab like Refly's gateway).
 
 **Acceptance Criteria**:
-- ✅ Users can drag-drop nodes and connect them
-- ✅ All media generation tools integrated
-- ✅ Workflows execute correctly with progress shown
-- ✅ Agent can suggest and build workflows
-- ✅ Templates functional and helpful
-- ✅ Pro features gated properly
+- ✅ Users can drag-drop nodes and connect them (Jaaz-like pop-bar integration).
+- ✅ All media generation tools integrated (Refly-like pilot for AI assists).
+- ✅ Workflows execute correctly with progress shown (Jaaz stream processing).
+- ✅ Agent can suggest and build workflows (Refly intent analysis).
+- ✅ Templates functional and helpful.
+- ✅ Pro features gated properly.
 
 ---
 

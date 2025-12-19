@@ -72,6 +72,9 @@ class ToolRegistry(
         // Spreadsheet editor - AI-native spreadsheet generation and editing (Epic 3)
         registerTool(SpreadsheetTool(context))
         
+        // Media canvas - AI-native multimodal media generation canvas (Epic 4)
+        registerTool(MediaCanvasTool(context))
+        
         Log.d(TAG, "ToolRegistry initialized with ${tools.size} built-in tools")
     }
     

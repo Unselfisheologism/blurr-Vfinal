@@ -203,6 +203,12 @@ class SettingsActivity : BaseNavigationActivity() {
             startActivity(intent)
         }
         
+        // Media Canvas button (Epic 4)
+        findViewById<Button?>(R.id.buttonMediaCanvas)?.setOnClickListener {
+            val intent = Intent(this, MediaCanvasActivity::class.java)
+            startActivity(intent)
+        }
+        
         // Add Tool Selection button click listener (if button exists in layout)
         findViewById<Button?>(R.id.buttonToolSelection)?.setOnClickListener {
             val intent = Intent(this, com.blurr.voice.ui.tools.ToolSelectionActivity::class.java)

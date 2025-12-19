@@ -288,6 +288,17 @@
                 android:text="📊 Workflow Editor"
                 android:textColor="@android:color/white" />
 
+            <!-- Media Canvas Button (Epic 4) -->
+            <Button
+                android:id="@+id/buttonMediaCanvas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/btn_with_border"
+                android:text="🎨 AI Media Canvas"
+                android:textColor="@android:color/white" />
+
             <Button
                 android:id="@+id/buttonSignOut"
                 android:layout_width="wrap_content"

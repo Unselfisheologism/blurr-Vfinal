@@ -299,6 +299,15 @@
             android:windowSoftInputMode="adjustResize"
             android:exported="false" />
 
+        <!-- Flutter Media Canvas Activity -->
+        <activity
+            android:name=".MediaCanvasActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="false" />
+
     </application>
 
 </manifest>
