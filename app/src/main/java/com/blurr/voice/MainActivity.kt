@@ -51,6 +51,7 @@ import com.blurr.voice.workflow.WorkflowEditorHandler
 import io.flutter.embedding.android.FlutterActivity
 import com.blurr.voice.apps.texteditor.TextEditorLauncher
 import com.blurr.voice.apps.spreadsheets.SpreadsheetEditorLauncher
+import com.blurr.voice.apps.learning.LearningPlatformLauncher
 
 class MainActivity : BaseNavigationActivity() {
 
@@ -346,6 +347,11 @@ class MainActivity : BaseNavigationActivity() {
         findViewById<TextView>(R.id.spreadsheet_editor_link).setOnClickListener {
             launchSpreadsheetEditor()
         }
+
+        // Add Learning Hub button
+        findViewById<TextView>(R.id.learning_platform_link).setOnClickListener {
+            launchLearningPlatform()
+        }
     }
 
     private fun requestLimitIncrease() {
@@ -549,6 +555,19 @@ class MainActivity : BaseNavigationActivity() {
         } catch (e: Exception) {
             Logger.e("MainActivity", "Failed to launch Spreadsheet Editor", e)
             Toast.makeText(this, "Failed to open Spreadsheet Editor", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /**
+     * Launch the Learning Hub
+     */
+    fun launchLearningPlatform() {
+        try {
+            LearningPlatformLauncher.launch(this)
+            Logger.d("MainActivity", "Launched Learning Hub")
+        } catch (e: Exception) {
+            Logger.e("MainActivity", "Failed to launch Learning Hub", e)
+            Toast.makeText(this, "Failed to open Learning Hub", Toast.LENGTH_SHORT).show()
         }
     }
 
