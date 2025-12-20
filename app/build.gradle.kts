@@ -38,7 +38,7 @@ android {
     val appwriteProjectName = localProperties.getProperty("APPWRITE_PROJECT_NAME") ?: "TWENT MOBILE" // Default from Appwrite config
     val appwritePublicEndpoint = localProperties.getProperty("APPWRITE_PUBLIC_ENDPOINT") ?: "https://sfo.cloud.appwrite.io/v1" // Default from Appwrite config
 
-    val debugSha1 = "D0:A1:49:03:FD:B5:37:DF:B5:36:51:B1:66:AE:70:11:E2:59:08:33"
+    val debugSha1 = "D0:A1:49:03:FD:B5:37:DF:B5:36:51:B1:6:AE:70:11:E2:59:08:33"
 
     defaultConfig {
         applicationId = "com.twent.voice"
@@ -129,7 +129,7 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0") // or latest
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.16")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.moshi:moshi:1.15.0")
     implementation("com.google.code.gson:gson:2.13.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
@@ -142,9 +142,10 @@ dependencies {
     // EncryptedSharedPreferences for secure key storage
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
     
-    // FFmpeg for Android (native binary for video/audio processing)
-    implementation("com.arthenica:ffmpeg-kit-full:5.1")
-
+    // FFmpeg for Android (native binary for video/audio processing) - REMOVED due to resolution issues
+    // Using Python-based ffmpeg instead through Chaquopy
+    // implementation("com.arthenica:ffmpeg-kit-full:5.0")
+    
     // Room database dependencies
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
@@ -157,10 +158,14 @@ dependencies {
 
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("com.android.billingclient:billing-ktx:7.0.0")
-
-    // Appwrite SDK - explicitly add platform dependency for OkHttp BOM to fix AGP 8.9.2 resolution
-    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
-    implementation(libs.appwrite.sdk)
+    
+    // Appwrite SDK - explicitly exclude the problematic BOM
+    implementation("io.appwrite:sdk-for-android:5.0.0") {
+        exclude(group = "com.squareup.okhttp3", module = "okhttp-bom")
+    }
+    // Explicitly include OkHttp to ensure compatibility
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation("com.squareup.okhttp3:okhttp-urlconnection:4.12.0")
     
     // JavaScript execution engine (Phase 2: Story 4.12 - Multi-language shell)
     implementation("org.mozilla:rhino:1.7.14")
