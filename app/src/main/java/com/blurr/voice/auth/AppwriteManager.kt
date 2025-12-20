@@ -23,7 +23,7 @@ object AppwriteManager {
         if (_client != null) return
 
         _client = Client(context)
-            .setEndpoint("https://cloud.appwrite.io/v1")
+            .setEndpoint(BuildConfig.APPWRITE_PUBLIC_ENDPOINT)
             .setProject(BuildConfig.APPWRITE_PROJECT_ID)
             .setSelfSigned(BuildConfig.DEBUG) // Allow self-signed certs in debug
         _account = Account(_client!!)

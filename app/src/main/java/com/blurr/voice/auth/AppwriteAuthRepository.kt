@@ -1,5 +1,6 @@
 package com.twent.voice.auth
 
+import com.twent.voice.BuildConfig
 import com.twent.voice.core.result.AIError
 import com.twent.voice.core.result.Result
 import io.appwrite.exceptions.AppwriteException
@@ -40,6 +41,69 @@ class AppwriteAuthRepository(
             Result.Error(mapException(e))
         } catch (e: Exception) {
             Result.Error(AIError(AIError.UNKNOWN, e.message ?: "Unknown error"))
+        }
+    }
+
+    override suspend fun loginWithGoogle(redirectUrl: String): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            // This method should redirect the user to the OAuth provider
+            // In Android, this would typically be handled by calling the SDK method
+            // which opens a browser for the user to authenticate
+            val url = accountService.createOAuth2Session(
+                provider = "google",
+                successUrl = redirectUrl,
+                failureUrl = redirectUrl
+            )
+            Result.Success(url)
+        } catch (e: AppwriteException) {
+            Result.Error(mapException(e))
+        } catch (e: Exception) {
+            Result.Error(AIError(AIError.UNKNOWN, e.message ?: "OAuth error"))
+        }
+    }
+
+    override suspend fun loginWithFacebook(redirectUrl: String): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            val url = accountService.createOAuth2Session(
+                provider = "facebook",
+                successUrl = redirectUrl,
+                failureUrl = redirectUrl
+            )
+            Result.Success(url)
+        } catch (e: AppwriteException) {
+            Result.Error(mapException(e))
+        } catch (e: Exception) {
+            Result.Error(AIError(AIError.UNKNOWN, e.message ?: "OAuth error"))
+        }
+    }
+
+    override suspend fun loginWithGithub(redirectUrl: String): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            val url = accountService.createOAuth2Session(
+                provider = "github",
+                successUrl = redirectUrl,
+                failureUrl = redirectUrl
+            )
+            Result.Success(url)
+        } catch (e: AppwriteException) {
+            Result.Error(mapException(e))
+        } catch (e: Exception) {
+            Result.Error(AIError(AIError.UNKNOWN, e.message ?: "OAuth error"))
+        }
+    }
+
+    override suspend fun loginWithApple(redirectUrl: String): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            val url = accountService.createOAuth2Session(
+                provider = "apple",
+                successUrl = redirectUrl,
+                failureUrl = redirectUrl
+            )
+            Result.Success(url)
+        } catch (e: AppwriteException) {
+            Result.Error(mapException(e))
+        } catch (e: Exception) {
+            Result.Error(AIError(AIError.UNKNOWN, e.message ?: "OAuth error"))
         }
     }
 

@@ -10,4 +10,10 @@ interface AuthRepository {
     suspend fun logout(): Result<Unit>
     suspend fun getCurrentUser(): Result<User<Map<String, Any>>>
     suspend fun checkSession(): Result<Boolean>
+    
+    // OAuth methods
+    suspend fun loginWithGoogle(redirectUrl: String): Result<String>
+    suspend fun loginWithFacebook(redirectUrl: String): Result<String>
+    suspend fun loginWithGithub(redirectUrl: String): Result<String>
+    suspend fun loginWithApple(redirectUrl: String): Result<String>
 }

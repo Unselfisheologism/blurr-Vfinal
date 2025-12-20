@@ -29,11 +29,6 @@ android {
     compileSdk = 35
 
     // Phase 0: API keys now managed via BYOK Settings in the app
-    val tavilyApiKeys = localProperties.getProperty("TAVILY_API") ?: ""
-    val mem0ApiKey = localProperties.getProperty("MEM0_API") ?: ""
-    val googlecloudGatewayURL = localProperties.getProperty("GCLOUD_GATEWAY_URL") ?: ""
-    val googlecloudProxyURL = localProperties.getProperty("GCLOUD_PROXY_URL") ?: ""
-    val googlecloudProxyURLKey = localProperties.getProperty("GCLOUD_PROXY_URL_KEY") ?: ""
     val revenueCatSDK = localProperties.getProperty("REVENUE_CAT_PUBLIC_URL") ?: ""
     val revenueCatApiKey = localProperties.getProperty("REVENUECAT_API_KEY") ?: ""
     val appwriteProjectId = localProperties.getProperty("APPWRITE_PROJECT_ID") ?: "69466d6d002944e62a34" // Default/Placeholder
@@ -61,13 +56,8 @@ android {
          buildConfigField("String", "APPWRITE_PROJECT_NAME", "\"$appwriteProjectName\"")
          buildConfigField("String", "APPWRITE_PUBLIC_ENDPOINT", "\"$appwritePublicEndpoint\"")
         // Phase 0: Removed hard-coded API keys (GEMINI_API_KEYS, GOOGLE_TTS_API_KEY, PICOVOICE_ACCESS_KEY)
-        buildConfigField("String", "TAVILY_API", "\"$tavilyApiKeys\"")
-        buildConfigField("String", "MEM0_API", "\"$mem0ApiKey\"")
         buildConfigField("boolean", "ENABLE_DIRECT_APP_OPENING", "true")
         buildConfigField("boolean", "SPEAK_INSTRUCTIONS", "true")
-        buildConfigField("String", "GCLOUD_GATEWAY_URL", "\"$googlecloudGatewayURL\"")
-        buildConfigField("String", "GCLOUD_PROXY_URL", "\"$googlecloudProxyURL\"")
-        buildConfigField("String", "GCLOUD_PROXY_URL_KEY", "\"$googlecloudProxyURLKey\"")
         buildConfigField("boolean", "ENABLE_LOGGING", "true")
         buildConfigField("String", "APPWRITE_PROJECT_ID", "\"$appwriteProjectId\"")
         

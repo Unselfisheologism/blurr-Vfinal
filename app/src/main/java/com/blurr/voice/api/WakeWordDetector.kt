@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.twent.voice.utilities.STTManager
+import com.twent.voice.core.providers.ProviderKeyManager
 import java.util.Locale
 
 class WakeWordDetector(
@@ -24,6 +25,17 @@ class WakeWordDetector(
             Log.d("WakeWordDetector", "Already started.")
             return
         }
+        
+        // Check if user has configured API keys for voice features
+        val keyManager = ProviderKeyManager(context)
+        val (isValid, errorMessage) = keyManager.validateConfiguration()
+        
+        if (!isValid) {
+            Log.w("WakeWordDetector", "API configuration invalid: $errorMessage - Using local STT only")
+        } else {
+            Log.d("WakeWordDetector", "API configuration valid - STT features available")
+        }
+        
         isListening = true
         Log.d("WakeWordDetector", "Starting to listen for wake word.")
         startContinuousListening()
@@ -59,6 +71,7 @@ class WakeWordDetector(
             onResult = { recognizedText ->
                 Log.d("WakeWordDetector", "Recognized: '$recognizedText'")
                 if (recognizedText.lowercase(Locale.ROOT).contains(wakeWord.lowercase(Locale.ROOT))) {
+                    Log.d("WakeWordDetector", "Wake word detected: '$recognizedText'")
                     onWakeWordDetected()
                 }
                 restartListening()
@@ -69,7 +82,6 @@ class WakeWordDetector(
             },
             onListeningStateChange = { },
             onPartialResult = { }
-
         )
 
         // Unmute the stream shortly after starting to ensure other notifications can be heard

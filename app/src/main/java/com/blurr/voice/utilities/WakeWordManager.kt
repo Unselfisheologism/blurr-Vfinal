@@ -30,10 +30,10 @@ class WakeWordManager(
     private fun startWakeWordService() {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
             val serviceIntent = Intent(context, EnhancedWakeWordService::class.java).apply {
-                putExtra(EnhancedWakeWordService.EXTRA_USE_PORCUPINE, true)
+                putExtra(EnhancedWakeWordService.EXTRA_USE_PORCUPINE, false) // Use STT engine instead of Porcupine
             }
             ContextCompat.startForegroundService(context, serviceIntent)
-            Toast.makeText(context, context.getString(R.string.wake_word_enabled, "Porcupine"), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.wake_word_enabled, "STT"), Toast.LENGTH_SHORT).show()
         } else {
             permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
         }

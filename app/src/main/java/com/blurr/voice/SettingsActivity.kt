@@ -18,9 +18,9 @@ import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import com.twent.voice.api.GoogleTts
-import com.twent.voice.api.PicovoiceKeyManager
-import com.twent.voice.api.TTSVoice
+import com.twent.voice.core.providers.UniversalTTSService
+import com.twent.voice.core.providers.VoiceProviderConfig
+import com.twent.voice.core.providers.ProviderKeyManager
 import com.twent.voice.utilities.SpeechCoordinator
 import com.twent.voice.utilities.VoicePreferenceManager
 import com.twent.voice.utilities.UserProfileManager
@@ -50,20 +50,21 @@ class SettingsActivity : BaseNavigationActivity() {
     private lateinit var buttonSignOut: Button
     private lateinit var buttonBYOKSettings: Button
 
+
     private lateinit var wakeWordManager: WakeWordManager
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
 
     private lateinit var sc: SpeechCoordinator
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var availableVoices: List<TTSVoice>
+    private lateinit var availableVoices: List<String>
     private var voiceTestJob: Job? = null
 
     companion object {
         private const val PREFS_NAME = "TwentSettings"
         private const val KEY_SELECTED_VOICE = "selected_voice"
         private const val TEST_TEXT = "Hello, I'm Panda, and this is a test of the selected voice."
-        private val DEFAULT_VOICE = TTSVoice.CHIRP_PUCK
+        private const val DEFAULT_VOICE = "alloy"
         const val KEY_SHOW_THOUGHTS = "show_thoughts"
     }
 
@@ -100,9 +101,19 @@ class SettingsActivity : BaseNavigationActivity() {
     private fun initialize() {
         sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         sc = SpeechCoordinator.getInstance(this)
-        availableVoices = GoogleTts.getAvailableVoices()
+        
         // Initialize wake word manager
         wakeWordManager = WakeWordManager(this, requestPermissionLauncher)
+        
+        // Initialize available voices based on current BYOK configuration
+        val keyManager = ProviderKeyManager(this)
+        val provider = keyManager.getSelectedProvider()
+        availableVoices = if (provider != null) {
+            VoiceProviderConfig.getCapabilities(provider).ttsVoices
+        } else {
+            // defaults
+            listOf("alloy", "echo", "fable", "onyx", "nova", "shimmer")
+        }
     }
 
     private fun setupUI() {
@@ -145,7 +156,7 @@ class SettingsActivity : BaseNavigationActivity() {
     }
 
     private fun setupVoicePicker() {
-        val voiceDisplayNames = availableVoices.map { it.displayName }.toTypedArray()
+        val voiceDisplayNames = availableVoices.toTypedArray()
         ttsVoicePicker.minValue = 0
         ttsVoicePicker.maxValue = voiceDisplayNames.size - 1
         ttsVoicePicker.displayedValues = voiceDisplayNames
@@ -161,24 +172,26 @@ class SettingsActivity : BaseNavigationActivity() {
             showBatteryOptimizationDialog()
         }
         wakeWordButton.setOnClickListener {
-            val keyManager = PicovoiceKeyManager(this)
+            // Check if user has configured API keys for voice capabilities
+            val keyManager = ProviderKeyManager(this)
+            val (isValid, errorMessage) = keyManager.validateConfiguration()
             
-            // Step 1: Save key if provided in the EditText
-            val userKey = editWakeWordKey.text.toString().trim()
-            if (userKey.isNotEmpty()) {
-                keyManager.saveUserProvidedKey(userKey)
-                Toast.makeText(this, "Wake word key saved.", Toast.LENGTH_SHORT).show()
-            }
-            
-            // Step 2: Check if we have a key (either just saved or previously saved)
-            val hasKey = !keyManager.getUserProvidedKey().isNullOrBlank()
-            
-            if (!hasKey) {
-                showPicovoiceKeyRequiredDialog()
+            if (!isValid) {
+                showBYOKConfigurationRequiredDialog()
                 return@setOnClickListener
             }
             
-            // Step 3: Enable the wake word
+            // Check if the selected provider supports STT (for wake word detection)
+            val provider = keyManager.getSelectedProvider()
+            if (provider != null) {
+                val capabilities = VoiceProviderConfig.getCapabilities(provider)
+                if (!capabilities.supportsSTT) {
+                    showSTTNotSupportedDialog(provider.displayName)
+                    return@setOnClickListener
+                }
+            }
+            
+            // Enable the wake word
             wakeWordManager.handleWakeWordButtonClick(wakeWordButton)
             // Give the service a moment to update its state before refreshing the UI
             android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ updateWakeWordButtonState() }, 500)
@@ -267,19 +280,19 @@ class SettingsActivity : BaseNavigationActivity() {
         }
     }
 
-    private fun playVoiceSample(voice: TTSVoice) {
+    private fun playVoiceSample(voice: String) {
         lifecycleScope.launch {
             val cacheDir = File(cacheDir, "voice_samples")
-            val voiceFile = File(cacheDir, "${voice.name}.wav")
+            val voiceFile = File(cacheDir, "${voice}.wav")
 
             try {
                 if (voiceFile.exists()) {
                     val audioData = voiceFile.readBytes()
                     sc.playAudioData(audioData)
-                    Log.d("SettingsActivity", "Playing cached sample for ${voice.displayName}")
+                    Log.d("SettingsActivity", "Playing cached sample for $voice")
                 } else {
                     sc.testVoice(TEST_TEXT, voice)
-                    Log.d("SettingsActivity", "Synthesizing test for ${voice.displayName}")
+                    Log.d("SettingsActivity", "Synthesizing test for $voice")
                 }
             } catch (e: Exception) {
                 if (e !is CancellationException) {
@@ -297,14 +310,17 @@ class SettingsActivity : BaseNavigationActivity() {
 
             var downloadedCount = 0
             for (voice in availableVoices) {
-                val voiceFile = File(cacheDir, "${voice.name}.wav")
+                val voiceFile = File(cacheDir, "${voice}.wav")
                 if (!voiceFile.exists()) {
                     try {
-                        val audioData = GoogleTts.synthesize(TEST_TEXT, voice)
-                        voiceFile.writeBytes(audioData)
-                        downloadedCount++
+                        val ttsService = UniversalTTSService(this@SettingsActivity)
+                        val audioData = ttsService.synthesize(TEST_TEXT, voice)
+                        if (audioData != null) {
+                            voiceFile.writeBytes(audioData)
+                            downloadedCount++
+                        }
                     } catch (e: Exception) {
-                        Log.e("SettingsActivity", "Failed to cache voice ${voice.name}", e)
+                        Log.e("SettingsActivity", "Failed to cache voice $voice", e)
                     }
                 }
             }
@@ -319,11 +335,14 @@ class SettingsActivity : BaseNavigationActivity() {
     private fun loadAllSettings() {
 
         // Inside loadAllSettings()
-        val keyManager = PicovoiceKeyManager(this)
-        editWakeWordKey.setText(keyManager.getUserProvidedKey() ?: "") // You will create this method next
-        val savedVoiceName = sharedPreferences.getString(KEY_SELECTED_VOICE, DEFAULT_VOICE.name)
-        val savedVoice = availableVoices.find { it.name == savedVoiceName } ?: DEFAULT_VOICE
-        ttsVoicePicker.value = availableVoices.indexOf(savedVoice)
+        // We no longer need to load Picovoice key as we're using BYOK for voice features
+        val savedVoiceName = sharedPreferences.getString(KEY_SELECTED_VOICE, DEFAULT_VOICE) ?: DEFAULT_VOICE
+        val voiceIndex = availableVoices.indexOf(savedVoiceName)
+        if (voiceIndex != -1) {
+            ttsVoicePicker.value = voiceIndex
+        } else {
+            ttsVoicePicker.value = 0 // default to first voice
+        }
         
         // Update wake word button state
         updateWakeWordButtonState()
@@ -331,26 +350,40 @@ class SettingsActivity : BaseNavigationActivity() {
         switchShowThoughts.isChecked = sharedPreferences.getBoolean(KEY_SHOW_THOUGHTS, false)
     }
 
-    private fun saveSelectedVoice(voice: TTSVoice) {
+    private fun saveSelectedVoice(voice: String) {
         VoicePreferenceManager.saveSelectedVoice(this, voice)
-        Log.d("SettingsActivity", "Saved voice: ${voice.displayName}")
+        Log.d("SettingsActivity", "Saved voice: $voice")
     }
 
-    private fun showPicovoiceKeyRequiredDialog() {
+    private fun showBYOKConfigurationRequiredDialog() {
         val dialog = AlertDialog.Builder(this)
-            .setTitle("Picovoice Key Required")
-            .setMessage("To enable wake word functionality, you need a Picovoice AccessKey. You can get a free key from the Picovoice Console. Note: The Picovoice dashboard might not be available on mobile browsers sometimes - you may need to use a desktop browser.")
-            .setPositiveButton("Get Key") { _, _ ->
-                // Try to open Picovoice console
-                val url = "https://console.picovoice.ai/login"
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = Uri.parse(url)
-                try {
-                    startActivity(intent)
-                } catch (e: Exception) {
-                    Toast.makeText(this, "Could not open link. No browser found or link unavailable on mobile. Please use a desktop browser.", Toast.LENGTH_LONG).show()
-                    Log.e("SettingsActivity", "Failed to open Picovoice link", e)
-                }
+            .setTitle("API Configuration Required")
+            .setMessage("To use wake word functionality, you need to configure your API keys. Please set up your BYOK (Bring Your Own Key) configuration in the API Keys section.")
+            .setPositiveButton("Go to API Keys") { _, _ ->
+                val intent = Intent(this, com.twent.voice.ui.BYOKSettingsActivity::class.java)
+                startActivity(intent)
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+        
+        // Set button text colors to white
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+            androidx.core.content.ContextCompat.getColor(this, R.color.white)
+        )
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(
+            androidx.core.content.ContextCompat.getColor(this, R.color.white)
+        )
+    }
+    
+    private fun showSTTNotSupportedDialog(providerName: String) {
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("STT Not Supported")
+            .setMessage("The selected provider ($providerName) does not support Speech-to-Text, which is required for wake word detection. Please select a different provider that supports STT in API Keys settings.")
+            .setPositiveButton("Go to API Keys") { _, _ ->
+                val intent = Intent(this, com.twent.voice.ui.BYOKSettingsActivity::class.java)
+                startActivity(intent)
             }
             .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
@@ -385,7 +418,6 @@ class SettingsActivity : BaseNavigationActivity() {
                     Toast.makeText(this, "Could not open link. No browser found.", Toast.LENGTH_LONG).show()
                     Log.e("SettingsActivity", "Failed to open battery optimization link", e)
                 }
-            }
             .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
             }

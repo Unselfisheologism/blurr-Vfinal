@@ -17,14 +17,15 @@ import androidx.core.content.ContextCompat
 import com.twent.voice.ConversationalAgentService
 import com.twent.voice.MainActivity
 import com.twent.voice.R
-import com.twent.voice.api.PorcupineWakeWordDetector
+import com.twent.voice.api.WakeWordDetector
+import com.twent.voice.core.providers.ProviderKeyManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
 class EnhancedWakeWordService : Service() {
 
-    private var porcupineDetector: PorcupineWakeWordDetector? = null
+    private var wakeWordDetector: WakeWordDetector? = null
     private var usePorcupine = false
     private val serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
@@ -66,10 +67,10 @@ class EnhancedWakeWordService : Service() {
             PendingIntent.FLAG_IMMUTABLE
         )
 
-        val engineName = if (usePorcupine) "Porcupine" else "STT"
+        val engineName = if (usePorcupine) "STT" else "STT"
         val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Twent Wake Word")
-            .setContentText("Listening for 'Panda' with Porcupine engine...")
+            .setContentText("Listening for 'Panda' with STT engine...")
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentIntent(pendingIntent)
             .build()
@@ -105,7 +106,7 @@ class EnhancedWakeWordService : Service() {
         }
 
         val onApiFailure: () -> Unit = {
-            Log.d("EnhancedWakeWordService", "Porcupine API failed, starting floating button service")
+            Log.d("EnhancedWakeWordService", "STT API failed, starting floating button service")
             // Start the floating button service when API fails
             val intent = Intent(ACTION_WAKE_WORD_FAILED)
             sendBroadcast(intent)
@@ -113,14 +114,22 @@ class EnhancedWakeWordService : Service() {
         }
 
         try {
-            if (usePorcupine) {
-                Log.d("EnhancedWakeWordService", "Using Porcupine wake word detection")
-                porcupineDetector = PorcupineWakeWordDetector(this, onWakeWordDetected, onApiFailure)
-                porcupineDetector?.start()
+            // Check if user has configured API keys
+            val keyManager = ProviderKeyManager(this)
+            val (isValid, errorMessage) = keyManager.validateConfiguration()
+            
+            if (!isValid) {
+                Log.e("EnhancedWakeWordService", "API configuration invalid: $errorMessage")
+                // Use STT-based detection which works locally without API keys
+                Log.d("EnhancedWakeWordService", "Using STT wake word detection (local, no API key needed)")
+                wakeWordDetector = WakeWordDetector(this, onWakeWordDetected)
+                wakeWordDetector?.start()
             } else {
-                Log.d("EnhancedWakeWordService", "Using Porcupine wake word detection")
-                porcupineDetector = PorcupineWakeWordDetector(this, onWakeWordDetected, onApiFailure)
-                porcupineDetector?.start()
+                // User has API keys configured, but we still use STT for wake word detection
+                // (wake word detection typically runs locally for performance/privacy)
+                Log.d("EnhancedWakeWordService", "Using STT wake word detection (local)")
+                wakeWordDetector = WakeWordDetector(this, onWakeWordDetected)
+                wakeWordDetector?.start()
             }
         } catch (e: Exception) {
             Log.e("EnhancedWakeWordService", "Error starting wake word detection: ${e.message}")
@@ -134,8 +143,8 @@ class EnhancedWakeWordService : Service() {
         
         Log.d("EnhancedWakeWordService", "Service onDestroy() called")
         
-        porcupineDetector?.stop()
-        porcupineDetector = null
+        wakeWordDetector?.stop()
+        wakeWordDetector = null
         
         isRunning = false
         Log.d("EnhancedWakeWordService", "Service destroyed, isRunning set to false")
@@ -156,4 +165,4 @@ class EnhancedWakeWordService : Service() {
             manager.createNotificationChannel(serviceChannel)
         }
     }
-} 
+}
