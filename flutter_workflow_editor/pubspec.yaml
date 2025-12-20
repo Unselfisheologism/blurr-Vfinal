@@ -82,6 +82,9 @@ dependencies:
   # Image picker for text editor embeds
   image_picker: ^1.0.7
   
+  # Video preview
+  video_player: ^2.8.6
+  
   # File sharing
   share_plus: ^7.2.1
   
