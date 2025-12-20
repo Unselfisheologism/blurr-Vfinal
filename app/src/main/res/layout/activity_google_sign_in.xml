@@ -70,7 +70,7 @@
         android:layout_height="wrap_content"
         android:text="We never store your Google password. You can revoke access at any time from your Google account settings."
         android:textSize="12sp"
-        android:textColor="@color/text_tertiary"
+        android:textColor="@color/text_secondary"
         android:gravity="center"
         android:layout_marginTop="24dp"
         android:layout_marginBottom="24dp"

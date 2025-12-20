@@ -10,7 +10,7 @@
         android:id="@+id/loading_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#80000"
+        android:background="#80000000"
         android:gravity="center"
         android:orientation="vertical"
         android:visibility="gone">
@@ -328,7 +328,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Pro Active"
-                    android:textColor="#BDBDBD"
+                    android:textColor="#BDBD"
                     android:textSize="10sp"
                     tools:text="Pro Active"
                     tools:visibility="visible" />
@@ -425,7 +425,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="16dp"
             android:padding="8dp"
-            android:textColor="#BDBDBD"
+            android:textColor="#BDBD"
             android:textSize="12sp"
             android:visibility="gone" />
 
