@@ -135,7 +135,7 @@ class _TrimHandle extends StatelessWidget {
         final state = context.read<VideoEditorState>();
         final deltaMs = (details.delta.dx / state.pixelsPerSecond * 1000).round();
         if (deltaMs == 0) return;
-        onDrag(isRight ? deltaMs : deltaMs);
+        onDrag(deltaMs);
       },
       child: Container(
         width: 14,

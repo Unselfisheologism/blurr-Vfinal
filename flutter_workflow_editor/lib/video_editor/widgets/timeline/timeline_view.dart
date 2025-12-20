@@ -95,10 +95,11 @@ class _TimelineViewState extends State<TimelineView> {
                   ),
 
                   // Tap-to-seek surface.
+                  // Use onTapUp (not onTapDown) so it doesn't fire during drags.
                   Positioned.fill(
                     child: GestureDetector(
                       behavior: HitTestBehavior.translucent,
-                      onTapDown: (details) {
+                      onTapUp: (details) {
                         final box = context.findRenderObject() as RenderBox?;
                         if (box == null) return;
                         final local = box.globalToLocal(details.globalPosition);

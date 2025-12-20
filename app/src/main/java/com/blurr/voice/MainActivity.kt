@@ -52,6 +52,8 @@ import io.flutter.embedding.android.FlutterActivity
 import com.blurr.voice.apps.texteditor.TextEditorLauncher
 import com.blurr.voice.apps.spreadsheets.SpreadsheetEditorLauncher
 import com.blurr.voice.apps.learning.LearningPlatformLauncher
+import com.blurr.voice.apps.daw.DawEditorLauncher
+import com.blurr.voice.apps.video.VideoEditorLauncher
 
 class MainActivity : BaseNavigationActivity() {
 
@@ -348,10 +350,39 @@ class MainActivity : BaseNavigationActivity() {
             launchSpreadsheetEditor()
         }
 
+        // Add Video Editor button
+        findViewById<TextView>(R.id.video_editor_link).setOnClickListener {
+            launchVideoEditor()
+        }
+
         // Add Learning Hub button
         findViewById<TextView>(R.id.learning_platform_link).setOnClickListener {
             launchLearningPlatform()
         }
+    }
+
+    private fun launchWorkflowEditor() {
+        startActivity(Intent(this, WorkflowEditorActivity::class.java))
+    }
+
+    private fun launchTextEditor() {
+        TextEditorLauncher.launchNewDocument(this)
+    }
+
+    private fun launchSpreadsheetEditor() {
+        SpreadsheetEditorLauncher.launchNewSpreadsheet(this)
+    }
+
+    private fun launchDawEditor() {
+        DawEditorLauncher.launchNewProject(this)
+    }
+
+    private fun launchLearningPlatform() {
+        LearningPlatformLauncher.launch(this)
+    }
+
+    private fun launchVideoEditor() {
+        VideoEditorLauncher.launch(this)
     }
 
     private fun requestLimitIncrease() {
