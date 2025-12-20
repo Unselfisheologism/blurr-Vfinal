@@ -64,6 +64,21 @@ class VideoEditorBridge {
     return Map<String, dynamic>.from(result as Map);
   }
 
+  Future<int?> getMediaDurationMs({required String uri}) async {
+    try {
+      final result = await _channel.invokeMethod('getMediaDurationMs', {
+        'uri': uri,
+      });
+      final map = Map<String, dynamic>.from(result as Map);
+      final d = map['durationMs'];
+      if (d is int) return d;
+      if (d is num) return d.toInt();
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<Map<String, dynamic>> exportTimeline({
     required String timelineJson,
     String? outputFileName,

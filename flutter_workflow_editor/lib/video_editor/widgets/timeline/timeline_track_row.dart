@@ -50,23 +50,25 @@ class TimelineTrackRow extends StatelessWidget {
                     bottom: BorderSide(color: colorScheme.outlineVariant.withOpacity(0.4)),
                   ),
                 ),
-                child: Stack(
-                  children: [
-                    ...track.clips.map((clip) {
-                      final isSelected = project.selectedClipId == clip.id;
-                      return TimelineClipWidget(
-                        clip: clip,
+                child: RepaintBoundary(
+                  child: Stack(
+                    children: [
+                      ...track.clips.map((clip) {
+                        final isSelected = project.selectedClipId == clip.id;
+                        return TimelineClipWidget(
+                          clip: clip,
+                          pixelsPerSecond: pixelsPerSecond,
+                          isSelected: isSelected,
+                        );
+                      }),
+                      ..._buildTransitionMarkers(
+                        transitions: project.transitions,
+                        clips: track.clips,
                         pixelsPerSecond: pixelsPerSecond,
-                        isSelected: isSelected,
-                      );
-                    }),
-                    ..._buildTransitionMarkers(
-                      transitions: project.transitions,
-                      clips: track.clips,
-                      pixelsPerSecond: pixelsPerSecond,
-                      color: colorScheme.tertiary,
-                    ),
-                  ],
+                        color: colorScheme.tertiary,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

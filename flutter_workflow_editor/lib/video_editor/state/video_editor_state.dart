@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -12,6 +13,7 @@ import '../models/video_transition.dart';
 import '../services/video_ai_service.dart';
 import '../services/video_editor_bridge.dart';
 import '../services/video_export_service.dart';
+import '../services/video_project_storage_service.dart';
 
 class VideoEditorState extends ChangeNotifier {
   VideoProject? _project;
@@ -34,6 +36,7 @@ class VideoEditorState extends ChangeNotifier {
   final VideoEditorBridge _bridge = VideoEditorBridge();
   final VideoAIService _aiService = VideoAIService();
   final VideoExportService _exportService = VideoExportService();
+  final VideoProjectStorageService _storageService = VideoProjectStorageService();
 
   VideoProject? get project => _project;
   List<MediaAsset> get mediaBin => List.unmodifiable(_mediaBin);
@@ -59,8 +62,19 @@ class VideoEditorState extends ChangeNotifier {
 
     try {
       _isPro = await _bridge.checkProStatus();
+
+      final saved = await _storageService.loadCurrent();
+      if (saved != null) {
+        _project = saved.project;
+        _mediaBin
+          ..clear()
+          ..addAll(saved.mediaBin);
+      }
+
       _project ??= VideoProject.empty(name: projectName ?? 'Untitled Video');
       _recordHistory();
+
+      unawaited(_autoSave());
     } catch (e) {
       _error = 'Failed to initialize editor: $e';
     } finally {
@@ -123,6 +137,8 @@ class VideoEditorState extends ChangeNotifier {
           ),
         );
       }
+
+      unawaited(_autoSave());
     } catch (e) {
       _error = 'Failed to import media: $e';
     } finally {
@@ -143,6 +159,17 @@ class VideoEditorState extends ChangeNotifier {
   }
 
   Future<int?> _tryGetDurationMs(String path, MediaAssetType type) async {
+    // Prefer native metadata (works for both audio and video).
+    try {
+      final nativeDuration = await _bridge.getMediaDurationMs(uri: path);
+      if (nativeDuration != null && nativeDuration > 0) {
+        return nativeDuration;
+      }
+    } catch (_) {
+      // Best-effort; fall back below.
+    }
+
+    // Fallback for videos if native metadata isn't available.
     try {
       if (type == MediaAssetType.video) {
         final controller = VideoPlayerController.file(File(path));
@@ -333,6 +360,7 @@ class VideoEditorState extends ChangeNotifier {
       if (asset != null) {
         _mediaBin.insert(0, asset);
         notifyListeners();
+        unawaited(_autoSave());
       }
       return asset;
     } catch (e) {
@@ -357,7 +385,19 @@ class VideoEditorState extends ChangeNotifier {
       if (srt == null) {
         _error = 'Failed to generate captions.';
         notifyListeners();
+        return null;
       }
+
+      final project = _project;
+      if (project != null) {
+        _updateProject(
+          project.copyWith(
+            captionsSrt: srt,
+            updatedAt: DateTime.now(),
+          ),
+        );
+      }
+
       return srt;
     } catch (e) {
       _error = 'Caption generation failed: $e';
@@ -378,13 +418,14 @@ class VideoEditorState extends ChangeNotifier {
 
     try {
       final transitions = await _aiService.suggestTransitions(project: project);
-      if (transitions.isEmpty) {
+      final filtered = transitions.where((t) => t.type != VideoTransitionType.none && t.durationMs > 0).toList();
+      if (filtered.isEmpty) {
         _error = 'No transitions suggested.';
         notifyListeners();
         return;
       }
 
-      _updateProject(project.copyWith(transitions: transitions, updatedAt: DateTime.now()));
+      _updateProject(project.copyWith(transitions: filtered, updatedAt: DateTime.now()));
     } catch (e) {
       _error = 'Transition suggestions failed: $e';
       notifyListeners();
@@ -416,6 +457,12 @@ class VideoEditorState extends ChangeNotifier {
       notifyListeners();
       return null;
     }
+  }
+
+  void setBurnInCaptions(bool value) {
+    final project = _project;
+    if (project == null) return;
+    _updateProject(project.copyWith(burnInCaptions: value, updatedAt: DateTime.now()));
   }
 
   Future<void> exportProject() async {
@@ -461,6 +508,7 @@ class VideoEditorState extends ChangeNotifier {
     _historyIndex--;
     _project = _history[_historyIndex];
     notifyListeners();
+    unawaited(_autoSave());
   }
 
   /// Redo
@@ -469,6 +517,7 @@ class VideoEditorState extends ChangeNotifier {
     _historyIndex++;
     _project = _history[_historyIndex];
     notifyListeners();
+    unawaited(_autoSave());
   }
 
   void clearError() {
@@ -504,6 +553,17 @@ class VideoEditorState extends ChangeNotifier {
     _project = next;
     _recordHistory();
     notifyListeners();
+    unawaited(_autoSave());
+  }
+
+  Future<void> _autoSave() async {
+    final project = _project;
+    if (project == null) return;
+    try {
+      await _storageService.saveCurrent(project: project, mediaBin: _mediaBin);
+    } catch (_) {
+      // Best-effort persistence.
+    }
   }
 
   void _recordHistory() {

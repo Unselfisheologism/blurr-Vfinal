@@ -47,6 +47,22 @@ class _TimelineViewState extends State<TimelineView> {
               width: contentWidth,
               child: Stack(
                 children: [
+                  // Tap-to-seek surface.
+                  // Use onTapUp (not onTapDown) so it doesn't fire during drags.
+                  Positioned.fill(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTapUp: (details) {
+                        final box = context.findRenderObject() as RenderBox?;
+                        if (box == null) return;
+                        final local = box.globalToLocal(details.globalPosition);
+                        final x = (local.dx - 110).clamp(0.0, double.infinity);
+                        final ms = (x / state.pixelsPerSecond * 1000).round();
+                        state.setPlayheadMs(ms);
+                      },
+                    ),
+                  ),
+
                   Column(
                     children: [
                       Row(
@@ -91,22 +107,6 @@ class _TimelineViewState extends State<TimelineView> {
                         width: 2,
                         color: Theme.of(context).colorScheme.error,
                       ),
-                    ),
-                  ),
-
-                  // Tap-to-seek surface.
-                  // Use onTapUp (not onTapDown) so it doesn't fire during drags.
-                  Positioned.fill(
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.translucent,
-                      onTapUp: (details) {
-                        final box = context.findRenderObject() as RenderBox?;
-                        if (box == null) return;
-                        final local = box.globalToLocal(details.globalPosition);
-                        final x = (local.dx - 110).clamp(0.0, double.infinity);
-                        final ms = (x / state.pixelsPerSecond * 1000).round();
-                        state.setPlayheadMs(ms);
-                      },
                     ),
                   ),
                 ],

@@ -196,6 +196,45 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
   Future<void> _handleExport(BuildContext context) async {
     final state = context.read<VideoEditorState>();
 
+    final project = state.project;
+    if (project == null) return;
+
+    // Optional burn-in captions toggle.
+    var burnIn = project.burnInCaptions;
+    if (project.captionsSrt != null && project.captionsSrt!.trim().isNotEmpty) {
+      final chosen = await showDialog<bool>(
+        context: context,
+        builder: (context) => StatefulBuilder(
+          builder: (context, setLocalState) {
+            return AlertDialog(
+              title: const Text('Export options'),
+              content: CheckboxListTile(
+                value: burnIn,
+                onChanged: (v) {
+                  setLocalState(() => burnIn = v ?? false);
+                },
+                title: const Text('Burn captions into video'),
+                subtitle: const Text('If off, captions are exported as a separate .srt file.'),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(null),
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('Export'),
+                ),
+              ],
+            );
+          },
+        ),
+      );
+
+      if (chosen != true) return;
+      state.setBurnInCaptions(burnIn);
+    }
+
     showDialog<void>(
       context: context,
       barrierDismissible: false,

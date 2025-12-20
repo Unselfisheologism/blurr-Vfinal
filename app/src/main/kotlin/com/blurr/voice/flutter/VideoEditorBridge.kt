@@ -2,6 +2,7 @@
 package com.blurr.voice.flutter
 
 import android.content.Context
+import android.media.MediaMetadataRetriever
 import android.util.Log
 import com.arthenica.ffmpegkit.FFmpegKit
 import com.arthenica.ffmpegkit.ReturnCode
@@ -13,6 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 
@@ -22,7 +24,8 @@ import java.io.File
  * Responsibilities:
  * - Pro gating checks
  * - AI-assisted actions via UltraGeneralistAgent
- * - Timeline export via FFmpegKit (simple MVP renderer)
+ * - Media metadata probing
+ * - Timeline export via FFmpegKit
  */
 class VideoEditorBridge(
     private val context: Context,
@@ -31,6 +34,14 @@ class VideoEditorBridge(
     companion object {
         private const val CHANNEL = "com.blurr.video_editor/bridge"
         private const val TAG = "VideoEditorBridge"
+
+        private const val OUTPUT_W = 1280
+        private const val OUTPUT_H = 720
+        private const val OUTPUT_FPS = 30
+
+        private const val PIP_W = 384
+        private const val PIP_H = 216
+        private const val PIP_MARGIN = 24
     }
 
     private val methodChannel: MethodChannel = MethodChannel(
@@ -48,6 +59,16 @@ class VideoEditorBridge(
         methodChannel.setMethodCallHandler { call, result ->
             when (call.method) {
                 "checkProStatus" -> handleCheckProStatus(result)
+
+                "getMediaDurationMs" -> {
+                    val uri = call.argument<String>("uri")
+                    if (uri.isNullOrBlank()) {
+                        result.error("INVALID_ARGS", "uri is required", null)
+                    } else {
+                        handleGetMediaDurationMs(uri, result)
+                    }
+                }
+
                 "executeAgentTask" -> {
                     val prompt = call.argument<String>("prompt")
                     if (prompt.isNullOrBlank()) {
@@ -124,6 +145,42 @@ class VideoEditorBridge(
         }
     }
 
+    private fun handleGetMediaDurationMs(uri: String, result: MethodChannel.Result) {
+        scope.launch {
+            try {
+                val durationMs = withContext(Dispatchers.IO) {
+                    getMediaDurationMsInternal(uri)
+                }
+                result.success(mapOf("durationMs" to durationMs))
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to get media duration", e)
+                result.success(mapOf("durationMs" to null))
+            }
+        }
+    }
+
+    private fun getMediaDurationMsInternal(uri: String): Long? {
+        // Best-effort: if we can't read it, return null.
+        val lower = uri.lowercase()
+        if (lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".webp")) {
+            return null
+        }
+
+        val retriever = MediaMetadataRetriever()
+        return try {
+            retriever.setDataSource(uri)
+            val durStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+            durStr?.toLongOrNull()
+        } catch (_: Exception) {
+            null
+        } finally {
+            try {
+                retriever.release()
+            } catch (_: Exception) {
+            }
+        }
+    }
+
     private fun handleExecuteAgentTask(prompt: String, result: MethodChannel.Result) {
         scope.launch {
             try {
@@ -151,13 +208,12 @@ class VideoEditorBridge(
     }
 
     private fun handleGenerateClipFromPrompt(prompt: String, result: MethodChannel.Result) {
-        // This is intentionally a single-shot call to keep UI responsive.
-        val agentPrompt = "Use the video_generation tool to generate a short clip (MP4) for: $prompt. Return ONLY the URL or file path.";
+        val agentPrompt = "Use the video_generation tool to generate a short clip (MP4) for: $prompt. Return ONLY the URL or file path."
         handleExecuteAgentTask(agentPrompt, result)
     }
 
     private fun handleGenerateCaptions(clipUri: String, language: String, result: MethodChannel.Result) {
-        val agentPrompt = "Generate SRT captions in language '$language' for the video at path/URL: $clipUri. Return ONLY SRT.";
+        val agentPrompt = "Generate SRT captions in language '$language' for the video at path/URL: $clipUri. Return ONLY SRT."
         scope.launch {
             try {
                 val responseText = withContext(Dispatchers.IO) {
@@ -173,7 +229,7 @@ class VideoEditorBridge(
     }
 
     private fun handleSuggestTransitions(projectJson: String, result: MethodChannel.Result) {
-        val agentPrompt = "You are a mobile video editor assistant. Given this project JSON, suggest transitions between adjacent clips on each video track. Return JSON array of transitions with fields: id, fromClipId, toClipId, type(one of none,crossfade,fadeToBlack), durationMs. Project JSON: $projectJson";
+        val agentPrompt = "You are a mobile video editor assistant. Given this project JSON, suggest transitions between adjacent clips on each video track. Return JSON array of transitions with fields: id, fromClipId, toClipId, type(one of none,crossfade,fadeToBlack), durationMs. Project JSON: $projectJson"
 
         scope.launch {
             try {
@@ -206,11 +262,17 @@ class VideoEditorBridge(
     ) {
         scope.launch {
             try {
-                val filePath = withContext(Dispatchers.IO) {
+                val exportResult = withContext(Dispatchers.IO) {
                     exportTimelineInternal(timelineJson, outputFileName)
                 }
 
-                result.success(mapOf("success" to true, "filePath" to filePath))
+                val response = mutableMapOf<String, Any?>(
+                    "success" to true,
+                    "filePath" to exportResult.videoPath,
+                )
+                exportResult.captionsPath?.let { response["captionsFilePath"] = it }
+
+                result.success(response)
             } catch (e: Exception) {
                 Log.e(TAG, "Export failed", e)
                 result.success(mapOf("success" to false, "error" to (e.message ?: "Unknown error")))
@@ -218,123 +280,451 @@ class VideoEditorBridge(
         }
     }
 
+    private data class ParsedClip(
+        val id: String,
+        val type: String,
+        val uri: String,
+        val startMs: Int,
+        val durationMs: Int,
+        val trimStartMs: Int,
+    ) {
+        val endMs: Int get() = startMs + durationMs
+    }
+
+    private data class ParsedTransition(
+        val fromClipId: String,
+        val toClipId: String,
+        val type: String,
+        val durationMs: Int,
+    )
+
+    private data class ExportResult(
+        val videoPath: String,
+        val captionsPath: String? = null,
+    )
+
     /**
-     * MVP export implementation:
-     * - Exports ONLY the first video track (video/images) in timeline order
-     * - Applies trimStartMs and durationMs
-     * - Produces a single MP4 in app external files dir
+     * Export implementation (incremental toward full NLE):
+     * - Respects clip startMs (inserts black gaps)
+     * - Applies simple fade transitions (fade-out + fade-in)
+     * - Supports picture-in-picture overlays from additional video tracks (simple bottom-right stacking)
+     * - Mixes audio clips from audio tracks (timeline-aligned via adelay + amix)
+     * - Exports captions sidecar (.srt) and can optionally burn-in captions
      */
-    private fun exportTimelineInternal(timelineJson: String, outputFileName: String?): String {
+    private fun exportTimelineInternal(timelineJson: String, outputFileName: String?): ExportResult {
         val project = JSONObject(timelineJson)
         val tracks = project.getJSONArray("tracks")
 
-        // Find the first video track.
-        var videoTrack: JSONObject? = null
+        val transitions = parseTransitions(project.optJSONArray("transitions"))
+        val transitionFrom = transitions.associateBy { it.fromClipId }
+        val transitionTo = transitions.associateBy { it.toClipId }
+
+        val videoTracks = collectTracksByType(tracks, "video")
+        if (videoTracks.isEmpty()) throw IllegalStateException("No video track found")
+
+        val baseTrack = videoTracks.first()
+        val baseClips = parseClips(baseTrack)
+        if (baseClips.isEmpty()) throw IllegalStateException("No clips on the main video track")
+
+        val baseClipById = baseClips.associateBy { it.id }
+
+        val workDir = File(context.cacheDir, "video_export_${System.currentTimeMillis()}").apply { mkdirs() }
+
+        val overlayTracks = videoTracks.drop(1)
+        val overlayClips = overlayTracks.flatMap { parseClips(it) }
+
+        val audioTracks = collectTracksByType(tracks, "audio")
+        val audioClips = audioTracks.flatMap { parseClips(it) }
+            .filter { it.type == "audio" }
+
+        val captionsSrt = (project.opt("captionsSrt") as? String)?.takeIf { it.isNotBlank() }
+        val burnInCaptions = project.optBoolean("burnInCaptions", false)
+
+        val finalName = outputFileName?.takeIf { it.endsWith(".mp4") }
+            ?: "blurr_export_${System.currentTimeMillis()}.mp4"
+        val outputFile = File(context.getExternalFilesDir(null), finalName)
+
+        val captionsFilePath = captionsSrt?.let {
+            val nameWithoutExt = finalName.removeSuffix(".mp4")
+            val srtFile = File(context.getExternalFilesDir(null), "$nameWithoutExt.srt")
+            srtFile.writeText(it)
+            srtFile.absolutePath
+        }
+
+        val needsCompose = overlayClips.isNotEmpty() || audioClips.isNotEmpty() || (burnInCaptions && captionsFilePath != null)
+
+        val baseVideoFile = if (needsCompose) {
+            File(workDir, "base.mp4")
+        } else {
+            outputFile
+        }
+
+        // Render base track segments (clips + gaps) then concat.
+        val renderedSegments = renderBaseTrackSegments(
+            baseClips = baseClips,
+            baseClipById = baseClipById,
+            transitionFrom = transitionFrom,
+            transitionTo = transitionTo,
+            workDir = workDir,
+        )
+
+        concatSegments(renderedSegments, baseVideoFile)
+
+        if (!needsCompose) {
+            // Sidecar captions already written.
+            return ExportResult(videoPath = baseVideoFile.absolutePath, captionsPath = captionsFilePath)
+        }
+
+        // Render overlay segments (PiP) for additional video tracks.
+        val overlaySegments = renderOverlaySegments(overlayClips, workDir)
+
+        // Compose overlays, audio, and optional burned captions.
+        composeFinal(
+            baseVideoFile = baseVideoFile,
+            overlaySegments = overlaySegments,
+            audioClips = audioClips,
+            outputFile = outputFile,
+            captionsFilePath = captionsFilePath,
+            burnInCaptions = burnInCaptions,
+        )
+
+        return ExportResult(videoPath = outputFile.absolutePath, captionsPath = captionsFilePath)
+    }
+
+    private fun parseTransitions(array: JSONArray?): List<ParsedTransition> {
+        if (array == null) return emptyList()
+        val out = mutableListOf<ParsedTransition>()
+        for (i in 0 until array.length()) {
+            val t = array.optJSONObject(i) ?: continue
+            val from = t.optString("fromClipId")
+            val to = t.optString("toClipId")
+            val type = t.optString("type", "none")
+            val dur = t.optInt("durationMs", 0)
+            if (from.isBlank() || to.isBlank()) continue
+            if (type == "none" || dur <= 0) continue
+            out.add(ParsedTransition(from, to, type, dur))
+        }
+        return out
+    }
+
+    private fun collectTracksByType(tracks: JSONArray, type: String): List<JSONObject> {
+        val out = mutableListOf<JSONObject>()
         for (i in 0 until tracks.length()) {
-            val t = tracks.getJSONObject(i)
-            if (t.optString("type") == "video") {
-                videoTrack = t
-                break
+            val t = tracks.optJSONObject(i) ?: continue
+            if (t.optString("type") == type) {
+                out.add(t)
             }
         }
-        if (videoTrack == null) {
-            throw IllegalStateException("No video track found")
+        return out
+    }
+
+    private fun parseClips(track: JSONObject): List<ParsedClip> {
+        val clips = track.optJSONArray("clips") ?: return emptyList()
+        val out = mutableListOf<ParsedClip>()
+        for (i in 0 until clips.length()) {
+            val c = clips.optJSONObject(i) ?: continue
+            val id = c.optString("id")
+            val type = c.optString("type")
+            val uri = c.optString("uri")
+            val startMs = c.optInt("startMs", 0)
+            val durationMs = c.optInt("durationMs", 0)
+            val trimStartMs = c.optInt("trimStartMs", 0)
+
+            if (id.isBlank() || uri.isBlank() || durationMs <= 0) continue
+            out.add(ParsedClip(id, type, uri, startMs, durationMs, trimStartMs))
         }
+        return out.sortedBy { it.startMs }
+    }
 
-        val clips = videoTrack.getJSONArray("clips")
-        if (clips.length() == 0) {
-            throw IllegalStateException("No clips on the video track")
-        }
-
-        val clipsList = (0 until clips.length()).map { clips.getJSONObject(it) }
-            .sortedBy { it.optInt("startMs", 0) }
-
-        val workDir = File(context.cacheDir, "video_export_${System.currentTimeMillis()}")
-        workDir.mkdirs()
-
+    private fun renderBaseTrackSegments(
+        baseClips: List<ParsedClip>,
+        baseClipById: Map<String, ParsedClip>,
+        transitionFrom: Map<String, ParsedTransition>,
+        transitionTo: Map<String, ParsedTransition>,
+        workDir: File,
+    ): List<File> {
         val segmentFiles = mutableListOf<File>()
 
-        clipsList.forEachIndexed { index, clip ->
-            val uri = clip.optString("uri")
-            if (uri.startsWith("http://") || uri.startsWith("https://")) {
-                throw IllegalArgumentException("Network media not supported for export yet: $uri")
+        var cursorMs = 0
+        var segIndex = 0
+
+        for (clip in baseClips) {
+            if (clip.startMs > cursorMs) {
+                val gapMs = clip.startMs - cursorMs
+                val gapFile = File(workDir, "segment_${segIndex}_gap.mp4")
+                renderBlackSegment(gapMs, gapFile)
+                segmentFiles.add(gapFile)
+                segIndex++
+                cursorMs = clip.startMs
             }
 
-            val type = clip.optString("type")
-            val trimStartMs = clip.optInt("trimStartMs", 0)
-            val durationMs = clip.optInt("durationMs", 0)
+            val fadeInMs = transitionTo[clip.id]?.durationMs ?: 0
 
-            if (durationMs <= 0) {
-                return@forEachIndexed
+            val trFrom = transitionFrom[clip.id]
+            val fadeOutMs = if (trFrom != null) {
+                if (trFrom.type == "fadeToBlack") {
+                    trFrom.durationMs
+                } else {
+                    val toClip = baseClipById[trFrom.toClipId]
+                    if (toClip != null && toClip.startMs == clip.endMs) trFrom.durationMs else 0
+                }
+            } else {
+                0
             }
 
-            val durSec = durationMs / 1000.0
-            val trimStartSec = trimStartMs / 1000.0
-
-            val outFile = File(workDir, "segment_$index.mp4")
-            val inputPath = escapePath(uri)
-            val outputPath = escapePath(outFile.absolutePath)
-
-            val baseVideoFilter = escapeFilter(
-                "scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,format=yuv420p"
+            val outFile = File(workDir, "segment_${segIndex}_${clip.id}.mp4")
+            renderVisualSegment(
+                clip = clip,
+                outFile = outFile,
+                width = OUTPUT_W,
+                height = OUTPUT_H,
+                fps = OUTPUT_FPS,
+                fadeInMs = fadeInMs,
+                fadeOutMs = fadeOutMs,
+                fadeOutToBlack = (trFrom?.type == "fadeToBlack"),
             )
-
-            val cmd = when (type) {
-                "image" -> {
-                    "-y -loop 1 -t $durSec -i $inputPath -vf $baseVideoFilter -r 30 -c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p $outputPath"
-                }
-                "video" -> {
-                    "-y -ss $trimStartSec -t $durSec -i $inputPath -vf $baseVideoFilter -r 30 -c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p -an $outputPath"
-                }
-                else -> {
-                    // Skip non-video media on the main video track.
-                    return@forEachIndexed
-                }
-            }
-
-            val session = FFmpegKit.execute(cmd)
-            val rc = session.returnCode
-            if (!ReturnCode.isSuccess(rc)) {
-                val stackTrace = session.failStackTrace
-                throw IllegalStateException("FFmpeg segment render failed (code=${rc?.value}): $stackTrace")
-            }
-
             segmentFiles.add(outFile)
+            segIndex++
+            cursorMs = maxOf(cursorMs, clip.endMs)
         }
 
+        return segmentFiles
+    }
+
+    private fun renderOverlaySegments(clips: List<ParsedClip>, workDir: File): List<Pair<ParsedClip, File>> {
+        val out = mutableListOf<Pair<ParsedClip, File>>()
+        var idx = 0
+        for (clip in clips) {
+            val outFile = File(workDir, "overlay_${idx}_${clip.id}.mp4")
+            renderVisualSegment(
+                clip = clip,
+                outFile = outFile,
+                width = PIP_W,
+                height = PIP_H,
+                fps = OUTPUT_FPS,
+                fadeInMs = 0,
+                fadeOutMs = 0,
+                fadeOutToBlack = false,
+            )
+            out.add(clip to outFile)
+            idx++
+        }
+        return out
+    }
+
+    private fun renderBlackSegment(durationMs: Int, outFile: File) {
+        val durSec = durationMs / 1000.0
+        val outPath = escapePath(outFile.absolutePath)
+        val cmd = "-y -f lavfi -t $durSec -i color=c=black:s=${OUTPUT_W}x${OUTPUT_H}:r=$OUTPUT_FPS -c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p $outPath"
+        runFfmpeg(cmd)
+    }
+
+    private fun renderVisualSegment(
+        clip: ParsedClip,
+        outFile: File,
+        width: Int,
+        height: Int,
+        fps: Int,
+        fadeInMs: Int,
+        fadeOutMs: Int,
+        fadeOutToBlack: Boolean,
+    ) {
+        val uri = clip.uri
+        if (uri.startsWith("http://") || uri.startsWith("https://")) {
+            throw IllegalArgumentException("Network media not supported for export yet: $uri")
+        }
+
+        val type = clip.type
+        val durSec = clip.durationMs / 1000.0
+        val trimStartSec = clip.trimStartMs / 1000.0
+
+        val inputPath = escapePath(uri)
+        val outputPath = escapePath(outFile.absolutePath)
+
+        val baseFilter = buildString {
+            append("scale=$width:$height:force_original_aspect_ratio=decrease,")
+            append("pad=$width:$height:(ow-iw)/2:(oh-ih)/2,")
+            append("format=yuv420p")
+
+            val fadeInSec = (fadeInMs / 1000.0).coerceAtMost(durSec.coerceAtLeast(0.0))
+            if (fadeInSec > 0.0) {
+                append(",fade=t=in:st=0:d=$fadeInSec")
+            }
+
+            val fadeOutSec = (fadeOutMs / 1000.0).coerceAtMost(durSec.coerceAtLeast(0.0))
+            if (fadeOutSec > 0.0 && durSec > fadeOutSec) {
+                val st = (durSec - fadeOutSec).coerceAtLeast(0.0)
+                val color = if (fadeOutToBlack) ":color=black" else ""
+                append(",fade=t=out:st=$st:d=$fadeOutSec$color")
+            }
+        }
+
+        val filterArg = escapeFilter(baseFilter)
+
+        val cmd = when (type) {
+            "image" -> {
+                "-y -loop 1 -t $durSec -i $inputPath -vf $filterArg -r $fps -c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p $outputPath"
+            }
+            "video" -> {
+                "-y -ss $trimStartSec -t $durSec -i $inputPath -vf $filterArg -r $fps -c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p -an $outputPath"
+            }
+            // For audio tracks we don't generate visual segments.
+            else -> {
+                // Render a black segment to keep pipeline stable.
+                "-y -f lavfi -t $durSec -i color=c=black:s=${width}x${height}:r=$fps -c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p $outputPath"
+            }
+        }
+
+        runFfmpeg(cmd)
+    }
+
+    private fun concatSegments(segmentFiles: List<File>, outputFile: File) {
         if (segmentFiles.isEmpty()) {
-            throw IllegalStateException("No renderable clips found")
+            throw IllegalStateException("No segments to concat")
         }
 
-        // concat demuxer file
-        val concatFile = File(workDir, "concat.txt")
+        val concatFile = File(outputFile.parentFile ?: segmentFiles.first().parentFile, "concat_${System.currentTimeMillis()}.txt")
         concatFile.writeText(segmentFiles.joinToString(separator = "\n") { "file '${it.absolutePath.replace("'", "\\'")}'" })
-
-        val finalName = outputFileName?.takeIf { it.endsWith(".mp4") } ?: "blurr_export_${System.currentTimeMillis()}.mp4"
-        val outputFile = File(context.getExternalFilesDir(null), finalName)
 
         val concatPath = escapePath(concatFile.absolutePath)
         val outPath = escapePath(outputFile.absolutePath)
 
-        // Re-encode on final concat for broad compatibility.
-        val concatCmd = "-y -f concat -safe 0 -i $concatPath -c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p -movflags +faststart $outPath"
-        val concatSession = FFmpegKit.execute(concatCmd)
-        val concatRc = concatSession.returnCode
-        if (!ReturnCode.isSuccess(concatRc)) {
-            val stackTrace = concatSession.failStackTrace
-            throw IllegalStateException("FFmpeg concat failed (code=${concatRc?.value}): $stackTrace")
+        val cmd = "-y -f concat -safe 0 -i $concatPath -c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p -movflags +faststart $outPath"
+        runFfmpeg(cmd)
+    }
+
+    private fun composeFinal(
+        baseVideoFile: File,
+        overlaySegments: List<Pair<ParsedClip, File>>, // clip + rendered pip segment
+        audioClips: List<ParsedClip>,
+        outputFile: File,
+        captionsFilePath: String?,
+        burnInCaptions: Boolean,
+    ) {
+        val cmd = StringBuilder()
+        cmd.append("-y ")
+
+        // Inputs
+        cmd.append("-i ").append(escapePath(baseVideoFile.absolutePath)).append(' ')
+
+        overlaySegments.forEach { (_, segFile) ->
+            cmd.append("-i ").append(escapePath(segFile.absolutePath)).append(' ')
         }
 
-        return outputFile.absolutePath
+        // Audio inputs: use trim via -ss/-t at input level.
+        audioClips.forEach { clip ->
+            val uri = clip.uri
+            if (uri.startsWith("http://") || uri.startsWith("https://")) {
+                throw IllegalArgumentException("Network media not supported for export yet: $uri")
+            }
+            val trimStartSec = clip.trimStartMs / 1000.0
+            val durSec = clip.durationMs / 1000.0
+            cmd.append("-ss ").append(trimStartSec).append(' ')
+            cmd.append("-t ").append(durSec).append(' ')
+            cmd.append("-i ").append(escapePath(uri)).append(' ')
+        }
+
+        // Filter graph
+        val filter = StringBuilder()
+
+        // Video chain
+        val baseLabel = "v0"
+        filter.append("[0:v]setpts=PTS-STARTPTS[$baseLabel];")
+
+        var currentV = baseLabel
+        overlaySegments.forEachIndexed { idx, (clip, _) ->
+            val inputIndex = 1 + idx
+            val ovLabel = "ov$idx"
+            val nextV = "v${idx + 1}"
+
+            val startSec = clip.startMs / 1000.0
+            val endSec = (clip.startMs + clip.durationMs) / 1000.0
+
+            // Stack overlays upwards if multiple.
+            val stackOffset = idx * (PIP_H + 12)
+            val x = OUTPUT_W - PIP_W - PIP_MARGIN
+            val y = (OUTPUT_H - PIP_H - PIP_MARGIN - stackOffset).coerceAtLeast(PIP_MARGIN)
+
+            filter.append("[$inputIndex:v]setpts=PTS-STARTPTS+$startSec/TB[$ovLabel];")
+            filter.append("[$currentV][$ovLabel]overlay=$x:$y:enable='between(t,$startSec,$endSec)'[$nextV];")
+            currentV = nextV
+        }
+
+        var finalVideoLabel = currentV
+
+        // Optional burn-in captions
+        if (burnInCaptions && !captionsFilePath.isNullOrBlank()) {
+            val burned = "vburn"
+            val subtitleArg = escapeSubtitleFilterArg(captionsFilePath)
+            filter.append("[$finalVideoLabel]subtitles=$subtitleArg[$burned];")
+            finalVideoLabel = burned
+        }
+
+        // Audio chain
+        val audioInputStart = 1 + overlaySegments.size
+        val audioLabels = mutableListOf<String>()
+
+        audioClips.forEachIndexed { idx, clip ->
+            val inputIndex = audioInputStart + idx
+            val delayed = "ad$idx"
+            val startMs = clip.startMs
+
+            filter.append("[$inputIndex:a]adelay=${startMs}|${startMs}[$delayed];")
+            audioLabels.add(delayed)
+        }
+
+        val hasAudio = audioLabels.isNotEmpty()
+        val audioOut = "aout"
+        if (hasAudio) {
+            if (audioLabels.size == 1) {
+                filter.append("[${audioLabels.first()}]anull[$audioOut];")
+            } else {
+                audioLabels.forEach { filter.append("[$it]") }
+                filter.append("amix=inputs=${audioLabels.size}:duration=longest[$audioOut];")
+            }
+        }
+
+        cmd.append("-filter_complex ").append(escapeFilter(filter.toString())).append(' ')
+        cmd.append("-map [").append(finalVideoLabel).append("] ")
+        if (hasAudio) {
+            cmd.append("-map [").append(audioOut).append("] ")
+        }
+
+        cmd.append("-c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p -movflags +faststart ")
+
+        if (hasAudio) {
+            cmd.append("-c:a aac -b:a 192k -shortest ")
+        }
+
+        cmd.append(escapePath(outputFile.absolutePath))
+
+        runFfmpeg(cmd.toString())
+    }
+
+    private fun runFfmpeg(cmd: String) {
+        val session = FFmpegKit.execute(cmd)
+        val rc = session.returnCode
+        if (!ReturnCode.isSuccess(rc)) {
+            val stackTrace = session.failStackTrace
+            throw IllegalStateException("FFmpeg failed (code=${rc?.value}): $stackTrace")
+        }
     }
 
     private fun escapePath(path: String): String {
-        // ffmpeg-kit accepts shell-like quoted args.
         return "\"" + path.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
     }
 
     private fun escapeFilter(filter: String): String {
         return "\"" + filter.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+    }
+
+    private fun escapeSubtitleFilterArg(path: String): String {
+        // subtitles filter uses ':' as separators, so escape it.
+        val escaped = path
+            .replace("\\", "\\\\")
+            .replace(":", "\\:")
+            .replace("'", "\\'")
+        return "'$escaped'"
     }
 
     fun dispose() {

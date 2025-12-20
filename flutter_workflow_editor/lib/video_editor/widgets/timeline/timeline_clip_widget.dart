@@ -83,6 +83,16 @@ class _ClipBody extends StatelessWidget {
           ),
           child: Stack(
             children: [
+              if (clip.type == MediaAssetType.audio)
+                Positioned.fill(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+                    child: CustomPaint(
+                      painter: _WaveformPainter(seed: clip.id.hashCode),
+                    ),
+                  ),
+                ),
+
               // Label
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -114,6 +124,45 @@ class _ClipBody extends StatelessWidget {
       ),
     );
   }
+}
+
+class _WaveformPainter extends CustomPainter {
+  final int seed;
+
+  _WaveformPainter({required this.seed});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withOpacity(0.65)
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round;
+
+    // Deterministic pseudo-random waveform based on the clip id.
+    var v = seed;
+
+    final barCount = (size.width / 6).floor().clamp(8, 80);
+    final barWidth = size.width / barCount;
+
+    for (var i = 0; i < barCount; i++) {
+      // xorshift-ish
+      v ^= (v << 13);
+      v ^= (v >> 17);
+      v ^= (v << 5);
+
+      final normalized = (v.abs() % 1000) / 1000.0;
+      final barHeight = (normalized * size.height).clamp(4.0, size.height);
+
+      final dx = i * barWidth;
+      final dy1 = (size.height - barHeight) / 2;
+      final dy2 = dy1 + barHeight;
+
+      canvas.drawLine(Offset(dx, dy1), Offset(dx, dy2), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _WaveformPainter oldDelegate) => oldDelegate.seed != seed;
 }
 
 class _TrimHandle extends StatelessWidget {

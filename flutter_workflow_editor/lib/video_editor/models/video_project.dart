@@ -10,6 +10,15 @@ class VideoProject {
   final List<VideoTrack> tracks;
   final List<VideoTransition> transitions;
 
+  /// Optional SRT captions to be exported alongside the video.
+  ///
+  /// For now this is a single sidecar (project-level) caption track.
+  final String? captionsSrt;
+
+  /// Whether to burn captions into the exported MP4.
+  /// When false, captions are exported as a separate .srt file.
+  final bool burnInCaptions;
+
   final String? selectedClipId;
   final int playheadMs;
 
@@ -20,6 +29,8 @@ class VideoProject {
     required this.updatedAt,
     required this.tracks,
     this.transitions = const [],
+    this.captionsSrt,
+    this.burnInCaptions = false,
     this.selectedClipId,
     this.playheadMs = 0,
   });
@@ -53,6 +64,8 @@ class VideoProject {
     DateTime? updatedAt,
     List<VideoTrack>? tracks,
     List<VideoTransition>? transitions,
+    String? captionsSrt,
+    bool? burnInCaptions,
     String? selectedClipId,
     int? playheadMs,
   }) {
@@ -63,6 +76,8 @@ class VideoProject {
       updatedAt: updatedAt ?? this.updatedAt,
       tracks: tracks ?? this.tracks,
       transitions: transitions ?? this.transitions,
+      captionsSrt: captionsSrt ?? this.captionsSrt,
+      burnInCaptions: burnInCaptions ?? this.burnInCaptions,
       selectedClipId: selectedClipId ?? this.selectedClipId,
       playheadMs: playheadMs ?? this.playheadMs,
     );
@@ -83,6 +98,8 @@ class VideoProject {
       'updatedAt': updatedAt.toIso8601String(),
       'tracks': tracks.map((t) => t.toJson()).toList(),
       'transitions': transitions.map((t) => t.toJson()).toList(),
+      'captionsSrt': captionsSrt,
+      'burnInCaptions': burnInCaptions,
       'selectedClipId': selectedClipId,
       'playheadMs': playheadMs,
     };
@@ -100,6 +117,8 @@ class VideoProject {
       transitions: (json['transitions'] as List<dynamic>? ?? [])
           .map((t) => VideoTransition.fromJson(Map<String, dynamic>.from(t as Map)))
           .toList(),
+      captionsSrt: json['captionsSrt'] as String?,
+      burnInCaptions: json['burnInCaptions'] as bool? ?? false,
       selectedClipId: json['selectedClipId'] as String?,
       playheadMs: json['playheadMs'] as int? ?? 0,
     );

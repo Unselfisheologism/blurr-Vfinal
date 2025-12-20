@@ -184,12 +184,13 @@ Channel:
 
 Methods implemented on Kotlin side:
 - `checkProStatus` → `{ isPro: Boolean }`
+- `getMediaDurationMs(uri)` → `{ durationMs: number? }` (native metadata probing for audio/video)
 - `executeAgentTask(prompt)` → `{ success: Boolean, result: String?, error: String? }`
-- `generateClipFromPrompt(prompt)` → currently proxied to agent prompt; expects URL/path in `result`.
+- `generateClipFromPrompt(prompt)` → proxied to agent prompt; expects URL/path in `result`.
 - `generateCaptions(clipUri, language)` → returns `{ success, srt }`
 - `suggestTransitions(projectJson)` → returns `{ success, transitions }` (often JSON string from agent)
 - `enhanceVideo(clipUri, intent)` → returns `{ success, result }`
-- `exportTimeline(timelineJson, outputFileName)` → returns `{ success, filePath }`
+- `exportTimeline(timelineJson, outputFileName)` → returns `{ success, filePath, captionsFilePath? }`
 
 Pro gating implementation:
 - Uses `FreemiumManager().isUserSubscribed()`.
@@ -202,12 +203,15 @@ Pro gating implementation:
 
 Export details:
 - Uses `FFmpegKit` to render timeline to MP4.
-- Current behavior (intentionally MVP):
-  - Exports **ONLY the first video track** (`type == "video"`).
-  - Supports timeline clips of `type == "video"` and `type == "image"`.
+- Current behavior (incremental NLE export):
+  - Respects `startMs` by inserting **black gaps** where needed.
+  - Supports clips of `type == "video"` and `type == "image"` on video tracks.
   - Applies `trimStartMs` and `durationMs`.
+  - Applies **simple transitions** (fade-out + fade-in) based on `project.transitions`.
+  - Supports **picture-in-picture overlays** from additional video tracks (bottom-right stacking).
+  - Mixes **audio clips** from audio tracks with timeline alignment (via `adelay` + `amix`).
+  - Exports captions as a **sidecar .srt**, with optional **burn-in**.
   - Produces 1280×720, 30fps, H.264 MP4.
-  - **No audio mixing yet**.
   - **Network URLs are not supported** for export yet (local device paths only).
 
 Output location:
@@ -215,27 +219,28 @@ Output location:
 
 ---
 
-## 6) Known limitations / planned next steps
+## 6) Remaining limitations / next steps
 
-This is a solid Epic 7 foundation, but still an MVP (by design):
+Epic 7 now has a usable end-to-end editor (timeline → preview → AI → export). Remaining work is mostly about **accuracy and polish**:
 
-1. **True NLE composition**
-   - Multi-track compositing (video overlays, picture-in-picture)
-   - Audio mixing + waveform display
-   - Captions track rendering (burn-in or sidecar)
+1. **True NLE composition (preview + export parity)**
+   - Export supports basic PiP overlays and audio mixing; the **live preview** is still single-clip oriented.
+   - Next step: real-time composition preview (multi-track) and per-clip transforms (position/scale/rotation).
 
-2. **Transitions**
-   - Currently displayed as markers and stored in project model.
-   - Export doesn’t yet apply transitions.
+2. **Transitions (true crossfades)**
+   - Export applies transitions as fade-out/fade-in. Next step: real **crossfade** (xfade) + transition parameter UI.
 
-3. **Project persistence**
-   - No save/load of projects yet (could be SharedPreferences/Hive + asset references).
+3. **Project persistence (multi-project UX)**
+   - Current implementation auto-saves and auto-restores the last project.
+   - Next step: multi-project list, rename, duplicate, delete, and per-project export presets.
 
 4. **Media import robustness**
-   - Duration probing for audio/video can be improved (metadata extractor on Kotlin side).
+   - Native duration probing is implemented via `MediaMetadataRetriever`.
+   - Next step: richer metadata (fps, resolution), thumbnail extraction, and SAF/URI support.
 
 5. **Performance**
-   - Timeline thumbnails, virtualization, and better gesture conflict handling.
+   - Tracks are virtualized with `ListView.builder` and track rows are wrapped in `RepaintBoundary`.
+   - Next step: timeline thumbnails caching, gesture arena refinements, and reducing rebuilds with selectors.
 
 ---
 
