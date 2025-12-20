@@ -225,7 +225,7 @@
 
             </LinearLayout>
             
-            <!-- Fourth Row of Action Tabs - DAW button -->
+            <!-- Fourth Row of Action Tabs - DAW + Video Editor -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -238,6 +238,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_marginEnd="4dp"
                     android:background="@drawable/rounded_button"
                     android:textColor="@color/black"
                     android:clickable="true"
@@ -245,6 +246,21 @@
                     android:gravity="center"
                     android:padding="12dp"
                     android:text="🎵 Music Studio"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/video_editor_link"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:background="@drawable/rounded_button"
+                    android:textColor="@color/black"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:text="🎬 Video Editor"
                     android:textSize="12sp" />
 
             </LinearLayout>
