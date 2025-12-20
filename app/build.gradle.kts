@@ -36,10 +36,12 @@ android {
     val googlecloudProxyURLKey = localProperties.getProperty("GCLOUD_PROXY_URL_KEY") ?: ""
     val revenueCatSDK = localProperties.getProperty("REVENUE_CAT_PUBLIC_URL") ?: ""
     val revenueCatApiKey = localProperties.getProperty("REVENUECAT_API_KEY") ?: ""
-    val appwriteProjectId = localProperties.getProperty("APPWRITE_PROJECT_ID") ?: "67543c7001402067d7" // Default/Placeholder
+    val appwriteProjectId = localProperties.getProperty("APPWRITE_PROJECT_ID") ?: "69466d6d002944e62a34" // Default/Placeholder
     val appwriteDatabaseId = localProperties.getProperty("APPWRITE_DATABASE_ID") ?: "" // REQUIRED: set in local.properties
     val appwriteUsersCollectionId = localProperties.getProperty("APPWRITE_USERS_COLLECTION_ID") ?: "" // REQUIRED
     val appwriteTasksCollectionId = localProperties.getProperty("APPWRITE_TASKS_COLLECTION_ID") ?: "" // REQUIRED
+    val appwriteProjectName = localProperties.getProperty("APPWRITE_PROJECT_NAME") ?: "TWENT MOBILE" // Default from Appwrite config
+    val appwritePublicEndpoint = localProperties.getProperty("APPWRITE_PUBLIC_ENDPOINT") ?: "https://sfo.cloud.appwrite.io/v1" // Default from Appwrite config
 
     val debugSha1 = "D0:A1:49:03:FD:B5:37:DF:B5:36:51:B1:66:AE:70:11:E2:59:08:33"
 
@@ -56,6 +58,8 @@ android {
          buildConfigField("String", "APPWRITE_DATABASE_ID", "\"$appwriteDatabaseId\"")
          buildConfigField("String", "APPWRITE_USERS_COLLECTION_ID", "\"$appwriteUsersCollectionId\"")
          buildConfigField("String", "APPWRITE_TASKS_COLLECTION_ID", "\"$appwriteTasksCollectionId\"")
+         buildConfigField("String", "APPWRITE_PROJECT_NAME", "\"$appwriteProjectName\"")
+         buildConfigField("String", "APPWRITE_PUBLIC_ENDPOINT", "\"$appwritePublicEndpoint\"")
         // Phase 0: Removed hard-coded API keys (GEMINI_API_KEYS, GOOGLE_TTS_API_KEY, PICOVOICE_ACCESS_KEY)
         buildConfigField("String", "TAVILY_API", "\"$tavilyApiKeys\"")
         buildConfigField("String", "MEM0_API", "\"$mem0ApiKey\"")
