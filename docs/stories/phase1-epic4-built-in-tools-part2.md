@@ -34,7 +34,7 @@ Implement PDF document generation tool using Android's built-in PDF library.
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/blurr/voice/tools/documents/PDFGeneratorTool.kt`
+- `app/src/main/java/com/twent/voice/tools/documents/PDFGeneratorTool.kt`
 
 ```kotlin
 class PDFGeneratorTool : Tool {
@@ -99,7 +99,7 @@ Implement PowerPoint presentation generation using Apache POI.
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/blurr/voice/tools/documents/PowerPointTool.kt`
+- `app/src/main/java/com/twent/voice/tools/documents/PowerPointTool.kt`
 
 **Dependencies**:
 Add to `build.gradle.kts`:
@@ -166,8 +166,8 @@ Implement infographic generation using Canvas drawing with templates.
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/blurr/voice/tools/documents/InfographicTool.kt`
-- `app/src/main/java/com/blurr/voice/tools/documents/InfographicTemplates.kt`
+- `app/src/main/java/com/twent/voice/tools/documents/InfographicTool.kt`
+- `app/src/main/java/com/twent/voice/tools/documents/InfographicTemplates.kt`
 
 ```kotlin
 class InfographicTool : Tool {
@@ -236,8 +236,8 @@ Implement Google OAuth 2.0 authentication for FREE Workspace API access using us
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/blurr/voice/auth/GoogleAuthManager.kt`
-- `app/src/main/java/com/blurr/voice/ui/GoogleSignInActivity.kt`
+- `app/src/main/java/com/twent/voice/auth/GoogleAuthManager.kt`
+- `app/src/main/java/com/twent/voice/ui/GoogleSignInActivity.kt`
 
 **Dependencies**:
 Add to `build.gradle.kts`:
@@ -320,8 +320,8 @@ Integrate Composio SDK for 2,000+ tool integrations (Notion, Asana, Linear, Slac
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/blurr/voice/integrations/ComposioIntegrationManager.kt`
-- `app/src/main/java/com/blurr/voice/tools/composio/ComposioTool.kt`
+- `app/src/main/java/com/twent/voice/integrations/ComposioIntegrationManager.kt`
+- `app/src/main/java/com/twent/voice/tools/composio/ComposioTool.kt`
 
 **Dependencies**:
 Add to `build.gradle.kts`:
@@ -427,7 +427,7 @@ Implement Gmail tool for reading and composing emails using user's OAuth credent
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/blurr/voice/tools/google/GmailTool.kt`
+- `app/src/main/java/com/twent/voice/tools/google/GmailTool.kt`
 
 **Dependencies**:
 ```kotlin
@@ -521,7 +521,7 @@ Implement Google Calendar and Drive tools using user's OAuth credentials (FREE).
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/blurr/voice/tools/google/GoogleCalendarTool.kt`
+- `app/src/main/java/com/twent/voice/tools/google/GoogleCalendarTool.kt`
 
 **Dependencies**:
 ```kotlin
@@ -566,7 +566,7 @@ Create bridge tool that wraps existing ScreenInteractionService for phone contro
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/blurr/voice/tools/phone/PhoneControlTool.kt`
+- `app/src/main/java/com/twent/voice/tools/phone/PhoneControlTool.kt`
 
 ```kotlin
 class PhoneControlTool(

@@ -1,15 +1,15 @@
-package com.blurr.voice.intents
+package com.twent.voice.intents
 
 import android.content.Context
 import android.util.Log
-import com.blurr.voice.intents.impl.DialIntent
-import com.blurr.voice.intents.impl.EmailComposeIntent
-import com.blurr.voice.intents.impl.ShareTextIntent
-import com.blurr.voice.intents.impl.ViewUrlIntent
+import com.twent.voice.intents.impl.DialIntent
+import com.twent.voice.intents.impl.EmailComposeIntent
+import com.twent.voice.intents.impl.ShareTextIntent
+import com.twent.voice.intents.impl.ViewUrlIntent
 
 /**
  * Discovers and manages AppIntent implementations.
- * Convention: Put intent implementations under package com.blurr.voice.intents.impl
+ * Convention: Put intent implementations under package com.twent.voice.intents.impl
  */
 object IntentRegistry {
     private const val TAG = "IntentRegistry"

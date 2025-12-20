@@ -324,7 +324,7 @@ Built-in Tools:
 
 ### New Files (3):
 ```
-app/src/main/java/com/blurr/voice/tools/PerplexitySonarTool.kt   (420 lines)
+app/src/main/java/com/twent/voice/tools/PerplexitySonarTool.kt   (420 lines)
 docs/STORY_4.1_WEB_SEARCH_COMPLETE.md                            (detailed doc)
 docs/STORY_4.1_SUMMARY.md                                        (summary)
 docs/PHASE_1_STORY_4.1_COMPLETE.md                               (this file)
@@ -332,7 +332,7 @@ docs/PHASE_1_STORY_4.1_COMPLETE.md                               (this file)
 
 ### Modified Files (1):
 ```
-app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt          (+2 lines)
+app/src/main/java/com/twent/voice/tools/ToolRegistry.kt          (+2 lines)
 ```
 
 **Total New Code**: ~420 lines  

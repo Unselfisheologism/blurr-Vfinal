@@ -1,4 +1,4 @@
-package com.blurr.voice.v2
+package com.twent.voice.v2
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -12,18 +12,18 @@ import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import com.blurr.voice.R
-import com.blurr.voice.api.Eyes
-import com.blurr.voice.api.Finger
-import com.blurr.voice.overlay.OverlayDispatcher
-import com.blurr.voice.utilities.VisualFeedbackManager
-import com.blurr.voice.overlay.OverlayManager
-import com.blurr.voice.v2.actions.ActionExecutor
-import com.blurr.voice.v2.fs.FileSystem
-import com.blurr.voice.core.providers.UniversalLLMService
-import com.blurr.voice.v2.message_manager.MemoryManager
-import com.blurr.voice.v2.perception.Perception
-import com.blurr.voice.v2.perception.SemanticParser
+import com.twent.voice.R
+import com.twent.voice.api.Eyes
+import com.twent.voice.api.Finger
+import com.twent.voice.overlay.OverlayDispatcher
+import com.twent.voice.utilities.VisualFeedbackManager
+import com.twent.voice.overlay.OverlayManager
+import com.twent.voice.v2.actions.ActionExecutor
+import com.twent.voice.v2.fs.FileSystem
+import com.twent.voice.core.providers.UniversalLLMService
+import com.twent.voice.v2.message_manager.MemoryManager
+import com.twent.voice.v2.perception.Perception
+import com.twent.voice.v2.perception.SemanticParser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -64,8 +64,8 @@ class AgentService : Service() {
     companion object {
         private const val NOTIFICATION_CHANNEL_ID = "AgentServiceChannelV2"
         private const val NOTIFICATION_ID = 14
-        private const val EXTRA_TASK = "com.blurr.voice.v2.EXTRA_TASK"
-        private const val ACTION_STOP_SERVICE = "com.blurr.voice.v2.ACTION_STOP_SERVICE"
+        private const val EXTRA_TASK = "com.twent.voice.v2.EXTRA_TASK"
+        private const val ACTION_STOP_SERVICE = "com.twent.voice.v2.ACTION_STOP_SERVICE"
 
         @Volatile
         var isRunning: Boolean = false
@@ -94,7 +94,7 @@ class AgentService : Service() {
             try {
                 kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.IO) {
                     try {
-                        com.blurr.voice.utilities.FreemiumManager().decrementTaskCount()
+                        com.twent.voice.utilities.FreemiumManager().decrementTaskCount()
                     } catch (_: Exception) {
                     }
                 }
@@ -284,7 +284,7 @@ class AgentService : Service() {
      * Tracks the task start in Appwrite by appending it to the user's task history array.
      */
     private suspend fun trackTaskStart(task: String) {
-        val uid = com.blurr.voice.data.AppwriteDb.getCurrentUserIdOrNull()
+        val uid = com.twent.voice.data.AppwriteDb.getCurrentUserIdOrNull()
         if (uid == null) {
             Log.w(TAG, "Cannot track task start, user is not logged in.")
             return
@@ -300,7 +300,7 @@ class AgentService : Service() {
                 "success" to null,
                 "errorMessage" to null
             )
-            com.blurr.voice.data.AppwriteDb.appendToUserArrayField(uid, "taskHistory", taskEntry)
+            com.twent.voice.data.AppwriteDb.appendToUserArrayField(uid, "taskHistory", taskEntry)
             Log.d(TAG, "Tracked task start for user $uid: $task")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to track task start", e)
@@ -314,7 +314,7 @@ class AgentService : Service() {
      * we'll add a new completion entry to track the result.
      */
     private suspend fun trackTaskCompletion(task: String, success: Boolean, errorMessage: String? = null) {
-        val uid = com.blurr.voice.data.AppwriteDb.getCurrentUserIdOrNull()
+        val uid = com.twent.voice.data.AppwriteDb.getCurrentUserIdOrNull()
         if (uid == null) {
             Log.w(TAG, "Cannot track task completion, user is not logged in.")
             return
@@ -331,7 +331,7 @@ class AgentService : Service() {
                 "errorMessage" to errorMessage
             )
 
-            com.blurr.voice.data.AppwriteDb.appendToUserArrayField(uid, "taskHistory", completionEntry)
+            com.twent.voice.data.AppwriteDb.appendToUserArrayField(uid, "taskHistory", completionEntry)
             Log.d(TAG, "Tracked task completion for user $uid: $task (success: $success)")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to track task completion", e)

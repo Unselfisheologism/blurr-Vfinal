@@ -6,8 +6,8 @@
     },
     "mode": "initial_scan",
     "scan_level": "quick",
-    "project_root": "c:/Users/James Abraham/Downloads/blurr-Vfinal",
-    "output_folder": "c:/Users/James Abraham/Downloads/blurr-Vfinal/docs",
+    "project_root": "c:/Users/James Abraham/Downloads/twent-Vfinal",
+    "output_folder": "c:/Users/James Abraham/Downloads/twent-Vfinal/docs",
     "completed_steps": [
         {
             "step": "step_1",

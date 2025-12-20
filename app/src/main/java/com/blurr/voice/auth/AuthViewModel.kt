@@ -1,9 +1,9 @@
-package com.blurr.voice.auth
+package com.twent.voice.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.blurr.voice.core.result.Result
-import com.blurr.voice.core.result.AIError
+import com.twent.voice.core.result.Result
+import com.twent.voice.core.result.AIError
 import io.appwrite.models.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

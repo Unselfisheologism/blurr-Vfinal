@@ -1,4 +1,4 @@
-package com.blurr.voice.api
+package com.twent.voice.api
 
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
@@ -8,9 +8,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
-import com.blurr.voice.MyApplication
-import com.blurr.voice.utilities.NetworkConnectivityManager
-import com.blurr.voice.utilities.NetworkNotifier
+import com.twent.voice.MyApplication
+import com.twent.voice.utilities.NetworkConnectivityManager
+import com.twent.voice.utilities.NetworkNotifier
 
 class TavilyApi(private val apiKey: String) {
 

@@ -39,7 +39,7 @@ class WorkflowEditorApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => VideoEditorState()),
       ],
       child: MaterialApp(
-        title: 'Blurr AI Apps',
+        title: 'Twent AI Apps',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           useMaterial3: true,

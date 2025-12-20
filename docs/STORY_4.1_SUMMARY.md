@@ -14,7 +14,7 @@ Implemented **Perplexity Sonar Web Search & Deep Research Tool** that consolidat
 ## What Was Built
 
 ### Single Tool: `PerplexitySonarTool`
-- **File**: `app/src/main/java/com/blurr/voice/tools/PerplexitySonarTool.kt` (420 lines)
+- **File**: `app/src/main/java/com/twent/voice/tools/PerplexitySonarTool.kt` (420 lines)
 - **Tool Name**: `web_search`
 - **Description**: Search the web and perform deep research
 
@@ -212,12 +212,12 @@ Built-in Tools:
 ## Files
 
 ### Created:
-- `app/src/main/java/com/blurr/voice/tools/PerplexitySonarTool.kt` (420 lines)
+- `app/src/main/java/com/twent/voice/tools/PerplexitySonarTool.kt` (420 lines)
 - `docs/STORY_4.1_WEB_SEARCH_COMPLETE.md` (detailed doc)
 - `docs/STORY_4.1_SUMMARY.md` (this file)
 
 ### Modified:
-- `app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt` (+2 lines)
+- `app/src/main/java/com/twent/voice/tools/ToolRegistry.kt` (+2 lines)
 
 **Total**: ~422 lines of new code
 

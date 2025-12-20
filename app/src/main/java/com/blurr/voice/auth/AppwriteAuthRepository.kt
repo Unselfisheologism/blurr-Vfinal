@@ -1,7 +1,7 @@
-package com.blurr.voice.auth
+package com.twent.voice.auth
 
-import com.blurr.voice.core.result.AIError
-import com.blurr.voice.core.result.Result
+import com.twent.voice.core.result.AIError
+import com.twent.voice.core.result.Result
 import io.appwrite.exceptions.AppwriteException
 import io.appwrite.ID
 import io.appwrite.models.Session

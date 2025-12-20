@@ -1,20 +1,20 @@
-package com.blurr.voice.v2
+package com.twent.voice.v2
 
 import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import com.blurr.voice.v2.actions.ActionExecutor
-import com.blurr.voice.v2.fs.FileSystem
-import com.blurr.voice.core.providers.UniversalLLMService
-import com.blurr.voice.v2.llm.GeminiMessage
-import com.blurr.voice.v2.message_manager.MemoryManager
-import com.blurr.voice.v2.perception.Perception
-import com.blurr.voice.utilities.SpeechCoordinator
-import com.blurr.voice.overlay.OverlayDispatcher
-import com.blurr.voice.overlay.OverlayPriority
-import com.blurr.voice.overlay.OverlayPosition
-import com.blurr.voice.SettingsActivity
+import com.twent.voice.v2.actions.ActionExecutor
+import com.twent.voice.v2.fs.FileSystem
+import com.twent.voice.core.providers.UniversalLLMService
+import com.twent.voice.v2.llm.GeminiMessage
+import com.twent.voice.v2.message_manager.MemoryManager
+import com.twent.voice.v2.perception.Perception
+import com.twent.voice.utilities.SpeechCoordinator
+import com.twent.voice.overlay.OverlayDispatcher
+import com.twent.voice.overlay.OverlayPriority
+import com.twent.voice.overlay.OverlayPosition
+import com.twent.voice.SettingsActivity
 import kotlinx.coroutines.delay
 
 /**
@@ -104,7 +104,7 @@ class Agent(
             Log.d(TAG,"🤖 LLM decided: ${agentOutput.nextGoal}")
 
             // Show thoughts if enabled
-            val sharedPrefs = context.getSharedPreferences("BlurrSettings", Context.MODE_PRIVATE)
+            val sharedPrefs = context.getSharedPreferences("TwentSettings", Context.MODE_PRIVATE)
             if (sharedPrefs.getBoolean(SettingsActivity.KEY_SHOW_THOUGHTS, false)) {
                 val thoughtText = buildString {
                     agentOutput.thinking?.let { if (it.isNotEmpty()) append("Thinking: ${agentOutput.thinking}\n") }

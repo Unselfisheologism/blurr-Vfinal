@@ -1,10 +1,10 @@
-package com.blurr.voice.v2.perception
+package com.twent.voice.v2.perception
 
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import com.blurr.voice.RawScreenData
-import com.blurr.voice.api.Eyes
+import com.twent.voice.RawScreenData
+import com.twent.voice.api.Eyes
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.async
 

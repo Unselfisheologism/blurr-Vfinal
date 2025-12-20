@@ -125,7 +125,7 @@ class DawExportService {
       
       final result = await Share.shareXFiles(
         [XFile(file.path)],
-        subject: 'Exported from Blurr AI DAW',
+        subject: 'Exported from Twent AI DAW',
         text: 'Check out this audio I created!',
       );
 
@@ -140,7 +140,7 @@ class DawExportService {
     }
   }
 
-  /// Save project as a DAW project file (.baw - Blurr Audio Workstation)
+  /// Save project as a DAW project file (.baw - Twent Audio Workstation)
   Future<File?> saveProjectFile(DawProject project, {String? customPath}) async {
     try {
       debugPrint('Saving project file: ${project.name}');
@@ -235,7 +235,7 @@ class DawExportService {
   /// Get default export path
   Future<String> _getDefaultExportPath(String fileName, ExportFormat format) async {
     final directory = await getApplicationDocumentsDirectory();
-    final exportDir = Directory('${directory.path}/BlurrDAW/Exports');
+    final exportDir = Directory('${directory.path}/TwentDAW/Exports');
     
     if (!await exportDir.exists()) {
       await exportDir.create(recursive: true);
@@ -251,7 +251,7 @@ class DawExportService {
   /// Get default project save path
   Future<String> _getDefaultProjectPath(String projectName) async {
     final directory = await getApplicationDocumentsDirectory();
-    final projectsDir = Directory('${directory.path}/BlurrDAW/Projects');
+    final projectsDir = Directory('${directory.path}/TwentDAW/Projects');
     
     if (!await projectsDir.exists()) {
       await projectsDir.create(recursive: true);

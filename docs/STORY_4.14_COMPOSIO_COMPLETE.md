@@ -22,7 +22,7 @@ Successfully integrated Composio SDK for access to 2,000+ tool integrations incl
 
 ### 1. ✅ Composio Configuration
 
-**File**: `app/src/main/java/com/blurr/voice/integrations/ComposioConfig.kt`
+**File**: `app/src/main/java/com/twent/voice/integrations/ComposioConfig.kt`
 
 ```kotlin
 object ComposioConfig {
@@ -42,7 +42,7 @@ object ComposioConfig {
 
 ### 2. ✅ Composio REST API Client
 
-**File**: `app/src/main/java/com/blurr/voice/integrations/ComposioClient.kt` (300+ lines)
+**File**: `app/src/main/java/com/twent/voice/integrations/ComposioClient.kt` (300+ lines)
 
 **Features**:
 - REST API client using OkHttp
@@ -75,7 +75,7 @@ object ComposioConfig {
 
 ### 3. ✅ Composio Integration Manager
 
-**File**: `app/src/main/java/com/blurr/voice/integrations/ComposioIntegrationManager.kt` (200+ lines)
+**File**: `app/src/main/java/com/twent/voice/integrations/ComposioIntegrationManager.kt` (200+ lines)
 
 **High-level manager wrapping ComposioClient**:
 
@@ -112,7 +112,7 @@ TRELLO, TODOIST, MONDAY, CLICKUP
 
 ### 4. ✅ Composio Tool
 
-**File**: `app/src/main/java/com/blurr/voice/tools/ComposioTool.kt` (250+ lines)
+**File**: `app/src/main/java/com/twent/voice/tools/ComposioTool.kt` (250+ lines)
 
 **The AI Agent Interface**:
 
@@ -185,7 +185,7 @@ Returns OAuth URL for user to authorize.
 
 ### 5. ✅ Tool Registration
 
-**File**: `app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt`
+**File**: `app/src/main/java/com/twent/voice/tools/ToolRegistry.kt`
 
 ```kotlin
 // Composio integrations (2,000+ tools) - Story 4.14
@@ -336,17 +336,17 @@ Task created instantly (no OAuth needed)
 
 ## Files Created
 
-1. ✅ `app/src/main/java/com/blurr/voice/integrations/ComposioConfig.kt` (30 lines)
-2. ✅ `app/src/main/java/com/blurr/voice/integrations/ComposioClient.kt` (300+ lines)
-3. ✅ `app/src/main/java/com/blurr/voice/integrations/ComposioIntegrationManager.kt` (200+ lines)
-4. ✅ `app/src/main/java/com/blurr/voice/tools/ComposioTool.kt` (250+ lines)
+1. ✅ `app/src/main/java/com/twent/voice/integrations/ComposioConfig.kt` (30 lines)
+2. ✅ `app/src/main/java/com/twent/voice/integrations/ComposioClient.kt` (300+ lines)
+3. ✅ `app/src/main/java/com/twent/voice/integrations/ComposioIntegrationManager.kt` (200+ lines)
+4. ✅ `app/src/main/java/com/twent/voice/tools/ComposioTool.kt` (250+ lines)
 5. ✅ `docs/STORY_4.14_COMPOSIO_COMPLETE.md` (This file)
 
 ---
 
 ## Files Modified
 
-1. ✅ `app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt` - Registered ComposioTool
+1. ✅ `app/src/main/java/com/twent/voice/tools/ToolRegistry.kt` - Registered ComposioTool
 2. ✅ `app/src/main/assets/prompts/system_prompt.md` - Added composio_tool documentation
 
 ---

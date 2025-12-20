@@ -659,7 +659,7 @@ flutter_workflow_editor/lib/text_editor/
 │   └── document_list.dart         # Document management drawer
 └── text_editor_screen.dart        # Main editor screen
 
-app/src/main/java/com/blurr/voice/apps/texteditor/
+app/src/main/java/com/twent/voice/apps/texteditor/
 ├── TextEditorActivity.kt          # Host Activity + Platform Channel
 └── TextEditorLauncher.kt          # Launch utilities
 ```

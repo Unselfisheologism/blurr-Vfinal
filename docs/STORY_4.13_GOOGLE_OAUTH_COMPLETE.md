@@ -41,7 +41,7 @@ implementation("com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0")
 
 ### 2. ✅ GoogleAuthManager Created
 
-**File**: `app/src/main/java/com/blurr/voice/auth/GoogleAuthManager.kt` (300+ lines)
+**File**: `app/src/main/java/com/twent/voice/auth/GoogleAuthManager.kt` (300+ lines)
 
 **Features**:
 - Google Sign-In configuration
@@ -68,7 +68,7 @@ implementation("com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0")
 ### 3. ✅ Google Sign-In Activity Created
 
 **Files**:
-- `app/src/main/java/com/blurr/voice/ui/GoogleSignInActivity.kt`
+- `app/src/main/java/com/twent/voice/ui/GoogleSignInActivity.kt`
 - `app/src/main/res/layout/activity_google_sign_in.xml`
 
 **Features**:
@@ -174,7 +174,7 @@ implementation("com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0")
    - Drive API
 4. **Create OAuth Credentials**:
    - Type: Android
-   - Package name: `com.blurr.voice`
+   - Package name: `com.twent.voice`
    - SHA-1: (from your keystore)
 5. **Configure Consent Screen**:
    - App name
@@ -222,8 +222,8 @@ class GmailTool(private val authManager: GoogleAuthManager) : Tool {
 
 ## Files Created
 
-1. ✅ `app/src/main/java/com/blurr/voice/auth/GoogleAuthManager.kt` (300+ lines)
-2. ✅ `app/src/main/java/com/blurr/voice/ui/GoogleSignInActivity.kt` (100+ lines)
+1. ✅ `app/src/main/java/com/twent/voice/auth/GoogleAuthManager.kt` (300+ lines)
+2. ✅ `app/src/main/java/com/twent/voice/ui/GoogleSignInActivity.kt` (100+ lines)
 3. ✅ `app/src/main/res/layout/activity_google_sign_in.xml` (90+ lines)
 4. ✅ `docs/STORY_4.13_GOOGLE_OAUTH_COMPLETE.md` (This file)
 

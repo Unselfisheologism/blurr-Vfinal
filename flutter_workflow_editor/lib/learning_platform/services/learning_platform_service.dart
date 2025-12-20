@@ -6,7 +6,7 @@ import '../models/document_item.dart';
 
 /// Platform channel service for AI + native capabilities (document parsing, TTS, etc).
 class LearningPlatformService {
-  static const MethodChannel _channel = MethodChannel('com.blurr.learning_platform/bridge');
+  static const MethodChannel _channel = MethodChannel('com.twent.learning_platform/bridge');
 
   Future<bool> checkProAccess() async {
     try {

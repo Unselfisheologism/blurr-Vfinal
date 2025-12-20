@@ -21,7 +21,7 @@ enum NodeType {
   httpRequest,
   code,
   
-  // System-level Actions (Blurr's unique capabilities)
+  // System-level Actions (Twent's unique capabilities)
   systemToolAction,
   uiAutomationAction,
   notificationAction,

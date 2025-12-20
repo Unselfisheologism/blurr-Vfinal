@@ -1,4 +1,4 @@
-package com.blurr.voice.data
+package com.twent.voice.data
 
 import android.content.Context
 import androidx.room.Database
@@ -22,7 +22,7 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "blurr_memory_database"
+                    "twent_memory_database"
                 )
                 .fallbackToDestructiveMigration() // This will recreate the database if schema changes
                 .build()

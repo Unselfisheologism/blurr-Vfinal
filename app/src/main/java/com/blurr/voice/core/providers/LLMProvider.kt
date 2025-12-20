@@ -1,4 +1,4 @@
-package com.blurr.voice.core.providers
+package com.twent.voice.core.providers
 
 /**
  * Enum representing supported LLM providers for BYOK (Bring Your Own Key)

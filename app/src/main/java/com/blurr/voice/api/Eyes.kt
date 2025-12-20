@@ -1,4 +1,4 @@
-package com.blurr.voice.api
+package com.twent.voice.api
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -7,8 +7,8 @@ import android.os.Environment
 import java.io.File
 import android.util.Log
 import androidx.annotation.RequiresApi
-import com.blurr.voice.RawScreenData
-import com.blurr.voice.ScreenInteractionService
+import com.twent.voice.RawScreenData
+import com.twent.voice.ScreenInteractionService
 
 class Eyes(context: Context) {
 

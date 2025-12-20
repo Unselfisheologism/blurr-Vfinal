@@ -1,5 +1,5 @@
 // Platform bridge for Spreadsheet Editor communication
-package com.blurr.voice.flutter
+package com.twent.voice.flutter
 
 import android.content.Context
 import android.util.Log
@@ -9,7 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import com.blurr.voice.agent.ToolExecutor
+import com.twent.voice.agent.ToolExecutor
 
 /**
  * Bridge for communication between Kotlin (Android) and Flutter (Spreadsheet Editor)
@@ -23,7 +23,7 @@ class SpreadsheetEditorBridge(
     flutterEngine: FlutterEngine
 ) {
     companion object {
-        private const val CHANNEL = "com.blurr.spreadsheet_editor/bridge"
+        private const val CHANNEL = "com.twent.spreadsheet_editor/bridge"
         private const val TAG = "SpreadsheetEditorBridge"
     }
 

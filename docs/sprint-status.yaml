@@ -1,6 +1,6 @@
 # generated: 2025-12-10
-# project: Blurr Mobile AI Super-Assistant
-# project_key: blurr
+# project: Twent Mobile AI Super-Assistant
+# project_key: twent
 # tracking_system: file-system
 # story_location: docs/stories
 
@@ -35,8 +35,8 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2025-12-10
-project: Blurr Mobile AI Super-Assistant
-project_key: blurr
+project: Twent Mobile AI Super-Assistant
+project_key: twent
 tracking_system: file-system
 story_location: docs/stories
 

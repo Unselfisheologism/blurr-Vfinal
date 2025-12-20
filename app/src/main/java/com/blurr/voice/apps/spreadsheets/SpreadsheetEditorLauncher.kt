@@ -1,8 +1,8 @@
-package com.blurr.voice.apps.spreadsheets
+package com.twent.voice.apps.spreadsheets
 
 import android.content.Context
 import android.content.Intent
-import com.blurr.voice.SpreadsheetEditorActivity
+import com.twent.voice.SpreadsheetEditorActivity
 
 /**
  * Launcher utility for Spreadsheet Editor

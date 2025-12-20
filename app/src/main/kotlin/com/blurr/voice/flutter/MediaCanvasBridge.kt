@@ -1,5 +1,5 @@
 // Platform bridge for Media Canvas communication
-package com.blurr.voice.flutter
+package com.twent.voice.flutter
 
 import android.content.Context
 import android.util.Log
@@ -8,7 +8,7 @@ import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import com.blurr.voice.agent.ToolExecutor
+import com.twent.voice.agent.ToolExecutor
 
 /**
  * Bridge for communication between Kotlin and Flutter Media Canvas
@@ -22,7 +22,7 @@ class MediaCanvasBridge(
     flutterEngine: FlutterEngine
 ) {
     companion object {
-        private const val CHANNEL = "com.blurr.media_canvas/bridge"
+        private const val CHANNEL = "com.twent.media_canvas/bridge"
         private const val TAG = "MediaCanvasBridge"
     }
 

@@ -149,7 +149,7 @@ Notion, Asana, Linear, Slack, Jira, GitHub, and many more!
    - Copy the key
 
 3. **Add to App**:
-   - Open: `app/src/main/java/com/blurr/voice/integrations/ComposioConfig.kt`
+   - Open: `app/src/main/java/com/twent/voice/integrations/ComposioConfig.kt`
    - Replace: `YOUR_COMPOSIO_API_KEY_HERE` with your actual key
    
    ```kotlin

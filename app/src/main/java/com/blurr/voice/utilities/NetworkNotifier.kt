@@ -1,10 +1,10 @@
-package com.blurr.voice.utilities
+package com.twent.voice.utilities
 
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
 import android.util.Log
-import com.blurr.voice.MyApplication
+import com.twent.voice.MyApplication
 
 /**
  * Shows a user-facing offline notification (toast) and speaks a short TTS message.

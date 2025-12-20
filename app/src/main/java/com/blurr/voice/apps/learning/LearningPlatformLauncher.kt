@@ -1,8 +1,8 @@
-package com.blurr.voice.apps.learning
+package com.twent.voice.apps.learning
 
 import android.content.Context
 import android.content.Intent
-import com.blurr.voice.LearningPlatformActivity
+import com.twent.voice.LearningPlatformActivity
 
 /**
  * Launcher utility for the AI-Native Learning Platform.

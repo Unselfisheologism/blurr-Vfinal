@@ -1,7 +1,7 @@
-package com.blurr.voice.auth
+package com.twent.voice.auth
 
 import android.content.Context
-import com.blurr.voice.BuildConfig
+import com.twent.voice.BuildConfig
 import io.appwrite.Client
 import io.appwrite.services.Account
 import io.appwrite.services.Databases

@@ -1,15 +1,15 @@
-package com.blurr.voice.data
+package com.twent.voice.data
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.blurr.voice.data.dao.ConversationDao
-import com.blurr.voice.data.models.Conversation
-import com.blurr.voice.data.models.Message
+import com.twent.voice.data.dao.ConversationDao
+import com.twent.voice.data.models.Conversation
+import com.twent.voice.data.models.Message
 
 /**
- * Room Database for Blurr AI Assistant
+ * Room Database for Twent AI Assistant
  * 
  * Manages conversations, messages, and other persistent data.
  */
@@ -21,24 +21,24 @@ import com.blurr.voice.data.models.Message
     version = 1,
     exportSchema = true
 )
-abstract class BlurrDatabase : RoomDatabase() {
+abstract class TwentDatabase : RoomDatabase() {
     
     abstract fun conversationDao(): ConversationDao
     
     companion object {
-        private const val DATABASE_NAME = "blurr_database"
+        private const val DATABASE_NAME = "twent_database"
         
         @Volatile
-        private var INSTANCE: BlurrDatabase? = null
+        private var INSTANCE: TwentDatabase? = null
         
         /**
          * Get database instance (singleton)
          */
-        fun getDatabase(context: Context): BlurrDatabase {
+        fun getDatabase(context: Context): TwentDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    BlurrDatabase::class.java,
+                    TwentDatabase::class.java,
                     DATABASE_NAME
                 )
                     .fallbackToDestructiveMigration()  // For development

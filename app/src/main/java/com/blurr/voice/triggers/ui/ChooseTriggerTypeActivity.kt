@@ -1,11 +1,11 @@
-package com.blurr.voice.triggers.ui
+package com.twent.voice.triggers.ui
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-import com.blurr.voice.R
-import com.blurr.voice.triggers.TriggerType
+import com.twent.voice.R
+import com.twent.voice.triggers.TriggerType
 
 class ChooseTriggerTypeActivity : AppCompatActivity() {
 

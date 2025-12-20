@@ -2,7 +2,7 @@
 
 ## Summary
 
-All advanced AIMLAPI features have been successfully implemented, bringing the Blurr agentic AI app to feature parity with the official AIMLAPI documentation.
+All advanced AIMLAPI features have been successfully implemented, bringing the Twent agentic AI app to feature parity with the official AIMLAPI documentation.
 
 ## What Was Implemented
 

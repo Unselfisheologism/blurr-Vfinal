@@ -195,7 +195,7 @@ pip_install('qrcode')
 import qrcode
 
 qr = qrcode.QRCode()
-qr.add_data('https://blurr.app')
+qr.add_data('https://twent.app')
 qr.make_image().save('qr.png')
 print('QR code generated')
     "
@@ -212,7 +212,7 @@ print('QR code generated')
 
 ### New Files (2):
 ```
-app/src/main/java/com/blurr/voice/tools/PythonShellTool.kt  (~450 lines)
+app/src/main/java/com/twent/voice/tools/PythonShellTool.kt  (~450 lines)
 app/src/main/assets/prompts/python_shell_guide.md           (~300 lines)
 ```
 

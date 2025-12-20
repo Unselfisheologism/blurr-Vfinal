@@ -1,13 +1,13 @@
-package com.blurr.voice.ui
+package com.twent.voice.ui
 
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.blurr.voice.BaseNavigationActivity
-import com.blurr.voice.R
-import com.blurr.voice.core.providers.LLMProvider
-import com.blurr.voice.core.providers.ProviderKeyManager
-import com.blurr.voice.core.providers.VoiceProviderConfig
+import com.twent.voice.BaseNavigationActivity
+import com.twent.voice.R
+import com.twent.voice.core.providers.LLMProvider
+import com.twent.voice.core.providers.ProviderKeyManager
+import com.twent.voice.core.providers.VoiceProviderConfig
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.CoroutineScope
@@ -290,7 +290,7 @@ class BYOKSettingsActivity : BaseNavigationActivity() {
     }
     
     private fun updateProviderCapabilities(provider: LLMProvider) {
-        val modelChecker = com.blurr.voice.tools.MediaModelChecker(this)
+        val modelChecker = com.twent.voice.tools.MediaModelChecker(this)
         
         activityScope.launch {
             val capabilities = withContext(Dispatchers.IO) {
@@ -304,11 +304,11 @@ class BYOKSettingsActivity : BaseNavigationActivity() {
                 capabilities.forEach { (mediaType, availability) ->
                     val icon = if (availability.isAvailable) "✅" else "❌"
                     val typeName = when (mediaType) {
-                        com.blurr.voice.tools.MediaModelChecker.MediaType.IMAGE -> "Images"
-                        com.blurr.voice.tools.MediaModelChecker.MediaType.VIDEO -> "Video"
-                        com.blurr.voice.tools.MediaModelChecker.MediaType.AUDIO_TTS -> "Audio/TTS"
-                        com.blurr.voice.tools.MediaModelChecker.MediaType.MUSIC -> "Music"
-                        com.blurr.voice.tools.MediaModelChecker.MediaType.MODEL_3D -> "3D Models"
+                        com.twent.voice.tools.MediaModelChecker.MediaType.IMAGE -> "Images"
+                        com.twent.voice.tools.MediaModelChecker.MediaType.VIDEO -> "Video"
+                        com.twent.voice.tools.MediaModelChecker.MediaType.AUDIO_TTS -> "Audio/TTS"
+                        com.twent.voice.tools.MediaModelChecker.MediaType.MUSIC -> "Music"
+                        com.twent.voice.tools.MediaModelChecker.MediaType.MODEL_3D -> "3D Models"
                     }
                     
                     appendLine("$icon $typeName")
@@ -338,7 +338,7 @@ class BYOKSettingsActivity : BaseNavigationActivity() {
         activityScope.launch {
             try {
                 val result = withContext(Dispatchers.IO) {
-                    val api = com.blurr.voice.core.providers.OpenAICompatibleAPI(
+                    val api = com.twent.voice.core.providers.OpenAICompatibleAPI(
                         selectedProvider, 
                         apiKey, 
                         "test"
@@ -400,7 +400,7 @@ class BYOKSettingsActivity : BaseNavigationActivity() {
         activityScope.launch {
             try {
                 val models = withContext(Dispatchers.IO) {
-                    val api = com.blurr.voice.core.providers.OpenAICompatibleAPI(
+                    val api = com.twent.voice.core.providers.OpenAICompatibleAPI(
                         selectedProvider, 
                         apiKey, 
                         "test"

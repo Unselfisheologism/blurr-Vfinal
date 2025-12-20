@@ -14,7 +14,7 @@
 
 ### Step 1: Launch Workflow Editor
 
-1. Open Blurr Voice app
+1. Open Twent Voice app
 2. Navigate to Settings/Menu
 3. Tap "Workflow Editor" button
 4. **Expected**: Flutter workflow editor opens with empty canvas

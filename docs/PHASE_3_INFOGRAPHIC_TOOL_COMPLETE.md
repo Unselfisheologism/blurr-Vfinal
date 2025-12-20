@@ -44,7 +44,7 @@ Successfully implemented the **GenerateInfographicTool** - the final piece of St
 
 ### 2. ✅ Tool Registration
 
-**File**: `app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt`
+**File**: `app/src/main/java/com/twent/voice/tools/ToolRegistry.kt`
 
 ```kotlin
 // Infographic generation (AI or D3.js) - Phase 3: Story 4.12
@@ -381,12 +381,12 @@ val question = UserQuestion(
 ## Files Summary
 
 ### Created (Phase 3)
-1. `app/src/main/java/com/blurr/voice/tools/GenerateInfographicTool.kt` (400+ lines)
+1. `app/src/main/java/com/twent/voice/tools/GenerateInfographicTool.kt` (400+ lines)
 2. `docs/STORY_4.12_COMPLETE.md` (1,200+ lines)
 3. `docs/PHASE_3_INFOGRAPHIC_TOOL_COMPLETE.md` (This file, 600+ lines)
 
 ### Modified (Phase 3)
-1. `app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt` (+5 lines)
+1. `app/src/main/java/com/twent/voice/tools/ToolRegistry.kt` (+5 lines)
 2. `app/src/main/assets/prompts/system_prompt.md` (+70 lines)
 3. `app/src/main/assets/prompts/unified_shell_guide.md` (+280 lines)
 

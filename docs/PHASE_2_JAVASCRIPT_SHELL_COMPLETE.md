@@ -36,7 +36,7 @@ The AI agent can now execute **both Python AND JavaScript** code through a singl
 ---
 
 ### 2. ✅ Language Detector
-**File**: `app/src/main/java/com/blurr/voice/tools/shell/LanguageDetector.kt`
+**File**: `app/src/main/java/com/twent/voice/tools/shell/LanguageDetector.kt`
 
 **Automatic Detection** based on syntax patterns:
 
@@ -76,7 +76,7 @@ fun detectLanguage(code: String): ShellLanguage {
 ---
 
 ### 3. ✅ JavaScript Executor
-**File**: `app/src/main/java/com/blurr/voice/tools/shell/JavaScriptExecutor.kt`
+**File**: `app/src/main/java/com/twent/voice/tools/shell/JavaScriptExecutor.kt`
 
 **Features**:
 - ✅ Rhino context initialization
@@ -109,7 +109,7 @@ fs.readFile(path)            // Read from cache directory
 ---
 
 ### 4. ✅ Python Executor (Extracted)
-**File**: `app/src/main/java/com/blurr/voice/tools/shell/PythonExecutor.kt`
+**File**: `app/src/main/java/com/twent/voice/tools/shell/PythonExecutor.kt`
 
 **Extracted from PythonShellTool** for consistency:
 - ✅ Python 3.8 execution via Chaquopy
@@ -132,7 +132,7 @@ fs.readFile(path)            // Read from cache directory
 ---
 
 ### 5. ✅ Unified Shell Tool
-**File**: `app/src/main/java/com/blurr/voice/tools/UnifiedShellTool.kt`
+**File**: `app/src/main/java/com/twent/voice/tools/UnifiedShellTool.kt`
 
 **The Main Interface**:
 ```kotlin
@@ -184,7 +184,7 @@ class UnifiedShellTool(context: Context) : Tool {
 ---
 
 ### 6. ✅ Execution Result Model
-**File**: `app/src/main/java/com/blurr/voice/tools/shell/ExecutionResult.kt`
+**File**: `app/src/main/java/com/twent/voice/tools/shell/ExecutionResult.kt`
 
 **Unified result format** for both languages:
 ```kotlin
@@ -200,7 +200,7 @@ data class ExecutionResult(
 ---
 
 ### 7. ✅ Tool Registry Integration
-**File**: `app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt`
+**File**: `app/src/main/java/com/twent/voice/tools/ToolRegistry.kt`
 
 **Added UnifiedShellTool** alongside PythonShellTool:
 ```kotlin
@@ -396,15 +396,15 @@ UnifiedShellTool
 
 ### Modified Files
 1. ✅ `app/build.gradle.kts` - Added Rhino dependency
-2. ✅ `app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt` - Registered UnifiedShellTool
+2. ✅ `app/src/main/java/com/twent/voice/tools/ToolRegistry.kt` - Registered UnifiedShellTool
 3. ✅ `app/src/main/assets/prompts/system_prompt.md` - Added unified_shell documentation
 
 ### New Files Created
-1. ✅ `app/src/main/java/com/blurr/voice/tools/shell/LanguageDetector.kt` (85 lines)
-2. ✅ `app/src/main/java/com/blurr/voice/tools/shell/ExecutionResult.kt` (20 lines)
-3. ✅ `app/src/main/java/com/blurr/voice/tools/shell/JavaScriptExecutor.kt` (220 lines)
-4. ✅ `app/src/main/java/com/blurr/voice/tools/shell/PythonExecutor.kt` (95 lines)
-5. ✅ `app/src/main/java/com/blurr/voice/tools/UnifiedShellTool.kt` (140 lines)
+1. ✅ `app/src/main/java/com/twent/voice/tools/shell/LanguageDetector.kt` (85 lines)
+2. ✅ `app/src/main/java/com/twent/voice/tools/shell/ExecutionResult.kt` (20 lines)
+3. ✅ `app/src/main/java/com/twent/voice/tools/shell/JavaScriptExecutor.kt` (220 lines)
+4. ✅ `app/src/main/java/com/twent/voice/tools/shell/PythonExecutor.kt` (95 lines)
+5. ✅ `app/src/main/java/com/twent/voice/tools/UnifiedShellTool.kt` (140 lines)
 6. ✅ `app/src/main/assets/prompts/unified_shell_guide.md` (850+ lines)
 7. ✅ `docs/PHASE_2_JAVASCRIPT_SHELL_PLAN.md` (Implementation plan)
 8. ✅ `docs/PHASE_2_JAVASCRIPT_SHELL_COMPLETE.md` (This file)

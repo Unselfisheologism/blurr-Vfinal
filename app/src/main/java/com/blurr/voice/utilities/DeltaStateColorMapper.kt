@@ -1,8 +1,8 @@
-package com.blurr.voice.utilities
+package com.twent.voice.utilities
 
 import android.content.Context
 import androidx.core.content.ContextCompat
-import com.blurr.voice.R
+import com.twent.voice.R
 
 /**
  * Utility class for mapping PandaState values to their corresponding colors

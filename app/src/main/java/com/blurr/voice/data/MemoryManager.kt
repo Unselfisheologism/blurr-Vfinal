@@ -1,9 +1,9 @@
-package com.blurr.voice.data
+package com.twent.voice.data
 
 import android.content.Context
 import android.util.Log
-import com.blurr.voice.api.EmbeddingService
-import com.blurr.voice.MyApplication
+import com.twent.voice.api.EmbeddingService
+import com.twent.voice.MyApplication
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

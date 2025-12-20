@@ -10,7 +10,7 @@
 ## What Was Implemented
 
 ### 1. ✅ GmailTool Class Created
-**File**: `app/src/main/java/com/blurr/voice/tools/google/GmailTool.kt` (730 lines)
+**File**: `app/src/main/java/com/twent/voice/tools/google/GmailTool.kt` (730 lines)
 
 **12 Complete Actions**:
 1. `list` - List recent emails
@@ -43,12 +43,12 @@ implementation("com.sun.mail:android-activation:1.6.7")
 ---
 
 ### 3. ✅ Tool Registration
-**File**: `app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt`
+**File**: `app/src/main/java/com/twent/voice/tools/ToolRegistry.kt`
 
 ```kotlin
 // Google Workspace integrations - FREE! (Story 4.13 + 4.15)
-val googleAuthManager = com.blurr.voice.auth.GoogleAuthManager(context)
-registerTool(com.blurr.voice.tools.google.GmailTool(context, googleAuthManager))
+val googleAuthManager = com.twent.voice.auth.GoogleAuthManager(context)
+registerTool(com.twent.voice.tools.google.GmailTool(context, googleAuthManager))
 ```
 
 ---
@@ -180,11 +180,11 @@ Agent: Searches + adds archive label to each
 ## Files Created/Modified
 
 ### Created (1 file)
-- ✅ `app/src/main/java/com/blurr/voice/tools/google/GmailTool.kt` (730 lines)
+- ✅ `app/src/main/java/com/twent/voice/tools/google/GmailTool.kt` (730 lines)
 
 ### Modified (3 files)
 - ✅ `app/build.gradle.kts` - Added JavaMail dependencies
-- ✅ `app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt` - Registered GmailTool
+- ✅ `app/src/main/java/com/twent/voice/tools/ToolRegistry.kt` - Registered GmailTool
 - ✅ `app/src/main/assets/prompts/system_prompt.md` - Added documentation
 
 **Total**: ~850 lines of code added

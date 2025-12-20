@@ -437,18 +437,18 @@ All media tools appear with appropriate categories:
 
 ### New Files (6):
 ```
-app/src/main/java/com/blurr/voice/tools/MediaModelChecker.kt          (~200 lines)
-app/src/main/java/com/blurr/voice/tools/ImageGenerationTool.kt        (~280 lines)
-app/src/main/java/com/blurr/voice/tools/VideoGenerationTool.kt        (~380 lines)
-app/src/main/java/com/blurr/voice/tools/AudioGenerationTool.kt        (~260 lines)
-app/src/main/java/com/blurr/voice/tools/MusicGenerationTool.kt        (~400 lines)
-app/src/main/java/com/blurr/voice/tools/Model3DGenerationTool.kt      (~350 lines)
+app/src/main/java/com/twent/voice/tools/MediaModelChecker.kt          (~200 lines)
+app/src/main/java/com/twent/voice/tools/ImageGenerationTool.kt        (~280 lines)
+app/src/main/java/com/twent/voice/tools/VideoGenerationTool.kt        (~380 lines)
+app/src/main/java/com/twent/voice/tools/AudioGenerationTool.kt        (~260 lines)
+app/src/main/java/com/twent/voice/tools/MusicGenerationTool.kt        (~400 lines)
+app/src/main/java/com/twent/voice/tools/Model3DGenerationTool.kt      (~350 lines)
 ```
 
 ### Modified Files (3):
 ```
-app/src/main/java/com/blurr/voice/core/providers/OpenAICompatibleAPI.kt  (+210 lines)
-app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt                  (+9 lines)
+app/src/main/java/com/twent/voice/core/providers/OpenAICompatibleAPI.kt  (+210 lines)
+app/src/main/java/com/twent/voice/tools/ToolRegistry.kt                  (+9 lines)
 docs/stories/phase1-epic4-built-in-tools-part1.md                        (updated)
 ```
 

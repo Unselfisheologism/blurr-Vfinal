@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 ///
 /// The Kotlin host implements the heavy lifting (agent calls + FFmpeg export).
 class VideoEditorBridge {
-  static const MethodChannel _channel = MethodChannel('com.blurr.video_editor/bridge');
+  static const MethodChannel _channel = MethodChannel('com.twent.video_editor/bridge');
 
   Future<bool> checkProStatus() async {
     try {

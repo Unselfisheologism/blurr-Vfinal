@@ -1,4 +1,4 @@
-package com.blurr.voice.core.providers
+package com.twent.voice.core.providers
 
 import android.graphics.Bitmap
 import android.util.Base64
@@ -74,8 +74,8 @@ class OpenAICompatibleAPI(
                         when (provider) {
                             LLMProvider.OPENROUTER -> {
                                 // Required for OpenRouter rankings and analytics
-                                addHeader("HTTP-Referer", "https://github.com/Ayush0Chaudhary/blurr")
-                                addHeader("X-Title", "Blurr AI Assistant")
+                                addHeader("HTTP-Referer", "https://github.com/Ayush0Chaudhary/twent")
+                                addHeader("X-Title", "Twent AI Assistant")
                                 // Optional: Add user identifier for better analytics
                                 // addHeader("X-User-ID", userId)
                             }
@@ -422,8 +422,8 @@ class OpenAICompatibleAPI(
                     .apply {
                         when (provider) {
                             LLMProvider.OPENROUTER -> {
-                                addHeader("HTTP-Referer", "https://github.com/Ayush0Chaudhary/blurr")
-                                addHeader("X-Title", "Blurr AI Assistant")
+                                addHeader("HTTP-Referer", "https://github.com/Ayush0Chaudhary/twent")
+                                addHeader("X-Title", "Twent AI Assistant")
                             }
                             else -> {}
                         }

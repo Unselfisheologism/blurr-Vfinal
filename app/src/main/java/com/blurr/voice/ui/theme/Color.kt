@@ -1,4 +1,4 @@
-package com.blurr.voice.ui.theme
+package com.twent.voice.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

@@ -1,8 +1,8 @@
-package com.blurr.voice
+package com.twent.voice
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.blurr.voice.flutter.LearningPlatformBridge
+import com.twent.voice.flutter.LearningPlatformBridge
 import io.flutter.embedding.android.FlutterFragment
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache

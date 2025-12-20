@@ -1,6 +1,6 @@
 ---
 title: "AI-Native Apps Phase - Product Requirements Document"
-project: blurr-Vfinal
+project: twent-Vfinal
 phase: "AI-Native Apps Implementation"
 version: 1.0
 date: 2025-12-18
@@ -13,11 +13,11 @@ stepsCompleted: []
 
 ## Executive Summary
 
-This PRD defines the implementation plan for six AI-native applications within the Blurr ecosystem. These are dedicated, agent-powered experiences that leverage the existing ultra-generalist agent, tool infrastructure, and workflow engine to provide specialized creative and productivity capabilities. Each app represents a full-screen or modal UI where users can accomplish complex tasks with AI assistance.
+This PRD defines the implementation plan for six AI-native applications within the Twent ecosystem. These are dedicated, agent-powered experiences that leverage the existing ultra-generalist agent, tool infrastructure, and workflow engine to provide specialized creative and productivity capabilities. Each app represents a full-screen or modal UI where users can accomplish complex tasks with AI assistance.
 
 ### Vision
 
-Transform Blurr from a general-purpose AI assistant into a comprehensive AI-native productivity suite, offering specialized experiences for text editing, data analysis, media generation, music production, learning, and video editing—all powered by a unified agent architecture.
+Transform Twent from a general-purpose AI assistant into a comprehensive AI-native productivity suite, offering specialized experiences for text editing, data analysis, media generation, music production, learning, and video editing—all powered by a unified agent architecture.
 
 ### Business Model Alignment
 
@@ -383,7 +383,7 @@ Transform Blurr from a general-purpose AI assistant into a comprehensive AI-nati
 ### 6.1 Module Structure
 
 ```
-app/src/main/java/com/blurr/voice/
+app/src/main/java/com/twent/voice/
 ├── apps/
 │   ├── texteditor/
 │   │   ├── TextEditorActivity.kt

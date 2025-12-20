@@ -118,7 +118,7 @@ app/
 │   │   └── prompts/
 │   │       ├── system_prompt.md (+ unified_shell docs)
 │   │       └── unified_shell_guide.md (NEW - 850+ lines)
-│   └── java/com/blurr/voice/
+│   └── java/com/twent/voice/
 │       └── tools/
 │           ├── shell/ (NEW package)
 │           │   ├── LanguageDetector.kt

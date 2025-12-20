@@ -1,6 +1,6 @@
 # Quick Start Guide - Flutter Workflow Editor
 
-Get the workflow editor running in your Blurr AI assistant in 5 steps.
+Get the workflow editor running in your Twent AI assistant in 5 steps.
 
 ## Step 1: Install Dependencies
 
@@ -39,7 +39,7 @@ dependencies {
 ## Step 4: Initialize in MainActivity
 
 ```kotlin
-import com.blurr.voice.workflow.WorkflowEditorHandler
+import com.twent.voice.workflow.WorkflowEditorHandler
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.plugin.common.MethodChannel
 

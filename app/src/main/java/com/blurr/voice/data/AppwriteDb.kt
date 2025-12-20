@@ -1,7 +1,7 @@
-package com.blurr.voice.data
+package com.twent.voice.data
 
-import com.blurr.voice.BuildConfig
-import com.blurr.voice.auth.AppwriteManager
+import com.twent.voice.BuildConfig
+import com.twent.voice.auth.AppwriteManager
 import io.appwrite.ID
 import io.appwrite.exceptions.AppwriteException
 import io.appwrite.models.Document

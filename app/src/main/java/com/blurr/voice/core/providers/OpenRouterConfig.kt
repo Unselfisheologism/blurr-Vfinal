@@ -1,4 +1,4 @@
-package com.blurr.voice.core.providers
+package com.twent.voice.core.providers
 
 /**
  * OpenRouter-specific configuration and constants
@@ -112,8 +112,8 @@ object OpenRouterConfig {
         const val TOP_P = 1.0
         
         // Recommended headers
-        const val HTTP_REFERER = "https://github.com/Ayush0Chaudhary/blurr"
-        const val X_TITLE = "Blurr AI Assistant"
+        const val HTTP_REFERER = "https://github.com/Ayush0Chaudhary/twent"
+        const val X_TITLE = "Twent AI Assistant"
     }
     
     /**

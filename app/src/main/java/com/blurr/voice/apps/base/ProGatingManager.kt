@@ -1,4 +1,4 @@
-package com.blurr.voice.apps.base
+package com.twent.voice.apps.base
 
 import android.content.Context
 import android.content.SharedPreferences

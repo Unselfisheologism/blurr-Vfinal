@@ -391,7 +391,7 @@ val response = api.generateChatCompletion(
 
 ## Conclusion
 
-**The Blurr AI Assistant now has BEST-IN-CLASS multi-provider support with 100% feature parity across all 6 major LLM providers.**
+**The Twent AI Assistant now has BEST-IN-CLASS multi-provider support with 100% feature parity across all 6 major LLM providers.**
 
 ### Key Achievements
 ✅ Fixed critical Groq vision bug

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The OpenRouter BYOK implementation has been enhanced with **all advanced features** from the official OpenRouter.ai API documentation, making Blurr a fully-featured agentic AI platform.
+The OpenRouter BYOK implementation has been enhanced with **all advanced features** from the official OpenRouter.ai API documentation, making Twent a fully-featured agentic AI platform.
 
 ## What Was Added
 
@@ -421,7 +421,7 @@ The OpenRouter implementation is now **feature-complete** and **production-ready
 - ✅ Comprehensive documentation
 - ✅ Type-safe, well-tested code
 
-**The implementation exceeds the original requirements and positions Blurr as a leading agentic AI platform with best-in-class OpenRouter integration.**
+**The implementation exceeds the original requirements and positions Twent as a leading agentic AI platform with best-in-class OpenRouter integration.**
 
 ---
 

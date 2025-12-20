@@ -1,6 +1,6 @@
-package com.blurr.voice.tools
+package com.twent.voice.tools
 
-import com.blurr.voice.core.providers.FunctionTool
+import com.twent.voice.core.providers.FunctionTool
 
 /**
  * Tool interface for Ultra-Generalist Agent

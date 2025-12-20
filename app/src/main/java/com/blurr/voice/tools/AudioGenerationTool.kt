@@ -1,9 +1,9 @@
-package com.blurr.voice.tools
+package com.twent.voice.tools
 
 import android.content.Context
 import android.util.Log
-import com.blurr.voice.core.providers.OpenAICompatibleAPI
-import com.blurr.voice.core.providers.ProviderKeyManager
+import com.twent.voice.core.providers.OpenAICompatibleAPI
+import com.twent.voice.core.providers.ProviderKeyManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient

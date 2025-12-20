@@ -1,7 +1,7 @@
-package com.blurr.voice.utilities
+package com.twent.voice.utilities
 
 import android.graphics.Bitmap
-import com.blurr.voice.core.providers.UniversalLLMService
+import com.twent.voice.core.providers.UniversalLLMService
 import android.content.Context
 import com.google.ai.client.generativeai.type.ImagePart
 import com.google.ai.client.generativeai.type.TextPart

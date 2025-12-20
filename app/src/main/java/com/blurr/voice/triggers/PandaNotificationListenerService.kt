@@ -1,4 +1,4 @@
-package com.blurr.voice.triggers
+package com.twent.voice.triggers
 
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification

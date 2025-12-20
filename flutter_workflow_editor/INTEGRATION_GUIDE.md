@@ -1,6 +1,6 @@
 # Flutter Workflow Editor - Integration Guide
 
-Complete guide for integrating the Flutter workflow editor module into the Blurr Voice Android app.
+Complete guide for integrating the Flutter workflow editor module into the Twent Voice Android app.
 
 ## Table of Contents
 1. [Prerequisites](#prerequisites)
@@ -56,16 +56,16 @@ project(":flutter_workflow_editor").projectDir =
 
 ### Step 2: Create WorkflowBridge.kt
 
-Create file: `app/src/main/kotlin/com/blurr/voice/flutter/WorkflowBridge.kt`
+Create file: `app/src/main/kotlin/com/twent/voice/flutter/WorkflowBridge.kt`
 
 ```kotlin
-package com.blurr.voice.flutter
+package com.twent.voice.flutter
 
 import android.content.Context
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
-import com.blurr.voice.utilities.FreemiumManager
-import com.blurr.voice.integrations.ComposioIntegrationManager
+import com.twent.voice.utilities.FreemiumManager
+import com.twent.voice.integrations.ComposioIntegrationManager
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -77,7 +77,7 @@ class WorkflowEditorBridge(
     private val flutterEngine: FlutterEngine
 ) {
     companion object {
-        private const val CHANNEL_NAME = "com.blurr.workflow_editor"
+        private const val CHANNEL_NAME = "com.twent.workflow_editor"
     }
 
     private val methodChannel = MethodChannel(
@@ -310,10 +310,10 @@ class WorkflowEditorBridge(
 
 ### Step 3: Create WorkflowEditorActivity
 
-Create: `app/src/main/kotlin/com/blurr/voice/WorkflowEditorActivity.kt`
+Create: `app/src/main/kotlin/com/twent/voice/WorkflowEditorActivity.kt`
 
 ```kotlin
-package com.blurr.voice
+package com.twent.voice
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -321,7 +321,7 @@ import io.flutter.embedding.android.FlutterFragment
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.embedding.engine.dart.DartExecutor
-import com.blurr.voice.flutter.WorkflowEditorBridge
+import com.twent.voice.flutter.WorkflowEditorBridge
 
 class WorkflowEditorActivity : AppCompatActivity() {
     
@@ -500,7 +500,7 @@ fun testPlatformChannel() {
     val bridge = WorkflowEditorBridge(context, engine)
     
     // Test Pro status
-    val channel = MethodChannel(engine.dartExecutor, "com.blurr.workflow_editor")
+    val channel = MethodChannel(engine.dartExecutor, "com.twent.workflow_editor")
     channel.invokeMethod("getProStatus", null) { result ->
         assertTrue(result is Boolean)
     }
@@ -544,7 +544,7 @@ cd .android
 
 **Check:**
 1. FlutterEngine initialized before creating bridge
-2. Method channel name matches: `com.blurr.workflow_editor`
+2. Method channel name matches: `com.twent.workflow_editor`
 3. Bridge created with correct engine instance
 
 **Debug:**
@@ -593,7 +593,7 @@ Log.d("Storage", "Saved: $saved")
 Ensure `FlutterEngineCache` is properly initialized:
 ```kotlin
 // In Application class
-class BlurrApp : Application() {
+class TwentApp : Application() {
     override fun onCreate() {
         super.onCreate()
         // Pre-warm Flutter engine
@@ -637,4 +637,4 @@ For integration issues:
 3. Test platform channels independently
 4. Check Composio/MCP connections
 
-Contact: Blurr development team
+Contact: Twent development team

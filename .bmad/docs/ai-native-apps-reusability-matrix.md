@@ -1,6 +1,6 @@
 ---
 title: "AI-Native Apps - Component Reusability Matrix"
-project: blurr-Vfinal
+project: twent-Vfinal
 phase: "AI-Native Apps Implementation"
 version: 1.0
 date: 2025-12-18
@@ -221,7 +221,7 @@ flutter_workflow_editor/lib/
 Each app has a dedicated Kotlin Activity that hosts its Flutter screen:
 
 ```kotlin
-// app/src/main/kotlin/com/blurr/voice/apps/texteditor/TextEditorActivity.kt
+// app/src/main/kotlin/com/twent/voice/apps/texteditor/TextEditorActivity.kt
 class TextEditorActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -402,7 +402,7 @@ CREATE TABLE video_clips (
 ### Consistent Pattern Across Apps
 
 ```kotlin
-// app/src/main/java/com/blurr/voice/apps/base/ProGatingManager.kt
+// app/src/main/java/com/twent/voice/apps/base/ProGatingManager.kt
 
 class ProGatingManager(
     private val subscriptionRepository: SubscriptionRepository
@@ -472,7 +472,7 @@ sealed class FeatureAccessResult {
 ### Export Helper
 
 ```kotlin
-// app/src/main/java/com/blurr/voice/apps/base/ExportHelper.kt
+// app/src/main/java/com/twent/voice/apps/base/ExportHelper.kt
 
 class ExportHelper(
     private val context: Context,

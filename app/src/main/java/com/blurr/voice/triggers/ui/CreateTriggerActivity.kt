@@ -1,4 +1,4 @@
-package com.blurr.voice.triggers.ui
+package com.twent.voice.triggers.ui
 
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -19,11 +19,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.blurr.voice.R
-import com.blurr.voice.triggers.PermissionUtils
-import com.blurr.voice.triggers.Trigger
-import com.blurr.voice.triggers.TriggerManager
-import com.blurr.voice.triggers.TriggerType
+import com.twent.voice.R
+import com.twent.voice.triggers.PermissionUtils
+import com.twent.voice.triggers.Trigger
+import com.twent.voice.triggers.TriggerManager
+import com.twent.voice.triggers.TriggerType
 import java.util.UUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -302,7 +302,7 @@ class CreateTriggerActivity : AppCompatActivity() {
         val trigger: Trigger
         when (selectedTriggerType) {
             TriggerType.SCHEDULED_TIME -> {
-                if (!com.blurr.voice.triggers.PermissionUtils.canScheduleExactAlarms(this)) {
+                if (!com.twent.voice.triggers.PermissionUtils.canScheduleExactAlarms(this)) {
                     showExactAlarmPermissionDialog()
                     return
                 }

@@ -25,7 +25,7 @@ if (versionPropsFile.exists()) {
 }
 
 android {
-    namespace = "com.blurr.voice"
+    namespace = "com.twent.voice"
     compileSdk = 35
 
     // Phase 0: API keys now managed via BYOK Settings in the app
@@ -36,7 +36,7 @@ android {
     val googlecloudProxyURLKey = localProperties.getProperty("GCLOUD_PROXY_URL_KEY") ?: ""
     val revenueCatSDK = localProperties.getProperty("REVENUE_CAT_PUBLIC_URL") ?: ""
     val revenueCatApiKey = localProperties.getProperty("REVENUECAT_API_KEY") ?: ""
-    val appwriteProjectId = localProperties.getProperty("APPWRITE_PROJECT_ID") ?: "675543c70014022067d7" // Default/Placeholder
+    val appwriteProjectId = localProperties.getProperty("APPWRITE_PROJECT_ID") ?: "67543c7001402067d7" // Default/Placeholder
     val appwriteDatabaseId = localProperties.getProperty("APPWRITE_DATABASE_ID") ?: "" // REQUIRED: set in local.properties
     val appwriteUsersCollectionId = localProperties.getProperty("APPWRITE_USERS_COLLECTION_ID") ?: "" // REQUIRED
     val appwriteTasksCollectionId = localProperties.getProperty("APPWRITE_TASKS_COLLECTION_ID") ?: "" // REQUIRED
@@ -44,7 +44,7 @@ android {
     val debugSha1 = "D0:A1:49:03:FD:B5:37:DF:B5:36:51:B1:66:AE:70:11:E2:59:08:33"
 
     defaultConfig {
-        applicationId = "com.blurr.voice"
+        applicationId = "com.twent.voice"
         minSdk = 24
         targetSdk = 35
         versionCode = versionProps.getProperty("VERSION_CODE", "13").toInt()
@@ -109,8 +109,8 @@ android {
 val libsuVersion = "6.0.0"
 
 dependencies {
-    // Flutter workflow editor module
-    implementation(project(":flutter_workflow_editor"))
+    // Flutter workflow editor module - commented out since the module doesn't exist in expected location
+    // implementation(project(":flutter_workflow_editor"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -220,7 +220,7 @@ tasks.register("incrementVersion") {
         // Save back to file with comments
         val output = FileOutputStream(versionFile)
         output.use { fileOutput ->
-            fileOutput.write("# Version configuration for Blurr Android App\n".toByteArray())
+            fileOutput.write("# Version configuration for Twent Android App\n".toByteArray())
             fileOutput.write("# This file is automatically updated during release builds\n".toByteArray())
             fileOutput.write("# Do not modify manually - use Gradle tasks to update versions\n\n".toByteArray())
             fileOutput.write("# Current version code (integer - increments by 1 each release)\n".toByteArray())

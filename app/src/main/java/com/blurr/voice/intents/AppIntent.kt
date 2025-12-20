@@ -1,4 +1,4 @@
-package com.blurr.voice.intents
+package com.twent.voice.intents
 
 import android.content.Context
 import android.content.Intent

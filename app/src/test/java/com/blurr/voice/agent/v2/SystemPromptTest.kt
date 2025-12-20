@@ -1,6 +1,6 @@
-package com.blurr.voice.agent.v2
+package com.twent.voice.agent.v2
 
-import com.blurr.voice.agent.v2.prompts.SystemPrompt
+import com.twent.voice.agent.v2.prompts.SystemPrompt
 import org.junit.Test
 import org.junit.Assert.*
 import org.junit.Before

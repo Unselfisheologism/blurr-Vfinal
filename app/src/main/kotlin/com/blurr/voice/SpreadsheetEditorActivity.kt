@@ -1,5 +1,5 @@
 // Spreadsheet Editor Activity for launching Flutter spreadsheet editor
-package com.blurr.voice
+package com.twent.voice
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -7,7 +7,7 @@ import io.flutter.embedding.android.FlutterFragment
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.embedding.engine.dart.DartExecutor
-import com.blurr.voice.flutter.SpreadsheetEditorBridge
+import com.twent.voice.flutter.SpreadsheetEditorBridge
 
 /**
  * Activity for hosting the Flutter spreadsheet editor

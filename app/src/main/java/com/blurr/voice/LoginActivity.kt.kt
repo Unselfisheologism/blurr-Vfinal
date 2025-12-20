@@ -1,4 +1,4 @@
-package com.blurr.voice
+package com.twent.voice
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,9 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
 import androidx.lifecycle.lifecycleScope
-import com.blurr.voice.auth.ui.LoginScreen
-import com.blurr.voice.auth.ui.SignUpScreen
-import com.blurr.voice.utilities.OnboardingManager
+import com.twent.voice.auth.ui.LoginScreen
+import com.twent.voice.auth.ui.SignUpScreen
+import com.twent.voice.utilities.OnboardingManager
 import kotlinx.coroutines.launch
 
 class LoginActivity : ComponentActivity() {

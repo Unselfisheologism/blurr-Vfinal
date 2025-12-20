@@ -1,4 +1,4 @@
-package com.blurr.voice.ui.agent
+package com.twent.voice.ui.agent
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

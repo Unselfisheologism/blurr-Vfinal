@@ -78,7 +78,7 @@ dependencies {
 ```
 
 ### Step 2: Create Language Detector
-**New File**: `app/src/main/java/com/blurr/voice/tools/shell/LanguageDetector.kt`
+**New File**: `app/src/main/java/com/twent/voice/tools/shell/LanguageDetector.kt`
 
 ```kotlin
 enum class ShellLanguage {
@@ -127,7 +127,7 @@ object LanguageDetector {
 ```
 
 ### Step 3: Create JavaScript Executor
-**New File**: `app/src/main/java/com/blurr/voice/tools/shell/JavaScriptExecutor.kt`
+**New File**: `app/src/main/java/com/twent/voice/tools/shell/JavaScriptExecutor.kt`
 
 ```kotlin
 class JavaScriptExecutor(private val context: Context) {
@@ -212,7 +212,7 @@ data class ExecutionResult(
 ```
 
 ### Step 4: Create Python Executor (Extract from PythonShellTool)
-**New File**: `app/src/main/java/com/blurr/voice/tools/shell/PythonExecutor.kt`
+**New File**: `app/src/main/java/com/twent/voice/tools/shell/PythonExecutor.kt`
 
 ```kotlin
 class PythonExecutor(private val context: Context) {
@@ -407,7 +407,7 @@ console.log(svg);
 ## File Structure
 
 ```
-app/src/main/java/com/blurr/voice/tools/
+app/src/main/java/com/twent/voice/tools/
 ├── shell/
 │   ├── LanguageDetector.kt
 │   ├── PythonExecutor.kt

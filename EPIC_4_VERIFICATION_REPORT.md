@@ -348,7 +348,7 @@ registerTool(MediaCanvasTool(context))
 ### User Access Methods
 
 #### Method 1: Settings Activity Button ✅
-**Location**: `app/src/main/java/com/blurr/voice/SettingsActivity.kt`
+**Location**: `app/src/main/java/com/twent/voice/SettingsActivity.kt`
 ```kotlin
 findViewById<Button?>(R.id.buttonMediaCanvas)?.setOnClickListener {
     val intent = Intent(this, MediaCanvasActivity::class.java)

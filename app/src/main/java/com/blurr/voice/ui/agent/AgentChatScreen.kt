@@ -1,4 +1,4 @@
-package com.blurr.voice.ui.agent
+package com.twent.voice.ui.agent
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -18,8 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.blurr.voice.data.models.Message
-import com.blurr.voice.data.models.MessageRole
+import com.twent.voice.data.models.Message
+import com.twent.voice.data.models.MessageRole
 import kotlinx.coroutines.launch
 
 /**
@@ -502,7 +502,7 @@ fun ChatInputBar(
 
 @Composable
 fun AgentQuestionDialog(
-    question: com.blurr.voice.agents.UserQuestion,
+    question: com.twent.voice.agents.UserQuestion,
     onOptionSelected: (Int) -> Unit,
     onDismiss: () -> Unit
 ) {

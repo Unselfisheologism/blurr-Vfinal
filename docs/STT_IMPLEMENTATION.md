@@ -1,7 +1,7 @@
 # Speech-to-Text (STT) Implementation
 
 ## Overview
-This implementation adds voice command functionality to the Blurr app, allowing users to speak their instructions and have them automatically executed. The feature follows a press-and-hold pattern similar to popular voice assistants, with automatic task execution and TTS feedback.
+This implementation adds voice command functionality to the Twent app, allowing users to speak their instructions and have them automatically executed. The feature follows a press-and-hold pattern similar to popular voice assistants, with automatic task execution and TTS feedback.
 
 ## Features
 

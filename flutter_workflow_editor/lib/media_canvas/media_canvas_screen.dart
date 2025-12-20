@@ -178,7 +178,7 @@ class _MediaCanvasScreenState extends State<MediaCanvasScreen> {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
+            twentadius: 4,
             offset: const Offset(0, 2),
           ),
         ],

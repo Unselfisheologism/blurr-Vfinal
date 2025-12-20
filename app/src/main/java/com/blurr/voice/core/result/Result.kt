@@ -1,4 +1,4 @@
-package com.blurr.voice.core.result
+package com.twent.voice.core.result
 
 data class AIError(
     val code: String,

@@ -274,7 +274,7 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
           action: SnackBarAction(
             label: 'Share',
             onPressed: () {
-              Share.shareXFiles([XFile(path)], text: 'Exported with Blurr Video Editor');
+              Share.shareXFiles([XFile(path)], text: 'Exported with Twent Video Editor');
             },
           ),
         ),

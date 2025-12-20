@@ -1,4 +1,4 @@
-package com.blurr.voice.utilities
+package com.twent.voice.utilities
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -23,13 +23,13 @@ import android.widget.TextView
 import androidx.core.graphics.toColorInt
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.blurr.voice.AudioWaveView
-import com.blurr.voice.R
-import com.blurr.voice.ui.SmallDeltaGlowView
-import com.blurr.voice.utilities.PandaState
-import com.blurr.voice.utilities.PandaStateManager
-import com.blurr.voice.utilities.TTSManager
-import com.blurr.voice.utilities.TtsVisualizer
+import com.twent.voice.AudioWaveView
+import com.twent.voice.R
+import com.twent.voice.ui.SmallDeltaGlowView
+import com.twent.voice.utilities.PandaState
+import com.twent.voice.utilities.PandaStateManager
+import com.twent.voice.utilities.TTSManager
+import com.twent.voice.utilities.TtsVisualizer
 
 class VisualFeedbackManager private constructor(private val context: Context) {
 

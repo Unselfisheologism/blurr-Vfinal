@@ -1,4 +1,4 @@
-package com.blurr.voice
+package com.twent.voice
 
 import android.Manifest
 import android.app.role.RoleManager

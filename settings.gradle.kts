@@ -21,11 +21,22 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "blurr"
+rootProject.name = "twent"
 include(":app")
 
-// Flutter workflow editor module
-setBinding(Binding(settings))
-include(":flutter_workflow_editor")
-project(":flutter_workflow_editor").projectDir = File("flutter_workflow_editor/.android/Flutter")
- 
+// Check if flutter_workflow_editor exists before including it
+if (file("flutter_workflow_editor").exists()) {
+    // Only include if the Flutter Android build directory exists
+    val flutterProjectDir = file("flutter_workflow_editor")
+    val androidProjectPath = File(flutterProjectDir, ".android/Flutter")
+    
+    if (androidProjectPath.exists()) {
+        include(":flutter_workflow_editor")
+        project(":flutter_workflow_editor").projectDir = androidProjectPath
+    } else {
+        println("Flutter workflow editor Android project not found at: ${'$'}{androidProjectPath.absolutePath}")
+        println("Skipping inclusion of flutter_workflow_editor module.")
+    }
+} else {
+    println("Flutter workflow editor directory not found, skipping inclusion.")
+}

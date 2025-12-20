@@ -1,4 +1,4 @@
-package com.blurr.voice.auth
+package com.twent.voice.auth
 
 import android.accounts.Account
 import android.content.Context

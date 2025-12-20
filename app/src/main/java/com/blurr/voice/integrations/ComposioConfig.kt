@@ -1,4 +1,4 @@
-package com.blurr.voice.integrations
+package com.twent.voice.integrations
 
 /**
  * Composio Configuration

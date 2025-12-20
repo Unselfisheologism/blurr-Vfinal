@@ -1,4 +1,4 @@
-package com.blurr.voice.tools
+package com.twent.voice.tools
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -7,7 +7,7 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
-import com.blurr.voice.R
+import com.twent.voice.R
 import com.chaquo.python.Python
 import com.chaquo.python.PyException
 import kotlinx.coroutines.Dispatchers

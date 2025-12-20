@@ -1,4 +1,4 @@
-package com.blurr.voice.triggers
+package com.twent.voice.triggers
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -11,8 +11,8 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.blurr.voice.MainActivity
-import com.blurr.voice.R
+import com.twent.voice.MainActivity
+import com.twent.voice.R
 
 class TriggerMonitoringService : Service() {
 
@@ -36,7 +36,7 @@ class TriggerMonitoringService : Service() {
         val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
 
         val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Blurr Trigger Service")
+            .setContentTitle("Twent Trigger Service")
             .setContentText("Monitoring for app triggers in the background.")
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentIntent(pendingIntent)

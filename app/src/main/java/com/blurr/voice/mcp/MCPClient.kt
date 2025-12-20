@@ -1,8 +1,8 @@
-package com.blurr.voice.mcp
+package com.twent.voice.mcp
 
 import android.content.Context
 import android.util.Log
-import com.blurr.voice.tools.Tool
+import com.twent.voice.tools.Tool
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -20,7 +20,7 @@ class MCPClient(
     private val servers = mutableMapOf<String, MCPServer>()
     private val tools = mutableMapOf<String, MCPTool>()
     private val toolPreferences by lazy { 
-        com.blurr.voice.data.ToolPreferences(context) 
+        com.twent.voice.data.ToolPreferences(context) 
     }
     
     companion object {

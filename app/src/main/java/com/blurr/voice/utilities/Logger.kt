@@ -1,10 +1,10 @@
-package com.blurr.voice.utilities
+package com.twent.voice.utilities
 
 import android.util.Log
-import com.blurr.voice.BuildConfig
+import com.twent.voice.BuildConfig
 
 object Logger {
-    private const val DEFAULT_TAG = "BlurrVoice"
+    private const val DEFAULT_TAG = "TwentVoice"
     
     // Enable logging based on build configuration
     private val isLoggingEnabled = BuildConfig.ENABLE_LOGGING

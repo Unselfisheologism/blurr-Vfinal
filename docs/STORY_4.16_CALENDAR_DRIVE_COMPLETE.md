@@ -22,7 +22,7 @@ Successfully implemented Google Calendar and Google Drive tools, completing the 
 
 ### 1. ✅ GoogleCalendarTool Created
 
-**File**: `app/src/main/java/com/blurr/voice/tools/google/GoogleCalendarTool.kt` (550+ lines)
+**File**: `app/src/main/java/com/twent/voice/tools/google/GoogleCalendarTool.kt` (550+ lines)
 
 **8 Complete Actions**:
 1. **list_events** - List upcoming events with date filtering
@@ -50,7 +50,7 @@ Successfully implemented Google Calendar and Google Drive tools, completing the 
 
 ### 2. ✅ GoogleDriveTool Created
 
-**File**: `app/src/main/java/com/blurr/voice/tools/google/GoogleDriveTool.kt` (600+ lines)
+**File**: `app/src/main/java/com/twent/voice/tools/google/GoogleDriveTool.kt` (600+ lines)
 
 **11 Complete Actions**:
 1. **list_files** - List files and folders
@@ -81,14 +81,14 @@ Successfully implemented Google Calendar and Google Drive tools, completing the 
 
 ### 3. ✅ Tool Registration
 
-**File**: `app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt`
+**File**: `app/src/main/java/com/twent/voice/tools/ToolRegistry.kt`
 
 ```kotlin
 // Google Workspace integrations - FREE! (Story 4.13 + 4.15 + 4.16)
-val googleAuthManager = com.blurr.voice.auth.GoogleAuthManager(context)
-registerTool(com.blurr.voice.tools.google.GmailTool(context, googleAuthManager))
-registerTool(com.blurr.voice.tools.google.GoogleCalendarTool(context, googleAuthManager))
-registerTool(com.blurr.voice.tools.google.GoogleDriveTool(context, googleAuthManager))
+val googleAuthManager = com.twent.voice.auth.GoogleAuthManager(context)
+registerTool(com.twent.voice.tools.google.GmailTool(context, googleAuthManager))
+registerTool(com.twent.voice.tools.google.GoogleCalendarTool(context, googleAuthManager))
+registerTool(com.twent.voice.tools.google.GoogleDriveTool(context, googleAuthManager))
 ```
 
 **Integration**:
@@ -332,7 +332,7 @@ class GoogleCalendarTool(
         credential.selectedAccount = authManager.getAccount()
         
         return Calendar.Builder(NetHttpTransport(), GsonFactory(), credential)
-            .setApplicationName("Blurr Voice Assistant")
+            .setApplicationName("Twent Voice Assistant")
             .build()
     }
 }
@@ -368,7 +368,7 @@ class GoogleDriveTool(
         credential.selectedAccount = authManager.getAccount()
         
         return Drive.Builder(NetHttpTransport(), GsonFactory(), credential)
-            .setApplicationName("Blurr Voice Assistant")
+            .setApplicationName("Twent Voice Assistant")
             .build()
     }
 }
@@ -540,11 +540,11 @@ Would you like me to:
 ## Files Created/Modified
 
 ### Created Files (2)
-1. ✅ `app/src/main/java/com/blurr/voice/tools/google/GoogleCalendarTool.kt` (550 lines)
-2. ✅ `app/src/main/java/com/blurr/voice/tools/google/GoogleDriveTool.kt` (600 lines)
+1. ✅ `app/src/main/java/com/twent/voice/tools/google/GoogleCalendarTool.kt` (550 lines)
+2. ✅ `app/src/main/java/com/twent/voice/tools/google/GoogleDriveTool.kt` (600 lines)
 
 ### Modified Files (2)
-1. ✅ `app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt` - Registered both tools
+1. ✅ `app/src/main/java/com/twent/voice/tools/ToolRegistry.kt` - Registered both tools
 2. ✅ `app/src/main/assets/prompts/system_prompt.md` - Added 260+ lines documentation
 
 **Total**: 2 new files, 2 modified files, ~1,400 lines added

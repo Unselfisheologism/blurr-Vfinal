@@ -71,17 +71,17 @@
 
 ### Kotlin Files (3 files)
 
-13. **`app/src/main/kotlin/com/blurr/voice/SpreadsheetEditorActivity.kt`**
+13. **`app/src/main/kotlin/com/twent/voice/SpreadsheetEditorActivity.kt`**
     - Lines: ~80
     - Purpose: Host Activity for Flutter fragment
     - Features: Engine caching, intent handling, bridge initialization
 
-14. **`app/src/main/kotlin/com/blurr/voice/flutter/SpreadsheetEditorBridge.kt`**
+14. **`app/src/main/kotlin/com/twent/voice/flutter/SpreadsheetEditorBridge.kt`**
     - Lines: ~200
     - Purpose: Platform channel bridge
     - Methods: `executeAgentTask()`, `pickFile()`, `saveFile()`, `shareFile()`, `checkProStatus()`
 
-15. **`app/src/main/java/com/blurr/voice/tools/SpreadsheetTool.kt`**
+15. **`app/src/main/java/com/twent/voice/tools/SpreadsheetTool.kt`**
     - Lines: ~90
     - Purpose: AI agent tool integration
     - Actions: create, open, generate

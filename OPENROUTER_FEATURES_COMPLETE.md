@@ -2,7 +2,7 @@
 
 ## Summary
 
-All missing OpenRouter features have been successfully implemented for the Blurr agentic AI app.
+All missing OpenRouter features have been successfully implemented for the Twent agentic AI app.
 
 ## What Was Implemented
 

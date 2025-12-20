@@ -1,4 +1,4 @@
-package com.blurr.voice
+package com.twent.voice
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
@@ -30,8 +30,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import com.blurr.voice.utilities.TTSManager
-import com.blurr.voice.utilities.TtsVisualizer
+import com.twent.voice.utilities.TTSManager
+import com.twent.voice.utilities.TtsVisualizer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine

@@ -1,4 +1,4 @@
-package com.blurr.voice.utilities
+package com.twent.voice.utilities
 
 import android.content.Context
 import android.graphics.PixelFormat
@@ -15,14 +15,14 @@ import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
-import com.blurr.voice.BuildConfig
+import com.twent.voice.BuildConfig
 // TODO: Migrate to UniversalTTSService (Phase 0 - BYOK voice)
-// import com.blurr.voice.api.GoogleTts
-// import com.blurr.voice.api.TTSVoice
-import com.blurr.voice.core.providers.UniversalTTSService
-import com.blurr.voice.overlay.OverlayDispatcher
-import com.blurr.voice.overlay.OverlayManager
-import com.blurr.voice.overlay.OverlayPriority
+// import com.twent.voice.api.GoogleTts
+// import com.twent.voice.api.TTSVoice
+import com.twent.voice.core.providers.UniversalTTSService
+import com.twent.voice.overlay.OverlayDispatcher
+import com.twent.voice.overlay.OverlayManager
+import com.twent.voice.overlay.OverlayPriority
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

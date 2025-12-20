@@ -8,7 +8,7 @@
 - [x] **Status**: Added to Chaquopy pip section
 
 ### 2. PythonShellTool Updated
-- [x] **File**: `app/src/main/java/com/blurr/voice/tools/PythonShellTool.kt`
+- [x] **File**: `app/src/main/java/com/twent/voice/tools/PythonShellTool.kt`
 - [x] **Line 62**: Added `"python-pptx"` to CORE_LIBRARIES set
 - [x] **Line 99**: Updated description to include PowerPoint capabilities
 - [x] **Status**: Tool recognizes python-pptx as pre-installed

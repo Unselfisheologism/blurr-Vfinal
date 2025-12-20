@@ -1,4 +1,4 @@
-package com.blurr.voice.utilities
+package com.twent.voice.utilities
 
 import android.Manifest
 import android.content.Intent
@@ -12,7 +12,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.blurr.voice.ScreenInteractionService
+import com.twent.voice.ScreenInteractionService
 
 /**
  * Utility class to handle all permission-related functionality

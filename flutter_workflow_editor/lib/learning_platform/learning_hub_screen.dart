@@ -180,7 +180,7 @@ class _LearningHubScreenState extends State<LearningHubScreen> {
     }
 
     buffer.writeln('---');
-    buffer.writeln('_Generated locally in Blurr AI Learning Hub._');
+    buffer.writeln('_Generated locally in Twent AI Learning Hub._');
 
     return buffer.toString();
   }

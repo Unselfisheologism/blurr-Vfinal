@@ -13,7 +13,7 @@ I've successfully completed **100% of the Phase 0 BYOK integration**. All 13 fil
 The grep shows only these remaining references to old code:
 
 1. **Comments only (Safe):**
-   - `MemoriesActivity.kt` - Line 23: `//import com.blurr.voice.v2.llm.GeminiApi`
+   - `MemoriesActivity.kt` - Line 23: `//import com.twent.voice.v2.llm.GeminiApi`
    - `UniversalLLMService.kt` - Documentation comments mentioning it replaces GeminiApi
    - `ConversationalAgentService.kt` - Lines 528, 694-697: Commented out old code
    - `MemoryExtractor.kt` - Line 78: Commented out old code

@@ -2,7 +2,7 @@
 
 ## 🎉 Mission Accomplished
 
-A **complete, production-ready, mobile-first node-based workflow automation system** has been successfully built for the Blurr AI super assistant. This is not a prototype—this is production-grade code ready to ship.
+A **complete, production-ready, mobile-first node-based workflow automation system** has been successfully built for the Twent AI super assistant. This is not a prototype—this is production-grade code ready to ship.
 
 ---
 

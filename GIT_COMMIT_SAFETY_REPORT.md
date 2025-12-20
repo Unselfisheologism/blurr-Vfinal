@@ -29,11 +29,11 @@
 - Permissions: No new permissions requested
 - Status: ✅ Safe - Follows existing pattern (WorkflowEditor, SpreadsheetEditor)
 
-#### **app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt**
+#### **app/src/main/java/com/twent/voice/tools/ToolRegistry.kt**
 - Added: `MediaCanvasTool` registration (line 75)
 - Status: ✅ Safe - Standard tool registration
 
-#### **app/src/main/java/com/blurr/voice/SettingsActivity.kt**
+#### **app/src/main/java/com/twent/voice/SettingsActivity.kt**
 - Added: Button click listener for Media Canvas
 - Status: ✅ Safe - Standard button handler
 
@@ -175,11 +175,11 @@ flutter_workflow_editor/lib/media_canvas/
 │   └── ai_prompt_panel.dart ✅
 └── media_canvas_screen.dart ✅
 
-app/src/main/kotlin/com/blurr/voice/
+app/src/main/kotlin/com/twent/voice/
 ├── MediaCanvasActivity.kt ✅
 └── flutter/MediaCanvasBridge.kt ✅
 
-app/src/main/java/com/blurr/voice/tools/
+app/src/main/java/com/twent/voice/tools/
 └── MediaCanvasTool.kt ✅
 
 app/src/main/res/layout/
@@ -267,19 +267,19 @@ git push origin main
 ```bash
 # Commit 1: Core implementation
 git add flutter_workflow_editor/lib/media_canvas/
-git add app/src/main/kotlin/com/blurr/voice/MediaCanvas*
-git add app/src/main/kotlin/com/blurr/voice/flutter/MediaCanvasBridge.kt
-git add app/src/main/java/com/blurr/voice/tools/MediaCanvasTool.kt
+git add app/src/main/kotlin/com/twent/voice/MediaCanvas*
+git add app/src/main/kotlin/com/twent/voice/flutter/MediaCanvasBridge.kt
+git add app/src/main/java/com/twent/voice/tools/MediaCanvasTool.kt
 git commit -m "feat(epic-4): Add media canvas core implementation"
 
 # Commit 2: Integration
 git add flutter_workflow_editor/lib/main.dart
 git add app/src/main/AndroidManifest.xml
-git add app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt
+git add app/src/main/java/com/twent/voice/tools/ToolRegistry.kt
 git commit -m "feat(epic-4): Integrate media canvas with app"
 
 # Commit 3: UI
-git add app/src/main/java/com/blurr/voice/SettingsActivity.kt
+git add app/src/main/java/com/twent/voice/SettingsActivity.kt
 git add app/src/main/res/layout/activity_settings.xml
 git commit -m "feat(epic-4): Add media canvas launch button"
 

@@ -307,7 +307,7 @@ app/src/main/res/layout/activity_byok_settings.xml  (+142 lines)
 
 ### Activity (1 file):
 ```
-app/src/main/java/com/blurr/voice/ui/BYOKSettingsActivity.kt  (+230 lines)
+app/src/main/java/com/twent/voice/ui/BYOKSettingsActivity.kt  (+230 lines)
 ```
 
 **Changes**:

@@ -20,7 +20,7 @@
 - [x] Method channel support enabled
 
 ### Step 3: WorkflowEditorHandler.kt ✅
-- [x] Created in: `app/src/main/kotlin/com/blurr/voice/workflow/`
+- [x] Created in: `app/src/main/kotlin/com/twent/voice/workflow/`
 - [x] Implements `MethodChannel.MethodCallHandler`
 - [x] Connected to UnifiedShellTool
 - [x] Ready for Composio/MCP integration
@@ -47,12 +47,12 @@
 ## 📁 Files Modified/Created
 
 ### Created Files ✅
-1. `app/src/main/kotlin/com/blurr/voice/workflow/WorkflowEditorHandler.kt` (373 lines)
+1. `app/src/main/kotlin/com/twent/voice/workflow/WorkflowEditorHandler.kt` (373 lines)
 
 ### Modified Files ✅
 1. `settings.gradle.kts` - Added Flutter module
 2. `app/build.gradle.kts` - Added Flutter dependency
-3. `app/src/main/java/com/blurr/voice/MainActivity.kt` - Added Flutter integration
+3. `app/src/main/java/com/twent/voice/MainActivity.kt` - Added Flutter integration
 
 ---
 
@@ -159,7 +159,7 @@ adb install app/build/outputs/apk/debug/app-debug.apk
 ```
 
 ### 3. Launch App
-- Open Blurr app
+- Open Twent app
 - Navigate to main screen
 - **Long-press** on "Examples" link at bottom
 
@@ -321,7 +321,7 @@ val agentService = AgentService.getInstance(this)
 
 1. **Build APK**: `./gradlew assembleDebug`
 2. **Install**: `adb install app/build/outputs/apk/debug/app-debug.apk`
-3. **Open app**: Launch Blurr
+3. **Open app**: Launch Twent
 4. **Access editor**: Long-press "Examples" link
 5. **Create workflows**: Use the visual editor
 6. **Execute**: Press Run to execute workflows

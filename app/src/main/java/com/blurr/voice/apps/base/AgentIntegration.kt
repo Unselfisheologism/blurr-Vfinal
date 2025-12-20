@@ -1,7 +1,7 @@
-package com.blurr.voice.apps.base
+package com.twent.voice.apps.base
 
-import com.blurr.voice.agents.UltraGeneralistAgent
-import com.blurr.voice.core.providers.UniversalLLMService
+import com.twent.voice.agents.UltraGeneralistAgent
+import com.twent.voice.core.providers.UniversalLLMService
 
 /**
  * Manages agent integration and system prompt management for AI-native apps.

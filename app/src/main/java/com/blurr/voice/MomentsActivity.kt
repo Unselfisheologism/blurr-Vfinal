@@ -1,4 +1,4 @@
-package com.blurr.voice
+package com.twent.voice
 
 import android.os.Bundle
 import android.view.View
@@ -6,9 +6,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.blurr.voice.data.AppwriteDb
-import com.blurr.voice.data.TaskHistoryItem
-import com.blurr.voice.utilities.Logger
+import com.twent.voice.data.AppwriteDb
+import com.twent.voice.data.TaskHistoryItem
+import com.twent.voice.utilities.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

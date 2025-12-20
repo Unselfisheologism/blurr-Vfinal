@@ -10,7 +10,7 @@ Based on the official **OpenRouter.ai documentation**, the BYOK implementation f
 
 ### 1. Core OpenAI-Compatible API Client
 
-**File:** `app/src/main/java/com/blurr/voice/core/providers/OpenAICompatibleAPI.kt`
+**File:** `app/src/main/java/com/twent/voice/core/providers/OpenAICompatibleAPI.kt`
 
 **Features:**
 - ✅ **Standard chat completions** endpoint (`/chat/completions`)
@@ -23,8 +23,8 @@ Based on the official **OpenRouter.ai documentation**, the BYOK implementation f
 **OpenRouter-Specific Enhancements:**
 ```kotlin
 // Required headers for OpenRouter rankings
-addHeader("HTTP-Referer", "https://github.com/Ayush0Chaudhary/blurr")
-addHeader("X-Title", "Blurr AI Assistant")
+addHeader("HTTP-Referer", "https://github.com/Ayush0Chaudhary/twent")
+addHeader("X-Title", "Twent AI Assistant")
 
 // Optional: User ID for analytics
 // addHeader("X-User-ID", userId)
@@ -45,7 +45,7 @@ addHeader("X-Title", "Blurr AI Assistant")
 
 ### 2. OpenRouter Helper Functions
 
-**File:** `app/src/main/java/com/blurr/voice/core/providers/OpenRouterHelpers.kt`
+**File:** `app/src/main/java/com/twent/voice/core/providers/OpenRouterHelpers.kt`
 
 **Features:**
 ```kotlin
@@ -94,7 +94,7 @@ data class GenerationDetails(
 
 ### 3. OpenRouter Configuration
 
-**File:** `app/src/main/java/com/blurr/voice/core/providers/OpenRouterConfig.kt`
+**File:** `app/src/main/java/com/twent/voice/core/providers/OpenRouterConfig.kt`
 
 **Features:**
 - ✅ **Routing strategies** (fallback, least-busy, best-price)

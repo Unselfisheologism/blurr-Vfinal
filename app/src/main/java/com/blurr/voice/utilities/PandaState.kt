@@ -1,4 +1,4 @@
-package com.blurr.voice.utilities
+package com.twent.voice.utilities
 
 /**
  * Represents the different states of the Panda app for visual feedback

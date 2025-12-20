@@ -1,4 +1,4 @@
-package com.blurr.voice.v2.llm
+package com.twent.voice.v2.llm
 
 import kotlinx.serialization.Serializable
 

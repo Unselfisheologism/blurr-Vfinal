@@ -1,16 +1,16 @@
-package com.blurr.voice.v2.message_manager
+package com.twent.voice.v2.message_manager
 
 import android.content.Context
-import com.blurr.voice.v2.ActionResult
-import com.blurr.voice.v2.AgentOutput
-import com.blurr.voice.v2.AgentSettings
-import com.blurr.voice.v2.AgentStepInfo
-import com.blurr.voice.v2.ScreenState
-import com.blurr.voice.v2.SystemPromptLoader
-import com.blurr.voice.v2.UserMessageBuilder
-import com.blurr.voice.v2.fs.FileSystem
-import com.blurr.voice.v2.llm.GeminiMessage
-import com.blurr.voice.v2.llm.TextPart
+import com.twent.voice.v2.ActionResult
+import com.twent.voice.v2.AgentOutput
+import com.twent.voice.v2.AgentSettings
+import com.twent.voice.v2.AgentStepInfo
+import com.twent.voice.v2.ScreenState
+import com.twent.voice.v2.SystemPromptLoader
+import com.twent.voice.v2.UserMessageBuilder
+import com.twent.voice.v2.fs.FileSystem
+import com.twent.voice.v2.llm.GeminiMessage
+import com.twent.voice.v2.llm.TextPart
 import android.os.Build
 import androidx.annotation.RequiresApi
 

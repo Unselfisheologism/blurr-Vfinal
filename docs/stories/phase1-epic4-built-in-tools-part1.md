@@ -35,7 +35,7 @@ Implement Tavily web search tool for deep research capabilities.
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/blurr/voice/tools/search/TavilySearchTool.kt`
+- `app/src/main/java/com/twent/voice/tools/search/TavilySearchTool.kt`
 
 ```kotlin
 class TavilySearchTool(
@@ -98,7 +98,7 @@ Implement Exa search tool for neural web search.
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/blurr/voice/tools/search/ExaSearchTool.kt`
+- `app/src/main/java/com/twent/voice/tools/search/ExaSearchTool.kt`
 
 #### API Integration
 ```kotlin
@@ -136,7 +136,7 @@ Implement SerpAPI tool for Google search results.
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/blurr/voice/tools/search/SerpAPITool.kt`
+- `app/src/main/java/com/twent/voice/tools/search/SerpAPITool.kt`
 
 #### API Integration
 ```kotlin
@@ -173,7 +173,7 @@ Implement image generation tool using Flux/SD3 models via OpenRouter/AIMLAPI.
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/blurr/voice/tools/generation/ImageGenerationTool.kt`
+- `app/src/main/java/com/twent/voice/tools/generation/ImageGenerationTool.kt`
 
 ```kotlin
 class ImageGenerationTool(
@@ -333,8 +333,8 @@ Add UI for users to configure API keys for search and generation tools.
 
 #### Technical Details
 **Files to Modify**:
-- `app/src/main/java/com/blurr/voice/SettingsActivity.kt`
-- `app/src/main/java/com/blurr/voice/data/APIKeyManager.kt`
+- `app/src/main/java/com/twent/voice/SettingsActivity.kt`
+- `app/src/main/java/com/twent/voice/data/APIKeyManager.kt`
 
 #### Testing
 - [ ] Add API keys in settings

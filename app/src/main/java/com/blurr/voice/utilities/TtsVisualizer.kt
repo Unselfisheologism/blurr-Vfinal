@@ -1,4 +1,4 @@
-package com.blurr.voice.utilities
+package com.twent.voice.utilities
 
 import android.media.audiofx.Visualizer
 import android.util.Log

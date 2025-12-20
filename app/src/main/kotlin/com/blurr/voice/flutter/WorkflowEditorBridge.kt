@@ -1,16 +1,16 @@
 // Kotlin bridge for Flutter workflow editor with Google Workspace integration
-package com.blurr.voice.flutter
+package com.twent.voice.flutter
 
 import android.content.Context
 import android.content.Intent
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
-import com.blurr.voice.utilities.FreemiumManager
-import com.blurr.voice.integrations.ComposioIntegrationManager
-import com.blurr.voice.auth.GoogleAuthManager
-import com.blurr.voice.activities.GoogleSignInActivity
-import com.blurr.voice.tools.ToolResult
-import com.blurr.voice.data.WorkflowPreferences
+import com.twent.voice.utilities.FreemiumManager
+import com.twent.voice.integrations.ComposioIntegrationManager
+import com.twent.voice.auth.GoogleAuthManager
+import com.twent.voice.activities.GoogleSignInActivity
+import com.twent.voice.tools.ToolResult
+import com.twent.voice.data.WorkflowPreferences
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +26,7 @@ class WorkflowEditorBridge(
     private val flutterEngine: FlutterEngine
 ) {
     companion object {
-        private const val CHANNEL_NAME = "com.blurr.workflow_editor"
+        private const val CHANNEL_NAME = "com.twent.workflow_editor"
         private const val TAG = "WorkflowEditorBridge"
     }
 
@@ -284,7 +284,7 @@ class WorkflowEditorBridge(
         parameters: Map<String, Any>
     ): Map<String, Any> {
         // Use the existing GmailTool from Story 4.15
-        val gmailTool = com.blurr.voice.tools.google.GmailTool(context, googleAuthManager)
+        val gmailTool = com.twent.voice.tools.google.GmailTool(context, googleAuthManager)
         
         val toolParams = mapOf(
             "action" to actionName,
@@ -311,7 +311,7 @@ class WorkflowEditorBridge(
         parameters: Map<String, Any>
     ): Map<String, Any> {
         // Use the existing GoogleCalendarTool from Story 4.16
-        val calendarTool = com.blurr.voice.tools.google.GoogleCalendarTool(context, googleAuthManager)
+        val calendarTool = com.twent.voice.tools.google.GoogleCalendarTool(context, googleAuthManager)
         
         val toolParams = mapOf(
             "action" to actionName,
@@ -338,7 +338,7 @@ class WorkflowEditorBridge(
         parameters: Map<String, Any>
     ): Map<String, Any> {
         // Use the existing GoogleDriveTool from Story 4.16
-        val driveTool = com.blurr.voice.tools.google.GoogleDriveTool(context, googleAuthManager)
+        val driveTool = com.twent.voice.tools.google.GoogleDriveTool(context, googleAuthManager)
         
         val toolParams = mapOf(
             "action" to actionName,
@@ -492,7 +492,7 @@ class WorkflowEditorBridge(
 
         scope.launch {
             try {
-                val phoneControlTool = com.blurr.voice.tools.PhoneControlTool(context)
+                val phoneControlTool = com.twent.voice.tools.PhoneControlTool(context)
                 
                 val toolResult = withContext(Dispatchers.IO) {
                     when (toolId) {
@@ -526,7 +526,7 @@ class WorkflowEditorBridge(
                             ToolResult(toolName = "system", success = true, data = "Settings opened")
                         }
                         "notif_get_all", "notif_get_by_app" -> {
-                            val enabled = com.blurr.voice.triggers.PermissionUtils.isNotificationListenerEnabled(context)
+                            val enabled = com.twent.voice.triggers.PermissionUtils.isNotificationListenerEnabled(context)
                             if (!enabled) {
                                 ToolResult(toolName = "notification", success = false, error = "Notification Listener not enabled")
                             } else {
@@ -550,7 +550,7 @@ class WorkflowEditorBridge(
 
     private fun handleCheckAccessibilityStatus(result: MethodChannel.Result) {
         try {
-            val service = com.blurr.voice.ScreenInteractionService.instance
+            val service = com.twent.voice.ScreenInteractionService.instance
             result.success(service != null)
         } catch (e: Exception) {
             result.error("ACCESSIBILITY_CHECK_ERROR", e.message, null)
@@ -559,7 +559,7 @@ class WorkflowEditorBridge(
 
     private fun handleCheckNotificationListenerStatus(result: MethodChannel.Result) {
         try {
-            val isEnabled = com.blurr.voice.triggers.PermissionUtils.isNotificationListenerEnabled(context)
+            val isEnabled = com.twent.voice.triggers.PermissionUtils.isNotificationListenerEnabled(context)
             result.success(isEnabled)
         } catch (e: Exception) {
             result.error("NOTIFICATION_CHECK_ERROR", e.message, null)

@@ -1,4 +1,4 @@
-package com.blurr.voice.views
+package com.twent.voice.views
 
 import android.animation.ValueAnimator
 import android.content.Context
@@ -9,7 +9,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.content.ContextCompat
-import com.blurr.voice.R
+import com.twent.voice.R
 import kotlin.math.sqrt
 
 class DeltaSymbolView @JvmOverloads constructor(

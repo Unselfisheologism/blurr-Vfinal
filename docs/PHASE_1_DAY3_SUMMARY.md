@@ -43,7 +43,7 @@
    - Export functionality
    - Token limiting (MAX_CONTEXT_MESSAGES = 50)
 
-5. **BlurrDatabase.kt** - Room database singleton
+5. **TwentDatabase.kt** - Room database singleton
    - Thread-safe singleton pattern
    - Fallback to destructive migration (dev)
 

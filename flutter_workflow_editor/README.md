@@ -2,7 +2,7 @@
 
 **Advanced, original node-based workflow automation system for mobile AI super assistant**
 
-Built with [fl_nodes](https://github.com/WilliamKarolDiCioccio/fl_nodes) as the core rendering engine, this is a custom, mobile-optimized visual workflow editor designed specifically for the Blurr AI assistant app.
+Built with [fl_nodes](https://github.com/WilliamKarolDiCioccio/fl_nodes) as the core rendering engine, this is a custom, mobile-optimized visual workflow editor designed specifically for the Twent AI assistant app.
 
 ## 🎯 Features
 
@@ -43,7 +43,7 @@ Built with [fl_nodes](https://github.com/WilliamKarolDiCioccio/fl_nodes) as the 
 - Transform Data - Map and convert data
 - Function - Execute expressions
 
-#### System (Blurr-specific)
+#### System (Twent-specific)
 - Phone Control - Call, SMS, device functions
 - Notification - System notifications
 - UI Automation - Accessibility-based automation
@@ -124,7 +124,7 @@ setBinding(Binding(settings))
 include(":app")
 includeBuild("flutter_workflow_editor") {
     dependencySubstitution {
-        substitute(module("com.blurr:flutter_workflow_editor"))
+        substitute(module("com.twent:flutter_workflow_editor"))
             .using(project(":"))
     }
 }
@@ -134,7 +134,7 @@ includeBuild("flutter_workflow_editor") {
 
 ```kotlin
 // In your MainActivity or Application class
-import com.blurr.voice.workflow.WorkflowEditorHandler
+import com.twent.voice.workflow.WorkflowEditorHandler
 
 class MainActivity : FlutterActivity() {
     private lateinit var workflowHandler: WorkflowEditorHandler
@@ -275,7 +275,7 @@ flutter build apk --release
 
 ## 📄 License
 
-Proprietary - Part of Blurr AI Assistant
+Proprietary - Part of Twent AI Assistant
 
 ## 🙏 Acknowledgments
 

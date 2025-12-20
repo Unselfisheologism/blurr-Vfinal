@@ -1,4 +1,4 @@
-package com.blurr.voice.api
+package com.twent.voice.api
 
 import ai.picovoice.porcupine.PorcupineManager
 import ai.picovoice.porcupine.PorcupineManagerCallback

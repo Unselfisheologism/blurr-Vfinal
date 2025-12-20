@@ -45,13 +45,13 @@ so that I can securely access my personal settings and sync data.
 
 ### Architecture & Patterns
 - **Pattern:** MVVM + Clean Architecture (Repository Pattern).
-- **Error Handling:** Use `com.blurr.voice.core.result.Result` (or equivalent defined in Context). Do NOT throw exceptions to UI.
+- **Error Handling:** Use `com.twent.voice.core.result.Result` (or equivalent defined in Context). Do NOT throw exceptions to UI.
 - **State Management:** `ViewModel` holds `_uiState` (`MutableStateFlow`) exposed as `StateFlow`.
 - **Dependency Verson:** Check latest Appwrite Android SDK (likely ~4.0.0 or 5.0.0).
 - **Brownfield Constraint:** Do NOT modify `ScreenInteractionService`. Ensure Auth changes don't break accessibility service startup (though they should be independent).
 
 ### Project Structure Notes
-- **New Package:** `com.blurr.voice.auth` (or check existing auth package).
+- **New Package:** `com.twent.voice.auth` (or check existing auth package).
 - **DI:** Use Hilt/Dagger if present, or Manual DI if that's the current pattern (Project Context implies Hilt/Koin likely for "StateFlow" modern stack).
 - **BYOK:** This is for Appwrite Account (infrastructure), NOT BYOK AI keys. AI keys are stored locally (Epic 1.2), but user account helps sync settings later.
 
@@ -83,13 +83,13 @@ Vertex AI Gemini 1.5 Pro
 ### File List
 - gradle/libs.versions.toml
 - app/build.gradle.kts
-- app/src/main/java/com/blurr/voice/auth/AppwriteManager.kt
-- app/src/main/java/com/blurr/voice/MyApplication.kt
-- app/src/main/java/com/blurr/voice/core/result/Result.kt
-- app/src/main/java/com/blurr/voice/auth/AuthRepository.kt
-- app/src/main/java/com/blurr/voice/auth/AppwriteAuthRepository.kt
-- app/src/main/java/com/blurr/voice/auth/AuthViewModel.kt
-- app/src/main/java/com/blurr/voice/auth/ui/LoginScreen.kt
-- app/src/main/java/com/blurr/voice/auth/ui/SignUpScreen.kt
-- app/src/main/java/com/blurr/voice/LoginActivity.kt.kt
-- app/src/main/java/com/blurr/voice/MainActivity.kt
+- app/src/main/java/com/twent/voice/auth/AppwriteManager.kt
+- app/src/main/java/com/twent/voice/MyApplication.kt
+- app/src/main/java/com/twent/voice/core/result/Result.kt
+- app/src/main/java/com/twent/voice/auth/AuthRepository.kt
+- app/src/main/java/com/twent/voice/auth/AppwriteAuthRepository.kt
+- app/src/main/java/com/twent/voice/auth/AuthViewModel.kt
+- app/src/main/java/com/twent/voice/auth/ui/LoginScreen.kt
+- app/src/main/java/com/twent/voice/auth/ui/SignUpScreen.kt
+- app/src/main/java/com/twent/voice/LoginActivity.kt.kt
+- app/src/main/java/com/twent/voice/MainActivity.kt

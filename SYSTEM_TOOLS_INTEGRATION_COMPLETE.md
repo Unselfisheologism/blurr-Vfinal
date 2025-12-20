@@ -2,7 +2,7 @@
 
 ## Summary
 
-The n8n-workflow-UI app/feature has been successfully extended to include **UI automation**, **notification access**, and **other system-level features** that Blurr already has. These features are now fully callable within workflows, just like Composio, Google Workspace, and MCP server integrations.
+The n8n-workflow-UI app/feature has been successfully extended to include **UI automation**, **notification access**, and **other system-level features** that Twent already has. These features are now fully callable within workflows, just like Composio, Google Workspace, and MCP server integrations.
 
 ## What Was Implemented
 
@@ -21,7 +21,7 @@ Added native Android integration for system tools:
 - `handleCheckNotificationListenerStatus()` - Checks Notification Listener status
 - `handleRequestAccessibilityPermission()` - Opens settings to enable permissions
 - `handleRequestNotificationListenerPermission()` - Opens notification settings
-- Direct integration with existing Blurr components:
+- Direct integration with existing Twent components:
   - `PhoneControlTool` for UI automation
   - `ScreenInteractionService` for accessibility
   - `PandaNotificationListenerService` for notifications
@@ -178,7 +178,7 @@ Comprehensive testing guide with:
 │          ↓                                                    │
 │  WorkflowEditorBridge.handleExecuteSystemTool()              │
 │          ↓                                                    │
-│  PhoneControlTool (existing Blurr tool)                      │
+│  PhoneControlTool (existing Twent tool)                      │
 │          ↓                                                    │
 │  ScreenInteractionService / Eyes / Finger APIs               │
 │          ↓                                                    │

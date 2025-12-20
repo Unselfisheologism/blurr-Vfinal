@@ -1,4 +1,4 @@
-package com.blurr.voice.apps.base
+package com.twent.voice.apps.base
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import com.blurr.voice.ui.theme.BlurrTheme
-import com.blurr.voice.utilities.FreemiumManager
+import com.twent.voice.ui.theme.TwentTheme
+import com.twent.voice.utilities.FreemiumManager
 /**
  * Base Activity for all AI-native apps.
  * 
@@ -79,7 +79,7 @@ abstract class BaseAppActivity : ComponentActivity() {
         floatingActionButton: @Composable () -> Unit = {},
         content: @Composable (PaddingValues) -> Unit
     ) {
-        BlurrTheme {
+        TwentTheme {
             Scaffold(
                 topBar = topBar,
                 floatingActionButton = floatingActionButton,

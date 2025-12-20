@@ -1,9 +1,9 @@
-package com.blurr.voice.v2
+package com.twent.voice.v2
 
-import com.blurr.voice.v2.actions.Action
-import com.blurr.voice.v2.message_manager.MemoryState
-import com.blurr.voice.v2.perception.ScreenAnalysis
-import com.blurr.voice.v2.perception.XmlNode
+import com.twent.voice.v2.actions.Action
+import com.twent.voice.v2.message_manager.MemoryState
+import com.twent.voice.v2.perception.ScreenAnalysis
+import com.twent.voice.v2.perception.XmlNode
 import kotlinx.serialization.Serializable
 
 // --- Type Aliases and Placeholders ---

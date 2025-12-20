@@ -12,7 +12,7 @@ Complete the remaining 30% of Phase 0 to have a fully functional BYOK system.
 ### Part 1: Update LLM Usage (2-3 hours)
 
 - [ ] **File 1: `agents/ClarificationAgent.kt`**
-  - [ ] Replace `import com.blurr.voice.api.GeminiApi` with `UniversalLLMService`
+  - [ ] Replace `import com.twent.voice.api.GeminiApi` with `UniversalLLMService`
   - [ ] Update all GeminiApi usage
   - [ ] Add configuration check
   - [ ] Test clarification feature
@@ -100,12 +100,12 @@ Complete the remaining 30% of Phase 0 to have a fully functional BYOK system.
 
 - [ ] **Delete old implementations:**
   ```bash
-  rm app/src/main/java/com/blurr/voice/utilities/ApiKeyManager.kt
-  rm app/src/main/java/com/blurr/voice/api/GeminiApi.kt
-  rm app/src/main/java/com/blurr/voice/api/GoogleTTS.kt
-  rm app/src/main/java/com/blurr/voice/api/PicovoiceKeyManager.kt
-  rm app/src/main/java/com/blurr/voice/api/PorcupineWakeWordDetector.kt
-  rm app/src/main/java/com/blurr/voice/api/WakeWordDetector.kt
+  rm app/src/main/java/com/twent/voice/utilities/ApiKeyManager.kt
+  rm app/src/main/java/com/twent/voice/api/GeminiApi.kt
+  rm app/src/main/java/com/twent/voice/api/GoogleTTS.kt
+  rm app/src/main/java/com/twent/voice/api/PicovoiceKeyManager.kt
+  rm app/src/main/java/com/twent/voice/api/PorcupineWakeWordDetector.kt
+  rm app/src/main/java/com/twent/voice/api/WakeWordDetector.kt
   ```
 
 - [ ] **Remove imports:**

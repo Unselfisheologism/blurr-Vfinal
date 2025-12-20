@@ -1,4 +1,4 @@
-package com.blurr.voice
+package com.twent.voice
 
 import android.content.Context
 import android.content.Intent
@@ -18,16 +18,16 @@ import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import com.blurr.voice.api.GoogleTts
-import com.blurr.voice.api.PicovoiceKeyManager
-import com.blurr.voice.api.TTSVoice
-import com.blurr.voice.utilities.SpeechCoordinator
-import com.blurr.voice.utilities.VoicePreferenceManager
-import com.blurr.voice.utilities.UserProfileManager
-import com.blurr.voice.utilities.WakeWordManager
-import com.blurr.voice.apps.daw.DawEditorLauncher
-import com.blurr.voice.apps.texteditor.TextEditorLauncher
-import com.blurr.voice.apps.spreadsheets.SpreadsheetEditorLauncher
+import com.twent.voice.api.GoogleTts
+import com.twent.voice.api.PicovoiceKeyManager
+import com.twent.voice.api.TTSVoice
+import com.twent.voice.utilities.SpeechCoordinator
+import com.twent.voice.utilities.VoicePreferenceManager
+import com.twent.voice.utilities.UserProfileManager
+import com.twent.voice.utilities.WakeWordManager
+import com.twent.voice.apps.daw.DawEditorLauncher
+import com.twent.voice.apps.texteditor.TextEditorLauncher
+import com.twent.voice.apps.spreadsheets.SpreadsheetEditorLauncher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -60,7 +60,7 @@ class SettingsActivity : BaseNavigationActivity() {
     private var voiceTestJob: Job? = null
 
     companion object {
-        private const val PREFS_NAME = "BlurrSettings"
+        private const val PREFS_NAME = "TwentSettings"
         private const val KEY_SELECTED_VOICE = "selected_voice"
         private const val TEST_TEXT = "Hello, I'm Panda, and this is a test of the selected voice."
         private val DEFAULT_VOICE = TTSVoice.CHIRP_PUCK
@@ -201,7 +201,7 @@ class SettingsActivity : BaseNavigationActivity() {
         }
         
         buttonBYOKSettings.setOnClickListener {
-            val intent = Intent(this, com.blurr.voice.ui.BYOKSettingsActivity::class.java)
+            val intent = Intent(this, com.twent.voice.ui.BYOKSettingsActivity::class.java)
             startActivity(intent)
         }
         
@@ -234,7 +234,7 @@ class SettingsActivity : BaseNavigationActivity() {
 
         // Add Tool Selection button click listener (if button exists in layout)
         findViewById<Button?>(R.id.buttonToolSelection)?.setOnClickListener {
-            val intent = Intent(this, com.blurr.voice.ui.tools.ToolSelectionActivity::class.java)
+            val intent = Intent(this, com.twent.voice.ui.tools.ToolSelectionActivity::class.java)
             startActivity(intent)
         }
     }

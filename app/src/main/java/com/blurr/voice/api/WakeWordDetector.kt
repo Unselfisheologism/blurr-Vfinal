@@ -1,11 +1,11 @@
-package com.blurr.voice.api
+package com.twent.voice.api
 
 import android.content.Context
 import android.media.AudioManager
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import com.blurr.voice.utilities.STTManager
+import com.twent.voice.utilities.STTManager
 import java.util.Locale
 
 class WakeWordDetector(

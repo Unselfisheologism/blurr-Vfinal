@@ -25,7 +25,7 @@ Story 1.2 requirements were **already completed during Story 1.1** implementatio
 **Features**:
 - ✅ Common navigation patterns (AppContent wrapper with Scaffold)
 - ✅ Pro gating integration (FreemiumManager, ProGatingManager)
-- ✅ Consistent theming (BlurrTheme)
+- ✅ Consistent theming (TwentTheme)
 - ✅ Pro upgrade prompt UI component
 - ✅ Lifecycle management
 - ✅ Feature access checking helper methods

@@ -1,7 +1,7 @@
 # Interactive Dialogue System
 
 ## Overview
-The Interactive Dialogue System enhances the Blurr app by automatically detecting unclear user instructions and asking clarifying questions before executing tasks. This ensures more accurate and effective task execution.
+The Interactive Dialogue System enhances the Twent app by automatically detecting unclear user instructions and asking clarifying questions before executing tasks. This ensures more accurate and effective task execution.
 
 ## Features
 
@@ -96,7 +96,7 @@ Additional information:
 
 ### File Structure
 ```
-app/src/main/java/com/example/blurr/
+app/src/main/java/com/example/twent/
 ├── agent/
 │   └── ClarificationAgent.kt          # Instruction analysis
 ├── DialogueActivity.kt                # Dialogue interface

@@ -24,7 +24,7 @@ Add the SpreadsheetEditorActivity to your manifest:
     <activity
         android:name=".SpreadsheetEditorActivity"
         android:exported="false"
-        android:theme="@style/Theme.Blurr"
+        android:theme="@style/Theme.Twent"
         android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
         android:windowSoftInputMode="adjustResize" />
 </application>
@@ -188,7 +188,7 @@ flutter pub run build_runner build --delete-conflicting-outputs
 **Solution**: 
 1. Check SpreadsheetEditorBridge is initialized in Activity
 2. Verify ToolExecutor is accessible
-3. Check platform channel name matches: `com.blurr.spreadsheet_editor/bridge`
+3. Check platform channel name matches: `com.twent.spreadsheet_editor/bridge`
 
 ### Issue: Excel export fails
 **Solution**: 

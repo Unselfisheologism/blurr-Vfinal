@@ -1,9 +1,9 @@
-package com.blurr.voice.data.models
+package com.twent.voice.data.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.blurr.voice.data.converters.TimestampConverter
+import com.twent.voice.data.converters.TimestampConverter
 
 /**
  * Conversation entity for Room database

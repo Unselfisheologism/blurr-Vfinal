@@ -1,6 +1,6 @@
 ---
 title: "AI-Native Apps Phase - Epics Breakdown"
-project: blurr-Vfinal
+project: twent-Vfinal
 phase: "AI-Native Apps Implementation"
 version: 1.0
 date: 2025-12-18

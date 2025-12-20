@@ -1,14 +1,14 @@
-package com.blurr.voice.apps.texteditor
+package com.twent.voice.apps.texteditor
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.blurr.voice.agents.UltraGeneralistAgent
-import com.blurr.voice.apps.base.AgentIntegration
-import com.blurr.voice.apps.base.AgentResult
-import com.blurr.voice.apps.base.ProGatingManager
-import com.blurr.voice.apps.base.SystemPrompts
-import com.blurr.voice.core.providers.UniversalLLMService
-import com.blurr.voice.utilities.FreemiumManager
+import com.twent.voice.agents.UltraGeneralistAgent
+import com.twent.voice.apps.base.AgentIntegration
+import com.twent.voice.apps.base.AgentResult
+import com.twent.voice.apps.base.ProGatingManager
+import com.twent.voice.apps.base.SystemPrompts
+import com.twent.voice.core.providers.UniversalLLMService
+import com.twent.voice.utilities.FreemiumManager
 import io.flutter.embedding.android.FlutterView
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
@@ -27,7 +27,7 @@ import kotlinx.coroutines.withContext
 class TextEditorActivity : AppCompatActivity() {
     
     companion object {
-        private const val FLUTTER_ENGINE_ID = "blurr_flutter_engine"
+        private const val FLUTTER_ENGINE_ID = "twent_flutter_engine"
         private const val AI_ASSISTANCE_CHANNEL = "ai_assistance"
         private const val TEXT_EDITOR_ROUTE = "/text_editor"
     }

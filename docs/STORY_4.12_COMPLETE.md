@@ -337,11 +337,11 @@ Result: "✅ D3.js infographic created
 ## Files Created/Modified
 
 ### Phase 3 - New Files
-1. ✅ `app/src/main/java/com/blurr/voice/tools/GenerateInfographicTool.kt` (400+ lines)
+1. ✅ `app/src/main/java/com/twent/voice/tools/GenerateInfographicTool.kt` (400+ lines)
 2. ✅ `docs/STORY_4.12_COMPLETE.md` (This file)
 
 ### Phase 3 - Modified Files
-1. ✅ `app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt` - Registered GenerateInfographicTool
+1. ✅ `app/src/main/java/com/twent/voice/tools/ToolRegistry.kt` - Registered GenerateInfographicTool
 2. ✅ `app/src/main/assets/prompts/system_prompt.md` - Added generate_infographic documentation
 3. ✅ `app/src/main/assets/prompts/unified_shell_guide.md` - Added 6 infographic templates
 

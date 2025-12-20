@@ -1,4 +1,4 @@
-# Blurr (Panda) - Development Guide
+# Twent (Panda) - Development Guide
 
 ## Prerequisites
 
@@ -14,8 +14,8 @@
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/ayush0chaudhary/blurr.git
-cd blurr
+git clone https://github.com/ayush0chaudhary/twent.git
+cd twent
 ```
 
 ### 2. Configure API Keys
@@ -46,7 +46,7 @@ GCLOUD_GATEWAY_URL=your_gateway_url
 ### 3. Firebase Configuration
 
 1. Create a Firebase project
-2. Add Android app with package `com.blurr.voice`
+2. Add Android app with package `com.twent.voice`
 3. Download `google-services.json` to `app/` folder
 4. Enable: Authentication, Firestore, Crashlytics, Remote Config, Functions
 
@@ -102,7 +102,7 @@ Release builds auto-increment via the `incrementVersion` Gradle task.
 adb logcat | grep GeminiApi
 
 # All app logs
-adb logcat --pid=$(adb shell pidof -s com.blurr.voice)
+adb logcat --pid=$(adb shell pidof -s com.twent.voice)
 ```
 
 ## Running the App
@@ -151,7 +151,7 @@ Release builds use ProGuard rules from:
 ## Common Development Tasks
 
 ### Adding New Activity
-1. Create Kotlin file in `com.blurr.voice`
+1. Create Kotlin file in `com.twent.voice`
 2. Register in `AndroidManifest.xml`
 3. If Compose: extend `ComponentActivity`
 4. If navigation-based: extend `BaseNavigationActivity`

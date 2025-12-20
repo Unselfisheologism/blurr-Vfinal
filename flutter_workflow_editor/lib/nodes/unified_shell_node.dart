@@ -160,7 +160,7 @@ class UnifiedShellNodePrototype {
               ? [
                   BoxShadow(
                     color: const Color(0xFFFF9800).withOpacity(0.5),
-                    blurRadius: 10,
+                    twentadius: 10,
                     spreadRadius: 2,
                   )
                 ]

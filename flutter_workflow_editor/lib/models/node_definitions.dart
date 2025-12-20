@@ -199,7 +199,7 @@ class NodeDefinitions {
     tags: ['data', 'function', 'expression', 'calculate'],
   );
   
-  // System nodes (Blurr-specific)
+  // System nodes (Twent-specific)
   static const phoneControlNode = NodeDefinition(
     id: 'phone_control',
     displayName: 'Phone Control',

@@ -1,11 +1,11 @@
-package com.blurr.voice
+package com.twent.voice
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.blurr.voice.data.TaskHistoryItem
+import com.twent.voice.data.TaskHistoryItem
 
 class MomentsAdapter(private val taskHistory: List<TaskHistoryItem>) : 
     RecyclerView.Adapter<MomentsAdapter.TaskViewHolder>() {

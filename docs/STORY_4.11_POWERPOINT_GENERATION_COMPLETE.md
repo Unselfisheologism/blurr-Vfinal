@@ -48,7 +48,7 @@ python {
 
 ### 2. Updated PythonShellTool
 
-**File**: `app/src/main/java/com/blurr/voice/tools/PythonShellTool.kt`
+**File**: `app/src/main/java/com/twent/voice/tools/PythonShellTool.kt`
 
 Added `python-pptx` to:
 - **CORE_LIBRARIES** set (line 62): Marks it as pre-installed for instant execution

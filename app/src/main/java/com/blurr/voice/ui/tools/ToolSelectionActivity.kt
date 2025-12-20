@@ -1,4 +1,4 @@
-package com.blurr.voice.ui.tools
+package com.twent.voice.ui.tools
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,9 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.blurr.voice.data.ToolPreferences
-import com.blurr.voice.mcp.MCPClient
-import com.blurr.voice.tools.ToolRegistry
+import com.twent.voice.data.ToolPreferences
+import com.twent.voice.mcp.MCPClient
+import com.twent.voice.tools.ToolRegistry
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

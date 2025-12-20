@@ -1,17 +1,17 @@
-# Blurr (Panda) - Project Overview
+# Twent (Panda) - Project Overview
 
 > **🐼 Panda: Your Personal AI Phone Operator**  
 > *"You touch grass. I'll touch your glass."*
 
 ## Executive Summary
 
-Blurr is an Android application that serves as an AI-powered phone operator, capable of autonomously understanding natural language commands and operating the phone's UI to achieve them. The app is designed to make modern technology more accessible by acting as a personal assistant that can handle complex, multi-step tasks across different applications.
+Twent is an Android application that serves as an AI-powered phone operator, capable of autonomously understanding natural language commands and operating the phone's UI to achieve them. The app is designed to make modern technology more accessible by acting as a personal assistant that can handle complex, multi-step tasks across different applications.
 
 ## Quick Reference
 
 | Property | Value |
 |----------|-------|
-| **Application ID** | `com.blurr.voice` |
+| **Application ID** | `com.twent.voice` |
 | **Min SDK** | 24 (Android 7.0) |
 | **Target SDK** | 35 (Android 15) |
 | **Language** | Kotlin 1.9.22 |
@@ -103,8 +103,8 @@ Panda is built on a sophisticated multi-agent system:
 ### Quick Start
 ```bash
 # Clone repository
-git clone https://github.com/ayush0chaudhary/blurr.git
-cd blurr
+git clone https://github.com/ayush0chaudhary/twent.git
+cd twent
 
 # Open in Android Studio, sync Gradle, run on device
 
