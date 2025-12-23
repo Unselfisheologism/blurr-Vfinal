@@ -6,8 +6,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.2.10"
     id("com.chaquo.python")
 }
 
@@ -129,6 +129,7 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0") // or latest
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.moshi:moshi:1.15.0")
     implementation("com.google.code.gson:gson:2.13.1")
@@ -172,7 +173,6 @@ dependencies {
     
     // Google OAuth & APIs (Story 4.13-4.16 - Hybrid Integration Strategy)
     // FREE for unlimited users via user OAuth!
-    implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation("com.google.api-client:google-api-client-android:2.2.0")
     implementation("com.google.http-client:google-http-client-gson:1.43.3")
     
