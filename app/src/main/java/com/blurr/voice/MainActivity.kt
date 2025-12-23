@@ -41,14 +41,7 @@ import com.twent.voice.views.DeltaSymbolView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.tasks.await
 import java.io.File
-import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.embedding.engine.FlutterEngineCache
-import io.flutter.embedding.engine.dart.DartExecutor
-import io.flutter.plugin.common.MethodChannel
-import com.twent.voice.workflow.WorkflowEditorHandler
-import io.flutter.embedding.android.FlutterActivity
 import com.twent.voice.apps.texteditor.TextEditorLauncher
 import com.twent.voice.apps.spreadsheets.SpreadsheetEditorLauncher
 import com.twent.voice.apps.learning.LearningPlatformLauncher
@@ -80,10 +73,6 @@ class MainActivity : BaseNavigationActivity() {
     private lateinit var permissionsStatusTag: TextView
     private lateinit var tasksLeftText: TextView
     private lateinit var deltaSymbol: DeltaSymbolView
-    
-    // Flutter workflow editor integration
-    private var flutterEngine: FlutterEngine? = null
-    private var workflowEditorHandler: WorkflowEditorHandler? = null
 
     private lateinit var root: View
     companion object {
@@ -212,9 +201,6 @@ class MainActivity : BaseNavigationActivity() {
         setupClickListeners()
         showLoading(true)
         performBillingCheck()
-        
-        // Initialize Flutter engine for workflow editor
-        initializeFlutterEngine()
         
         lifecycleScope.launch {
             val videoUrl = "https://storage.googleapis.com/twent-app-assets/wake_word_demo.mp4"
@@ -487,64 +473,16 @@ class MainActivity : BaseNavigationActivity() {
     }
 
     /**
-     * Initialize Flutter engine for workflow editor
-     */
-    private fun initializeFlutterEngine() {
-        try {
-            // Create and warm up Flutter engine
-            flutterEngine = FlutterEngine(this)
-            
-            // Start executing Dart code
-            flutterEngine!!.dartExecutor.executeDartEntrypoint(
-                DartExecutor.DartEntrypoint.createDefault()
-            )
-            
-            // Cache the engine for reuse
-            FlutterEngineCache
-                .getInstance()
-                .put("workflow_editor_engine", flutterEngine!!)
-            
-            // Initialize WorkflowEditorHandler with dependencies
-            val agentService = AgentService.getInstance(this)
-            
-            workflowEditorHandler = WorkflowEditorHandler(
-                context = this,
-                unifiedShellTool = agentService.unifiedShellTool,
-                composioClient = null, // TODO: Get from AgentService if available
-                composioManager = null, // TODO: Get from AgentService if available
-                mcpClient = null // TODO: Get from AgentService if available
-            )
-            
-            // Setup method channel
-            val channel = MethodChannel(
-                flutterEngine!!.dartExecutor.binaryMessenger,
-                "workflow_editor"
-            )
-            channel.setMethodCallHandler(workflowEditorHandler)
-            
-            Logger.d("MainActivity", "Flutter engine initialized successfully")
-        } catch (e: Exception) {
-            Logger.e("MainActivity", "Failed to initialize Flutter engine", e)
-        }
-    }
-    
-    /**
-     * Launch the workflow editor
+     * Launch the workflow editor.
+     *
+     * The workflow editor UI is implemented in the Flutter module. If the Flutter artifacts
+     * aren't bundled in the current build, WorkflowEditorActivity will show an explanatory
+     * placeholder instead of crashing.
      */
     fun launchWorkflowEditor() {
-        try {
-            val intent = FlutterActivity
-                .withCachedEngine("workflow_editor_engine")
-                .build(this)
-            
-            startActivity(intent)
-            Logger.d("MainActivity", "Launched workflow editor")
-        } catch (e: Exception) {
-            Logger.e("MainActivity", "Failed to launch workflow editor", e)
-            Toast.makeText(this, "Failed to open workflow editor", Toast.LENGTH_SHORT).show()
-        }
+        startActivity(Intent(this, WorkflowEditorActivity::class.java))
     }
-    
+
     /**
      * Launch the DAW editor
      */
@@ -608,10 +546,7 @@ class MainActivity : BaseNavigationActivity() {
             pandaStateManager.removeStateChangeListener(stateChangeListener)
             pandaStateManager.stopMonitoring()
         }
-        
-        // Clean up Flutter engine
-        flutterEngine?.destroy()
-        flutterEngine = null
+
     }
 
     private fun showDisclaimerDialog() {
