@@ -1307,7 +1307,7 @@ class ConversationalAgentService : Service() {
                 Log.e("ConvAgent", "Failed to track conversation end", e)
             }
         }
-    */
+    }
 
     override fun onDestroy() {
         super.onDestroy()

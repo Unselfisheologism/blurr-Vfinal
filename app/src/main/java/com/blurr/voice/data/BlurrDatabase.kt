@@ -19,7 +19,7 @@ import com.twent.voice.data.models.Message
         Message::class
     ],
     version = 1,
-    exportSchema = true
+    exportSchema = false
 )
 abstract class TwentDatabase : RoomDatabase() {
     

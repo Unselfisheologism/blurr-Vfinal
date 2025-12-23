@@ -13,9 +13,7 @@ dependencies:
   
   # Core node editor engine
   fl_nodes:
-    git:
-      url: https://github.com/WilliamKarolDiCioccio/fl_nodes.git
-      ref: main
+    path: ../fl_nodes_local/packages/fl_nodes
   
   # State management
   provider: ^6.1.1
@@ -88,9 +86,7 @@ dependencies:
   # File sharing
   share_plus: ^7.2.1
   
-  # File system paths
-  path_provider: ^2.1.1
-  
+
   # Image handling
   image: ^4.1.3
   
@@ -106,7 +102,7 @@ dependencies:
   # Audio packages for DAW (Epic 5)
   audio_waveforms: ^1.0.5
   just_audio: ^0.9.36
-  flutter_soloud: ^2.3.2
+  # flutter_soloud: any
   
   # Audio file handling
   audioplayers: ^5.2.1
@@ -121,7 +117,15 @@ dev_dependencies:
   freezed: ^2.4.5
   flutter_lints: ^3.0.1
 
+dependency_overrides:
+  fl_nodes_core:
+    path: ../fl_nodes_local/packages/fl_nodes_core
+
 flutter:
+  module:
+    androidX: true
+    androidPackage: com.twent.workflow_editor
+    iosBundleIdentifier: com.twent.workflow_editor
   uses-material-design: true
   
   fonts:
