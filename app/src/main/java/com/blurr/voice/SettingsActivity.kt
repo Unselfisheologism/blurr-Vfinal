@@ -459,7 +459,6 @@ class SettingsActivity : BaseNavigationActivity() {
         finish()
     }
 
-    
     override fun getContentLayoutId(): Int = R.layout.activity_settings
     
     override fun getCurrentNavItem(): BaseNavigationActivity.NavItem = BaseNavigationActivity.NavItem.SETTINGS
