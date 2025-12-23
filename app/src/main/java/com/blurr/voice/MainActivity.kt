@@ -890,6 +890,7 @@ class MainActivity : BaseNavigationActivity() {
         /* Firebase removed 
            ... */
         return
+        // Firebase removed code would go here
         /*
         // Firebase removed: val uid = <removed>
         if (uid == null) {
@@ -914,92 +915,42 @@ class MainActivity : BaseNavigationActivity() {
                 }
             }
         }
+        */
     }
 
     private fun displayDeveloperMessage() {
-        //lifecycleScope.launch {
-            try {
-                // Check if message has been shown more than once
-                val sharedPrefs = getSharedPreferences("developer_message_prefs", Context.MODE_PRIVATE)
-                val displayCount = sharedPrefs.getInt("developer_message_count", 0)
-                
-                if (displayCount >= 1) {
-                    Logger.d("MainActivity", "Developer message already shown $displayCount times, skipping display")
-                    return
-                }
-
-                // Firebase removed: val remoteConfig = <removed>
-
-                // Fetch and activate the latest Remote Config values
-                // Firebase removed: remoteConfig.fetchAndActivate()
-                    .addOnCompleteListener(this) { task ->
-                        if (task.isSuccessful) {
-                            val updated = task.result
-                            Log.d("MainActivity", "Remote Config params updated: $updated")
-
-                            // Get the message from the activated config
-                            val message = "" // Firebase removed
-
-                            if (message.isNotEmpty()) {
-                                // Your existing dialog logic
-                                val dialog = AlertDialog.Builder(this@MainActivity)
-                                    .setTitle("Message from Developer")
-                                    .setMessage(message)
-                                    .setPositiveButton("OK") { dialogInterface, _ ->
-                                        dialogInterface.dismiss()
-                                        val editor = sharedPrefs.edit()
-                                        editor.putInt("developer_message_count", displayCount + 1)
-                                        editor.apply()
-                                    }
-                                    .show()
-                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
-                                    ContextCompat.getColor(this@MainActivity, R.color.black)
-                                )
-                                Log.d("MainActivity", "Developer message displayed from Remote Config.")
-                            } else {
-                                Log.d("MainActivity", "No developer message found in Remote Config.")
-                            }
-                        } else {
-                            Log.e("MainActivity", "Failed to fetch Remote Config.", task.exception)
-                        }
-                    }
-                
- //                Firebase removed
- //                val docRef = db.collection("settings").document("freemium")
- //
- //                docRef.get().addOnSuccessListener { document ->
- //                    if (document != null && document.exists()) {
- //                        val message = document.getString("developerMessage")
- //                        if (!message.isNullOrEmpty()) {
- //                            val dialog = AlertDialog.Builder(this@MainActivity)
- //                                .setTitle("Message from Developer")
- //                                .setMessage(message)
- //                                .setPositiveButton("OK") { dialogInterface, _ ->
- //                                    dialogInterface.dismiss()
- //                                    // Increment the display count after user dismisses
- //                                    val editor = sharedPrefs.edit()
- //                                    editor.putInt("developer_message_count", displayCount + 1)
- //                                    editor.apply()
- //                                    Logger.d("MainActivity", "Developer message display count updated to ${displayCount + 1}")
- //                                }
- //                                .show()
- //                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
- //                                ContextCompat.getColor(this@MainActivity, R.color.black)
- //                            )
- //                            Logger.d("MainActivity", "Developer message displayed in dialog")
- //                        } else {
- //                            Logger.d("MainActivity", "Developer message is empty")
- //                        }
- //                    } else {
- //                        Logger.d("MainActivity", "Developer message document does not exist")
- //                    }
- //                }.addOnFailureListener { exception ->
- //                    Logger.e("MainActivity", "Error fetching developer message", exception)
- //                }
-            } catch (e: Exception) {
-                Logger.e("MainActivity", "Exception in displayDeveloperMessage", e)
+        try {
+            // Check if message has been shown more than once
+            val sharedPrefs = getSharedPreferences("developer_message_prefs", Context.MODE_PRIVATE)
+            val displayCount = sharedPrefs.getInt("developer_message_count", 0)
+            
+            if (displayCount >= 1) {
+                Logger.d("MainActivity", "Developer message already shown $displayCount times, skipping display")
+                return
             }
-        //}
+
+            // Show welcome message for new users
+            val message = "Welcome to Twent AI Assistant!"
+            
+            if (message.isNotEmpty()) {
+                val dialog = AlertDialog.Builder(this@MainActivity)
+                    .setTitle("Message from Developer")
+                    .setMessage(message)
+                    .setPositiveButton("OK") { dialogInterface, _ ->
+                        dialogInterface.dismiss()
+                        val editor = sharedPrefs.edit()
+                        editor.putInt("developer_message_count", displayCount + 1)
+                        editor.apply()
+                    }
+                    .show()
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+                    ContextCompat.getColor(this@MainActivity, R.color.black)
+                )
+                Logger.d("MainActivity", "Developer message displayed")
+            }
+        } catch (e: Exception) {
+            Logger.e("MainActivity", "Error displaying developer message", e)
+        }
     }
 
     /**
