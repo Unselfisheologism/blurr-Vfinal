@@ -1,0 +1,40 @@
+// Stub Flutter module for build environments without Flutter SDK
+// This allows the Android app to build successfully even when Flutter SDK is not available
+
+plugins {
+    id("com.android.library")
+}
+
+group = "com.twent.workflow_editor"
+version = "1.0"
+
+android {
+    namespace = "com.twent.workflow_editor"
+    compileSdk = 35
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    defaultConfig {
+        minSdk = 24
+        targetSdk = 35
+        versionCode = 1
+        versionName = "1.0"
+    }
+
+    buildFeatures {
+        buildConfig = true
+    }
+}
+
+dependencies {
+    // Empty dependencies - this is a stub module
+    // When Flutter SDK is available, use the actual Flutter build instead
+}
+
+// Note: This is a stub implementation. To use the actual Flutter module:
+// 1. Ensure Flutter SDK is installed and available
+// 2. Update flutter_workflow_editor/.android/local.properties with flutter.sdk path
+// 3. Replace this file with Flutter/build.gradle.kts (the actual Flutter module build script)
