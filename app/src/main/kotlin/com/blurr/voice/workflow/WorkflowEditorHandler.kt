@@ -88,8 +88,8 @@ class WorkflowEditorHandler(
                 val toolResult = unifiedShellTool.execute(params)
                 
                 val response = mapOf(
-                    "success" to toolResult.isSuccess,
-                    "output" to toolResult.output,
+                    "success" to toolResult.success,
+                    "output" to toolResult.getDataAsString(),
                     "error" to toolResult.error
                 )
                 
@@ -224,7 +224,7 @@ class WorkflowEditorHandler(
                 
                 result.success(mapOf(
                     "success" to toolResult.success,
-                    "result" to (toolResult.data ?: toolResult.output),
+                    "result" to (toolResult.data ?: toolResult.getDataAsString()),
                     "error" to toolResult.error
                 ))
             } catch (e: Exception) {

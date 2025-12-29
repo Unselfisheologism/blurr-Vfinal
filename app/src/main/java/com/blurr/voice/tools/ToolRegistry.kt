@@ -28,52 +28,52 @@ class ToolRegistry(
         
         // User interaction
         if (confirmationHandler != null) {
-            registerTool(AskUserTool(context, confirmationHandler))
+            register(AskUserTool(context, confirmationHandler))
         }
         
         // Phone control (UI automation)
-        registerTool(PhoneControlTool(context))
+        register(PhoneControlTool(context))
         
         // Python shell (unlimited flexibility)
-        registerTool(PythonShellTool(context))  // Keep for backward compatibility
+        register(PythonShellTool(context))  // Keep for backward compatibility
         
         // Unified shell (Python + JavaScript) - Phase 2: Story 4.12
-        registerTool(UnifiedShellTool(context))
+        register(UnifiedShellTool(context))
         
         // Infographic generation (AI or D3.js) - Phase 3: Story 4.12
         confirmationHandler?.let {
-            registerTool(GenerateInfographicTool(context, it))
+            register(GenerateInfographicTool(context, it))
         }
         
         // Google Workspace integrations - FREE for all users! (Story 4.13 + 4.15 + 4.16)
         val googleAuthManager = com.blurr.voice.auth.GoogleAuthManager(context)
-        registerTool(com.blurr.voice.tools.google.GmailTool(context, googleAuthManager))
-        registerTool(com.blurr.voice.tools.google.GoogleCalendarTool(context, googleAuthManager))
-        registerTool(com.blurr.voice.tools.google.GoogleDriveTool(context, googleAuthManager))
+        register(com.blurr.voice.tools.google.GmailTool(context, googleAuthManager))
+        register(com.blurr.voice.tools.google.GoogleCalendarTool(context, googleAuthManager))
+        register(com.blurr.voice.tools.google.GoogleDriveTool(context, googleAuthManager))
         
         // Composio integrations (2,000+ tools) - PRO ONLY! (Story 4.14 + 4.16)
         // Note: Actual gating happens at execution time via ComposioTool.execute()
         // Tool is always registered so it appears in listings, but throws paywall error when used by free users
-        registerTool(ComposioTool(context))
+        register(ComposioTool(context))
         
         // Web search & research
-        registerTool(PerplexitySonarTool(context))
+        register(PerplexitySonarTool(context))
         
         // Media generation tools
-        registerTool(ImageGenerationTool(context))
-        registerTool(VideoGenerationTool(context))
-        registerTool(AudioGenerationTool(context))
-        registerTool(MusicGenerationTool(context))
-        registerTool(Model3DGenerationTool(context))
+        register(ImageGenerationTool(context))
+        register(VideoGenerationTool(context))
+        register(AudioGenerationTool(context))
+        register(MusicGenerationTool(context))
+        register(Model3DGenerationTool(context))
         
         // Workflow management - Enables AI to create and manage n8n-style workflows
-        registerTool(WorkflowTool(context))
+        register(WorkflowTool(context))
         
         // Spreadsheet editor - AI-native spreadsheet generation and editing (Epic 3)
-        registerTool(SpreadsheetTool(context))
+        register(SpreadsheetTool(context))
         
         // Media canvas - AI-native multimodal media generation canvas (Epic 4)
-        registerTool(MediaCanvasTool(context))
+        register(MediaCanvasTool(context))
         
         Log.d(TAG, "ToolRegistry initialized with ${tools.size} built-in tools")
     }

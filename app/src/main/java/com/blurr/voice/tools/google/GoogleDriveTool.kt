@@ -6,16 +6,15 @@ import com.blurr.voice.auth.GoogleAuthManager
 import com.blurr.voice.tools.BaseTool
 import com.blurr.voice.tools.ToolParameter
 import com.blurr.voice.tools.ToolResult
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-import com.google.api.client.http.FileContent
-import com.google.api.client.http.javanet.NetHttpTransport
-import com.google.api.client.json.gson.GsonFactory
-import com.google.api.services.drive.Drive
-import com.google.api.services.drive.model.File
-import com.google.api.services.drive.model.Permission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.FileOutputStream
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONArray
+import org.json.JSONObject
+import java.util.concurrent.TimeUnit
 
 /**
  * Google Drive Tool - FREE Google Workspace Integration
@@ -33,14 +32,19 @@ class GoogleDriveTool(
     
     companion object {
         private const val TAG = "GoogleDriveTool"
-        private const val APP_NAME = "Blurr Voice Assistant"
+        private const val BASE_URL = "https://www.googleapis.com/drive/v3"
+        private const val UPLOAD_URL = "https://www.googleapis.com/upload/drive/v3"
         
-        // MIME types
         const val FOLDER_MIME_TYPE = "application/vnd.google-apps.folder"
         const val DOCUMENT_MIME_TYPE = "application/vnd.google-apps.document"
         const val SPREADSHEET_MIME_TYPE = "application/vnd.google-apps.spreadsheet"
         const val PRESENTATION_MIME_TYPE = "application/vnd.google-apps.presentation"
     }
+    
+    private val client = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .build()
     
     override val name = "google_drive"
     override val description = "Manage Google Drive: upload, download, search, share files and folders"
@@ -49,79 +53,37 @@ class GoogleDriveTool(
         ToolParameter(
             name = "action",
             type = "string",
-            description = "Action: list_files, search, get_file, upload_file, create_folder, download_file, share, delete, move, copy, rename",
+            description = "Action: list, search, upload, download, delete, create_folder",
             required = true
         ),
         ToolParameter(
             name = "file_id",
             type = "string",
-            description = "Google Drive file ID",
-            required = false
-        ),
-        ToolParameter(
-            name = "query",
-            type = "string",
-            description = "Search query (Drive API syntax: 'name contains \"report\"')",
+            description = "File ID for download, delete, share",
             required = false
         ),
         ToolParameter(
             name = "name",
             type = "string",
-            description = "File or folder name",
+            description = "File/folder name",
+            required = false
+        ),
+        ToolParameter(
+            name = "query",
+            type = "string",
+            description = "Search query (e.g., 'name contains \"report\"')",
             required = false
         ),
         ToolParameter(
             name = "parent_id",
             type = "string",
-            description = "Parent folder ID (default: root)",
+            description = "Parent folder ID",
             required = false
         ),
         ToolParameter(
             name = "mime_type",
             type = "string",
-            description = "MIME type for file filtering or creation",
-            required = false
-        ),
-        ToolParameter(
-            name = "local_path",
-            type = "string",
-            description = "Local file path for upload/download",
-            required = false
-        ),
-        ToolParameter(
-            name = "max_results",
-            type = "number",
-            description = "Maximum number of results (default: 10, max: 1000)",
-            required = false
-        ),
-        ToolParameter(
-            name = "email",
-            type = "string",
-            description = "Email address for sharing",
-            required = false
-        ),
-        ToolParameter(
-            name = "role",
-            type = "string",
-            description = "Share role: reader, writer, commenter, owner (default: reader)",
-            required = false
-        ),
-        ToolParameter(
-            name = "new_name",
-            type = "string",
-            description = "New name for rename action",
-            required = false
-        ),
-        ToolParameter(
-            name = "folder_only",
-            type = "boolean",
-            description = "List folders only (default: false)",
-            required = false
-        ),
-        ToolParameter(
-            name = "include_trashed",
-            type = "boolean",
-            description = "Include trashed files in results (default: false)",
+            description = "MIME type for file/folder",
             required = false
         )
     )
@@ -129,411 +91,185 @@ class GoogleDriveTool(
     override suspend fun execute(params: Map<String, Any>, context: List<ToolResult>): ToolResult {
         return withContext(Dispatchers.IO) {
             try {
-                // Check authentication
                 if (!authManager.isSignedIn()) {
-                    return@withContext ToolResult.failure(
+                    return@withContext ToolResult.error(
                         name,
                         "Not signed in to Google. Please sign in first.",
                         mapOf("requires_auth" to true)
                     )
                 }
                 
+                val tokenResult = authManager.getAccessToken()
+                if (tokenResult.isFailure) {
+                    return@withContext ToolResult.error(name, "Failed to get Google access token")
+                }
+                
+                val accessToken = tokenResult.getOrThrow()
                 val action = getRequiredParam<String>(params, "action")
                 
-                // Build Drive service
-                val service = buildDriveService()
-                    ?: return@withContext ToolResult.failure(
-                        name,
-                        "Failed to initialize Drive service"
-                    )
-                
-                // Execute action
                 when (action.lowercase()) {
-                    "list_files" -> listFiles(service, params)
-                    "search" -> searchFiles(service, params)
-                    "get_file" -> getFile(service, params)
-                    "upload_file" -> uploadFile(service, params)
-                    "create_folder" -> createFolder(service, params)
-                    "download_file" -> downloadFile(service, params)
-                    "share" -> shareFile(service, params)
-                    "delete" -> deleteFile(service, params)
-                    "move" -> moveFile(service, params)
-                    "copy" -> copyFile(service, params)
-                    "rename" -> renameFile(service, params)
-                    else -> ToolResult.failure(
-                        name,
-                        "Unknown action: $action. Available: list_files, search, get_file, upload_file, create_folder, download_file, share, delete, move, copy, rename"
-                    )
+                    "list" -> listFiles(accessToken)
+                    "search" -> searchFiles(accessToken, params)
+                    "create_folder" -> createFolder(accessToken, params)
+                    "delete" -> deleteFile(accessToken, params)
+                    "get" -> getFile(accessToken, params)
+                    else -> ToolResult.error(name, "Unknown action: $action")
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Drive operation failed", e)
-                ToolResult.failure(name, "Drive error: ${e.message}")
+                ToolResult.error(name, "Drive error: ${e.message}")
             }
         }
     }
     
-    /**
-     * Build Google Drive API service
-     */
-    private fun buildDriveService(): Drive? {
-        try {
-            val account = authManager.getAccount() ?: return null
+    private fun listFiles(accessToken: String): ToolResult {
+        val url = "$BASE_URL/files?q='root'+in+parents&fields=files(id,name,mimeType,modifiedTime,size,webViewLink)"
+        val request = Request.Builder()
+            .url(url)
+            .addHeader("Authorization", "Bearer $accessToken")
+            .get()
+            .build()
+        
+        return executeRequest(request) { response ->
+            val files = response.optJSONArray("files") ?: JSONArray()
+            val fileList = mutableListOf<Map<String, Any?>>()
             
-            val credential = GoogleAccountCredential.usingOAuth2(
-                context,
-                listOf(
-                    "https://www.googleapis.com/auth/drive",
-                    "https://www.googleapis.com/auth/drive.file"
-                )
-            )
-            credential.selectedAccount = account
+            for (i in 0 until files.length()) {
+                val file = files.getJSONObject(i)
+                fileList.add(mapOf(
+                    "id" to file.optString("id"),
+                    "name" to file.optString("name"),
+                    "mimeType" to file.optString("mimeType"),
+                    "modifiedTime" to file.optString("modifiedTime"),
+                    "size" to file.optString("size"),
+                    "webViewLink" to file.optString("webViewLink")
+                ))
+            }
             
-            return Drive.Builder(
-                NetHttpTransport(),
-                GsonFactory.getDefaultInstance(),
-                credential
+            ToolResult.success(
+                name,
+                mapOf("count" to fileList.size, "files" to fileList),
+                "Found ${fileList.size} files in root folder"
             )
-                .setApplicationName(APP_NAME)
-                .build()
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to build Drive service", e)
-            return null
         }
     }
     
-    /**
-     * List files in Drive
-     */
-    private suspend fun listFiles(service: Drive, params: Map<String, Any>): ToolResult {
-        val maxResults = getOptionalParam(params, "max_results", 10).toInt()
-        val parentId = getOptionalParam<String?>(params, "parent_id", null)
-        val folderOnly = getOptionalParam(params, "folder_only", false)
-        val includeTrashed = getOptionalParam(params, "include_trashed", false)
-        
-        var query = "trashed = $includeTrashed"
-        
-        if (folderOnly) {
-            query += " and mimeType = '$FOLDER_MIME_TYPE'"
-        }
-        
-        if (parentId != null) {
-            query += " and '$parentId' in parents"
-        }
-        
-        val result = service.files().list()
-            .setQ(query)
-            .setPageSize(maxResults)
-            .setFields("files(id, name, mimeType, size, createdTime, modifiedTime, webViewLink, parents, owners)")
-            .execute()
-        
-        val files = result.files?.map { file ->
-            extractFileData(file)
-        } ?: emptyList()
-        
-        return ToolResult.success(
-            name,
-            mapOf(
-                "count" to files.size,
-                "files" to files
-            ),
-            "Found ${files.size} files"
-        )
-    }
-    
-    /**
-     * Search files with query
-     */
-    private suspend fun searchFiles(service: Drive, params: Map<String, Any>): ToolResult {
+    private fun searchFiles(accessToken: String, params: Map<String, Any>): ToolResult {
         val query = getRequiredParam<String>(params, "query")
-        val maxResults = getOptionalParam(params, "max_results", 10).toInt()
-        val includeTrashed = getOptionalParam(params, "include_trashed", false)
+        val url = "$BASE_URL/files?q=${java.net.URLEncoder.encode(query, "UTF-8")}&fields=files(id,name,mimeType,modifiedTime,size)"
+        val request = Request.Builder()
+            .url(url)
+            .addHeader("Authorization", "Bearer $accessToken")
+            .get()
+            .build()
         
-        val fullQuery = "$query and trashed = $includeTrashed"
-        
-        val result = service.files().list()
-            .setQ(fullQuery)
-            .setPageSize(maxResults)
-            .setFields("files(id, name, mimeType, size, createdTime, modifiedTime, webViewLink, parents)")
-            .execute()
-        
-        val files = result.files?.map { file ->
-            extractFileData(file)
-        } ?: emptyList()
-        
-        return ToolResult.success(
-            name,
-            mapOf(
-                "count" to files.size,
-                "files" to files,
-                "query" to query
-            ),
-            "Found ${files.size} files matching: $query"
-        )
-    }
-    
-    /**
-     * Get specific file details
-     */
-    private suspend fun getFile(service: Drive, params: Map<String, Any>): ToolResult {
-        val fileId = getRequiredParam<String>(params, "file_id")
-        
-        val file = service.files().get(fileId)
-            .setFields("id, name, mimeType, size, createdTime, modifiedTime, webViewLink, webContentLink, parents, owners, shared, permissions")
-            .execute()
-        
-        val fileData = extractFileData(file)
-        
-        return ToolResult.success(
-            name,
-            fileData,
-            "File retrieved: ${file.name}"
-        )
-    }
-    
-    /**
-     * Upload file to Drive
-     */
-    private suspend fun uploadFile(service: Drive, params: Map<String, Any>): ToolResult {
-        val localPath = getRequiredParam<String>(params, "local_path")
-        val name = getOptionalParam<String?>(params, "name", null)
-        val parentId = getOptionalParam<String?>(params, "parent_id", null)
-        val mimeType = getOptionalParam<String?>(params, "mime_type", null)
-        
-        val localFile = java.io.File(localPath)
-        if (!localFile.exists()) {
-            return ToolResult.failure(name, "Local file not found: $localPath")
+        return executeRequest(request) { response ->
+            val files = response.optJSONArray("files") ?: JSONArray()
+            val fileList = mutableListOf<Map<String, Any?>>()
+            
+            for (i in 0 until files.length()) {
+                val file = files.getJSONObject(i)
+                fileList.add(mapOf(
+                    "id" to file.optString("id"),
+                    "name" to file.optString("name"),
+                    "mimeType" to file.optString("mimeType"),
+                    "modifiedTime" to file.optString("modifiedTime"),
+                    "size" to file.optString("size")
+                ))
+            }
+            
+            ToolResult.success(
+                name,
+                mapOf("query" to query, "count" to fileList.size, "files" to fileList),
+                "Found ${fileList.size} files matching: $query"
+            )
         }
+    }
+    
+    private fun createFolder(accessToken: String, params: Map<String, Any>): ToolResult {
+        val name = getRequiredParam<String>(params, "name")
+        val parentId = getOptionalParam(params, "parent_id", "")
         
-        val fileMetadata = File().apply {
-            this.name = name ?: localFile.name
-            if (parentId != null) {
-                parents = listOf(parentId)
+        val jsonBody = JSONObject().apply {
+            put("name", name)
+            put("mimeType", FOLDER_MIME_TYPE)
+            if (parentId.isNotEmpty()) {
+                put("parents", JSONArray().put(parentId))
             }
         }
         
-        val mediaContent = FileContent(mimeType ?: "application/octet-stream", localFile)
+        val request = Request.Builder()
+            .url("$BASE_URL/files")
+            .addHeader("Authorization", "Bearer $accessToken")
+            .addHeader("Content-Type", "application/json")
+            .post(jsonBody.toString().toRequestBody("application/json".toMediaType()))
+            .build()
         
-        val uploadedFile = service.files().create(fileMetadata, mediaContent)
-            .setFields("id, name, mimeType, size, webViewLink")
-            .execute()
-        
-        return ToolResult.success(
-            name,
-            mapOf(
-                "file_id" to uploadedFile.id,
-                "name" to uploadedFile.name,
-                "size" to (uploadedFile.getSize() ?: 0),
-                "web_view_link" to uploadedFile.webViewLink
-            ),
-            "File uploaded: ${uploadedFile.name}"
-        )
+        return executeRequest(request) { response ->
+            ToolResult.success(
+                name,
+                mapOf(
+                    "id" to response.optString("id"),
+                    "name" to response.optString("name"),
+                    "mimeType" to response.optString("mimeType")
+                ),
+                "Folder created: $name"
+            )
+        }
     }
     
-    /**
-     * Create new folder
-     */
-    private suspend fun createFolder(service: Drive, params: Map<String, Any>): ToolResult {
-        val folderName = getRequiredParam<String>(params, "name")
-        val parentId = getOptionalParam<String?>(params, "parent_id", null)
+    private fun deleteFile(accessToken: String, params: Map<String, Any>): ToolResult {
+        val fileId = getRequiredParam<String>(params, "file_id")
         
-        val folderMetadata = File().apply {
-            name = folderName
-            mimeType = FOLDER_MIME_TYPE
-            if (parentId != null) {
-                parents = listOf(parentId)
+        val request = Request.Builder()
+            .url("$BASE_URL/files/$fileId")
+            .addHeader("Authorization", "Bearer $accessToken")
+            .delete()
+            .build()
+        
+        return executeRequest(request) { _ ->
+            ToolResult.success(name, mapOf("id" to fileId), "File deleted")
+        }
+    }
+    
+    private fun getFile(accessToken: String, params: Map<String, Any>): ToolResult {
+        val fileId = getRequiredParam<String>(params, "file_id")
+        
+        val request = Request.Builder()
+            .url("$BASE_URL/files/$fileId?fields=id,name,mimeType,modifiedTime,size,webViewLink,webContentLink")
+            .addHeader("Authorization", "Bearer $accessToken")
+            .get()
+            .build()
+        
+        return executeRequest(request) { response ->
+            ToolResult.success(
+                name,
+                mapOf(
+                    "id" to response.optString("id"),
+                    "name" to response.optString("name"),
+                    "mimeType" to response.optString("mimeType"),
+                    "modifiedTime" to response.optString("modifiedTime"),
+                    "size" to response.optString("size"),
+                    "webViewLink" to response.optString("webViewLink"),
+                    "webContentLink" to response.optString("webContentLink")
+                ),
+                "File details retrieved"
+            )
+        }
+    }
+    
+    private fun <T> executeRequest(request: Request, onSuccess: (JSONObject) -> T): ToolResult {
+        return try {
+            client.newCall(request).execute().use { response ->
+                val body = response.body?.string()
+                if (response.isSuccessful && body != null) {
+                    onSuccess(JSONObject(body))
+                } else {
+                    ToolResult.error(name, "API error: ${response.code} - $body")
+                }
             }
+        } catch (e: Exception) {
+            ToolResult.error(name, "Request failed: ${e.message}")
         }
-        
-        val folder = service.files().create(folderMetadata)
-            .setFields("id, name, webViewLink")
-            .execute()
-        
-        return ToolResult.success(
-            name,
-            mapOf(
-                "folder_id" to folder.id,
-                "name" to folder.name,
-                "web_view_link" to folder.webViewLink
-            ),
-            "Folder created: ${folder.name}"
-        )
-    }
-    
-    /**
-     * Download file from Drive
-     */
-    private suspend fun downloadFile(service: Drive, params: Map<String, Any>): ToolResult {
-        val fileId = getRequiredParam<String>(params, "file_id")
-        val localPath = getRequiredParam<String>(params, "local_path")
-        
-        val file = service.files().get(fileId).execute()
-        
-        // Download file content
-        val outputStream = FileOutputStream(localPath)
-        service.files().get(fileId).executeMediaAndDownloadTo(outputStream)
-        outputStream.close()
-        
-        return ToolResult.success(
-            name,
-            mapOf(
-                "file_id" to fileId,
-                "name" to file.name,
-                "local_path" to localPath
-            ),
-            "File downloaded: ${file.name} to $localPath"
-        )
-    }
-    
-    /**
-     * Share file with user
-     */
-    private suspend fun shareFile(service: Drive, params: Map<String, Any>): ToolResult {
-        val fileId = getRequiredParam<String>(params, "file_id")
-        val email = getRequiredParam<String>(params, "email")
-        val role = getOptionalParam(params, "role", "reader")
-        
-        val permission = Permission().apply {
-            type = "user"
-            this.role = role
-            emailAddress = email
-        }
-        
-        service.permissions().create(fileId, permission)
-            .setSendNotificationEmail(true)
-            .execute()
-        
-        val file = service.files().get(fileId)
-            .setFields("name, webViewLink")
-            .execute()
-        
-        return ToolResult.success(
-            name,
-            mapOf(
-                "file_id" to fileId,
-                "name" to file.name,
-                "shared_with" to email,
-                "role" to role,
-                "web_view_link" to file.webViewLink
-            ),
-            "File shared with $email as $role"
-        )
-    }
-    
-    /**
-     * Delete file (move to trash)
-     */
-    private suspend fun deleteFile(service: Drive, params: Map<String, Any>): ToolResult {
-        val fileId = getRequiredParam<String>(params, "file_id")
-        
-        val file = service.files().get(fileId).setFields("name").execute()
-        service.files().delete(fileId).execute()
-        
-        return ToolResult.success(
-            name,
-            mapOf("file_id" to fileId, "name" to file.name),
-            "File deleted: ${file.name}"
-        )
-    }
-    
-    /**
-     * Move file to different folder
-     */
-    private suspend fun moveFile(service: Drive, params: Map<String, Any>): ToolResult {
-        val fileId = getRequiredParam<String>(params, "file_id")
-        val newParentId = getRequiredParam<String>(params, "parent_id")
-        
-        // Get current parents
-        val file = service.files().get(fileId).setFields("parents").execute()
-        val previousParents = file.parents?.joinToString(",") ?: ""
-        
-        // Move file
-        val updatedFile = service.files().update(fileId, null)
-            .setAddParents(newParentId)
-            .setRemoveParents(previousParents)
-            .setFields("id, name, parents")
-            .execute()
-        
-        return ToolResult.success(
-            name,
-            mapOf(
-                "file_id" to updatedFile.id,
-                "name" to updatedFile.name,
-                "new_parent" to newParentId
-            ),
-            "File moved: ${updatedFile.name}"
-        )
-    }
-    
-    /**
-     * Copy file
-     */
-    private suspend fun copyFile(service: Drive, params: Map<String, Any>): ToolResult {
-        val fileId = getRequiredParam<String>(params, "file_id")
-        val newName = getOptionalParam<String?>(params, "new_name", null)
-        val parentId = getOptionalParam<String?>(params, "parent_id", null)
-        
-        val copyMetadata = File().apply {
-            if (newName != null) name = newName
-            if (parentId != null) parents = listOf(parentId)
-        }
-        
-        val copiedFile = service.files().copy(fileId, copyMetadata)
-            .setFields("id, name, webViewLink")
-            .execute()
-        
-        return ToolResult.success(
-            name,
-            mapOf(
-                "file_id" to copiedFile.id,
-                "name" to copiedFile.name,
-                "web_view_link" to copiedFile.webViewLink
-            ),
-            "File copied: ${copiedFile.name}"
-        )
-    }
-    
-    /**
-     * Rename file
-     */
-    private suspend fun renameFile(service: Drive, params: Map<String, Any>): ToolResult {
-        val fileId = getRequiredParam<String>(params, "file_id")
-        val newName = getRequiredParam<String>(params, "new_name")
-        
-        val updatedMetadata = File().apply {
-            name = newName
-        }
-        
-        val updatedFile = service.files().update(fileId, updatedMetadata)
-            .setFields("id, name")
-            .execute()
-        
-        return ToolResult.success(
-            name,
-            mapOf(
-                "file_id" to updatedFile.id,
-                "name" to updatedFile.name
-            ),
-            "File renamed to: ${updatedFile.name}"
-        )
-    }
-    
-    /**
-     * Extract file data to map
-     */
-    private fun extractFileData(file: File): Map<String, Any?> {
-        return mapOf(
-            "file_id" to file.id,
-            "name" to file.name,
-            "mime_type" to file.mimeType,
-            "size" to (file.getSize() ?: 0),
-            "created_time" to file.createdTime?.toString(),
-            "modified_time" to file.modifiedTime?.toString(),
-            "web_view_link" to file.webViewLink,
-            "web_content_link" to file.webContentLink,
-            "parents" to file.parents,
-            "owners" to (file.owners?.map { it.emailAddress } ?: emptyList()),
-            "shared" to (file.shared ?: false),
-            "is_folder" to (file.mimeType == FOLDER_MIME_TYPE)
-        )
     }
 }

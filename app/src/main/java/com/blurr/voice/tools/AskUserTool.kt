@@ -81,7 +81,7 @@ class AskUserTool(
             
             // Validate options
             if (options.size < 2 || options.size > 4) {
-                return ToolResult.failure(
+                return ToolResult.error(
                     toolName = name,
                     error = "Must provide 2-4 options. Got ${options.size} options."
                 )
@@ -114,7 +114,7 @@ class AskUserTool(
             
         } catch (e: Exception) {
             Log.e(TAG, "Error asking user", e)
-            ToolResult.failure(
+            ToolResult.error(
                 toolName = name,
                 error = "Failed to ask user: ${e.message}"
             )
