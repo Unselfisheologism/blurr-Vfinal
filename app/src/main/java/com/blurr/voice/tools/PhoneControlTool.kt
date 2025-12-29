@@ -134,7 +134,7 @@ class PhoneControlTool(
             // Check if accessibility service is running
             val service = ScreenInteractionService.instance
             if (service == null) {
-                return ToolResult.failure(
+                return ToolResult.error(
                     toolName = name,
                     error = "Accessibility service is not running. Please enable accessibility permissions for Blurr."
                 )
@@ -161,7 +161,7 @@ class PhoneControlTool(
                 "read_screen" -> executeReadScreen()
                 "screenshot" -> executeScreenshot()
                 "get_current_app" -> executeGetCurrentApp()
-                else -> ToolResult.failure(
+                else -> ToolResult.error(
                     toolName = name,
                     error = "Unknown action: $action"
                 )
@@ -171,7 +171,7 @@ class PhoneControlTool(
             
         } catch (e: Exception) {
             Log.e(TAG, "Error executing phone control", e)
-            ToolResult.failure(
+            ToolResult.error(
                 toolName = name,
                 error = "Phone control error: ${e.message}"
             )
@@ -194,7 +194,7 @@ class PhoneControlTool(
                     data = mapOf("x" to x, "y" to y, "action" to "tap")
                 )
             } catch (e: Exception) {
-                ToolResult.failure(
+                ToolResult.error(
                     toolName = name,
                     error = "Tap failed: ${e.message}"
                 )
@@ -218,7 +218,7 @@ class PhoneControlTool(
                     data = mapOf("x" to x, "y" to y, "action" to "long_press")
                 )
             } catch (e: Exception) {
-                ToolResult.failure(
+                ToolResult.error(
                     toolName = name,
                     error = "Long press failed: ${e.message}"
                 )
@@ -250,7 +250,7 @@ class PhoneControlTool(
                     )
                 )
             } catch (e: Exception) {
-                ToolResult.failure(
+                ToolResult.error(
                     toolName = name,
                     error = "Swipe failed: ${e.message}"
                 )
@@ -273,7 +273,7 @@ class PhoneControlTool(
                     data = mapOf("pixels" to pixels, "action" to "scroll_down")
                 )
             } catch (e: Exception) {
-                ToolResult.failure(
+                ToolResult.error(
                     toolName = name,
                     error = "Scroll down failed: ${e.message}"
                 )
@@ -296,7 +296,7 @@ class PhoneControlTool(
                     data = mapOf("pixels" to pixels, "action" to "scroll_up")
                 )
             } catch (e: Exception) {
-                ToolResult.failure(
+                ToolResult.error(
                     toolName = name,
                     error = "Scroll up failed: ${e.message}"
                 )
@@ -315,7 +315,7 @@ class PhoneControlTool(
                 // Check if typing is available (keyboard visible)
                 val isTypingAvailable = eyes.getKeyBoardStatus()
                 if (!isTypingAvailable) {
-                    return@withContext ToolResult.failure(
+                    return@withContext ToolResult.error(
                         toolName = name,
                         error = "No text field is focused. Tap on a text field first before typing."
                     )
@@ -328,7 +328,7 @@ class PhoneControlTool(
                     data = mapOf("text" to text, "action" to "type")
                 )
             } catch (e: Exception) {
-                ToolResult.failure(
+                ToolResult.error(
                     toolName = name,
                     error = "Type failed: ${e.message}"
                 )
@@ -349,7 +349,7 @@ class PhoneControlTool(
                     data = mapOf("action" to "press_back")
                 )
             } catch (e: Exception) {
-                ToolResult.failure(
+                ToolResult.error(
                     toolName = name,
                     error = "Press back failed: ${e.message}"
                 )
@@ -370,7 +370,7 @@ class PhoneControlTool(
                     data = mapOf("action" to "press_home")
                 )
             } catch (e: Exception) {
-                ToolResult.failure(
+                ToolResult.error(
                     toolName = name,
                     error = "Press home failed: ${e.message}"
                 )
@@ -391,7 +391,7 @@ class PhoneControlTool(
                     data = mapOf("action" to "press_recents")
                 )
             } catch (e: Exception) {
-                ToolResult.failure(
+                ToolResult.error(
                     toolName = name,
                     error = "Press recents failed: ${e.message}"
                 )
@@ -413,7 +413,7 @@ class PhoneControlTool(
                     data = mapOf("action" to "press_enter")
                 )
             } catch (e: Exception) {
-                ToolResult.failure(
+                ToolResult.error(
                     toolName = name,
                     error = "Press enter failed: ${e.message}"
                 )
@@ -436,7 +436,7 @@ class PhoneControlTool(
                     data = mapOf("app_name" to appName, "action" to "open_app")
                 )
             } catch (e: Exception) {
-                ToolResult.failure(
+                ToolResult.error(
                     toolName = name,
                     error = "Open app failed: ${e.message}"
                 )
@@ -458,7 +458,7 @@ class PhoneControlTool(
                 data = mapOf("action" to "read_screen", "content_length" to screenContent.length)
             )
         } catch (e: Exception) {
-            ToolResult.failure(
+            ToolResult.error(
                 toolName = name,
                 error = "Read screen failed: ${e.message}"
             )
@@ -485,13 +485,13 @@ class PhoneControlTool(
                     )
                 )
             } else {
-                ToolResult.failure(
+                ToolResult.error(
                     toolName = name,
                     error = "Screenshot capture failed"
                 )
             }
         } catch (e: Exception) {
-            ToolResult.failure(
+            ToolResult.error(
                 toolName = name,
                 error = "Screenshot failed: ${e.message}"
             )
@@ -511,7 +511,7 @@ class PhoneControlTool(
                 data = mapOf("action" to "get_current_app", "app_name" to currentApp)
             )
         } catch (e: Exception) {
-            ToolResult.failure(
+            ToolResult.error(
                 toolName = name,
                 error = "Get current app failed: ${e.message}"
             )

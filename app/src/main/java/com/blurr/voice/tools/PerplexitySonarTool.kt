@@ -102,7 +102,7 @@ class PerplexitySonarTool(
             
             // Get best available Sonar model
             val sonarModel = getBestAvailableSonarModel()
-                ?: return ToolResult.failure(
+                ?: return ToolResult.error(
                     toolName = name,
                     error = "No Perplexity Sonar models available from your provider. " +
                             "Please ensure your provider (OpenRouter, AIMLAPI, etc.) has access to Sonar models."
@@ -131,7 +131,7 @@ class PerplexitySonarTool(
                     )
                 )
             } else {
-                ToolResult.failure(
+                ToolResult.error(
                     toolName = name,
                     error = "Web search failed. Please try again or rephrase your query."
                 )
@@ -139,7 +139,7 @@ class PerplexitySonarTool(
             
         } catch (e: Exception) {
             Log.e(TAG, "Error executing web search", e)
-            ToolResult.failure(
+            ToolResult.error(
                 toolName = name,
                 error = "Search error: ${e.message}"
             )

@@ -41,13 +41,20 @@ android {
         // Common build config fields - applies to all build types
         
         buildConfigField("boolean", "ENABLE_DIRECT_APP_OPENING", "true")
-        buildConfigField("boolean", "SPEAK_INSTRUCTIONS", "true")
-        
-        
-        
 
-        
+        buildConfigField("boolean", "SPEAK_INSTRUCTIONS", "true")
+
+        // Appwrite configuration
+        buildConfigField("String", "APPWRITE_PUBLIC_ENDPOINT", "\"https://cloud.appwrite.io/v1\"")
+        buildConfigField("String", "APPWRITE_PROJECT_ID", "\"blurr\"")
+        buildConfigField("String", "APPWRITE_DATABASE_ID", "\"blurr-db\"")
+        buildConfigField("String", "APPWRITE_USERS_COLLECTION_ID", "\"users\"")
+        buildConfigField("String", "APPWRITE_CONVERSATIONS_COLLECTION_ID", "\"conversations\"")
+        buildConfigField("String", "APPWRITE_WORKFLOWS_COLLECTION_ID", "\"workflows\"")
+        buildConfigField("boolean", "DEBUG", "true")
+
         buildConfigField("boolean", "ENABLE_LOGGING", "true")
+
 
     }
 
@@ -115,7 +122,6 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0") // or latest
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.16")
     implementation("com.squareup.moshi:moshi:1.15.0")
     implementation("com.google.code.gson:gson:2.13.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
@@ -125,6 +131,23 @@ dependencies {
     // Remove Browser dependency for CustomTabsIntent since we're using popup WebView
     // implementation("androidx.browser:browser:1.8.0")
     
+    // Appwrite SDK for backend services
+    implementation(libs.appwrite.sdk) {
+        exclude(group = "com.squareup.okhttp3", module = "okhttp-bom")
+    }
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    
+    // Google Sign-In for OAuth authentication
+    implementation(libs.play.services.auth)
+    implementation(libs.play.services.basement)
+    
+    // Firebase for analytics (optional)
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    
+    // Google Play Billing
+    implementation("com.android.billingclient:billing:6.2.0")
     
     // Room database dependencies
     implementation("androidx.room:room-runtime:2.6.1")

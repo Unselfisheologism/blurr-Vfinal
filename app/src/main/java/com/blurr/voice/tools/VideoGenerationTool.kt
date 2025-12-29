@@ -105,7 +105,7 @@ class VideoGenerationTool(
             val availability = modelChecker.checkAvailability(MediaModelChecker.MediaType.VIDEO)
             
             if (!availability.isAvailable) {
-                return ToolResult.failure(
+                return ToolResult.error(
                     toolName = name,
                     error = modelChecker.getUnsupportedMessage(
                         MediaModelChecker.MediaType.VIDEO,
@@ -116,7 +116,7 @@ class VideoGenerationTool(
             
             // Choose model
             val model = availability.recommendedModel 
-                ?: return ToolResult.failure(
+                ?: return ToolResult.error(
                     toolName = name,
                     error = "No video generation models available"
                 )
@@ -134,7 +134,7 @@ class VideoGenerationTool(
             val jobId = startVideoGeneration(model, enhancedPrompt, duration, aspectRatio, imagePath)
             
             if (jobId == null) {
-                return ToolResult.failure(
+                return ToolResult.error(
                     toolName = name,
                     error = "Failed to start video generation. Please try again."
                 )
@@ -162,13 +162,13 @@ class VideoGenerationTool(
                         )
                     )
                 } else {
-                    ToolResult.failure(
+                    ToolResult.error(
                         toolName = name,
                         error = "Video generated but download failed. URL: $videoUrl"
                     )
                 }
             } else {
-                ToolResult.failure(
+                ToolResult.error(
                     toolName = name,
                     error = "Video generation timed out or failed. Please try again with a simpler prompt."
                 )
@@ -176,7 +176,7 @@ class VideoGenerationTool(
             
         } catch (e: Exception) {
             Log.e(TAG, "Error generating video", e)
-            ToolResult.failure(
+            ToolResult.error(
                 toolName = name,
                 error = "Video generation error: ${e.message}"
             )

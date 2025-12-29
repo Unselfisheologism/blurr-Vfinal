@@ -174,18 +174,18 @@ class PythonShellTool(
             )
             
         } catch (e: kotlinx.coroutines.TimeoutCancellationException) {
-            ToolResult.failure(
+            ToolResult.error(
                 toolName = name,
                 error = "Python code execution timed out after ${params["timeout"]} seconds"
             )
         } catch (e: PyException) {
-            ToolResult.failure(
+            ToolResult.error(
                 toolName = name,
                 error = "Python error: ${e.message}\n${e.stackTraceToString()}"
             )
         } catch (e: Exception) {
             Log.e(TAG, "Python execution error", e)
-            ToolResult.failure(
+            ToolResult.error(
                 toolName = name,
                 error = "Python execution error: ${e.message}"
             )

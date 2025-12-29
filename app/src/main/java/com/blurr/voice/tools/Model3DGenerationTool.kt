@@ -106,7 +106,7 @@ class Model3DGenerationTool(
             val availability = modelChecker.checkAvailability(MediaModelChecker.MediaType.MODEL_3D)
             
             if (!availability.isAvailable) {
-                return ToolResult.failure(
+                return ToolResult.error(
                     toolName = name,
                     error = modelChecker.getUnsupportedMessage(
                         MediaModelChecker.MediaType.MODEL_3D,
@@ -118,7 +118,7 @@ class Model3DGenerationTool(
             
             // Choose model
             val model = availability.recommendedModel 
-                ?: return ToolResult.failure(
+                ?: return ToolResult.error(
                     toolName = name,
                     error = "No 3D generation models available"
                 )
@@ -129,7 +129,7 @@ class Model3DGenerationTool(
             val jobId = start3DGeneration(model, prompt, format, quality, imageInput, texture)
             
             if (jobId == null) {
-                return ToolResult.failure(
+                return ToolResult.error(
                     toolName = name,
                     error = "Failed to start 3D model generation. Please try again."
                 )
@@ -159,13 +159,13 @@ class Model3DGenerationTool(
                         )
                     )
                 } else {
-                    ToolResult.failure(
+                    ToolResult.error(
                         toolName = name,
                         error = "3D model generated but download failed. URL: $modelUrl"
                     )
                 }
             } else {
-                ToolResult.failure(
+                ToolResult.error(
                     toolName = name,
                     error = "3D model generation timed out or failed. " +
                             "3D generation is complex and can take up to 5 minutes. Please try again."
@@ -174,7 +174,7 @@ class Model3DGenerationTool(
             
         } catch (e: Exception) {
             Log.e(TAG, "Error generating 3D model", e)
-            ToolResult.failure(
+            ToolResult.error(
                 toolName = name,
                 error = "3D model generation error: ${e.message}"
             )

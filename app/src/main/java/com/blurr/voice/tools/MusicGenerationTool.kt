@@ -127,7 +127,7 @@ class MusicGenerationTool(
             val availability = modelChecker.checkAvailability(MediaModelChecker.MediaType.MUSIC)
             
             if (!availability.isAvailable) {
-                return ToolResult.failure(
+                return ToolResult.error(
                     toolName = name,
                     error = modelChecker.getUnsupportedMessage(
                         MediaModelChecker.MediaType.MUSIC,
@@ -138,7 +138,7 @@ class MusicGenerationTool(
             
             // Choose model
             val model = availability.recommendedModel 
-                ?: return ToolResult.failure(
+                ?: return ToolResult.error(
                     toolName = name,
                     error = "No music generation models available"
                 )
@@ -152,7 +152,7 @@ class MusicGenerationTool(
             val jobId = startMusicGeneration(model, enhancedPrompt, duration, instrumental)
             
             if (jobId == null) {
-                return ToolResult.failure(
+                return ToolResult.error(
                     toolName = name,
                     error = "Failed to start music generation. Please try again."
                 )
@@ -182,13 +182,13 @@ class MusicGenerationTool(
                         )
                     )
                 } else {
-                    ToolResult.failure(
+                    ToolResult.error(
                         toolName = name,
                         error = "Music generated but download failed. URL: $musicUrl"
                     )
                 }
             } else {
-                ToolResult.failure(
+                ToolResult.error(
                     toolName = name,
                     error = "Music generation timed out or failed. Please try again with a simpler prompt."
                 )
@@ -196,7 +196,7 @@ class MusicGenerationTool(
             
         } catch (e: Exception) {
             Log.e(TAG, "Error generating music", e)
-            ToolResult.failure(
+            ToolResult.error(
                 toolName = name,
                 error = "Music generation error: ${e.message}"
             )

@@ -100,7 +100,7 @@ class AudioGenerationTool(
             
             // Validate speed
             if (speed < 0.25 || speed > 4.0) {
-                return ToolResult.failure(
+                return ToolResult.error(
                     toolName = name,
                     error = "Speed must be between 0.25 and 4.0"
                 )
@@ -113,7 +113,7 @@ class AudioGenerationTool(
             val availability = modelChecker.checkAvailability(MediaModelChecker.MediaType.AUDIO_TTS)
             
             if (!availability.isAvailable) {
-                return ToolResult.failure(
+                return ToolResult.error(
                     toolName = name,
                     error = modelChecker.getUnsupportedMessage(
                         MediaModelChecker.MediaType.AUDIO_TTS,
@@ -124,7 +124,7 @@ class AudioGenerationTool(
             
             // Choose model
             val model = availability.recommendedModel 
-                ?: return ToolResult.failure(
+                ?: return ToolResult.error(
                     toolName = name,
                     error = "No TTS models available"
                 )
@@ -153,7 +153,7 @@ class AudioGenerationTool(
                     )
                 )
             } else {
-                ToolResult.failure(
+                ToolResult.error(
                     toolName = name,
                     error = "Audio generation failed. Please try again or use a different voice."
                 )
@@ -161,7 +161,7 @@ class AudioGenerationTool(
             
         } catch (e: Exception) {
             Log.e(TAG, "Error generating audio", e)
-            ToolResult.failure(
+            ToolResult.error(
                 toolName = name,
                 error = "Audio generation error: ${e.message}"
             )

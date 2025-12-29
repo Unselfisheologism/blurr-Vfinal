@@ -94,11 +94,11 @@ class GenerateInfographicTool(
                 when (method) {
                     METHOD_D3JS -> generateWithD3js(topic, data, style)
                     METHOD_NANO_BANANA_PRO -> generateWithNanoBananaPro(topic, style)
-                    else -> ToolResult.failure(name, "Invalid method: $method")
+                    else -> ToolResult.error(name, "Invalid method: $method")
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Infographic generation failed", e)
-                ToolResult.failure(name, e.message ?: "Infographic generation failed")
+                ToolResult.error(name, e.message ?: "Infographic generation failed")
             }
         }
 
@@ -145,12 +145,12 @@ class GenerateInfographicTool(
         )
 
         if (!result.success) {
-            return ToolResult.failure(name, result.error ?: "Image generation failed")
+            return ToolResult.error(name, result.error ?: "Image generation failed")
         }
 
         val imagePath = result.getDataAsMap()?.get("image_path")?.toString()
         if (imagePath.isNullOrBlank()) {
-            return ToolResult.failure(name, "Image generated but no local path returned")
+            return ToolResult.error(name, "Image generated but no local path returned")
         }
 
         return ToolResult.success(
@@ -176,7 +176,7 @@ class GenerateInfographicTool(
         )
 
         if (!result.success) {
-            return ToolResult.failure(name, result.error ?: "D3.js generation failed")
+            return ToolResult.error(name, result.error ?: "D3.js generation failed")
         }
 
         val output = result.getDataAsString()
@@ -193,7 +193,7 @@ class GenerateInfographicTool(
                 ?.trim()
 
         if (filePath.isNullOrBlank()) {
-            return ToolResult.failure(name, "D3.js executed but did not return a file path")
+            return ToolResult.error(name, "D3.js executed but did not return a file path")
         }
 
         return ToolResult.success(

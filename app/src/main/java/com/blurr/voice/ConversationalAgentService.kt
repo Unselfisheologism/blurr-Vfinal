@@ -43,7 +43,6 @@ import com.blurr.voice.utilities.PandaState
 import com.blurr.voice.utilities.UserProfileManager
 import com.blurr.voice.utilities.VisualFeedbackManager
 import com.blurr.voice.v2.AgentService
-import com.google.ai.client.generativeai.type.TextPart
 import com.blurr.voice.utilities.ServicePermissionManager
 import com.blurr.voice.utilities.PandaStateManager
 import com.blurr.voice.v2.perception.Perception
@@ -54,8 +53,17 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import org.json.JSONObject
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.analytics
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
+
+/**
+ * Simple text content part for conversation history (replaces Generative AI TextPart)
+ */
+data class TextPart(val text: String)
 
 data class ModelDecision(
     val type: String = "Reply",
@@ -289,13 +297,13 @@ class ConversationalAgentService : Service() {
                     putInt("error_attempt", sttErrorAttempts + 1)
                     putInt("max_attempts", maxSttErrorAttempts)
                 }
-                firebaseAnalytics.logEvent("stt_error", sttErrorBundle)
+                Log.d("ConvAgent", "STT error")
                 
                 visualFeedbackManager.hideTranscription()
                 sttErrorAttempts++
                 serviceScope.launch {
                     if (sttErrorAttempts >= maxSttErrorAttempts) {
-                        firebaseAnalytics.logEvent("conversation_ended_stt_errors", null)
+                        Log.d("ConvAgent", "Conversation ended due to STT errors")
                         val exitMessage = "I'm having trouble understanding you clearly. Please try calling later!"
                         trackMessage("model", exitMessage, "error_message")
                         gracefulShutdown(exitMessage, "stt_errors")
@@ -384,13 +392,13 @@ class ConversationalAgentService : Service() {
                     putInt("error_attempt", sttErrorAttempts + 1)
                     putInt("max_attempts", maxSttErrorAttempts)
                 }
-                firebaseAnalytics.logEvent("stt_error", sttErrorBundle)
+                Log.d("ConvAgent", "STT error")
                 
                 visualFeedbackManager.hideTranscription()
                 sttErrorAttempts++
                 serviceScope.launch {
                     if (sttErrorAttempts >= maxSttErrorAttempts) {
-                        firebaseAnalytics.logEvent("conversation_ended_stt_errors", null)
+                        Log.d("ConvAgent", "Conversation ended due to STT errors")
                         val exitMessage = "I'm having trouble understanding you clearly. Please try calling later!"
                         trackMessage("model", exitMessage, "error_message")
                         gracefulShutdown(exitMessage, "stt_errors")

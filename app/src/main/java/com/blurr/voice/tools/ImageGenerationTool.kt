@@ -98,7 +98,7 @@ class ImageGenerationTool(
             val availability = modelChecker.checkAvailability(MediaModelChecker.MediaType.IMAGE)
             
             if (!availability.isAvailable) {
-                return ToolResult.failure(
+                return ToolResult.error(
                     toolName = name,
                     error = modelChecker.getUnsupportedMessage(
                         MediaModelChecker.MediaType.IMAGE,
@@ -110,7 +110,7 @@ class ImageGenerationTool(
             // Choose model
             val model = requestedModel 
                 ?: availability.recommendedModel 
-                ?: return ToolResult.failure(
+                ?: return ToolResult.error(
                     toolName = name,
                     error = "No image generation models available"
                 )
@@ -142,7 +142,7 @@ class ImageGenerationTool(
                     )
                 )
             } else {
-                ToolResult.failure(
+                ToolResult.error(
                     toolName = name,
                     error = "Image generation failed. Please try again with a different prompt."
                 )
@@ -150,7 +150,7 @@ class ImageGenerationTool(
             
         } catch (e: Exception) {
             Log.e(TAG, "Error generating image", e)
-            ToolResult.failure(
+            ToolResult.error(
                 toolName = name,
                 error = "Image generation error: ${e.message}"
             )
