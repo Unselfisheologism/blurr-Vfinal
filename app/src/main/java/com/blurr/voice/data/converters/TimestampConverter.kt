@@ -8,12 +8,12 @@ import androidx.room.TypeConverter
 class TimestampConverter {
     
     @TypeConverter
-    fun fromTimestamp(value: Long?): Long {
-        return value ?: 0L
+    fun fromLong(value: Long?): Long? {
+        return value
     }
     
     @TypeConverter
-    fun toTimestamp(timestamp: Long?): Long {
-        return timestamp ?: System.currentTimeMillis()
+    fun toLong(value: Long?): Long? {
+        return value
     }
 }
