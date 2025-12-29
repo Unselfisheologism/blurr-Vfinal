@@ -418,6 +418,7 @@ class SettingsActivity : BaseNavigationActivity() {
                     Toast.makeText(this, "Could not open link. No browser found.", Toast.LENGTH_LONG).show()
                     Log.e("SettingsActivity", "Failed to open battery optimization link", e)
                 }
+            }
             .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
             }
