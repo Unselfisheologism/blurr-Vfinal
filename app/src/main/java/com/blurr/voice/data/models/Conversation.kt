@@ -1,7 +1,9 @@
 package com.twent.voice.data.models
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 
 /**
  * Conversation entity for Room database
@@ -110,7 +112,12 @@ data class Conversation(
  * Conversation with messages (for queries)
  */
 data class ConversationWithMessages(
+    @Embedded
     val conversation: Conversation,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "conversationId"
+    )
     val messages: List<Message>
 ) {
     /**
