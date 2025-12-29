@@ -6,7 +6,6 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.twent.voice.data.converters.MessageContentConverter
-import com.twent.voice.data.converters.TimestampConverter
 
 /**
  * Message entity for Room database
@@ -29,7 +28,7 @@ import com.twent.voice.data.converters.TimestampConverter
         Index("timestamp")
     ]
 )
-@TypeConverters(TimestampConverter::class, MessageContentConverter::class)
+@TypeConverters(MessageContentConverter::class)
 data class Message(
     @PrimaryKey
     val id: String,

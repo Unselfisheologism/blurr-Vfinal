@@ -1333,7 +1333,6 @@ class ConversationalAgentService : Service() {
         visualFeedbackManager.hideTtsWave()
         visualFeedbackManager.hideTranscription()
         visualFeedbackManager.hideInputBox()
-
     }
 
     override fun onBind(intent: Intent?): IBinder? = null

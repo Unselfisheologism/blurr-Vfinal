@@ -2,8 +2,6 @@ package com.twent.voice.data.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
-import com.twent.voice.data.converters.TimestampConverter
 
 /**
  * Conversation entity for Room database
@@ -12,7 +10,6 @@ import com.twent.voice.data.converters.TimestampConverter
  * Contains metadata and references to messages.
  */
 @Entity(tableName = "conversations")
-@TypeConverters(TimestampConverter::class)
 data class Conversation(
     @PrimaryKey
     val id: String,
