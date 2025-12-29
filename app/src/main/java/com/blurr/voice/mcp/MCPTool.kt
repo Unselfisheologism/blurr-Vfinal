@@ -1,4 +1,4 @@
-package com.twent.voice.mcp
+package com.blurr.voice.mcp
 
 import org.json.JSONObject
 

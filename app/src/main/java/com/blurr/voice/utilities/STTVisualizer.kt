@@ -1,4 +1,4 @@
-package com.twent.voice.utilities
+package com.blurr.voice.utilities
 
 import android.content.Context
 import android.graphics.PixelFormat
@@ -8,7 +8,7 @@ import android.os.Looper
 import android.view.Gravity
 import android.view.WindowManager
 import android.util.Log
-import com.twent.voice.AudioWaveView // CHANGED: Import the new wave view
+import com.blurr.voice.AudioWaveView // CHANGED: Import the new wave view
 
 class STTVisualizer(private val context: Context) {
 

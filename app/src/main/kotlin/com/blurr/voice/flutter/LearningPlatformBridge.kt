@@ -1,11 +1,11 @@
-package com.twent.voice.flutter
+package com.blurr.voice.flutter
 
 import android.content.Context
 import android.util.Log
-import com.twent.voice.core.providers.UniversalLLMService
-import com.twent.voice.core.providers.UniversalTTSService
-import com.twent.voice.tools.GenerateInfographicTool
-import com.twent.voice.utilities.FreemiumManager
+import com.blurr.voice.core.providers.UniversalLLMService
+import com.blurr.voice.core.providers.UniversalTTSService
+import com.blurr.voice.tools.GenerateInfographicTool
+import com.blurr.voice.utilities.FreemiumManager
 import com.chaquo.python.Python
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -29,7 +29,7 @@ class LearningPlatformBridge(
     flutterEngine: FlutterEngine
 ) {
     companion object {
-        private const val CHANNEL = "com.twent.learning_platform/bridge"
+        private const val CHANNEL = "com.blurr.learning_platform/bridge"
         private const val TAG = "LearningPlatformBridge"
 
         private const val FREE_CHAR_LIMIT = 8000

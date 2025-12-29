@@ -1,4 +1,4 @@
-package com.twent.voice
+package com.blurr.voice
 
 import android.content.Intent
 import android.os.Build
@@ -37,7 +37,7 @@ abstract class BaseNavigationActivity : AppCompatActivity() {
         findViewById<LinearLayout>(R.id.nav_triggers).apply {
             setOnClickListener {
                 if (currentItem != NavItem.TRIGGERS) {
-                    navigateToActivity(com.twent.voice.triggers.ui.TriggersActivity::class.java, currentItem)
+                    navigateToActivity(com.blurr.voice.triggers.ui.TriggersActivity::class.java, currentItem)
                 }
             }
             alpha = if (currentItem == NavItem.TRIGGERS) 1.0f else 0.7f

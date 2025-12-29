@@ -1,11 +1,11 @@
-package com.twent.voice.data.models
+package com.blurr.voice.data.models
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.twent.voice.data.converters.MessageContentConverter
+import com.blurr.voice.data.converters.MessageContentConverter
 
 /**
  * Message entity for Room database

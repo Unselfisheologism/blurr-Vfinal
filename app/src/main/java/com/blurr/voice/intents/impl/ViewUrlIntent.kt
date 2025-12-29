@@ -1,10 +1,10 @@
-package com.twent.voice.intents.impl
+package com.blurr.voice.intents.impl
 
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import com.twent.voice.intents.AppIntent
-import com.twent.voice.intents.ParameterSpec
+import com.blurr.voice.intents.AppIntent
+import com.blurr.voice.intents.ParameterSpec
 import androidx.core.net.toUri
 
 class ViewUrlIntent : AppIntent {

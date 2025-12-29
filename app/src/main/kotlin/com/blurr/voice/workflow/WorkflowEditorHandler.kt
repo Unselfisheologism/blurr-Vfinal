@@ -1,10 +1,10 @@
-package com.twent.voice.workflow
+package com.blurr.voice.workflow
 
 import android.content.Context
-import com.twent.voice.tools.UnifiedShellTool
-import com.twent.voice.integrations.ComposioClient
-import com.twent.voice.integrations.ComposioIntegrationManager
-import com.twent.voice.mcp.MCPClient
+import com.blurr.voice.tools.UnifiedShellTool
+import com.blurr.voice.integrations.ComposioClient
+import com.blurr.voice.integrations.ComposioIntegrationManager
+import com.blurr.voice.mcp.MCPClient
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope

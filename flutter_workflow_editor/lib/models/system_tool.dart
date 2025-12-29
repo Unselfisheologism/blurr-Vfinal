@@ -5,7 +5,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'system_tool.g.dart';
 
-/// System tool categories matching Twent's capabilities
+/// System tool categories matching Blurr's capabilities
 enum SystemToolCategory {
   uiAutomation,
   notification,
@@ -107,7 +107,7 @@ class SystemToolParameter {
   Map<String, dynamic> toJson() => _$SystemToolParameterToJson(this);
 }
 
-/// Pre-defined system tools matching Twent's PhoneControlTool capabilities
+/// Pre-defined system tools matching Blurr's PhoneControlTool capabilities
 class SystemTools {
   // UI Automation Tools
   static final tapElement = SystemTool(

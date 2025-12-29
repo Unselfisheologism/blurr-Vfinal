@@ -1,6 +1,6 @@
 # Automated Version Management
 
-This document explains the automated version management system implemented for the Twent Android app.
+This document explains the automated version management system implemented for the Blurr Android app.
 
 ## Overview
 

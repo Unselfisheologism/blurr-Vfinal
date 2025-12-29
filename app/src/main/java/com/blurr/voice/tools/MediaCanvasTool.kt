@@ -1,8 +1,8 @@
-package com.twent.voice.tools
+package com.blurr.voice.tools
 
 import android.content.Context
 import android.content.Intent
-import com.twent.voice.MediaCanvasActivity
+import com.blurr.voice.MediaCanvasActivity
 import org.json.JSONObject
 
 /**

@@ -34,7 +34,7 @@ The "save as reusable tool/prompt chain" feature has been **removed from Phase 1
 **Status**: Discovered to be already fully implemented!
 
 **Files** (185 lines):
-- `app/src/main/java/com/twent/voice/mcp/MCPToolAdapter.kt`
+- `app/src/main/java/com/blurr/voice/mcp/MCPToolAdapter.kt`
 
 **What It Does**:
 - Wraps MCP tools to implement the standard `Tool` interface
@@ -59,14 +59,14 @@ ${mcpClient.describeTools()} // In system prompt
 **Status**: Fully implemented with Material 3 UI
 
 **New Files** (470 lines):
-1. `app/src/main/java/com/twent/voice/data/ToolPreferences.kt` (90 lines)
-2. `app/src/main/java/com/twent/voice/ui/tools/ToolSelectionActivity.kt` (380 lines)
+1. `app/src/main/java/com/blurr/voice/data/ToolPreferences.kt` (90 lines)
+2. `app/src/main/java/com/blurr/voice/ui/tools/ToolSelectionActivity.kt` (380 lines)
 
 **Modified Files** (4):
-1. `app/src/main/java/com/twent/voice/tools/ToolRegistry.kt`
-2. `app/src/main/java/com/twent/voice/mcp/MCPClient.kt`
+1. `app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt`
+2. `app/src/main/java/com/blurr/voice/mcp/MCPClient.kt`
 3. `app/src/main/AndroidManifest.xml`
-4. `app/src/main/java/com/twent/voice/SettingsActivity.kt`
+4. `app/src/main/java/com/blurr/voice/SettingsActivity.kt`
 
 **What It Does**:
 - Displays all available tools (built-in + MCP)
@@ -290,17 +290,17 @@ Add Tool Selection button to `activity_settings.xml`:
 
 ### New Files Created (3):
 ```
-app/src/main/java/com/twent/voice/data/ToolPreferences.kt              (90 lines)
-app/src/main/java/com/twent/voice/ui/tools/ToolSelectionActivity.kt   (380 lines)
+app/src/main/java/com/blurr/voice/data/ToolPreferences.kt              (90 lines)
+app/src/main/java/com/blurr/voice/ui/tools/ToolSelectionActivity.kt   (380 lines)
 docs/PHASE_1_STORIES_3.5_AND_3.8_COMPLETE.md                          (500 lines)
 ```
 
 ### Modified Files (5):
 ```
-app/src/main/java/com/twent/voice/tools/ToolRegistry.kt               (+20 lines)
-app/src/main/java/com/twent/voice/mcp/MCPClient.kt                    (+25 lines)
+app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt               (+20 lines)
+app/src/main/java/com/blurr/voice/mcp/MCPClient.kt                    (+25 lines)
 app/src/main/AndroidManifest.xml                                      (+6 lines)
-app/src/main/java/com/twent/voice/SettingsActivity.kt                 (+6 lines)
+app/src/main/java/com/blurr/voice/SettingsActivity.kt                 (+6 lines)
 WHATIWANT.md                                                           (1 line changed)
 ```
 

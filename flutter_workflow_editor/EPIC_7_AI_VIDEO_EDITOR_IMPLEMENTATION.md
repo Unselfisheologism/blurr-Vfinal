@@ -2,7 +2,7 @@
 
 This document summarizes the **Epic 7: AI-Native Video Editor** implementation added to the embedded Flutter module (`flutter_workflow_editor`) and the Kotlin-native Android host (`app`).
 
-The editor is **heavily inspired by TryKimu’s UX concepts** (multi-track timeline + ruler, media bin, preview + playback controls, top actions, AI toolbar, export), but is implemented natively in Flutter and integrates with the existing Twent agent/tooling on Android.
+The editor is **heavily inspired by TryKimu’s UX concepts** (multi-track timeline + ruler, media bin, preview + playback controls, top actions, AI toolbar, export), but is implemented natively in Flutter and integrates with the existing Blurr agent/tooling on Android.
 
 ---
 
@@ -38,7 +38,7 @@ The editor is **heavily inspired by TryKimu’s UX concepts** (multi-track timel
   - Export orchestration
 
 ### AI + export integration
-- New **MethodChannel** bridge: `com.twent.video_editor/bridge`
+- New **MethodChannel** bridge: `com.blurr.video_editor/bridge`
   - AI features call the **UltraGeneralistAgent** (via `AgentFactory.getAgent(context)`)
   - Export uses **FFmpegKit** (already present in app dependencies) for an MVP renderer.
 
@@ -150,11 +150,11 @@ Key responsibilities:
 ## 3) Android host (Kotlin) changes
 
 ### Entry point + launcher
-**File:** `app/src/main/java/com/twent/voice/apps/video/VideoEditorLauncher.kt`
+**File:** `app/src/main/java/com/blurr/voice/apps/video/VideoEditorLauncher.kt`
 - `VideoEditorLauncher.launch(context)` starts `VideoEditorActivity`.
 
 ### Host activity
-**File:** `app/src/main/kotlin/com/twent/voice/VideoEditorActivity.kt`
+**File:** `app/src/main/kotlin/com/blurr/voice/VideoEditorActivity.kt`
 - Uses cached engine: `video_editor_engine`
 - Sets initial route `/video_editor` and also `pushRoute(ROUTE)` when reusing engine.
 - Attaches Flutter via `FlutterFragment.withCachedEngine(...)`.
@@ -171,7 +171,7 @@ Key responsibilities:
 **Files:**
 - `app/src/main/res/layout/activity_main_content.xml`
   - Added `TextView` button: `@+id/video_editor_link` labeled “🎬 Video Editor”.
-- `app/src/main/java/com/twent/voice/MainActivity.kt`
+- `app/src/main/java/com/blurr/voice/MainActivity.kt`
   - Adds click listener for `video_editor_link` → `launchVideoEditor()`.
   - `launchVideoEditor()` uses `VideoEditorLauncher.launch(this)`.
 
@@ -180,7 +180,7 @@ Key responsibilities:
 ## 4) MethodChannel contract (Flutter ↔ Kotlin)
 
 Channel:
-- `com.twent.video_editor/bridge`
+- `com.blurr.video_editor/bridge`
 
 Methods implemented on Kotlin side:
 - `checkProStatus` → `{ isPro: Boolean }`
@@ -199,7 +199,7 @@ Pro gating implementation:
 
 ## 5) Export implementation (current MVP)
 
-**File:** `app/src/main/kotlin/com/twent/voice/flutter/VideoEditorBridge.kt`
+**File:** `app/src/main/kotlin/com/blurr/voice/flutter/VideoEditorBridge.kt`
 
 Export details:
 - Uses `FFmpegKit` to render timeline to MP4.
@@ -251,7 +251,7 @@ Epic 7 now has a usable end-to-end editor (timeline → preview → AI → expor
 
 ### From Kotlin anywhere else
 ```kotlin
-import com.twent.voice.apps.video.VideoEditorLauncher
+import com.blurr.voice.apps.video.VideoEditorLauncher
 
 VideoEditorLauncher.launch(context)
 ```
@@ -272,14 +272,14 @@ VideoEditorLauncher.launch(context)
 - `pubspec.yaml`
 
 ### Android (new)
-- `app/src/main/kotlin/com/twent/voice/VideoEditorActivity.kt`
-- `app/src/main/kotlin/com/twent/voice/flutter/VideoEditorBridge.kt`
-- `app/src/main/java/com/twent/voice/apps/video/VideoEditorLauncher.kt`
+- `app/src/main/kotlin/com/blurr/voice/VideoEditorActivity.kt`
+- `app/src/main/kotlin/com/blurr/voice/flutter/VideoEditorBridge.kt`
+- `app/src/main/java/com/blurr/voice/apps/video/VideoEditorLauncher.kt`
 - `app/src/main/res/layout/activity_video_editor.xml`
 
 ### Android (modified)
 - `app/src/main/AndroidManifest.xml`
-- `app/src/main/java/com/twent/voice/MainActivity.kt`
+- `app/src/main/java/com/blurr/voice/MainActivity.kt`
 - `app/src/main/res/layout/activity_main_content.xml`
 
 ---

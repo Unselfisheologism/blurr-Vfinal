@@ -94,11 +94,11 @@ lib/media_canvas/
 
 ### Kotlin Files (3 files)
 ```
-app/src/main/kotlin/com/twent/voice/
+app/src/main/kotlin/com/blurr/voice/
 ├── MediaCanvasActivity.kt             # Host Activity (80 lines)
 └── flutter/MediaCanvasBridge.kt       # Platform bridge (250 lines)
 
-app/src/main/java/com/twent/voice/tools/
+app/src/main/java/com/blurr/voice/tools/
 └── MediaCanvasTool.kt                 # AI tool integration (100 lines)
 ```
 

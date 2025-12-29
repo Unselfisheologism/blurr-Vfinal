@@ -1,9 +1,9 @@
-package com.twent.voice.apps.base
+package com.blurr.voice.apps.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.twent.voice.agents.UltraGeneralistAgent
-import com.twent.voice.core.providers.UniversalLLMService
+import com.blurr.voice.agents.UltraGeneralistAgent
+import com.blurr.voice.core.providers.UniversalLLMService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

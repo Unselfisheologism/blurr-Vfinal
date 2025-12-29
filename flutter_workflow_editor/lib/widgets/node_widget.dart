@@ -47,7 +47,7 @@ class NodeWidget extends StatelessWidget {
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
-              twentadius: 4,
+              blurradius: 4,
               offset: const Offset(0, 2),
             ),
           ],

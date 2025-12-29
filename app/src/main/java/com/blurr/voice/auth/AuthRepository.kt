@@ -1,6 +1,6 @@
-package com.twent.voice.auth
+package com.blurr.voice.auth
 
-import com.twent.voice.core.result.Result
+import com.blurr.voice.core.result.Result
 import io.appwrite.models.User
 import io.appwrite.models.Session
 

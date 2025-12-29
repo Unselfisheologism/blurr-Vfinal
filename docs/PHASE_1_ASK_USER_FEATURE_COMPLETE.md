@@ -18,7 +18,7 @@ The AI agent can now **pause and ask users to choose** between different approac
 ## What Was Implemented
 
 ### 1. ✅ AskUserTool (Already Existed!)
-**File**: `app/src/main/java/com/twent/voice/tools/AskUserTool.kt`
+**File**: `app/src/main/java/com/blurr/voice/tools/AskUserTool.kt`
 
 The tool was already implemented with full functionality:
 - Pauses agent execution
@@ -38,7 +38,7 @@ The tool was already implemented with full functionality:
 ---
 
 ### 2. ✅ User Confirmation Handler
-**File**: `app/src/main/java/com/twent/voice/agents/UserConfirmation.kt`
+**File**: `app/src/main/java/com/blurr/voice/agents/UserConfirmation.kt`
 
 Already implemented with:
 - `UserConfirmationHandler` interface
@@ -55,7 +55,7 @@ Already implemented with:
 ---
 
 ### 3. ✅ AgentFactory Integration (FIXED)
-**File**: `app/src/main/java/com/twent/voice/agents/AgentFactory.kt`
+**File**: `app/src/main/java/com/blurr/voice/agents/AgentFactory.kt`
 
 **Problem**: ToolRegistry was created WITHOUT confirmation handler, so AskUserTool wasn't being registered.
 
@@ -86,7 +86,7 @@ fun getConfirmationHandler(): DefaultUserConfirmationHandler? {
 ---
 
 ### 4. ✅ ViewModel Integration
-**File**: `app/src/main/java/com/twent/voice/ui/agent/AgentChatViewModel.kt`
+**File**: `app/src/main/java/com/blurr/voice/ui/agent/AgentChatViewModel.kt`
 
 **Added**:
 ```kotlin
@@ -129,7 +129,7 @@ data class AgentChatUiState(
 ---
 
 ### 5. ✅ UI Dialog Component
-**File**: `app/src/main/java/com/twent/voice/ui/agent/AgentChatScreen.kt`
+**File**: `app/src/main/java/com/blurr/voice/ui/agent/AgentChatScreen.kt`
 
 **Added AgentQuestionDialog Composable**:
 ```kotlin

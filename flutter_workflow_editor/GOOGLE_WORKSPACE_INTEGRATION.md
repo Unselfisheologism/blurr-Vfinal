@@ -261,7 +261,7 @@ Log.d("Auth", "Signed in: $isSignedIn")
 
 ```kotlin
 // Test getGoogleAuthStatus
-val channel = MethodChannel(flutterEngine.dartExecutor, "com.twent.workflow_editor")
+val channel = MethodChannel(flutterEngine.dartExecutor, "com.blurr.workflow_editor")
 channel.invokeMethod("getGoogleAuthStatus", null) { result ->
     Log.d("Bridge", "Auth status: $result")
 }
@@ -325,7 +325,7 @@ if (!googleAuthManager.isSignedIn()) {
 **Fix:**
 ```kotlin
 // Test tool directly
-val gmailTool = com.twent.voice.tools.google.GmailTool(context, googleAuthManager)
+val gmailTool = com.blurr.voice.tools.google.GmailTool(context, googleAuthManager)
 val result = gmailTool.execute(mapOf(
     "action" to "send_email",
     "to" to "test@example.com",

@@ -60,7 +60,7 @@ python {
 
 ### 2. Tool Configuration Update
 
-**File**: `app/src/main/java/com/twent/voice/tools/PythonShellTool.kt`
+**File**: `app/src/main/java/com/blurr/voice/tools/PythonShellTool.kt`
 
 **Change 1** - Added to CORE_LIBRARIES (Line 62):
 ```kotlin
@@ -338,7 +338,7 @@ except Exception as e:
 | File | Lines Changed | Type | Purpose |
 |------|---------------|------|---------|
 | `app/build.gradle.kts` | +1 | Addition | Added python-pptx dependency |
-| `app/src/main/java/com/twent/voice/tools/PythonShellTool.kt` | +2 | Addition | Added to CORE_LIBRARIES + description |
+| `app/src/main/java/com/blurr/voice/tools/PythonShellTool.kt` | +2 | Addition | Added to CORE_LIBRARIES + description |
 | `app/src/main/assets/prompts/python_shell_guide.md` | +356 | Addition | Comprehensive PowerPoint guide |
 | **Total** | **+359 lines** | **0 deletions** | **No breaking changes** |
 

@@ -1,14 +1,14 @@
-package com.twent.voice.ui.agent
+package com.blurr.voice.ui.agent
 
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.twent.voice.agents.AgentFactory
-import com.twent.voice.agents.ConversationManager
-import com.twent.voice.agents.DefaultUserConfirmationHandler
-import com.twent.voice.agents.UserQuestion
-import com.twent.voice.data.models.Message
+import com.blurr.voice.agents.AgentFactory
+import com.blurr.voice.agents.ConversationManager
+import com.blurr.voice.agents.DefaultUserConfirmationHandler
+import com.blurr.voice.agents.UserQuestion
+import com.blurr.voice.data.models.Message
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

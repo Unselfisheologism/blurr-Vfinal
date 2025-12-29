@@ -1,4 +1,4 @@
-package com.twent.voice.triggers.ui
+package com.blurr.voice.triggers.ui
 
 import android.content.Context
 import android.content.Intent
@@ -10,13 +10,13 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.twent.voice.BaseNavigationActivity
+import com.blurr.voice.BaseNavigationActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.twent.voice.R
-import com.twent.voice.triggers.TriggerManager
-import com.twent.voice.triggers.TriggerMonitoringService
-import com.twent.voice.triggers.TriggerType
+import com.blurr.voice.R
+import com.blurr.voice.triggers.TriggerManager
+import com.blurr.voice.triggers.TriggerMonitoringService
+import com.blurr.voice.triggers.TriggerType
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 
 class TriggersActivity : BaseNavigationActivity() {
@@ -128,7 +128,7 @@ class TriggersActivity : BaseNavigationActivity() {
 
     private fun checkNotificationPermission() {
         val hasNotificationTriggers = triggerManager.getTriggers().any { it.type == TriggerType.NOTIFICATION && it.isEnabled }
-        if (hasNotificationTriggers && !com.twent.voice.triggers.PermissionUtils.isNotificationListenerEnabled(this)) {
+        if (hasNotificationTriggers && !com.blurr.voice.triggers.PermissionUtils.isNotificationListenerEnabled(this)) {
             showPermissionDialog()
         }
     }
@@ -167,7 +167,7 @@ class TriggersActivity : BaseNavigationActivity() {
         triggersRecyclerView.adapter = triggerAdapter
     }
 
-    private fun showDeleteConfirmationDialog(trigger: com.twent.voice.triggers.Trigger) {
+    private fun showDeleteConfirmationDialog(trigger: com.blurr.voice.triggers.Trigger) {
         val dialog = AlertDialog.Builder(this)
             .setTitle("Delete Trigger")
             .setMessage("Are you sure you want to delete this trigger?")

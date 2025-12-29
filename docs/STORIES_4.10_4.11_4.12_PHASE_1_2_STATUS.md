@@ -135,17 +135,17 @@ UnifiedShellTool
 ```
 
 ### Files Created
-1. `app/src/main/java/com/twent/voice/tools/shell/LanguageDetector.kt`
-2. `app/src/main/java/com/twent/voice/tools/shell/ExecutionResult.kt`
-3. `app/src/main/java/com/twent/voice/tools/shell/JavaScriptExecutor.kt`
-4. `app/src/main/java/com/twent/voice/tools/shell/PythonExecutor.kt`
-5. `app/src/main/java/com/twent/voice/tools/UnifiedShellTool.kt`
+1. `app/src/main/java/com/blurr/voice/tools/shell/LanguageDetector.kt`
+2. `app/src/main/java/com/blurr/voice/tools/shell/ExecutionResult.kt`
+3. `app/src/main/java/com/blurr/voice/tools/shell/JavaScriptExecutor.kt`
+4. `app/src/main/java/com/blurr/voice/tools/shell/PythonExecutor.kt`
+5. `app/src/main/java/com/blurr/voice/tools/UnifiedShellTool.kt`
 6. `app/src/main/assets/js/d3.min.js`
 7. `app/src/main/assets/prompts/unified_shell_guide.md`
 
 ### Files Modified
 1. `app/build.gradle.kts` (+ Rhino dependency)
-2. `app/src/main/java/com/twent/voice/tools/ToolRegistry.kt` (+ register UnifiedShellTool)
+2. `app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt` (+ register UnifiedShellTool)
 3. `app/src/main/assets/prompts/system_prompt.md` (+ unified_shell docs)
 
 ### Documentation
@@ -189,7 +189,7 @@ Create `GenerateInfographicTool` that:
 - Fast, free (no API costs)
 
 ### Files to Create
-1. `app/src/main/java/com/twent/voice/tools/GenerateInfographicTool.kt`
+1. `app/src/main/java/com/blurr/voice/tools/GenerateInfographicTool.kt`
 2. Add comprehensive D3.js infographic examples to `unified_shell_guide.md`
 3. Update system prompt with `generate_infographic` tool docs
 

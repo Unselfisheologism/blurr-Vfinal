@@ -1,15 +1,15 @@
-package com.twent.voice
+package com.blurr.voice
 
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import com.twent.voice.utilities.Logger
+import com.blurr.voice.utilities.Logger
 import com.android.billingclient.api.*
-import com.twent.voice.intents.IntentRegistry
-import com.twent.voice.intents.impl.DialIntent
-import com.twent.voice.intents.impl.EmailComposeIntent
-import com.twent.voice.intents.impl.ShareTextIntent
-import com.twent.voice.intents.impl.ViewUrlIntent
+import com.blurr.voice.intents.IntentRegistry
+import com.blurr.voice.intents.impl.DialIntent
+import com.blurr.voice.intents.impl.EmailComposeIntent
+import com.blurr.voice.intents.impl.ShareTextIntent
+import com.blurr.voice.intents.impl.ViewUrlIntent
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,7 +39,7 @@ class MyApplication : Application(), PurchasesUpdatedListener {
         appContext = applicationContext
         
         // Initialize Appwrite
-        com.twent.voice.auth.AppwriteManager.init(this)
+        com.blurr.voice.auth.AppwriteManager.init(this)
 
 
         billingClient = BillingClient.newBuilder(this)
@@ -98,7 +98,7 @@ class MyApplication : Application(), PurchasesUpdatedListener {
 
     override fun onPurchasesUpdated(billingResult: BillingResult, purchases: MutableList<Purchase>?) {
         Logger.d("MyApplication", "Purchase update received")
-        val intent = Intent("com.twent.voice.PURCHASE_UPDATED")
+        val intent = Intent("com.blurr.voice.PURCHASE_UPDATED")
         intent.putExtra("response_code", billingResult.responseCode)
         intent.putExtra("debug_message", billingResult.debugMessage)
         appContext.sendBroadcast(intent)

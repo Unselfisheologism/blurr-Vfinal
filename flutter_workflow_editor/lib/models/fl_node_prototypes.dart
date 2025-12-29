@@ -33,7 +33,7 @@ class FlNodePrototypeFactory {
               ? [
                   BoxShadow(
                     color: definition.color.withOpacity(0.5),
-                    twentadius: 10,
+                    blurradius: 10,
                     spreadRadius: 2,
                   )
                 ]

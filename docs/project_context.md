@@ -1,5 +1,5 @@
 ---
-project_name: 'Twent Mobile AI Super-Assistant'
+project_name: 'Blurr Mobile AI Super-Assistant'
 user_name: 'James Abraham'
 date: '2025-12-10'
 ---
@@ -44,7 +44,7 @@ These files are **PRODUCTION CRITICAL** and must NOT be changed:
 All new code MUST go in the correct package:
 
 ```
-com.twent.voice/
+com.blurr.voice/
 ├── byok/           # FR1-12: API key management
 ├── mcp/            # FR30: MCP client
 ├── agent/          # FR19-29: AI agent
@@ -80,7 +80,7 @@ const val MAX_RETRIES = 3
 const val DEFAULT_MODEL = "gpt-4"
 
 // Packages: lowercase.dotted
-package com.twent.voice.byok
+package com.blurr.voice.byok
 ```
 
 ### Database

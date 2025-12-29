@@ -1,4 +1,4 @@
-package com.twent.voice.triggers.ui
+package com.blurr.voice.triggers.ui
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.twent.voice.R
-import com.twent.voice.triggers.Trigger
-import com.twent.voice.triggers.TriggerType
+import com.blurr.voice.R
+import com.blurr.voice.triggers.Trigger
+import com.blurr.voice.triggers.TriggerType
 import java.util.Locale
 
 class TriggerAdapter(

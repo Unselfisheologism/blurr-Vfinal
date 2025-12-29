@@ -1,6 +1,6 @@
 # AI-Native Apps Module
 
-This module contains all AI-native applications within Twent.
+This module contains all AI-native applications within Blurr.
 
 ## Structure
 
@@ -59,7 +59,7 @@ apps/
 Common activity foundation for all AI-native apps.
 
 **Features**:
-- Consistent theming via TwentTheme
+- Consistent theming via BlurrTheme
 - Pro gating integration
 - Navigation patterns
 - Pro upgrade prompts

@@ -1,6 +1,6 @@
 ---
 title: "AI-Native Apps - Quick Start Guide"
-project: twent-Vfinal
+project: blurr-Vfinal
 phase: "AI-Native Apps Implementation"
 version: 1.0
 date: 2025-12-18
@@ -10,7 +10,7 @@ author: BMAD Method
 
 # AI-Native Apps Phase - Quick Start Guide
 
-**🎯 Goal**: Implement 6 AI-native apps within Twent, leveraging 75% of existing infrastructure.
+**🎯 Goal**: Implement 6 AI-native apps within Blurr, leveraging 75% of existing infrastructure.
 
 **⏱️ Timeline**: 24 weeks (6 months)
 
@@ -328,7 +328,7 @@ Before starting Epic 1:
 - ✅ Strong foundation for future apps
 
 ### Long-Term Vision:
-- **Twent becomes AI-native productivity suite**
+- **Blurr becomes AI-native productivity suite**
 - **Users spend 3x more time in app**
 - **Pro subscriptions drive sustainable revenue**
 - **Platform showcases agent + tools architecture**
@@ -345,8 +345,8 @@ Before starting Epic 1:
 - `/fl_nodes_docs.md` - Flutter workflow editor docs
 
 ### Code References
-- `/app/src/main/java/com/twent/voice/tools/` - All existing tools
-- `/app/src/main/java/com/twent/voice/ui/agent/AgentChatActivity.kt` - Agent UI pattern
+- `/app/src/main/java/com/blurr/voice/tools/` - All existing tools
+- `/app/src/main/java/com/blurr/voice/ui/agent/AgentChatActivity.kt` - Agent UI pattern
 - `/flutter_workflow_editor/` - Flutter module
 
 ### External References

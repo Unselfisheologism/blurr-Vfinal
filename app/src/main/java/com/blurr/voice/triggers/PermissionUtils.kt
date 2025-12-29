@@ -1,4 +1,4 @@
-package com.twent.voice.triggers
+package com.blurr.voice.triggers
 
 import android.content.Context
 import android.provider.Settings

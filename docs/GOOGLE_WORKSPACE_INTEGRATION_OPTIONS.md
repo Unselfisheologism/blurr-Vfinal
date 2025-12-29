@@ -243,7 +243,7 @@ Example: Reading 1 email = 5 quota units
 3. **Create OAuth Credentials**
    - Create OAuth 2.0 Client ID
    - Type: Android
-   - Package name: com.twent.voice
+   - Package name: com.blurr.voice
    - SHA-1 fingerprint: (from your keystore)
    - **Cost: $0**
 
@@ -350,7 +350,7 @@ class GmailTool(private val context: Context, private val authManager: GoogleAut
             NetHttpTransport(),
             GsonFactory.getDefaultInstance(),
             credential
-        ).setApplicationName("Twent Voice").build()
+        ).setApplicationName("Blurr Voice").build()
     }
     
     override suspend fun execute(params: Map<String, Any>): ToolResult {
@@ -514,7 +514,7 @@ class GmailTool(private val context: Context, private val authManager: GoogleAut
 ## Sample Code Repository Structure
 
 ```
-app/src/main/java/com/twent/voice/
+app/src/main/java/com/blurr/voice/
 ├── auth/
 │   ├── GoogleAuthManager.kt       # OAuth implementation
 │   └── TokenStorage.kt            # Secure token storage

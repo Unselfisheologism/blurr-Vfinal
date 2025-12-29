@@ -70,11 +70,11 @@ lib/spreadsheet_editor/
 
 #### Kotlin (3 files)
 ```
-app/src/main/kotlin/com/twent/voice/
+app/src/main/kotlin/com/blurr/voice/
 ├── SpreadsheetEditorActivity.kt           # Activity (80 lines)
 └── flutter/SpreadsheetEditorBridge.kt     # Bridge (200 lines)
 
-app/src/main/java/com/twent/voice/tools/
+app/src/main/java/com/blurr/voice/tools/
 └── SpreadsheetTool.kt                     # AI tool (90 lines)
 ```
 
@@ -97,7 +97,7 @@ flutter_workflow_editor/
 2. **flutter_workflow_editor/lib/services/platform_bridge.dart** - Added `executeAgentTask()`
 3. **flutter_workflow_editor/pubspec.yaml** - Dependencies already added
 4. **app/src/main/AndroidManifest.xml** - Registered SpreadsheetEditorActivity
-5. **app/src/main/java/com/twent/voice/tools/ToolRegistry.kt** - Registered SpreadsheetTool
+5. **app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt** - Registered SpreadsheetTool
 
 ---
 

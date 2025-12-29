@@ -1,4 +1,4 @@
-package com.twent.voice.ui
+package com.blurr.voice.ui
 
 import android.animation.ValueAnimator
 import android.content.Context
@@ -10,7 +10,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.content.ContextCompat
-import com.twent.voice.R
+import com.blurr.voice.R
 import kotlin.math.sqrt
 
 class SmallDeltaGlowView @JvmOverloads constructor(

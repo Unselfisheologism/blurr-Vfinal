@@ -1,4 +1,4 @@
-package com.twent.voice.core.providers
+package com.blurr.voice.core.providers
 
 import android.content.Context
 import android.graphics.Bitmap

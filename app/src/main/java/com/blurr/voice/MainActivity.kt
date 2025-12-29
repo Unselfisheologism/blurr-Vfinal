@@ -1,4 +1,4 @@
-package com.twent.voice
+package com.blurr.voice
 
 import android.annotation.SuppressLint
 import android.app.role.RoleManager
@@ -25,19 +25,19 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.android.billingclient.api.*
-import com.twent.voice.v2.AgentService
-import com.twent.voice.utilities.FreemiumManager
-import com.twent.voice.utilities.Logger
-import com.twent.voice.utilities.OnboardingManager
-import com.twent.voice.utilities.PermissionManager
-import com.twent.voice.utilities.UserIdManager
-import com.twent.voice.utilities.UserProfileManager
-import com.twent.voice.utilities.VideoAssetManager
-import com.twent.voice.utilities.WakeWordManager
-import com.twent.voice.utilities.PandaState
-import com.twent.voice.utilities.PandaStateManager
-import com.twent.voice.utilities.DeltaStateColorMapper
-import com.twent.voice.views.DeltaSymbolView
+import com.blurr.voice.v2.AgentService
+import com.blurr.voice.utilities.FreemiumManager
+import com.blurr.voice.utilities.Logger
+import com.blurr.voice.utilities.OnboardingManager
+import com.blurr.voice.utilities.PermissionManager
+import com.blurr.voice.utilities.UserIdManager
+import com.blurr.voice.utilities.UserProfileManager
+import com.blurr.voice.utilities.VideoAssetManager
+import com.blurr.voice.utilities.WakeWordManager
+import com.blurr.voice.utilities.PandaState
+import com.blurr.voice.utilities.PandaStateManager
+import com.blurr.voice.utilities.DeltaStateColorMapper
+import com.blurr.voice.views.DeltaSymbolView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -47,13 +47,13 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.embedding.engine.dart.DartExecutor
 import io.flutter.plugin.common.MethodChannel
-import com.twent.voice.workflow.WorkflowEditorHandler
+import com.blurr.voice.workflow.WorkflowEditorHandler
 import io.flutter.embedding.android.FlutterActivity
-import com.twent.voice.apps.texteditor.TextEditorLauncher
-import com.twent.voice.apps.spreadsheets.SpreadsheetEditorLauncher
-import com.twent.voice.apps.learning.LearningPlatformLauncher
-import com.twent.voice.apps.daw.DawEditorLauncher
-import com.twent.voice.apps.video.VideoEditorLauncher
+import com.blurr.voice.apps.texteditor.TextEditorLauncher
+import com.blurr.voice.apps.spreadsheets.SpreadsheetEditorLauncher
+import com.blurr.voice.apps.learning.LearningPlatformLauncher
+import com.blurr.voice.apps.daw.DawEditorLauncher
+import com.blurr.voice.apps.video.VideoEditorLauncher
 
 class MainActivity : BaseNavigationActivity() {
 
@@ -87,8 +87,8 @@ class MainActivity : BaseNavigationActivity() {
 
     private lateinit var root: View
     companion object {
-        const val ACTION_WAKE_WORD_FAILED = "com.twent.voice.WAKE_WORD_FAILED"
-        const val ACTION_PURCHASE_UPDATED = "com.twent.voice.PURCHASE_UPDATED"
+        const val ACTION_WAKE_WORD_FAILED = "com.blurr.voice.WAKE_WORD_FAILED"
+        const val ACTION_PURCHASE_UPDATED = "com.blurr.voice.PURCHASE_UPDATED"
     }
     
     private val wakeWordFailureReceiver = object : BroadcastReceiver() {
@@ -131,9 +131,9 @@ class MainActivity : BaseNavigationActivity() {
 
         // Check Appwrite Session
         lifecycleScope.launch {
-            val authRepo = com.twent.voice.auth.AppwriteAuthRepository()
+            val authRepo = com.blurr.voice.auth.AppwriteAuthRepository()
             val sessionResult = authRepo.checkSession()
-            val isLoggedIn = sessionResult is com.twent.voice.core.result.Result.Success && sessionResult.data
+            val isLoggedIn = sessionResult is com.blurr.voice.core.result.Result.Success && sessionResult.data
             
             if (!isLoggedIn) {
                 startActivity(Intent(this@MainActivity, LoginActivity::class.java))
@@ -146,7 +146,7 @@ class MainActivity : BaseNavigationActivity() {
             if (!profileManager.isProfileComplete()) {
                  // Fetch user from Appwrite and save profile if possible, or redirect
                  val userResult = authRepo.getCurrentUser()
-                 if (userResult is com.twent.voice.core.result.Result.Success) {
+                 if (userResult is com.blurr.voice.core.result.Result.Success) {
                       val user = userResult.data
                       // profileManager.saveProfile(user.name, user.email) 
                       // Need to check generic map or proper field access. 
@@ -217,7 +217,7 @@ class MainActivity : BaseNavigationActivity() {
         initializeFlutterEngine()
         
         lifecycleScope.launch {
-            val videoUrl = "https://storage.googleapis.com/twent-app-assets/wake_word_demo.mp4"
+            val videoUrl = "https://storage.googleapis.com/blurr-app-assets/wake_word_demo.mp4"
             VideoAssetManager.getVideoFile(this@MainActivity, videoUrl)
         }
 
@@ -276,7 +276,7 @@ class MainActivity : BaseNavigationActivity() {
     }
 
     private fun handleIntent(intent: Intent?) {
-        if (intent?.action == "com.twent.voice.WAKE_UP_PANDA") {
+        if (intent?.action == "com.blurr.voice.WAKE_UP_PANDA") {
             Logger.d("MainActivity", "Wake up Panda shortcut activated!")
             startConversationalAgent()
         }
@@ -670,7 +670,7 @@ class MainActivity : BaseNavigationActivity() {
             }
         val alertDialog = builder.create()
         lifecycleScope.launch {
-            val videoUrl = "https://storage.googleapis.com/twent-app-assets/wake_word_demo.mp4"
+            val videoUrl = "https://storage.googleapis.com/blurr-app-assets/wake_word_demo.mp4"
             val videoFile: File? = VideoAssetManager.getVideoFile(this@MainActivity, videoUrl)
 
             if (videoFile != null && videoFile.exists()) {

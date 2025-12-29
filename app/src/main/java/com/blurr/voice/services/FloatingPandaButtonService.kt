@@ -1,4 +1,4 @@
-package com.twent.voice.services
+package com.blurr.voice.services
 
 import android.app.Service
 import android.content.Context
@@ -14,8 +14,8 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import androidx.core.content.ContextCompat
-import com.twent.voice.ConversationalAgentService
-import com.twent.voice.R
+import com.blurr.voice.ConversationalAgentService
+import com.blurr.voice.R
 
 class FloatingPandaButtonService : Service() {
 

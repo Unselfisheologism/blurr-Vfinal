@@ -156,7 +156,7 @@ User ↔ Agent (can ask questions mid-work) → Tools:
 ## File Changes Required
 
 ### Phase 1: AI Question System
-1. **New Tool**: `app/src/main/java/com/twent/voice/tools/AskUserTool.kt`
+1. **New Tool**: `app/src/main/java/com/blurr/voice/tools/AskUserTool.kt`
    - Implements Tool interface
    - Pauses agent execution
    - Displays question UI
@@ -172,7 +172,7 @@ User ↔ Agent (can ask questions mid-work) → Tools:
    - Provide usage examples
    - Explain when to use it
 
-4. **Agent Service**: `app/src/main/java/com/twent/voice/agents/ConversationalAgent.kt`
+4. **Agent Service**: `app/src/main/java/com/blurr/voice/agents/ConversationalAgent.kt`
    - Handle ask_user tool calls
    - Pause/resume execution
    - UI interaction
@@ -202,7 +202,7 @@ User ↔ Agent (can ask questions mid-work) → Tools:
 ---
 
 ### Phase 3: Story 4.12
-1. **New Tool**: `app/src/main/java/com/twent/voice/tools/GenerateInfographicTool.kt`
+1. **New Tool**: `app/src/main/java/com/blurr/voice/tools/GenerateInfographicTool.kt`
    - ALWAYS calls `ask_user` first
    - Routes to image_generation OR unified_shell
    - Handles both paths

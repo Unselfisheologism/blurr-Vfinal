@@ -1,4 +1,4 @@
-package com.twent.voice.v2.actions
+package com.blurr.voice.v2.actions
 
 import android.content.Context
 import android.content.pm.PackageManager
@@ -7,17 +7,17 @@ import android.os.Build
 import android.util.Log
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.annotation.RequiresApi
-import com.twent.voice.ScreenInteractionService
-import com.twent.voice.api.Finger
-import com.twent.voice.utilities.SpeechCoordinator
-import com.twent.voice.utilities.UserInputManager
-import com.twent.voice.overlay.OverlayManager
-import com.twent.voice.v2.ActionResult
-import com.twent.voice.v2.fs.FileSystem
-import com.twent.voice.v2.perception.ScreenAnalysis
-import com.twent.voice.intents.IntentRegistry
-import com.twent.voice.overlay.OverlayDispatcher
-import com.twent.voice.overlay.OverlayPriority
+import com.blurr.voice.ScreenInteractionService
+import com.blurr.voice.api.Finger
+import com.blurr.voice.utilities.SpeechCoordinator
+import com.blurr.voice.utilities.UserInputManager
+import com.blurr.voice.overlay.OverlayManager
+import com.blurr.voice.v2.ActionResult
+import com.blurr.voice.v2.fs.FileSystem
+import com.blurr.voice.v2.perception.ScreenAnalysis
+import com.blurr.voice.intents.IntentRegistry
+import com.blurr.voice.overlay.OverlayDispatcher
+import com.blurr.voice.overlay.OverlayPriority
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking

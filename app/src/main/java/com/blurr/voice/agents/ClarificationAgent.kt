@@ -1,7 +1,7 @@
-package com.twent.voice.agents
+package com.blurr.voice.agents
 
 import android.content.Context
-import com.twent.voice.core.providers.UniversalLLMService
+import com.blurr.voice.core.providers.UniversalLLMService
 import com.google.ai.client.generativeai.type.TextPart
 import org.json.JSONObject
 import kotlinx.coroutines.Dispatchers

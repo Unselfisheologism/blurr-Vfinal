@@ -1,4 +1,4 @@
-package com.twent.voice.triggers
+package com.blurr.voice.triggers
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -177,7 +177,7 @@ class TriggerManager(private val context: Context) {
     }
 
     companion object {
-        private const val PREFS_NAME = "com.twent.voice.triggers.prefs"
+        private const val PREFS_NAME = "com.blurr.voice.triggers.prefs"
         private const val KEY_TRIGGERS = "triggers_list"
 
         @Volatile

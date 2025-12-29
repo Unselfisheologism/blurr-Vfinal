@@ -1,4 +1,4 @@
-package com.twent.voice.ui
+package com.blurr.voice.ui
 
 import android.app.Activity
 import android.content.Intent
@@ -8,8 +8,8 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.twent.voice.R
-import com.twent.voice.auth.GoogleAuthManager
+import com.blurr.voice.R
+import com.blurr.voice.auth.GoogleAuthManager
 import kotlinx.coroutines.launch
 
 /**

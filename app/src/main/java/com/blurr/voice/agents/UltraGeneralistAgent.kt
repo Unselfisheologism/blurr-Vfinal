@@ -1,16 +1,16 @@
-package com.twent.voice.agents
+package com.blurr.voice.agents
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
-import com.twent.voice.core.providers.FunctionTool
-import com.twent.voice.core.providers.OpenRouterRequestOptions
-import com.twent.voice.core.providers.ToolChoice
-import com.twent.voice.core.providers.UniversalLLMService
-import com.twent.voice.mcp.MCPClient
-import com.twent.voice.tools.Tool
-import com.twent.voice.tools.ToolRegistry
-import com.twent.voice.tools.ToolResult
+import com.blurr.voice.core.providers.FunctionTool
+import com.blurr.voice.core.providers.OpenRouterRequestOptions
+import com.blurr.voice.core.providers.ToolChoice
+import com.blurr.voice.core.providers.UniversalLLMService
+import com.blurr.voice.mcp.MCPClient
+import com.blurr.voice.tools.Tool
+import com.blurr.voice.tools.ToolRegistry
+import com.blurr.voice.tools.ToolResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray

@@ -35,11 +35,11 @@ Implement the Model Context Protocol (MCP) client to connect to external MCP ser
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/twent/voice/mcp/MCPClient.kt`
-- `app/src/main/java/com/twent/voice/mcp/MCPServer.kt`
-- `app/src/main/java/com/twent/voice/mcp/MCPTransport.kt`
-- `app/src/main/java/com/twent/voice/mcp/MCPTool.kt`
-- `app/src/main/java/com/twent/voice/mcp/HttpMCPTransport.kt`
+- `app/src/main/java/com/blurr/voice/mcp/MCPClient.kt`
+- `app/src/main/java/com/blurr/voice/mcp/MCPServer.kt`
+- `app/src/main/java/com/blurr/voice/mcp/MCPTransport.kt`
+- `app/src/main/java/com/blurr/voice/mcp/MCPTool.kt`
+- `app/src/main/java/com/blurr/voice/mcp/HttpMCPTransport.kt`
 
 **Key Classes**:
 ```kotlin
@@ -77,10 +77,10 @@ Create the tool registry system and common Tool interface that all built-in tool
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/twent/voice/tools/Tool.kt`
-- `app/src/main/java/com/twent/voice/tools/ToolRegistry.kt`
-- `app/src/main/java/com/twent/voice/tools/ToolResult.kt`
-- `app/src/main/java/com/twent/voice/tools/ToolParameter.kt`
+- `app/src/main/java/com/blurr/voice/tools/Tool.kt`
+- `app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt`
+- `app/src/main/java/com/blurr/voice/tools/ToolResult.kt`
+- `app/src/main/java/com/blurr/voice/tools/ToolParameter.kt`
 
 **Key Interfaces**:
 ```kotlin
@@ -122,10 +122,10 @@ Implement conversation context management to maintain multi-turn conversation hi
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/twent/voice/agents/ConversationManager.kt`
-- `app/src/main/java/com/twent/voice/data/models/Conversation.kt`
-- `app/src/main/java/com/twent/voice/data/models/Message.kt`
-- `app/src/main/java/com/twent/voice/data/dao/ConversationDao.kt`
+- `app/src/main/java/com/blurr/voice/agents/ConversationManager.kt`
+- `app/src/main/java/com/blurr/voice/data/models/Conversation.kt`
+- `app/src/main/java/com/blurr/voice/data/models/Message.kt`
+- `app/src/main/java/com/blurr/voice/data/dao/ConversationDao.kt`
 
 **Data Models**:
 ```kotlin
@@ -176,9 +176,9 @@ Implement the core UltraGeneralistAgent that analyzes user intent, creates execu
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/twent/voice/agents/UltraGeneralistAgent.kt`
-- `app/src/main/java/com/twent/voice/agents/ExecutionPlan.kt`
-- `app/src/main/java/com/twent/voice/agents/ToolExecutor.kt`
+- `app/src/main/java/com/blurr/voice/agents/UltraGeneralistAgent.kt`
+- `app/src/main/java/com/blurr/voice/agents/ExecutionPlan.kt`
+- `app/src/main/java/com/blurr/voice/agents/ToolExecutor.kt`
 
 **Key Methods**:
 ```kotlin
@@ -217,7 +217,7 @@ Create adapter to wrap MCP tools as regular Tool interface so they can be used s
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/twent/voice/mcp/MCPToolAdapter.kt`
+- `app/src/main/java/com/blurr/voice/mcp/MCPToolAdapter.kt`
 
 **Key Class**:
 ```kotlin
@@ -260,10 +260,10 @@ Implement the ability to save successful prompt+tool chains as reusable custom t
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/twent/voice/agents/SavedToolsManager.kt`
-- `app/src/main/java/com/twent/voice/data/models/SavedTool.kt`
-- `app/src/main/java/com/twent/voice/data/dao/SavedToolDao.kt`
-- `app/src/main/java/com/twent/voice/tools/SavedToolWrapper.kt`
+- `app/src/main/java/com/blurr/voice/agents/SavedToolsManager.kt`
+- `app/src/main/java/com/blurr/voice/data/models/SavedTool.kt`
+- `app/src/main/java/com/blurr/voice/data/dao/SavedToolDao.kt`
+- `app/src/main/java/com/blurr/voice/tools/SavedToolWrapper.kt`
 
 **Data Model**:
 ```kotlin
@@ -308,11 +308,11 @@ Build the unified 1-chat-UI interface using Jetpack Compose for natural conversa
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/twent/voice/ui/agent/AgentChatActivity.kt`
-- `app/src/main/java/com/twent/voice/ui/agent/AgentChatViewModel.kt`
-- `app/src/main/java/com/twent/voice/ui/agent/AgentChatScreen.kt` (Compose)
-- `app/src/main/java/com/twent/voice/ui/agent/MessageItem.kt` (Compose)
-- `app/src/main/java/com/twent/voice/ui/agent/ToolExecutionView.kt` (Compose)
+- `app/src/main/java/com/blurr/voice/ui/agent/AgentChatActivity.kt`
+- `app/src/main/java/com/blurr/voice/ui/agent/AgentChatViewModel.kt`
+- `app/src/main/java/com/blurr/voice/ui/agent/AgentChatScreen.kt` (Compose)
+- `app/src/main/java/com/blurr/voice/ui/agent/MessageItem.kt` (Compose)
+- `app/src/main/java/com/blurr/voice/ui/agent/ToolExecutionView.kt` (Compose)
 
 **UI Components**:
 - Message list (LazyColumn)
@@ -349,8 +349,8 @@ Create a bottom sheet UI for users to manually select and configure tools before
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/twent/voice/ui/agent/ToolSelectionSheet.kt` (Compose)
-- `app/src/main/java/com/twent/voice/ui/agent/ToolCategoryView.kt` (Compose)
+- `app/src/main/java/com/blurr/voice/ui/agent/ToolSelectionSheet.kt` (Compose)
+- `app/src/main/java/com/blurr/voice/ui/agent/ToolCategoryView.kt` (Compose)
 
 #### Testing
 - [ ] Open tool selection bottom sheet
@@ -380,8 +380,8 @@ Build UI for managing saved custom tools (view, edit, delete, export/import).
 
 #### Technical Details
 **Files to Create**:
-- `app/src/main/java/com/twent/voice/ui/agent/SavedToolsScreen.kt` (Compose)
-- `app/src/main/java/com/twent/voice/ui/agent/SavedToolDetailsSheet.kt` (Compose)
+- `app/src/main/java/com/blurr/voice/ui/agent/SavedToolsScreen.kt` (Compose)
+- `app/src/main/java/com/blurr/voice/ui/agent/SavedToolDetailsSheet.kt` (Compose)
 
 #### Testing
 - [ ] View list of saved tools

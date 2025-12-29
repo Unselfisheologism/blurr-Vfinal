@@ -148,7 +148,7 @@ prs.save('results.pptx')
 ## Files Modified
 
 1. ✅ `app/build.gradle.kts` - Added python-pptx==0.6.21
-2. ✅ `app/src/main/java/com/twent/voice/tools/PythonShellTool.kt` - Added to CORE_LIBRARIES
+2. ✅ `app/src/main/java/com/blurr/voice/tools/PythonShellTool.kt` - Added to CORE_LIBRARIES
 3. ✅ `app/src/main/assets/prompts/python_shell_guide.md` - Added comprehensive examples
 
 ---

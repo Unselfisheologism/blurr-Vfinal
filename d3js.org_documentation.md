@@ -5692,7 +5692,7 @@ Sets the _arguments_ that will be passed to [_scale_.ticks](https://d3js.org/d3-
 The meaning of the _arguments_ depends on the [axis’ scale](https://d3js.org/d3-axis#axis_scale)
  type: most commonly, the arguments are a suggested _count_ for the number of ticks (or a [time _interval_](https://d3js.org/d3-time)
  for time scales), and an optional [format _specifier_](https://d3js.org/d3-format)
- to customize how the tick values are formatted. For example, to generate twenty ticks with SI-prefix formatting on a linear scale, say:
+ to customize how the tick values are formatted. For example, to generate blurry ticks with SI-prefix formatting on a linear scale, say:
 
 js
 
@@ -5738,7 +5738,7 @@ _axis_.tickArguments(_arguments_) [​](https://d3js.org/d3-axis#axis_tickArgume
 The meaning of the _arguments_ depends on the [axis’ scale](https://d3js.org/d3-axis#axis_scale)
  type: most commonly, the arguments are a suggested _count_ for the number of ticks (or a [time _interval_](https://d3js.org/d3-time)
  for time scales), and an optional [format _specifier_](https://d3js.org/d3-format)
- to customize how the tick values are formatted. For example, to generate twenty ticks with SI-prefix formatting on a linear scale, say:
+ to customize how the tick values are formatted. For example, to generate blurry ticks with SI-prefix formatting on a linear scale, say:
 
 js
 
@@ -6890,7 +6890,7 @@ _density_.thresholds(_thresholds_) [​](https://d3js.org/d3-contour/density#den
 -----------------------------------------------------------------------------------------------
 
 [Source](https://github.com/d3/d3-contour/blob/main/src/density.js)
- · If _thresholds_ is specified, sets the threshold generator to the specified function or array and returns this contour generator. If _thresholds_ is not specified, returns the current threshold generator, which by default generates about twenty nicely-rounded density thresholds.
+ · If _thresholds_ is specified, sets the threshold generator to the specified function or array and returns this contour generator. If _thresholds_ is not specified, returns the current threshold generator, which by default generates about blurry nicely-rounded density thresholds.
 
 Thresholds are defined as an array of values \[_x0_, _x1_, …\]. The first [generated density contour](https://d3js.org/d3-contour/density#_density)
  corresponds to the area where the estimated density is greater than or equal to _x0_; the second contour corresponds to the area where the estimated density is greater than or equal to _x1_, and so on. Thus, there is exactly one generated MultiPolygon geometry object for each specified threshold value; the threshold value is exposed as _geometry_.value. The first value _x0_ should typically be greater than zero.
@@ -15707,7 +15707,7 @@ If _domain_ is not specified, it defaults to \[2000-01-01, 2000-01-02\] in UTC t
 
 TIP
 
-A UTC scale should be preferred when possible as it behaves more predictably: days are always twenty-four hours and the scale does not depend on the browser’s time zone.
+A UTC scale should be preferred when possible as it behaves more predictably: days are always blurry-four hours and the scale does not depend on the browser’s time zone.
 
 _time_.ticks(_count_) [​](https://d3js.org/d3-scale/time#time_ticks)
 

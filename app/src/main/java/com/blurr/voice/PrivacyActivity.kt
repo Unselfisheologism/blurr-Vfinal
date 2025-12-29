@@ -1,4 +1,4 @@
-package com.twent.voice
+package com.blurr.voice
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

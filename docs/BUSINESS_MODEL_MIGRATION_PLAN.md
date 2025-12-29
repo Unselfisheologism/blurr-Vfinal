@@ -18,7 +18,7 @@ Migrating from **restrictive freemium with usage quotas** to **unlimited free co
 
 **Delete these files:**
 ```
-app/src/main/java/com/twent/voice/data/FreemiumManager.kt
+app/src/main/java/com/blurr/voice/data/FreemiumManager.kt
 ```
 
 **Remove from User schema:**
@@ -38,7 +38,7 @@ tasksResetAt: String
 
 **Create new file:**
 ```kotlin
-// app/src/main/java/com/twent/voice/data/FeatureGate.kt
+// app/src/main/java/com/blurr/voice/data/FeatureGate.kt
 enum class PlanFeature {
     // Free (always available)
     UNLIMITED_AGENT_RUNS,
@@ -111,7 +111,7 @@ Upgrade to Pro for unlimited access.
 
 **New:**
 ```
-Welcome to Twent AI Assistant
+Welcome to Blurr AI Assistant
 Your Mobile AI Operating System
 
 ✨ Unlimited AI agent runs - forever free
@@ -233,7 +233,7 @@ Trial: 14 days for all subscriptions
 #### Initialize in App
 
 ```kotlin
-// app/src/main/java/com/twent/voice/MyApplication.kt
+// app/src/main/java/com/blurr/voice/MyApplication.kt
 override fun onCreate() {
     super.onCreate()
     
@@ -269,9 +269,9 @@ fun updateUserPlan() {
 #### Add Affiliate Links
 
 ```kotlin
-// app/src/main/java/com/twent/voice/core/providers/AffiliateLinks.kt
+// app/src/main/java/com/blurr/voice/core/providers/AffiliateLinks.kt
 object AffiliateLinks {
-    const val AIMLAPI = "https://aimlapi.com/?via=twent"
+    const val AIMLAPI = "https://aimlapi.com/?via=blurr"
     const val OPENROUTER = "https://openrouter.ai"
     const val GROQ = "https://console.groq.com"
 }
@@ -459,12 +459,12 @@ Pro now unlocks premium features like:
 ```
 Hi [Name],
 
-We have exciting news about Twent AI Assistant!
+We have exciting news about Blurr AI Assistant!
 
 🎉 The Free tier now has UNLIMITED AI agent runs
 
 That's right - no more daily limits, no more quotas.
-You can use Twent as much as you want, forever free.
+You can use Blurr as much as you want, forever free.
 
 Why the change?
 
@@ -486,24 +486,24 @@ Try Pro free for 14 days: [Link]
 
 Questions? Reply to this email.
 
-Thanks for being part of Twent!
+Thanks for being part of Blurr!
 
 [Your Name]
-Founder, Twent AI Assistant
+Founder, Blurr AI Assistant
 ```
 
 ### Blog Post
 
-**Title:** Why We're Making Twent Free Forever (Unlimited)
+**Title:** Why We're Making Blurr Free Forever (Unlimited)
 
 ```markdown
-Today, we're making a major change to Twent's business model.
+Today, we're making a major change to Blurr's business model.
 
 The Free tier now has **unlimited AI agent runs** - no quotas, no limits, forever.
 
 ## Why?
 
-When we launched Twent with BYOK (Bring Your Own Key), we thought limiting free users to 10 runs/day made sense as a freemium model.
+When we launched Blurr with BYOK (Bring Your Own Key), we thought limiting free users to 10 runs/day made sense as a freemium model.
 
 We were wrong.
 
@@ -556,12 +556,12 @@ Curious about Pro? Try it free for 14 days:
 
 ## Questions?
 
-Ask in our Discord or email support@twent.app
+Ask in our Discord or email support@blurr.app
 
 Thanks for being part of this journey.
 
 [Your Name]
-Founder, Twent AI Assistant
+Founder, Blurr AI Assistant
 ```
 
 ---
@@ -647,4 +647,4 @@ Migration is successful when:
 
 ---
 
-**This migration positions Twent as a user-first, fair, unlimited AI assistant that respects users' existing AI costs while building a sustainable business through genuine value-add features.**
+**This migration positions Blurr as a user-first, fair, unlimited AI assistant that respects users' existing AI costs while building a sustainable business through genuine value-add features.**

@@ -5,7 +5,7 @@
 ### 1. **WorkflowEditorBridge Location Error**
 **Problem**: Bridge file is in wrong location
 - Current: `flutter_workflow_editor/lib/integration/kotlin_bridge.kt`
-- Should be: `app/src/main/kotlin/com/twent/voice/flutter/WorkflowEditorBridge.kt`
+- Should be: `app/src/main/kotlin/com/blurr/voice/flutter/WorkflowEditorBridge.kt`
 
 **Impact**: This will cause compilation failure. Kotlin files cannot be in Flutter lib folder.
 
@@ -14,7 +14,7 @@
 ### 2. **Missing Package Import in WorkflowEditorActivity**
 **Problem**: Import statement incorrect
 ```kotlin
-import com.twent.voice.flutter.WorkflowEditorBridge
+import com.blurr.voice.flutter.WorkflowEditorBridge
 ```
 But file doesn't exist at that location yet.
 
@@ -52,7 +52,7 @@ But file doesn't exist at that location yet.
 ## ⚠️ HIGH PRIORITY ISSUES
 
 ### 7. **Inconsistent Channel Names**
-- Flutter: `com.twent.workflow_editor`
+- Flutter: `com.blurr.workflow_editor`
 - Should verify all match
 
 ### 8. **Missing Error Handling**

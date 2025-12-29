@@ -1,19 +1,19 @@
-package com.twent.voice.triggers
+package com.blurr.voice.triggers
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import com.twent.voice.v2.AgentService
+import com.blurr.voice.v2.AgentService
 import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentHashMap
 
 class TriggerReceiver : BroadcastReceiver() {
 
     companion object {
-        const val ACTION_EXECUTE_TASK = "com.twent.voice.action.EXECUTE_TASK"
-        const val EXTRA_TASK_INSTRUCTION = "com.twent.voice.EXTRA_TASK_INSTRUCTION"
-        const val EXTRA_TRIGGER_ID = "com.twent.voice.EXTRA_TRIGGER_ID"
+        const val ACTION_EXECUTE_TASK = "com.blurr.voice.action.EXECUTE_TASK"
+        const val EXTRA_TASK_INSTRUCTION = "com.blurr.voice.EXTRA_TASK_INSTRUCTION"
+        const val EXTRA_TRIGGER_ID = "com.blurr.voice.EXTRA_TRIGGER_ID"
         private const val TAG = "TriggerReceiver"
         private const val DEBOUNCE_INTERVAL_MS = 60 * 1000 // 1 minute
 

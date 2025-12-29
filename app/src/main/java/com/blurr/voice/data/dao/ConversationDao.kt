@@ -1,9 +1,9 @@
-package com.twent.voice.data.dao
+package com.blurr.voice.data.dao
 
 import androidx.room.*
-import com.twent.voice.data.models.Conversation
-import com.twent.voice.data.models.ConversationWithMessages
-import com.twent.voice.data.models.Message
+import com.blurr.voice.data.models.Conversation
+import com.blurr.voice.data.models.ConversationWithMessages
+import com.blurr.voice.data.models.Message
 import kotlinx.coroutines.flow.Flow
 
 /**

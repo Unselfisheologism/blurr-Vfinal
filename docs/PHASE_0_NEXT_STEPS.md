@@ -119,13 +119,13 @@ generativeai = { group = "com.google.ai.client.generativeai", name = "generative
 
 ```bash
 # These files can be deleted after migration:
-rm app/src/main/java/com/twent/voice/utilities/ApiKeyManager.kt
-rm app/src/main/java/com/twent/voice/api/GeminiApi.kt
-rm app/src/main/java/com/twent/voice/api/GoogleTTS.kt
-rm app/src/main/java/com/twent/voice/api/PicovoiceKeyManager.kt
-rm app/src/main/java/com/twent/voice/api/PorcupineWakeWordDetector.kt
-rm app/src/main/java/com/twent/voice/api/WakeWordDetector.kt
-rm app/src/main/java/com/twent/voice/api/EmbeddingService.kt  # If using Gemini embeddings
+rm app/src/main/java/com/blurr/voice/utilities/ApiKeyManager.kt
+rm app/src/main/java/com/blurr/voice/api/GeminiApi.kt
+rm app/src/main/java/com/blurr/voice/api/GoogleTTS.kt
+rm app/src/main/java/com/blurr/voice/api/PicovoiceKeyManager.kt
+rm app/src/main/java/com/blurr/voice/api/PorcupineWakeWordDetector.kt
+rm app/src/main/java/com/blurr/voice/api/WakeWordDetector.kt
+rm app/src/main/java/com/blurr/voice/api/EmbeddingService.kt  # If using Gemini embeddings
 ```
 
 ### Step 6: Add Error Handling for Unconfigured State

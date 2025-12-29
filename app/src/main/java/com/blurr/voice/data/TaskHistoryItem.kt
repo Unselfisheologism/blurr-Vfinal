@@ -1,4 +1,4 @@
-package com.twent.voice.data
+package com.blurr.voice.data
 
 import java.util.Date
 

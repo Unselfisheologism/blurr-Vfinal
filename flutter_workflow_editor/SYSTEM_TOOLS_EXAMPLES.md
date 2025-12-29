@@ -1,6 +1,6 @@
 # System Tools Workflow Examples
 
-This document provides practical examples of workflows using Twent's system-level tools.
+This document provides practical examples of workflows using Blurr's system-level tools.
 
 ## Example 1: Auto-Reply to WhatsApp Messages
 

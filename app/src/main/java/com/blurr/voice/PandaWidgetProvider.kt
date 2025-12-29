@@ -1,4 +1,4 @@
-package com.twent.voice
+package com.blurr.voice
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
@@ -20,7 +20,7 @@ class PandaWidgetProvider : AppWidgetProvider() {
             // Create an Intent to launch MainActivity with our custom action.
             // THIS IS THE SAME ACTION WE USED FOR THE APP SHORTCUT!
             val intent = Intent(context, MainActivity::class.java)
-            intent.action = "com.twent.voice.WAKE_UP_PANDA"
+            intent.action = "com.blurr.voice.WAKE_UP_PANDA"
 
             // Create a PendingIntent that will be triggered when the widget is clicked.
             val pendingIntent = PendingIntent.getActivity(

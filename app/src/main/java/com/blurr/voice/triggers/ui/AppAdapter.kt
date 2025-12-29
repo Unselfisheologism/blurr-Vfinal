@@ -1,4 +1,4 @@
-package com.twent.voice.triggers.ui
+package com.blurr.voice.triggers.ui
 
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
@@ -10,7 +10,7 @@ import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.twent.voice.R
+import com.blurr.voice.R
 import java.util.Locale
 
 data class AppInfo(

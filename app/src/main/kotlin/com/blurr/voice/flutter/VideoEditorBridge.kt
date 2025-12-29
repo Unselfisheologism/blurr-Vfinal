@@ -1,13 +1,13 @@
 // Platform bridge for AI-Native Video Editor
-package com.twent.voice.flutter
+package com.blurr.voice.flutter
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.util.Log
 import com.arthenica.ffmpegkit.FFmpegKit
 import com.arthenica.ffmpegkit.ReturnCode
-import com.twent.voice.agents.AgentFactory
-import com.twent.voice.utilities.FreemiumManager
+import com.blurr.voice.agents.AgentFactory
+import com.blurr.voice.utilities.FreemiumManager
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
@@ -32,7 +32,7 @@ class VideoEditorBridge(
     flutterEngine: FlutterEngine,
 ) {
     companion object {
-        private const val CHANNEL = "com.twent.video_editor/bridge"
+        private const val CHANNEL = "com.blurr.video_editor/bridge"
         private const val TAG = "VideoEditorBridge"
 
         private const val OUTPUT_W = 1280
@@ -341,7 +341,7 @@ class VideoEditorBridge(
         val burnInCaptions = project.optBoolean("burnInCaptions", false)
 
         val finalName = outputFileName?.takeIf { it.endsWith(".mp4") }
-            ?: "twent_export_${System.currentTimeMillis()}.mp4"
+            ?: "blurr_export_${System.currentTimeMillis()}.mp4"
         val outputFile = File(context.getExternalFilesDir(null), finalName)
 
         val captionsFilePath = captionsSrt?.let {

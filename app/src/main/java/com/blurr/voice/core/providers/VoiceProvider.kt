@@ -1,4 +1,4 @@
-package com.twent.voice.core.providers
+package com.blurr.voice.core.providers
 
 /**
  * Voice provider capabilities for STT and TTS

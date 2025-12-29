@@ -1,8 +1,8 @@
-package com.twent.voice.tools
+package com.blurr.voice.tools
 
 import android.content.Context
 import android.util.Log
-import com.twent.voice.integrations.ComposioIntegrationManager
+import com.blurr.voice.integrations.ComposioIntegrationManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -93,7 +93,7 @@ class ComposioTool(
     
     override suspend fun execute(params: Map<String, Any>): ToolResult = withContext(Dispatchers.IO) {
         // Check subscription status - Composio is PRO only! (Story 4.16)
-        val freemiumManager = com.twent.voice.utilities.FreemiumManager()
+        val freemiumManager = com.blurr.voice.utilities.FreemiumManager()
         if (!freemiumManager.hasComposioAccess()) {
             return@withContext ToolResult.error(
                 toolName = name,

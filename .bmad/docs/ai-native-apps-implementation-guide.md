@@ -1,6 +1,6 @@
 ---
 title: "AI-Native Apps - Implementation Guide"
-project: twent-Vfinal
+project: blurr-Vfinal
 phase: "AI-Native Apps Implementation"
 version: 1.0
 date: 2025-12-18
@@ -34,7 +34,7 @@ This guide provides detailed technical specifications and implementation pattern
 ### Module Structure
 
 ```
-app/src/main/java/com/twent/voice/
+app/src/main/java/com/blurr/voice/
 ├── apps/                           # New directory for AI-native apps
 │   ├── base/                       # Shared base classes
 │   │   ├── BaseAppActivity.kt      # Common activity patterns

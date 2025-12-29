@@ -1,4 +1,4 @@
-package com.twent.voice
+package com.blurr.voice
 
 import android.app.Activity
 import android.content.Intent
@@ -25,7 +25,7 @@ class AssistEntryActivity : Activity() {
         Log.d("AssistEntryActivity", "Assistant invoked via ACTION_ASSIST (home button long press)")
 
         // Launch Ultra-Generalist Agent Chat UI
-        val chatIntent = Intent(this, com.twent.voice.ui.agent.AgentChatActivity::class.java).apply {
+        val chatIntent = Intent(this, com.blurr.voice.ui.agent.AgentChatActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             putExtra("source", "home_button_long_press")
         }

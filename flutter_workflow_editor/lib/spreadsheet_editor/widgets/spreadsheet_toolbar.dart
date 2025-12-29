@@ -43,7 +43,7 @@ class SpreadsheetToolbar extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            twentadius: 4,
+            blurradius: 4,
             offset: const Offset(0, 2),
           ),
         ],

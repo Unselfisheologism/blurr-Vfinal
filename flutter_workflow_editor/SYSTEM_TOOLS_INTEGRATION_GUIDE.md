@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide explains how to use Twent's unique system-level capabilities (UI automation, notification access, and phone control) within the n8n-style workflow editor.
+This guide explains how to use Blurr's unique system-level capabilities (UI automation, notification access, and phone control) within the n8n-style workflow editor.
 
 ## Features Added
 
@@ -75,7 +75,7 @@ MethodChannel → Kotlin
         ↓
 WorkflowEditorBridge.handleExecuteSystemTool()
         ↓
-PhoneControlTool (existing Twent tool)
+PhoneControlTool (existing Blurr tool)
         ↓
 ScreenInteractionService / Eyes / Finger APIs
         ↓
@@ -86,7 +86,7 @@ Result returned to Flutter
 
 ### Adding System Tool Nodes to Workflows
 
-1. **Open the Workflow Editor** from the main Twent app
+1. **Open the Workflow Editor** from the main Blurr app
 2. **Navigate to the "System" category** in the node palette
 3. **Click on any system tool** to add it to your workflow
 4. **Configure the node parameters** in the inspector panel
@@ -140,11 +140,11 @@ System tools require specific Android permissions:
 
 1. **Accessibility Service** (for UI automation tools)
    - Required for: tap, swipe, scroll, type, screenshot, hierarchy, etc.
-   - Enable: Settings → Accessibility → Twent
+   - Enable: Settings → Accessibility → Blurr
 
 2. **Notification Listener** (for notification tools)
    - Required for: get notifications, dismiss notifications
-   - Enable: Settings → Notification Access → Twent
+   - Enable: Settings → Notification Access → Blurr
 
 ### Checking Permissions in Workflows
 
@@ -415,7 +415,7 @@ Press Home
 **Solution:**
 1. Go to Android Settings
 2. Navigate to Accessibility
-3. Find Twent and enable it
+3. Find Blurr and enable it
 4. Restart the app if needed
 
 ### Issue: "Notification Listener permission not granted"
@@ -423,7 +423,7 @@ Press Home
 **Solution:**
 1. Go to Android Settings
 2. Navigate to Notification Access or Apps → Special Access → Notification Access
-3. Find Twent and enable it
+3. Find Blurr and enable it
 
 ### Issue: Tool execution returns error
 

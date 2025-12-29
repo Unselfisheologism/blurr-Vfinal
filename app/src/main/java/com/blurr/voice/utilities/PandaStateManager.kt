@@ -1,10 +1,10 @@
-package com.twent.voice.utilities
+package com.blurr.voice.utilities
 
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import com.twent.voice.ConversationalAgentService
+import com.blurr.voice.ConversationalAgentService
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**

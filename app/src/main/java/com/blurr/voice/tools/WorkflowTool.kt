@@ -1,9 +1,9 @@
-package com.twent.voice.tools
+package com.blurr.voice.tools
 
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import com.twent.voice.data.WorkflowPreferences
+import com.blurr.voice.data.WorkflowPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -338,7 +338,7 @@ class WorkflowTool(private val context: Context) : BaseTool() {
             }
             
             // Launch workflow editor activity with execute flag
-            val intent = Intent(context, com.twent.voice.WorkflowEditorActivity::class.java).apply {
+            val intent = Intent(context, com.blurr.voice.WorkflowEditorActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 putExtra("workflow_json", workflowJson)
                 putExtra("auto_execute", true)

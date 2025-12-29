@@ -57,7 +57,7 @@ dependencies {
 ---
 
 ### Step 4: Bridge Created ✅
-**File**: `app/src/main/kotlin/com/twent/voice/flutter/WorkflowEditorBridge.kt`
+**File**: `app/src/main/kotlin/com/blurr/voice/flutter/WorkflowEditorBridge.kt`
 
 ✅ Complete bridge with 450+ lines implementing:
 - Pro status checking
@@ -70,7 +70,7 @@ dependencies {
 ---
 
 ### Step 5: Activity Created ✅
-**File**: `app/src/main/kotlin/com/twent/voice/WorkflowEditorActivity.kt`
+**File**: `app/src/main/kotlin/com/blurr/voice/WorkflowEditorActivity.kt`
 
 ✅ Launcher activity implementing:
 - FlutterEngine creation and caching
@@ -90,7 +90,7 @@ dependencies {
 ### Step 7: Navigation Added ✅
 **Files**: 
 - `app/src/main/res/layout/activity_settings.xml`
-- `app/src/main/java/com/twent/voice/SettingsActivity.kt`
+- `app/src/main/java/com/blurr/voice/SettingsActivity.kt`
 
 ✅ "Workflow Editor" button added to Settings:
 - Button ID: `buttonWorkflowEditor`
@@ -104,7 +104,7 @@ dependencies {
 
 ### Launching Workflow Editor
 
-1. Open Twent Voice app
+1. Open Blurr Voice app
 2. Navigate to **Settings** tab
 3. Scroll down
 4. Tap **"📊 Workflow Editor"** button
@@ -192,11 +192,11 @@ adb install app/build/outputs/apk/debug/app-debug.apk
 1. `settings.gradle.kts` - Modified (Flutter module)
 2. `app/build.gradle.kts` - Modified (dependency)
 3. `app/src/main/AndroidManifest.xml` - Modified (activity)
-4. `app/src/main/kotlin/com/twent/voice/flutter/WorkflowEditorBridge.kt` - Created
-5. `app/src/main/kotlin/com/twent/voice/WorkflowEditorActivity.kt` - Created
+4. `app/src/main/kotlin/com/blurr/voice/flutter/WorkflowEditorBridge.kt` - Created
+5. `app/src/main/kotlin/com/blurr/voice/WorkflowEditorActivity.kt` - Created
 6. `app/src/main/res/layout/activity_workflow_editor.xml` - Created
 7. `app/src/main/res/layout/activity_settings.xml` - Modified (button)
-8. `app/src/main/java/com/twent/voice/SettingsActivity.kt` - Modified (navigation)
+8. `app/src/main/java/com/blurr/voice/SettingsActivity.kt` - Modified (navigation)
 9. `flutter_workflow_editor/` - Complete Flutter module (28 files, 10,000+ lines)
 10. `INTEGRATION_COMPLETE.md` - This file
 

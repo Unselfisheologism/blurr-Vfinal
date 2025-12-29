@@ -30,21 +30,21 @@ You now have a **complete BYOK architecture** ready to integrate. This guide wil
 Based on grep analysis, these files import old APIs:
 
 ### LLM Usage (6 files)
-1. ✅ **app/src/main/java/com/twent/voice/api/GeminiApi.kt** - Will be deleted
-2. ✅ **app/src/main/java/com/twent/voice/api/EmbeddingService.kt** - Update or delete
-3. ❌ **app/src/main/java/com/twent/voice/agents/ClarificationAgent.kt** - UPDATE REQUIRED
-4. ❌ **app/src/main/java/com/twent/voice/v2/llm/GeminiAPI.kt** - UPDATE REQUIRED
-5. ❌ **app/src/main/java/com/twent/voice/v2/AgentService.kt** - UPDATE REQUIRED
-6. ❌ **app/src/main/java/com/twent/voice/utilities/LLMHelperFunctions.kt** - UPDATE REQUIRED
-7. ❌ **app/src/main/java/com/twent/voice/v2/Agent.kt** - UPDATE REQUIRED
+1. ✅ **app/src/main/java/com/blurr/voice/api/GeminiApi.kt** - Will be deleted
+2. ✅ **app/src/main/java/com/blurr/voice/api/EmbeddingService.kt** - Update or delete
+3. ❌ **app/src/main/java/com/blurr/voice/agents/ClarificationAgent.kt** - UPDATE REQUIRED
+4. ❌ **app/src/main/java/com/blurr/voice/v2/llm/GeminiAPI.kt** - UPDATE REQUIRED
+5. ❌ **app/src/main/java/com/blurr/voice/v2/AgentService.kt** - UPDATE REQUIRED
+6. ❌ **app/src/main/java/com/blurr/voice/utilities/LLMHelperFunctions.kt** - UPDATE REQUIRED
+7. ❌ **app/src/main/java/com/blurr/voice/v2/Agent.kt** - UPDATE REQUIRED
 
 ### Voice Usage (3 files)
-8. ❌ **app/src/main/java/com/twent/voice/SettingsActivity.kt** - UPDATE REQUIRED
-9. ❌ **app/src/main/java/com/twent/voice/utilities/TTSManager.kt** - UPDATE REQUIRED
-10. ❌ **app/src/main/java/com/twent/voice/utilities/SpeechCoordinator.kt** - UPDATE REQUIRED
+8. ❌ **app/src/main/java/com/blurr/voice/SettingsActivity.kt** - UPDATE REQUIRED
+9. ❌ **app/src/main/java/com/blurr/voice/utilities/TTSManager.kt** - UPDATE REQUIRED
+10. ❌ **app/src/main/java/com/blurr/voice/utilities/SpeechCoordinator.kt** - UPDATE REQUIRED
 
 ### API Key Manager (3 files)
-11. ✅ **app/src/main/java/com/twent/voice/utilities/ApiKeyManager.kt** - Will be deleted
+11. ✅ **app/src/main/java/com/blurr/voice/utilities/ApiKeyManager.kt** - Will be deleted
 
 ---
 
@@ -52,16 +52,16 @@ Based on grep analysis, these files import old APIs:
 
 ### STEP 1: Update ClarificationAgent.kt
 
-**Location:** `app/src/main/java/com/twent/voice/agents/ClarificationAgent.kt`
+**Location:** `app/src/main/java/com/blurr/voice/agents/ClarificationAgent.kt`
 
 **Find:**
 ```kotlin
-import com.twent.voice.api.GeminiApi
+import com.blurr.voice.api.GeminiApi
 ```
 
 **Replace with:**
 ```kotlin
-import com.twent.voice.core.providers.UniversalLLMService
+import com.blurr.voice.core.providers.UniversalLLMService
 ```
 
 **Find in the class:**
@@ -83,7 +83,7 @@ val response = llmService.generateContent(...)
 
 ### STEP 2: Update v2/llm/GeminiAPI.kt
 
-**Location:** `app/src/main/java/com/twent/voice/v2/llm/GeminiAPI.kt`
+**Location:** `app/src/main/java/com/blurr/voice/v2/llm/GeminiAPI.kt`
 
 **Option A: Rename and Adapt**
 Rename this file to `UniversalLLMAPI.kt` and make it wrap `UniversalLLMService`
@@ -97,12 +97,12 @@ Update `v2/Agent.kt` to use `UniversalLLMService` directly instead of this class
 
 ### STEP 3: Update v2/AgentService.kt
 
-**Location:** `app/src/main/java/com/twent/voice/v2/AgentService.kt`
+**Location:** `app/src/main/java/com/blurr/voice/v2/AgentService.kt`
 
 **Find:**
 ```kotlin
-import com.twent.voice.utilities.ApiKeyManager
-import com.twent.voice.v2.llm.GeminiApi
+import com.blurr.voice.utilities.ApiKeyManager
+import com.blurr.voice.v2.llm.GeminiApi
 
 // In onCreate():
 llmApi = GeminiApi(
@@ -114,7 +114,7 @@ llmApi = GeminiApi(
 
 **Replace with:**
 ```kotlin
-import com.twent.voice.core.providers.UniversalLLMService
+import com.blurr.voice.core.providers.UniversalLLMService
 
 // In onCreate():
 llmApi = UniversalLLMService(this)
@@ -132,11 +132,11 @@ if (!llmApi.isConfigured()) {
 
 ### STEP 4: Update v2/Agent.kt
 
-**Location:** `app/src/main/java/com/twent/voice/v2/Agent.kt`
+**Location:** `app/src/main/java/com/blurr/voice/v2/Agent.kt`
 
 **Find:**
 ```kotlin
-import com.twent.voice.v2.llm.GeminiApi
+import com.blurr.voice.v2.llm.GeminiApi
 
 class Agent(
     // ...
@@ -147,7 +147,7 @@ class Agent(
 
 **Replace with:**
 ```kotlin
-import com.twent.voice.core.providers.UniversalLLMService
+import com.blurr.voice.core.providers.UniversalLLMService
 
 class Agent(
     // ...
@@ -162,11 +162,11 @@ Note: The interface should remain the same since UniversalLLMService has similar
 
 ### STEP 5: Update utilities/LLMHelperFunctions.kt
 
-**Location:** `app/src/main/java/com/twent/voice/utilities/LLMHelperFunctions.kt`
+**Location:** `app/src/main/java/com/blurr/voice/utilities/LLMHelperFunctions.kt`
 
 **Find:**
 ```kotlin
-import com.twent.voice.api.GeminiApi
+import com.blurr.voice.api.GeminiApi
 
 suspend fun getReasoningModelApiResponse(
     conversationHistory: List<Pair<String, List<Any>>>
@@ -178,7 +178,7 @@ suspend fun getReasoningModelApiResponse(
 
 **Replace with:**
 ```kotlin
-import com.twent.voice.core.providers.UniversalLLMService
+import com.blurr.voice.core.providers.UniversalLLMService
 
 suspend fun getReasoningModelApiResponse(
     context: Context,
@@ -199,11 +199,11 @@ suspend fun getReasoningModelApiResponse(
 
 ### STEP 6: Update utilities/TTSManager.kt
 
-**Location:** `app/src/main/java/com/twent/voice/utilities/TTSManager.kt`
+**Location:** `app/src/main/java/com/blurr/voice/utilities/TTSManager.kt`
 
 **Find:**
 ```kotlin
-import com.twent.voice.api.GoogleTts
+import com.blurr.voice.api.GoogleTts
 
 suspend fun speakText(text: String) {
     val audioData = GoogleTts.synthesize(text)
@@ -213,7 +213,7 @@ suspend fun speakText(text: String) {
 
 **Replace with:**
 ```kotlin
-import com.twent.voice.core.providers.UniversalTTSService
+import com.blurr.voice.core.providers.UniversalTTSService
 
 private val ttsService = UniversalTTSService(context)
 
@@ -231,11 +231,11 @@ suspend fun speakText(text: String) {
 
 ### STEP 7: Update utilities/SpeechCoordinator.kt
 
-**Location:** `app/src/main/java/com/twent/voice/utilities/SpeechCoordinator.kt`
+**Location:** `app/src/main/java/com/blurr/voice/utilities/SpeechCoordinator.kt`
 
 **Find:**
 ```kotlin
-import com.twent.voice.api.GoogleTts
+import com.blurr.voice.api.GoogleTts
 
 suspend fun testVoice(text: String, voice: TTSVoice) {
     val audioData = GoogleTts.synthesize(text, voice)
@@ -245,8 +245,8 @@ suspend fun testVoice(text: String, voice: TTSVoice) {
 
 **Replace with:**
 ```kotlin
-import com.twent.voice.core.providers.UniversalTTSService
-import com.twent.voice.core.providers.VoiceProviderConfig
+import com.blurr.voice.core.providers.UniversalTTSService
+import com.blurr.voice.core.providers.VoiceProviderConfig
 
 private val ttsService = UniversalTTSService(context)
 
@@ -266,12 +266,12 @@ suspend fun testVoice(text: String, voice: String = "alloy") {
 
 ### STEP 8: Update SettingsActivity.kt
 
-**Location:** `app/src/main/java/com/twent/voice/SettingsActivity.kt`
+**Location:** `app/src/main/java/com/blurr/voice/SettingsActivity.kt`
 
 **Find:**
 ```kotlin
-import com.twent.voice.api.GoogleTts
-import com.twent.voice.api.TTSVoice
+import com.blurr.voice.api.GoogleTts
+import com.blurr.voice.api.TTSVoice
 
 private lateinit var availableVoices: List<TTSVoice>
 
@@ -281,9 +281,9 @@ availableVoices = GoogleTts.getAvailableVoices()
 
 **Replace with:**
 ```kotlin
-import com.twent.voice.core.providers.UniversalTTSService
-import com.twent.voice.core.providers.VoiceProviderConfig
-import com.twent.voice.core.providers.ProviderKeyManager
+import com.blurr.voice.core.providers.UniversalTTSService
+import com.blurr.voice.core.providers.VoiceProviderConfig
+import com.blurr.voice.core.providers.ProviderKeyManager
 
 private lateinit var availableVoices: List<String>
 
@@ -354,22 +354,22 @@ Run these commands:
 
 ```bash
 # Delete old API implementations
-rm app/src/main/java/com/twent/voice/utilities/ApiKeyManager.kt
-rm app/src/main/java/com/twent/voice/api/GeminiApi.kt
-rm app/src/main/java/com/twent/voice/api/GoogleTTS.kt
-rm app/src/main/java/com/twent/voice/api/PicovoiceKeyManager.kt
-rm app/src/main/java/com/twent/voice/api/PorcupineWakeWordDetector.kt
-rm app/src/main/java/com/twent/voice/api/WakeWordDetector.kt
+rm app/src/main/java/com/blurr/voice/utilities/ApiKeyManager.kt
+rm app/src/main/java/com/blurr/voice/api/GeminiApi.kt
+rm app/src/main/java/com/blurr/voice/api/GoogleTTS.kt
+rm app/src/main/java/com/blurr/voice/api/PicovoiceKeyManager.kt
+rm app/src/main/java/com/blurr/voice/api/PorcupineWakeWordDetector.kt
+rm app/src/main/java/com/blurr/voice/api/WakeWordDetector.kt
 
 # Optional: Delete embedding service if using Gemini embeddings
-# rm app/src/main/java/com/twent/voice/api/EmbeddingService.kt
+# rm app/src/main/java/com/blurr/voice/api/EmbeddingService.kt
 ```
 
 ---
 
 ### STEP 12: Update ConversationalAgentService.kt
 
-**Location:** `app/src/main/java/com/twent/voice/ConversationalAgentService.kt`
+**Location:** `app/src/main/java/com/blurr/voice/ConversationalAgentService.kt`
 
 **Add at the top of class:**
 ```kotlin

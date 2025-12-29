@@ -27,7 +27,7 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@drawable/panda_logo_v1_512"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Twent"
+        android:theme="@style/Theme.Blurr"
         tools:targetApi="31">
 
         <!-- Your Activities -->
@@ -37,7 +37,7 @@
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Twent">
+            android:theme="@style/Theme.Blurr">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -53,7 +53,7 @@
             android:exported="true"
             android:label="Login_activity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Twent">
+            android:theme="@style/Theme.Blurr">
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -71,38 +71,38 @@
             android:exported="true"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Twent" />
+            android:theme="@style/Theme.Blurr" />
         <activity
             android:name=".DialogueActivity"
             android:exported="false"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Twent"
+            android:theme="@style/Theme.Blurr"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".SettingsActivity"
             android:exported="false"
             android:label="@string/settings"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Twent" />
+            android:theme="@style/Theme.Blurr" />
         <activity
             android:name=".ui.BYOKSettingsActivity"
             android:exported="false"
             android:label="BYOK Settings"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Twent" />
+            android:theme="@style/Theme.Blurr" />
         <activity
             android:name=".ui.tools.ToolSelectionActivity"
             android:exported="false"
             android:label="Tool Selection"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Twent" />
+            android:theme="@style/Theme.Blurr" />
         <activity
             android:name=".OnboardingPermissionsActivity"
             android:exported="false"
             android:label="onboarding"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Twent" />
+            android:theme="@style/Theme.Blurr" />
         
         <!-- Ultra-Generalist Agent Chat UI -->
         <activity
@@ -110,33 +110,33 @@
             android:exported="false"
             android:label="Ultra-Generalist Agent"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Twent"
+            android:theme="@style/Theme.Blurr"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".PermissionsActivity"
             android:exported="false"
             android:label="@string/permissions_explained_title"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Twent" />
+            android:theme="@style/Theme.Blurr" />
         <activity
             android:name=".MemoriesActivity"
             android:exported="false"
             android:label="My Memories"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Twent" />
+            android:theme="@style/Theme.Blurr" />
         <activity
             android:name=".PrivacyActivity"
             android:exported="false"
             android:label="How Panda Remembers"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Twent" />
+            android:theme="@style/Theme.Blurr" />
         <activity
             android:name=".RoleRequestActivity"
             android:excludeFromRecents="true"
             android:exported="false"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Twent" />
+            android:theme="@style/Theme.Blurr" />
 
         <activity
             android:name=".AssistEntryActivity"
@@ -156,32 +156,32 @@
             android:exported="false"
             android:label="Triggers"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Twent" />
+            android:theme="@style/Theme.Blurr" />
         <activity
             android:name=".triggers.ui.CreateTriggerActivity"
             android:exported="false"
             android:label="Create Trigger"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Twent"
+            android:theme="@style/Theme.Blurr"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".triggers.ui.ChooseTriggerTypeActivity"
             android:exported="false"
             android:label="Choose Trigger Type"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Twent" />
+            android:theme="@style/Theme.Blurr" />
         <activity
             android:name=".ProPurchaseActivity"
             android:exported="false"
             android:label="Upgrade to Pro"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Twent" />
+            android:theme="@style/Theme.Blurr" />
         <activity
             android:name=".MomentsActivity"
             android:exported="false"
             android:label="Moments"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Twent" />
+            android:theme="@style/Theme.Blurr" />
 
 
         <!-- Your Other Services -->
@@ -264,7 +264,7 @@
             android:enabled="true"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.twent.voice.action.EXECUTE_TASK" />
+                <action android:name="com.blurr.voice.action.EXECUTE_TASK" />
             </intent-filter>
         </receiver>
 

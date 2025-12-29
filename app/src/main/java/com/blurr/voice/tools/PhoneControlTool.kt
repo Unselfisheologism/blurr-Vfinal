@@ -1,13 +1,13 @@
-package com.twent.voice.tools
+package com.blurr.voice.tools
 
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import com.twent.voice.ScreenInteractionService
-import com.twent.voice.api.Eyes
-import com.twent.voice.api.Finger
+import com.blurr.voice.ScreenInteractionService
+import com.blurr.voice.api.Eyes
+import com.blurr.voice.api.Finger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -136,7 +136,7 @@ class PhoneControlTool(
             if (service == null) {
                 return ToolResult.failure(
                     toolName = name,
-                    error = "Accessibility service is not running. Please enable accessibility permissions for Twent."
+                    error = "Accessibility service is not running. Please enable accessibility permissions for Blurr."
                 )
             }
             

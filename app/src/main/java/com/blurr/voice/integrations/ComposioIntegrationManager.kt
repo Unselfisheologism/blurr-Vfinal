@@ -1,4 +1,4 @@
-package com.twent.voice.integrations
+package com.blurr.voice.integrations
 
 import android.content.Context
 import android.util.Log

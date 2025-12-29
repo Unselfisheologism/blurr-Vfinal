@@ -216,7 +216,7 @@
 - "Open camera and take a photo"
 
 **Why This is Critical**:
-- This is the **core differentiator** of Twent
+- This is the **core differentiator** of Blurr
 - Phone control already works in the app
 - Just needs to be exposed as a Tool
 - High user value
@@ -323,7 +323,7 @@ Day 4: Story 4.15 (Calendar) OR Story 4.16 (Drive)
 ## 💡 Why Phone Control Tool is #1 Priority
 
 1. **Already Implemented**: Just needs Tool wrapper
-2. **Core Feature**: This is what makes Twent unique
+2. **Core Feature**: This is what makes Blurr unique
 3. **High Impact**: Unlocks full phone automation
 4. **User Expectation**: Users expect AI to control phone
 5. **Quick Win**: Can be done in 1 day

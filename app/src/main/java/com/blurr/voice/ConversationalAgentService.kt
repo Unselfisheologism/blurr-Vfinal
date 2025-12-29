@@ -1,4 +1,4 @@
-package com.twent.voice
+package com.blurr.voice
 
 import android.Manifest
 import android.app.Notification
@@ -22,32 +22,32 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import com.twent.voice.api.Eyes
-//import com.twent.voice.services.AgentTaskService
-import com.twent.voice.utilities.SpeechCoordinator
+import com.blurr.voice.api.Eyes
+//import com.blurr.voice.services.AgentTaskService
+import com.blurr.voice.utilities.SpeechCoordinator
 import android.os.Handler
 import android.os.Looper
 import android.view.Gravity
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.toColorInt
-import com.twent.voice.agents.ClarificationAgent
-import com.twent.voice.utilities.TTSManager
-import com.twent.voice.utilities.addResponse
-import com.twent.voice.utilities.getReasoningModelApiResponse
-import com.twent.voice.data.MemoryManager
-import com.twent.voice.utilities.FreemiumManager
-import com.twent.voice.overlay.OverlayManager
-import com.twent.voice.overlay.OverlayDispatcher
-import com.twent.voice.utilities.PandaState
-import com.twent.voice.utilities.UserProfileManager
-import com.twent.voice.utilities.VisualFeedbackManager
-import com.twent.voice.v2.AgentService
+import com.blurr.voice.agents.ClarificationAgent
+import com.blurr.voice.utilities.TTSManager
+import com.blurr.voice.utilities.addResponse
+import com.blurr.voice.utilities.getReasoningModelApiResponse
+import com.blurr.voice.data.MemoryManager
+import com.blurr.voice.utilities.FreemiumManager
+import com.blurr.voice.overlay.OverlayManager
+import com.blurr.voice.overlay.OverlayDispatcher
+import com.blurr.voice.utilities.PandaState
+import com.blurr.voice.utilities.UserProfileManager
+import com.blurr.voice.utilities.VisualFeedbackManager
+import com.blurr.voice.v2.AgentService
 import com.google.ai.client.generativeai.type.TextPart
-import com.twent.voice.utilities.ServicePermissionManager
-import com.twent.voice.utilities.PandaStateManager
-import com.twent.voice.v2.perception.Perception
-import com.twent.voice.v2.perception.SemanticParser
+import com.blurr.voice.utilities.ServicePermissionManager
+import com.blurr.voice.utilities.PandaStateManager
+import com.blurr.voice.v2.perception.Perception
+import com.blurr.voice.v2.perception.SemanticParser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -101,7 +101,7 @@ class ConversationalAgentService : Service() {
     companion object {
         const val NOTIFICATION_ID = 3
         const val CHANNEL_ID = "ConversationalAgentChannel"
-        const val ACTION_STOP_SERVICE = "com.twent.voice.ACTION_STOP_SERVICE"
+        const val ACTION_STOP_SERVICE = "com.blurr.voice.ACTION_STOP_SERVICE"
         var isRunning = false
         const val MEMORY_ENABLED = false
     }
@@ -762,7 +762,7 @@ class ConversationalAgentService : Service() {
             4. If the user asks about something on the screen, you can reference the screen content directly.
             5. Always ask for clarification if the user's request is ambiguous or unclear.
             6. When the user ask to sing, shout or produce any sound, just generate text, we will sing it for you.
-            7. Your code is opensource so you can tell tell that to user. repo is ayush0chaudhary/twent
+            7. Your code is opensource so you can tell tell that to user. repo is ayush0chaudhary/blurr
             8. Give a warning for the tasks related to banking, games, shopping and app with Canvas (no a11y tree) that you wont be able to do them properly but you will try your best.
             
             Use these memories to answer the user's question with his personal data
@@ -1233,7 +1233,7 @@ class ConversationalAgentService : Service() {
                 )
 
                 // Append the conversation to the user's conversationHistory array
-                com.twent.voice.data.AppwriteDb.appendToUserArrayField(uid, "conversationHistory", conversationEntry)
+                com.blurr.voice.data.AppwriteDb.appendToUserArrayField(uid, "conversationHistory", conversationEntry)
 
                 Log.d("ConvAgent", "Tracked conversation start for user $uid: $conversationId")
             } catch (e: Exception) {
@@ -1265,7 +1265,7 @@ class ConversationalAgentService : Service() {
                 )
 
                 // Append the message to the user's messageHistory array
-                com.twent.voice.data.AppwriteDb.appendToUserArrayField(uid, "messageHistory", messageEntry)
+                com.blurr.voice.data.AppwriteDb.appendToUserArrayField(uid, "messageHistory", messageEntry)
 
                 Log.d("ConvAgent", "Tracked message: $role - ${message.take(50)}...")
             } catch (e: Exception) {
@@ -1300,7 +1300,7 @@ class ConversationalAgentService : Service() {
                 )
 
                 // Append the completion status to the user's conversationHistory array
-                com.twent.voice.data.AppwriteDb.appendToUserArrayField(uid, "conversationHistory", completionEntry)
+                com.blurr.voice.data.AppwriteDb.appendToUserArrayField(uid, "conversationHistory", completionEntry)
 
                 Log.d("ConvAgent", "Tracked conversation end: $conversationId ($endReason)")
             } catch (e: Exception) {

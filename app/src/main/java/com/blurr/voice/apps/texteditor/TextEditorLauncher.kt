@@ -1,4 +1,4 @@
-package com.twent.voice.apps.texteditor
+package com.blurr.voice.apps.texteditor
 
 import android.content.Context
 import android.content.Intent

@@ -115,7 +115,7 @@ class _FlashcardView extends StatelessWidget {
           color: cs.surface,
           boxShadow: [
             BoxShadow(
-              twentadius: 20,
+              blurradius: 20,
               color: Colors.black.withOpacity(0.08),
               offset: const Offset(0, 8),
             ),

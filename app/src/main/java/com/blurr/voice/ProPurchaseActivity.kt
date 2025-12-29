@@ -1,4 +1,4 @@
-package com.twent.voice
+package com.blurr.voice
 
 import android.os.Bundle
 import android.util.Log
@@ -10,7 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.android.billingclient.api.*
-import com.twent.voice.MyApplication
+import com.blurr.voice.MyApplication
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull

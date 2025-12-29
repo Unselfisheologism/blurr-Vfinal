@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Twent AI Assistant now includes complete support for all AIMLAPI advanced features, making it a fully-featured agentic AI platform with:
+The Blurr AI Assistant now includes complete support for all AIMLAPI advanced features, making it a fully-featured agentic AI platform with:
 
 - ✅ **Function Calling** - Native tool/function integration for agentic workflows
 - ✅ **Web Search** - Built-in web search capability for current information

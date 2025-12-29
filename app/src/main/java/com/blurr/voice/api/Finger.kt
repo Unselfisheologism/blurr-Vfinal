@@ -1,11 +1,11 @@
-package com.twent.voice.api
+package com.blurr.voice.api
 
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import com.twent.voice.ScreenInteractionService
+import com.blurr.voice.ScreenInteractionService
 
 /**
  * A rewritten Finger class that uses the AccessibilityService for all actions,
@@ -33,7 +33,7 @@ class Finger(private val context: Context) {
         try {
             val intent = Intent().apply {
                 // Use the app's own context to find the activity class
-                setClassName(context, "com.twent.app.ChatActivity")
+                setClassName(context, "com.blurr.app.ChatActivity")
                 putExtra("custom_message", message)
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }

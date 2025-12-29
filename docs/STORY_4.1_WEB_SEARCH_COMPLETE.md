@@ -433,12 +433,12 @@ Built-in Tools:
 
 ### New Files (1):
 ```
-app/src/main/java/com/twent/voice/tools/PerplexitySonarTool.kt  (~420 lines)
+app/src/main/java/com/blurr/voice/tools/PerplexitySonarTool.kt  (~420 lines)
 ```
 
 ### Modified Files (2):
 ```
-app/src/main/java/com/twent/voice/tools/ToolRegistry.kt          (+2 lines)
+app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt          (+2 lines)
 docs/STORY_4.1_WEB_SEARCH_COMPLETE.md                           (this file)
 ```
 

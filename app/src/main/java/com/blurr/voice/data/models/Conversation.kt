@@ -1,4 +1,4 @@
-package com.twent.voice.data.models
+package com.blurr.voice.data.models
 
 import androidx.room.Embedded
 import androidx.room.Entity

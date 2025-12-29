@@ -1,4 +1,4 @@
-package com.twent.voice.mcp
+package com.blurr.voice.mcp
 
 import android.util.Log
 import org.json.JSONArray
@@ -48,7 +48,7 @@ class MCPServer(
                     "experimental" to emptyMap<String, Any>()
                 ),
                 "clientInfo" to mapOf(
-                    "name" to "Twent AI Assistant",
+                    "name" to "Blurr AI Assistant",
                     "version" to "1.0.0"
                 )
             )

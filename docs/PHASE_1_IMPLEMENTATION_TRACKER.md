@@ -215,7 +215,7 @@ Story 4.11 (Google OAuth) ──> Stories 4.12, 4.13, 4.14
 - `Message.kt` - Message entity with role and content types
 - `ConversationDao.kt` - Complete DAO with CRUD operations
 - `ConversationManager.kt` - High-level conversation management
-- `TwentDatabase.kt` - Room database singleton
+- `BlurrDatabase.kt` - Room database singleton
 - `MessageContentConverter.kt` - Type converter for content items
 - `TimestampConverter.kt` - Type converter for timestamps
 

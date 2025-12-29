@@ -148,7 +148,7 @@ pip_install('qrcode')
 import qrcode
 
 qr = qrcode.QRCode(version=1, box_size=10, border=5)
-qr.add_data('https://twent.app')
+qr.add_data('https://blurr.app')
 qr.make(fit=True)
 
 img = qr.make_image(fill_color='black', back_color='white')
@@ -193,7 +193,7 @@ try:
 except:
     font = ImageFont.load_default()
 
-draw.text((10, 10), 'Twent AI', fill='white', font=font)
+draw.text((10, 10), 'Blurr AI', fill='white', font=font)
 
 # Save
 img.save('product_watermarked.png')

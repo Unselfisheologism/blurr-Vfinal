@@ -1,11 +1,11 @@
-package com.twent.voice.tools.google
+package com.blurr.voice.tools.google
 
 import android.content.Context
 import android.util.Log
-import com.twent.voice.auth.GoogleAuthManager
-import com.twent.voice.tools.BaseTool
-import com.twent.voice.tools.ToolParameter
-import com.twent.voice.tools.ToolResult
+import com.blurr.voice.auth.GoogleAuthManager
+import com.blurr.voice.tools.BaseTool
+import com.blurr.voice.tools.ToolParameter
+import com.blurr.voice.tools.ToolResult
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
@@ -37,7 +37,7 @@ class GmailTool(
     
     companion object {
         private const val TAG = "GmailTool"
-        private const val APP_NAME = "Twent Voice Assistant"
+        private const val APP_NAME = "Blurr Voice Assistant"
     }
     
     override val name = "gmail"

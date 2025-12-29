@@ -1,4 +1,4 @@
-package com.twent.voice.api
+package com.blurr.voice.api
 
 import android.util.Log
 import kotlinx.coroutines.delay
@@ -9,8 +9,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
-import com.twent.voice.utilities.ApiKeyManager
-import com.twent.voice.utilities.NetworkNotifier
+import com.blurr.voice.utilities.ApiKeyManager
+import com.blurr.voice.utilities.NetworkNotifier
 
 /**
  * Service for generating embeddings using Gemini API

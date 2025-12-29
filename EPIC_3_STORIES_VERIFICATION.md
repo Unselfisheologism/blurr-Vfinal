@@ -18,7 +18,7 @@ This document verifies that **all 6 stories from Epic 3** have been fully implem
 
 #### What Was Implemented
 1. **SpreadsheetEditorActivity.kt** - Kotlin Activity hosting Flutter fragment
-   - Location: `app/src/main/kotlin/com/twent/voice/SpreadsheetEditorActivity.kt`
+   - Location: `app/src/main/kotlin/com/blurr/voice/SpreadsheetEditorActivity.kt`
    - Features: Flutter engine caching, intent handling, bridge initialization
 
 2. **SpreadsheetEditorScreen** - Main UI with Syncfusion DataGrid
@@ -64,7 +64,7 @@ This document verifies that **all 6 stories from Epic 3** have been fully implem
    - Launches spreadsheet with AI-generated data from natural language prompt
 
 4. **SpreadsheetTool Integration**
-   - Location: `app/src/main/java/com/twent/voice/tools/SpreadsheetTool.kt`
+   - Location: `app/src/main/java/com/blurr/voice/tools/SpreadsheetTool.kt`
    - Actions: create, open, generate (with prompt)
    - Registered in ToolRegistry for agent access
 

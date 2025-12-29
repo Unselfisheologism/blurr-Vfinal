@@ -1,9 +1,9 @@
 // Video Editor Activity for launching Flutter AI-Native Video Editor
-package com.twent.voice
+package com.blurr.voice
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.twent.voice.flutter.VideoEditorBridge
+import com.blurr.voice.flutter.VideoEditorBridge
 import io.flutter.embedding.android.FlutterFragment
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache

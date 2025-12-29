@@ -1,12 +1,12 @@
-package com.twent.voice.tools
+package com.blurr.voice.tools
 
 import android.content.Context
 import android.util.Log
-import com.twent.voice.tools.shell.ExecutionResult
-import com.twent.voice.tools.shell.JavaScriptExecutor
-import com.twent.voice.tools.shell.LanguageDetector
-import com.twent.voice.tools.shell.PythonExecutor
-import com.twent.voice.tools.shell.ShellLanguage
+import com.blurr.voice.tools.shell.ExecutionResult
+import com.blurr.voice.tools.shell.JavaScriptExecutor
+import com.blurr.voice.tools.shell.LanguageDetector
+import com.blurr.voice.tools.shell.PythonExecutor
+import com.blurr.voice.tools.shell.ShellLanguage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

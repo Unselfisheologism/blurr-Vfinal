@@ -1,4 +1,4 @@
-# Twent (Panda) - Documentation Index
+# Blurr (Panda) - Documentation Index
 
 > 🐼 **Personal AI Phone Operator** | *You touch grass. I'll touch your glass.*
 
@@ -14,7 +14,7 @@
 
 ## Quick Reference
 
-- **Package**: `com.twent.voice`
+- **Package**: `com.blurr.voice`
 - **Entry Point**: `MainActivity.kt`
 - **Core Services**: 
   - `ConversationalAgentService` - AI conversation engine
@@ -81,8 +81,8 @@ Kotlin • Jetpack Compose • Room • Firebase • OkHttp • Gemini AI • Pi
 
 ### Quick Start
 ```bash
-git clone https://github.com/ayush0chaudhary/twent.git
-cd twent
+git clone https://github.com/ayush0chaudhary/blurr.git
+cd blurr
 # Configure local.properties with API keys
 # Open in Android Studio, sync, run
 ```
@@ -94,9 +94,9 @@ Settings → Accessibility → Panda → Enable
 
 ## Repository Links
 
-- [GitHub Repository](https://github.com/ayush0chaudhary/twent)
+- [GitHub Repository](https://github.com/ayush0chaudhary/blurr)
 - [Discord Community](https://discord.gg/b2hxFNXvWk)
-- [Google Play Store](https://play.google.com/store/apps/details?id=com.twent.voice)
+- [Google Play Store](https://play.google.com/store/apps/details?id=com.blurr.voice)
 
 ---
 

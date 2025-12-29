@@ -7,12 +7,12 @@ inputDocuments:
   - WHATIWANT.md
 workflowType: 'ux-design'
 lastStep: 6
-project_name: 'Twent AI Assistant - BYOK'
+project_name: 'Blurr AI Assistant - BYOK'
 user_name: 'James Abraham'
 date: '2025-12-11'
 ---
 
-# UX Design Specification: Twent AI Assistant - BYOK
+# UX Design Specification: Blurr AI Assistant - BYOK
 
 **Author:** James Abraham  
 **Date:** 2025-12-11  
@@ -40,7 +40,7 @@ date: '2025-12-11'
 
 ## 1. Executive Summary
 
-Twent AI Assistant is a revolutionary mobile AI super-assistant for Android that transforms smartphones into powerful AI operating systems. The key differentiator: **Pure BYOK (Bring Your Own Key)** - users control their API costs, privacy, and provider choice.
+Blurr AI Assistant is a revolutionary mobile AI super-assistant for Android that transforms smartphones into powerful AI operating systems. The key differentiator: **Pure BYOK (Bring Your Own Key)** - users control their API costs, privacy, and provider choice.
 
 **Core Interaction:** Long-press home button → Ultra-Generalist AI Agent Chat
 
@@ -224,7 +224,7 @@ Bottom Navigation:
 
 **High-level view (default):**
 ```
-🤖 Twent: I'll help you with that.
+🤖 Blurr: I'll help you with that.
 
 🔄 Task Breakdown:
 ┌─────────────────────────────────┐
@@ -523,7 +523,7 @@ Bottom of BYOK Settings:
 │  🔒 Your Keys Are Secure        │
 │  • Encrypted with AES256_GCM    │
 │  • Stored locally on device     │
-│  • Never sent to Twent servers  │
+│  • Never sent to Blurr servers  │
 │  • You can delete anytime       │
 │                                 │
 │  [Learn More About Security]    │
@@ -599,7 +599,7 @@ Settings → Privacy & Data
 ### 5.1 Site Map
 
 ```
-Twent AI Assistant
+Blurr AI Assistant
 │
 ├─ 🏠 HOME BUTTON LONG-PRESS
 │  └─ Ultra-Generalist AI Agent Chat (PRIMARY INTERFACE)
@@ -857,7 +857,7 @@ in the text editor. Want me to:
 [Security Reminder Shown]
 "🔒 Your key is encrypted and stored 
 locally on your device. Never sent to 
-Twent servers."
+Blurr servers."
 ```
 
 ### 6.5 Workflow Creation Flow
@@ -989,7 +989,7 @@ Twent servers."
 **Layout:**
 ```
 ┌─────────────────────────────────────────┐
-│  ← Twent AI              [⚙️]           │  Header (44dp)
+│  ← Blurr AI              [⚙️]           │  Header (44dp)
 ├─────────────────────────────────────────┤
 │                                         │
 │  💬 Chat Messages (Scrollable)          │  Main Content
@@ -998,7 +998,7 @@ Twent servers."
 │  └─────────────────────────────────┘  │
 │                                         │
 │  ┌─────────────────────────────────┐  │
-│  │ 🤖 Twent:                       │  │
+│  │ 🤖 Blurr:                       │  │
 │  │ 🔄 Task Breakdown:              │  │
 │  │ ✅ 1. Web search                │  │
 │  │ ⏳ 2. Generate script           │  │
@@ -1706,7 +1706,7 @@ Wait 60 seconds or switch providers.
 
 ## Conclusion
 
-This UX Design Specification provides a comprehensive blueprint for building Twent AI Assistant - BYOK. The design prioritizes:
+This UX Design Specification provides a comprehensive blueprint for building Blurr AI Assistant - BYOK. The design prioritizes:
 
 1. **User Control**: BYOK architecture puts users in control of costs and privacy
 2. **Transparency**: Real-time usage tracking and cost visibility

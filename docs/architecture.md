@@ -11,12 +11,12 @@ workflowType: 'architecture'
 lastStep: 8
 status: 'complete'
 completedAt: '2025-12-10'
-project_name: 'Twent Mobile AI Super-Assistant'
+project_name: 'Blurr Mobile AI Super-Assistant'
 user_name: 'James Abraham'
 date: '2025-12-10'
 ---
 
-# Architecture Decision Document - Twent Mobile AI Super-Assistant
+# Architecture Decision Document - Blurr Mobile AI Super-Assistant
 
 **Author:** James Abraham  
 **Date:** 2025-12-10
@@ -119,10 +119,10 @@ date: '2025-12-10'
 ### Modular Extension Strategy
 
 New features added as separate packages:
-- `com.twent.voice.byok` — API key management
-- `com.twent.voice.mcp` — MCP protocol client
-- `com.twent.voice.apps` — AI-native applications
-- `com.twent.voice.workflows` — Automation engine
+- `com.blurr.voice.byok` — API key management
+- `com.blurr.voice.mcp` — MCP protocol client
+- `com.blurr.voice.apps` — AI-native applications
+- `com.blurr.voice.workflows` — Automation engine
 
 ---
 
@@ -204,7 +204,7 @@ New features added as separate packages:
 - Functions: `camelCase`, verb prefix (`getApiKey()`)
 - Variables: `camelCase` (`userId`)
 - Constants: `SCREAMING_SNAKE` (`MAX_RETRIES`)
-- Packages: `lowercase.dotted` (`com.twent.voice.byok`)
+- Packages: `lowercase.dotted` (`com.blurr.voice.byok`)
 
 **Database:**
 - Tables: `snake_case`, singular (`api_key`, `conversation`)
@@ -218,7 +218,7 @@ New features added as separate packages:
 ### Package Structure
 
 ```
-com.twent.voice/
+com.blurr.voice/
 ├── ui/screens/        # Compose screens
 ├── ui/components/     # Reusable UI
 ├── viewmodel/         # ViewModels
@@ -269,7 +269,7 @@ sealed class Result<T> {
 ### Package Organization
 
 ```
-com.twent.voice/
+com.blurr.voice/
 ├── services/               # EXISTING - DO NOT MODIFY
 │   └── ScreenInteractionService.kt
 ├── ConversationalAgentService.kt  # Refactor for BYOK/MCP
@@ -415,7 +415,7 @@ architecture. Brownfield constraints properly documented.
 ### Implementation Handoff
 
 **For AI Agents:**
-This document is your complete guide for implementing Twent Mobile AI Super-Assistant. 
+This document is your complete guide for implementing Blurr Mobile AI Super-Assistant. 
 Follow all decisions, patterns, and structures exactly as documented.
 
 **Development Sequence:**

@@ -66,4 +66,4 @@ Total: ~8,000 lines of production-ready code
 4. Deploy to production
 
 ## Support
-Contact Twent development team for assistance.
+Contact Blurr development team for assistance.

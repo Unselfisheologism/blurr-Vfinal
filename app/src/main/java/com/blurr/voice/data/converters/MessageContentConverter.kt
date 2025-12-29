@@ -1,8 +1,8 @@
-package com.twent.voice.data.converters
+package com.blurr.voice.data.converters
 
 import androidx.room.TypeConverter
-import com.twent.voice.data.models.ContentType
-import com.twent.voice.data.models.MessageContentItem
+import com.blurr.voice.data.models.ContentType
+import com.blurr.voice.data.models.MessageContentItem
 import org.json.JSONArray
 import org.json.JSONObject
 

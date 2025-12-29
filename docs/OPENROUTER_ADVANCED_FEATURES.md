@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Twent AI Assistant now includes complete support for all OpenRouter advanced features, making it a fully-featured agentic AI platform with:
+The Blurr AI Assistant now includes complete support for all OpenRouter advanced features, making it a fully-featured agentic AI platform with:
 
 - ✅ **Provider Routing** - Automatic failover and intelligent provider selection
 - ✅ **Prompt Transforms** - Cost optimization (30-50% savings)

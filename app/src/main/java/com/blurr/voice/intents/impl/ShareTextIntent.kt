@@ -1,9 +1,9 @@
-package com.twent.voice.intents.impl
+package com.blurr.voice.intents.impl
 
 import android.content.Context
 import android.content.Intent
-import com.twent.voice.intents.AppIntent
-import com.twent.voice.intents.ParameterSpec
+import com.blurr.voice.intents.AppIntent
+import com.blurr.voice.intents.ParameterSpec
 
 class ShareTextIntent : AppIntent {
     override val name: String = "ShareText"

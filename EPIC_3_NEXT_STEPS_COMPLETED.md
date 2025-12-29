@@ -43,7 +43,7 @@ flutter pub run build_runner build --delete-conflicting-outputs
 **Status**: Complete
 
 **What was done**:
-- Added `SpreadsheetTool` registration in `app/src/main/java/com/twent/voice/tools/ToolRegistry.kt`
+- Added `SpreadsheetTool` registration in `app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt`
 - Placed after `WorkflowTool` registration (line 71-72):
   ```kotlin
   // Spreadsheet editor - AI-native spreadsheet generation and editing (Epic 3)

@@ -10,7 +10,7 @@ I've implemented the **complete BYOK (Bring Your Own Key) architecture** for Pha
 
 ### 1. **Core Provider System** (6 new files)
 
-**Location:** `app/src/main/java/com/twent/voice/core/providers/`
+**Location:** `app/src/main/java/com/blurr/voice/core/providers/`
 
 - ✅ **LLMProvider.kt**
   - Enum with 6 providers: OpenRouter, AIMLAPI, Groq, Fireworks, Together, OpenAI
@@ -278,18 +278,18 @@ All new code includes:
 ## 🔍 Files Created (10 new files)
 
 ### Core Architecture (4 files)
-1. `app/src/main/java/com/twent/voice/core/providers/LLMProvider.kt`
-2. `app/src/main/java/com/twent/voice/core/providers/ProviderKeyManager.kt`
-3. `app/src/main/java/com/twent/voice/core/providers/OpenAICompatibleAPI.kt`
-4. `app/src/main/java/com/twent/voice/core/providers/UniversalLLMService.kt`
+1. `app/src/main/java/com/blurr/voice/core/providers/LLMProvider.kt`
+2. `app/src/main/java/com/blurr/voice/core/providers/ProviderKeyManager.kt`
+3. `app/src/main/java/com/blurr/voice/core/providers/OpenAICompatibleAPI.kt`
+4. `app/src/main/java/com/blurr/voice/core/providers/UniversalLLMService.kt`
 
 ### Voice Services (3 files)
-5. `app/src/main/java/com/twent/voice/core/providers/VoiceProvider.kt`
-6. `app/src/main/java/com/twent/voice/core/providers/UniversalSTTService.kt`
-7. `app/src/main/java/com/twent/voice/core/providers/UniversalTTSService.kt`
+5. `app/src/main/java/com/blurr/voice/core/providers/VoiceProvider.kt`
+6. `app/src/main/java/com/blurr/voice/core/providers/UniversalSTTService.kt`
+7. `app/src/main/java/com/blurr/voice/core/providers/UniversalTTSService.kt`
 
 ### UI (2 files)
-8. `app/src/main/java/com/twent/voice/ui/BYOKSettingsActivity.kt`
+8. `app/src/main/java/com/blurr/voice/ui/BYOKSettingsActivity.kt`
 9. `app/src/main/res/layout/activity_byok_settings.xml`
 
 ### Documentation (3 files)

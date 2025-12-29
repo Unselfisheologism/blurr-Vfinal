@@ -43,7 +43,7 @@ class _DawAiToolbarState extends State<DawAiToolbar> {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.3),
-            twentadius: 10,
+            blurradius: 10,
             offset: const Offset(-2, 0),
           ),
         ],

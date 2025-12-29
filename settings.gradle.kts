@@ -21,7 +21,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "twent"
+rootProject.name = "blurr"
 include(":app")
 
 // Check if flutter_workflow_editor exists before including it

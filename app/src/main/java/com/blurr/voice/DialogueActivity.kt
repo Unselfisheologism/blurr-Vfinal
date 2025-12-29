@@ -1,4 +1,4 @@
-package com.twent.voice
+package com.blurr.voice
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,8 +7,8 @@ import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.twent.voice.utilities.TTSManager
-import com.twent.voice.utilities.STTManager
+import com.blurr.voice.utilities.TTSManager
+import com.blurr.voice.utilities.STTManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.delay
 

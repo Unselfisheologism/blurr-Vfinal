@@ -1,6 +1,6 @@
-package com.twent.voice.agents
+package com.blurr.voice.agents
 
-import com.twent.voice.tools.ToolResult
+import com.blurr.voice.tools.ToolResult
 
 /**
  * Response from the Ultra-Generalist Agent

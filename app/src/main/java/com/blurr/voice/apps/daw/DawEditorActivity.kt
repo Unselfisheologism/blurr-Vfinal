@@ -1,16 +1,16 @@
-package com.twent.voice.apps.daw
+package com.blurr.voice.apps.daw
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.twent.voice.agents.UltraGeneralistAgent
-import com.twent.voice.agents.ToolExecutor
-import com.twent.voice.apps.base.AgentIntegration
-import com.twent.voice.apps.base.AgentResult
-import com.twent.voice.apps.base.ProGatingManager
-import com.twent.voice.core.providers.UniversalLLMService
-import com.twent.voice.tools.MusicGenerationTool
-import com.twent.voice.tools.AudioGenerationTool
-import com.twent.voice.utilities.FreemiumManager
+import com.blurr.voice.agents.UltraGeneralistAgent
+import com.blurr.voice.agents.ToolExecutor
+import com.blurr.voice.apps.base.AgentIntegration
+import com.blurr.voice.apps.base.AgentResult
+import com.blurr.voice.apps.base.ProGatingManager
+import com.blurr.voice.core.providers.UniversalLLMService
+import com.blurr.voice.tools.MusicGenerationTool
+import com.blurr.voice.tools.AudioGenerationTool
+import com.blurr.voice.utilities.FreemiumManager
 import io.flutter.embedding.android.FlutterView
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
@@ -31,10 +31,10 @@ import java.io.File
 class DawEditorActivity : AppCompatActivity() {
     
     companion object {
-        private const val FLUTTER_ENGINE_ID = "twent_flutter_engine"
+        private const val FLUTTER_ENGINE_ID = "blurr_flutter_engine"
         private const val DAW_AUDIO_CHANNEL = "daw_audio"
         private const val DAW_AI_CHANNEL = "daw_ai"
-        private const val DAW_PLATFORM_CHANNEL = "com.twent.voice/daw_editor"
+        private const val DAW_PLATFORM_CHANNEL = "com.blurr.voice/daw_editor"
         private const val DAW_ROUTE = "/daw_editor"
     }
 
@@ -334,7 +334,7 @@ class DawEditorActivity : AppCompatActivity() {
             outputFile.createNewFile()
             
             // Add some mock data to the file to simulate audio content
-            val mockAudioData = "Twent DAW Audio Export - Format: $format, Quality: $quality"
+            val mockAudioData = "Blurr DAW Audio Export - Format: $format, Quality: $quality"
             outputFile.writeText(mockAudioData)
             
             finalPath

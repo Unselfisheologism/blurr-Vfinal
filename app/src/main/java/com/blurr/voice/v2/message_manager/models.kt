@@ -1,6 +1,6 @@
-package com.twent.voice.v2.message_manager
+package com.blurr.voice.v2.message_manager
 
-import com.twent.voice.v2.llm.GeminiMessage
+import com.blurr.voice.v2.llm.GeminiMessage
 import kotlinx.serialization.Serializable
 
 

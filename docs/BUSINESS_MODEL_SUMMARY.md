@@ -167,7 +167,7 @@
 
 ## Competitive Advantage
 
-| Feature | Competitors | Twent |
+| Feature | Competitors | Blurr |
 |---------|------------|-------|
 | Free Tier Usage | 10-50 requests | ✅ Unlimited |
 | API Control | Vendor locked | ✅ BYOK (your keys) |
@@ -247,7 +247,7 @@ Business model is successful when:
 
 ---
 
-**Bottom Line:** This business model respects users, maximizes growth, and builds a sustainable business without predatory freemium tactics. It positions Twent as the fair, transparent, unlimited AI assistant that users can trust and advocate for.
+**Bottom Line:** This business model respects users, maximizes growth, and builds a sustainable business without predatory freemium tactics. It positions Blurr as the fair, transparent, unlimited AI assistant that users can trust and advocate for.
 
 **Let's build something users love and respect.** 💜
 

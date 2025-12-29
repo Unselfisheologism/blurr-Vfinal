@@ -13,12 +13,12 @@ documentCounts:
   projectDocs: 5
 workflowType: 'prd'
 lastStep: 11
-project_name: 'Twent Mobile AI Super-Assistant'
+project_name: 'Blurr Mobile AI Super-Assistant'
 user_name: 'James Abraham'
 date: '2025-12-10'
 ---
 
-# Product Requirements Document - Twent Mobile AI Super-Assistant
+# Product Requirements Document - Blurr Mobile AI Super-Assistant
 
 **Author:** James Abraham  
 **Date:** 2025-12-10
@@ -27,7 +27,7 @@ date: '2025-12-10'
 
 ## Executive Summary
 
-Twent Mobile AI Super-Assistant transforms the open-source Twent Android app into a comprehensive "Mobile AI Operating System" — a bring-your-own-key (BYOK) platform that enables AI-powered phone automation, multi-modal content generation, workflow automation, and a suite of AI-native productivity applications.
+Blurr Mobile AI Super-Assistant transforms the open-source Blurr Android app into a comprehensive "Mobile AI Operating System" — a bring-your-own-key (BYOK) platform that enables AI-powered phone automation, multi-modal content generation, workflow automation, and a suite of AI-native productivity applications.
 
 **The Problem:**
 Current AI assistants are either (1) locked to specific providers with per-call costs, (2) limited to chat-only interfaces, or (3) siloed into single-purpose apps. Users lack a unified, cost-controlled way to leverage AI across all their mobile productivity needs.
@@ -37,7 +37,7 @@ A user-owned-key mobile platform where users bring their own AI API keys (OpenRo
 - An ultra-generalist AI agent that can control the phone, generate media, create documents, conduct research, and execute workflows
 - A suite of 6 AI-native apps (Text Editor, Spreadsheets, DAW, Video Editor, Media Generator, Learning Platform)
 - A visual workflow builder with scheduling and n8n integration
-- Existing Twent capabilities (home button activation, UI automation) — fully preserved
+- Existing Blurr capabilities (home button activation, UI automation) — fully preserved
 
 ### What Makes This Special
 
@@ -54,8 +54,8 @@ A user-owned-key mobile platform where users bring their own AI API keys (OpenRo
 | **Technical Type** | Android Mobile Application (Accessibility-based AI Platform) |
 | **Domain** | Consumer AI / Productivity Technology |
 | **Complexity** | High — 5-phase development, 6 AI-native apps, MCP client, workflow automation |
-| **Project Context** | Brownfield — extending existing open-source Twent codebase |
-| **Key Constraint** | Must not break any existing Twent functionality (UI automation, home button, etc.) |
+| **Project Context** | Brownfield — extending existing open-source Blurr codebase |
+| **Key Constraint** | Must not break any existing Blurr functionality (UI automation, home button, etc.) |
 
 ---
 
@@ -101,7 +101,7 @@ A user-owned-key mobile platform where users bring their own AI API keys (OpenRo
 - BYOK settings screen (OpenRouter, AIMLAPI.com, Groq, Fireworks, Together)
 - BYOK voice (STT/TTS via OpenAI-compatible APIs)
 - Model selector with balance display
-- All existing Twent features preserved
+- All existing Blurr features preserved
 - Ultra-Generalist 1-chat-UI Agent
 - MCP client support
 - Basic tools: web search, phone control, document generation
@@ -136,7 +136,7 @@ A user-owned-key mobile platform where users bring their own AI API keys (OpenRo
 
 ### Journey 1: Power User — Alex Chen
 
-Alex is a 28-year-old productivity enthusiast frustrated by AI apps that can't actually control his phone. He discovers Twent's BYOK model, sets up his OpenRouter key in minutes, and is amazed when the AI navigates Gmail, summarizes emails, and creates calendar events on command.
+Alex is a 28-year-old productivity enthusiast frustrated by AI apps that can't actually control his phone. He discovers Blurr's BYOK model, sets up his OpenRouter key in minutes, and is amazed when the AI navigates Gmail, summarizes emails, and creates calendar events on command.
 
 **The breakthrough:** Alex creates scheduled workflows that run automatically. He says: "Every morning at 8am, check my Gmail for emails from my team, summarize them, and notify me." It works. Alex becomes a God Mode subscriber and evangelist.
 
@@ -146,9 +146,9 @@ Alex is a 28-year-old productivity enthusiast frustrated by AI apps that can't a
 
 ### Journey 2: Creative Professional — Sarah Martinez
 
-Sarah is a 34-year-old content creator juggling 6 different tools for podcasts, videos, and client work. She's skeptical but tries Twent's AI-native apps — the DAW creates a podcast intro in 10 minutes vs 2 hours.
+Sarah is a 34-year-old content creator juggling 6 different tools for podcasts, videos, and client work. She's skeptical but tries Blurr's AI-native apps — the DAW creates a podcast intro in 10 minutes vs 2 hours.
 
-**The breakthrough:** Sarah consolidates her entire workflow into Twent, cancels 4 other subscriptions ($47/month saved), and upgrades to Pro immediately.
+**The breakthrough:** Sarah consolidates her entire workflow into Blurr, cancels 4 other subscriptions ($47/month saved), and upgrades to Pro immediately.
 
 **Capabilities Revealed:** Ultra-Generalist Agent, AI-native DAW, spreadsheets, learning platform, subscription conversion
 
@@ -168,7 +168,7 @@ Mike is a 45-year-old small business owner who's "not a tech person." His son he
 
 Rachel is a 31-year-old ops manager running 8 workflows for her startup. When a workflow fails due to depleted OpenRouter credits, the error is clear and recovery is automatic after she adds credits.
 
-**The breakthrough:** When Twent suggests "This workflow could be 40% faster if you combine these steps," Rachel trusts it and implements. She renews annually and advocates for team adoption.
+**The breakthrough:** When Blurr suggests "This workflow could be 40% faster if you combine these steps," Rachel trusts it and implements. She renews annually and advocates for team adoption.
 
 **Capabilities Revealed:** Workflow reliability, error handling, optimization suggestions, subscription retention, enterprise potential
 
@@ -297,7 +297,7 @@ Rachel is a 31-year-old ops manager running 8 workflows for her startup. When a 
 
 | Concern | Action Required |
 |---------|-----------------|
-| Accessibility Service Disclosure | ✅ Exists in Twent — preserve |
+| Accessibility Service Disclosure | ✅ Exists in Blurr — preserve |
 | Foreground Service Notice | Add persistent notification |
 | User Data Policy | BYOK keys stored locally only |
 | In-App Purchases | RevenueCat/Google Play Billing |

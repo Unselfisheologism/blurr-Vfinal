@@ -6,16 +6,16 @@ inputDocuments:
   - docs/prd.md
   - docs/architecture.md
   - docs/project_context.md
-project_name: 'Twent Mobile AI Super-Assistant'
+project_name: 'Blurr Mobile AI Super-Assistant'
 user_name: 'James Abraham'
 date: '2025-12-10'
 ---
 
-# Twent Mobile AI Super-Assistant - Epic Breakdown
+# Blurr Mobile AI Super-Assistant - Epic Breakdown
 
 ## Overview
 
-This document provides the complete epic and story breakdown for Twent Mobile AI Super-Assistant, decomposing the requirements from the PRD and Architecture into implementable stories.
+This document provides the complete epic and story breakdown for Blurr Mobile AI Super-Assistant, decomposing the requirements from the PRD and Architecture into implementable stories.
 
 ---
 

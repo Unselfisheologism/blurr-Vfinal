@@ -4,7 +4,7 @@ import 'dart:convert';
 
 /// Platform bridge for DAW editor to communicate with native Android/iOS
 class DawPlatformBridge {
-  static const MethodChannel _channel = MethodChannel('com.twent.voice/daw_editor');
+  static const MethodChannel _channel = MethodChannel('com.blurr.voice/daw_editor');
 
   /// Load a project from native
   static Future<Map<String, dynamic>?> loadProject(String? projectName, String? projectPath) async {

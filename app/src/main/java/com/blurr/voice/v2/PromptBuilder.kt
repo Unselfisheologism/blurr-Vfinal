@@ -1,17 +1,17 @@
-package com.twent.voice.v2
+package com.blurr.voice.v2
 
 import android.content.Context
 import android.util.Log
-import com.twent.voice.v2.actions.Action
-import com.twent.voice.v2.fs.FileSystem
-import com.twent.voice.v2.llm.GeminiMessage
-import com.twent.voice.v2.llm.MessageRole
-import com.twent.voice.v2.llm.TextPart
+import com.blurr.voice.v2.actions.Action
+import com.blurr.voice.v2.fs.FileSystem
+import com.blurr.voice.v2.llm.GeminiMessage
+import com.blurr.voice.v2.llm.MessageRole
+import com.blurr.voice.v2.llm.TextPart
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import com.twent.voice.intents.IntentRegistry
+import com.blurr.voice.intents.IntentRegistry
 
 private const val DEFAULT_PROMPT_TEMPLATE = "prompts/system_prompt.md"
 
@@ -33,7 +33,7 @@ class SystemPromptLoader(private val context: Context) {
         val actionsDescription = generateActionsDescription()
         val intentsCatalog = generateIntentsCatalog()
 
-        val userProfileManager = com.twent.voice.utilities.UserProfileManager(context)
+        val userProfileManager = com.blurr.voice.utilities.UserProfileManager(context)
         val userName = userProfileManager.getName() ?: "User"
         val userEmail = userProfileManager.getEmail() ?: "Unknown Email"
         val userInfo = "Name: $userName\nEmail: $userEmail"

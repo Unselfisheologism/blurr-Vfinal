@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document summarizes the **two major integrations** completed for the Twent (Panda) app:
+This document summarizes the **two major integrations** completed for the Blurr (Panda) app:
 
 1. **System-Level Tools Integration** - UI automation, notifications, and phone control in the n8n workflow editor
 2. **AI Agent Workflow Control** - Full programmatic control of workflows by the ultra-generalist AI agent
@@ -13,7 +13,7 @@ This document summarizes the **two major integrations** completed for the Twent 
 
 ### What Was Added
 
-Extended the n8n-workflow-UI app to include **15 system-level tools** that leverage Twent's unique Android capabilities:
+Extended the n8n-workflow-UI app to include **15 system-level tools** that leverage Blurr's unique Android capabilities:
 
 #### UI Automation Tools (10)
 - Tap Element - Click UI elements by text, ID, or coordinates
@@ -275,8 +275,8 @@ With both integrations complete, users can now:
 5. `SYSTEM_TOOLS_INTEGRATION_COMPLETE.md`
 
 ### AI Workflow Control (5)
-6. `app/src/main/java/com/twent/voice/tools/WorkflowTool.kt`
-7. `app/src/main/java/com/twent/voice/data/WorkflowPreferences.kt`
+6. `app/src/main/java/com/blurr/voice/tools/WorkflowTool.kt`
+7. `app/src/main/java/com/blurr/voice/data/WorkflowPreferences.kt`
 8. `app/src/main/assets/prompts/workflow_capabilities.md`
 9. `docs/AI_AGENT_WORKFLOW_CONTROL.md`
 10. `AI_WORKFLOW_INTEGRATION_COMPLETE.md`
@@ -298,7 +298,7 @@ With both integrations complete, users can now:
 7. `flutter_workflow_editor/README.md`
 
 ### AI Workflow Control (2)
-8. `app/src/main/java/com/twent/voice/tools/ToolRegistry.kt`
+8. `app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt`
 9. `app/src/main/assets/prompts/system_prompt.md`
 
 ---
@@ -429,7 +429,7 @@ Would you like me to run it now as a test?
 
 ## Conclusion
 
-Both integrations are **complete and production-ready**. The Twent app now offers:
+Both integrations are **complete and production-ready**. The Blurr app now offers:
 
 ✅ **15 system-level tools** for phone automation
 ✅ **AI-driven workflow creation** from natural language

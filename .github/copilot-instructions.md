@@ -1,4 +1,4 @@
-# Panda (Twent) - AI Phone Operator Android App
+# Panda (Blurr) - AI Phone Operator Android App
 
 Panda is an Android application written in Kotlin that serves as a proactive, on-device AI agent for Android. It uses accessibility services to understand and operate phone UI, supporting voice commands and AI-powered task automation.
 
@@ -30,8 +30,8 @@ Always reference these instructions first and fallback to search or bash command
 
 2. **Clone and configure API keys:**
    ```bash
-   git clone https://github.com/Ayush0Chaudhary/twent.git
-   cd twent
+   git clone https://github.com/Ayush0Chaudhary/blurr.git
+   cd blurr
    cp local.properties.template local.properties
    ```
 
@@ -78,7 +78,7 @@ Always reference these instructions first and fallback to search or bash command
 # NEVER CANCEL - Set timeout to 30+ minutes
 
 # Specific test classes
-./gradlew test --tests="com.twent.voice.agent.v2.SystemPromptTest"
+./gradlew test --tests="com.blurr.voice.agent.v2.SystemPromptTest"
 ```
 
 ### Development Workflow
@@ -87,7 +87,7 @@ Always reference these instructions first and fallback to search or bash command
 ./gradlew installDebug
 
 # Install and launch
-./gradlew installDebug && adb shell am start -n com.twent.voice/.MainActivity
+./gradlew installDebug && adb shell am start -n com.blurr.voice/.MainActivity
 
 # View live logs (useful for debugging)
 adb logcat | grep GeminiApi
@@ -112,7 +112,7 @@ When making changes to core functionality:
 
 ### Key Directories
 ```
-app/src/main/java/com/twent/voice/
+app/src/main/java/com/blurr/voice/
 ├── agent/               # AI agent logic and prompts
 ├── api/                 # API integrations (Gemini, etc.)
 ├── services/            # Android services (AgentTaskService, etc.)
@@ -122,9 +122,9 @@ app/src/main/java/com/twent/voice/
 ```
 
 ### Important Files
-- `app/src/main/java/com/twent/voice/services/AgentTaskService.kt` - Core agent execution service
-- `app/src/main/java/com/twent/voice/api/GeminiApi.kt` - Gemini AI integration
-- `app/src/main/java/com/twent/voice/v2/llm/GeminiAPI.kt` - Enhanced Gemini API v2
+- `app/src/main/java/com/blurr/voice/services/AgentTaskService.kt` - Core agent execution service
+- `app/src/main/java/com/blurr/voice/api/GeminiApi.kt` - Gemini AI integration
+- `app/src/main/java/com/blurr/voice/v2/llm/GeminiAPI.kt` - Enhanced Gemini API v2
 - `app/src/main/AndroidManifest.xml` - App permissions and services
 - `local.properties` - API keys and SDK configuration (never commit)
 - `gradle/libs.versions.toml` - Dependency versions
@@ -223,8 +223,8 @@ adb logcat | grep GeminiApi
 - Mem0: https://mem0.ai/
 
 ### File Locations
-- Main source: `app/src/main/java/com/twent/voice/`
-- Tests: `app/src/test/java/com/twent/voice/`
+- Main source: `app/src/main/java/com/blurr/voice/`
+- Tests: `app/src/test/java/com/blurr/voice/`
 - Resources: `app/src/main/res/`
 - Build config: `app/build.gradle.kts`
 - Dependencies: `gradle/libs.versions.toml` (AGP version 8.9.2 - NEVER change to 8.5.2)

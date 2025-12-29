@@ -1,4 +1,4 @@
-package com.twent.voice.services
+package com.blurr.voice.services
 
 import android.Manifest
 import android.app.Notification
@@ -14,11 +14,11 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import com.twent.voice.ConversationalAgentService
-import com.twent.voice.MainActivity
-import com.twent.voice.R
-import com.twent.voice.api.WakeWordDetector
-import com.twent.voice.core.providers.ProviderKeyManager
+import com.blurr.voice.ConversationalAgentService
+import com.blurr.voice.MainActivity
+import com.blurr.voice.R
+import com.blurr.voice.api.WakeWordDetector
+import com.blurr.voice.core.providers.ProviderKeyManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -32,7 +32,7 @@ class EnhancedWakeWordService : Service() {
     companion object {
         const val CHANNEL_ID = "EnhancedWakeWordServiceChannel"
         var isRunning = false
-        const val ACTION_WAKE_WORD_FAILED = "com.twent.voice.WAKE_WORD_FAILED"
+        const val ACTION_WAKE_WORD_FAILED = "com.blurr.voice.WAKE_WORD_FAILED"
         const val EXTRA_USE_PORCUPINE = "use_porcupine"
     }
 
@@ -69,7 +69,7 @@ class EnhancedWakeWordService : Service() {
 
         val engineName = if (usePorcupine) "STT" else "STT"
         val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Twent Wake Word")
+            .setContentTitle("Blurr Wake Word")
             .setContentText("Listening for 'Panda' with STT engine...")
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentIntent(pendingIntent)

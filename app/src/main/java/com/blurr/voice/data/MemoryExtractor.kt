@@ -1,7 +1,7 @@
-package com.twent.voice.data
+package com.blurr.voice.data
 
 import android.util.Log
-//import com.twent.voice.api.GeminiApi
+//import com.blurr.voice.api.GeminiApi
 import com.google.ai.client.generativeai.type.TextPart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

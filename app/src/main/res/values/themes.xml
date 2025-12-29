@@ -1,6 +1,6 @@
 <!-- res/values/themes.xml -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.Twent" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="Theme.Blurr" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Required for AppCompat -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary</item>
@@ -60,6 +60,6 @@
 
 
 <!--<resources>-->
-<!--<style name="Theme.Twent" parent="Theme.Material3.Dark.NoActionBar">-->
+<!--<style name="Theme.Blurr" parent="Theme.Material3.Dark.NoActionBar">-->
 <!--</style>-->
 <!--</resources>-->

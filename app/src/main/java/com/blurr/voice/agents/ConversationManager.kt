@@ -1,13 +1,13 @@
-package com.twent.voice.agents
+package com.blurr.voice.agents
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
-import com.twent.voice.data.TwentDatabase
-import com.twent.voice.data.models.Conversation
-import com.twent.voice.data.models.Message
-import com.twent.voice.data.models.MessageRole
-import com.twent.voice.tools.ToolResult
+import com.blurr.voice.data.BlurrDatabase
+import com.blurr.voice.data.models.Conversation
+import com.blurr.voice.data.models.Message
+import com.blurr.voice.data.models.MessageRole
+import com.blurr.voice.tools.ToolResult
 import com.google.ai.client.generativeai.type.TextPart
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -24,7 +24,7 @@ import java.util.*
 class ConversationManager(
     private val context: Context
 ) {
-    private val database = TwentDatabase.getDatabase(context)
+    private val database = BlurrDatabase.getDatabase(context)
     private val conversationDao = database.conversationDao()
     
     private var currentConversationId: String? = null

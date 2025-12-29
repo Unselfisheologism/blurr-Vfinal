@@ -1,8 +1,8 @@
-package com.twent.voice.utilities
+package com.blurr.voice.utilities
 
 import com.android.billingclient.api.BillingClient
-import com.twent.voice.MyApplication
-import com.twent.voice.data.AppwriteDb
+import com.blurr.voice.MyApplication
+import com.blurr.voice.data.AppwriteDb
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.Instant

@@ -1,10 +1,10 @@
-package com.twent.voice.tools
+package com.blurr.voice.tools
 
 import android.content.Context
 import android.util.Log
-import com.twent.voice.core.providers.LLMProvider
-import com.twent.voice.core.providers.OpenAICompatibleAPI
-import com.twent.voice.core.providers.ProviderKeyManager
+import com.blurr.voice.core.providers.LLMProvider
+import com.blurr.voice.core.providers.OpenAICompatibleAPI
+import com.blurr.voice.core.providers.ProviderKeyManager
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope

@@ -11,25 +11,25 @@ This document tracks the implementation of Phase 0 - BYOK architecture and depen
 ### 1. Core Provider Architecture
 
 **Created Files:**
-- `app/src/main/java/com/twent/voice/core/providers/LLMProvider.kt`
+- `app/src/main/java/com/blurr/voice/core/providers/LLMProvider.kt`
   - Enum defining all supported providers (OpenRouter, AIMLAPI, Groq, Fireworks, Together, OpenAI)
   - Provider capabilities (streaming, vision, STT, TTS)
   - Base URLs for each provider
 
-- `app/src/main/java/com/twent/voice/core/providers/ProviderKeyManager.kt`
+- `app/src/main/java/com/blurr/voice/core/providers/ProviderKeyManager.kt`
   - Encrypted storage using Android EncryptedSharedPreferences
   - API key management per provider
   - Selected provider and model persistence
   - Configuration validation
 
-- `app/src/main/java/com/twent/voice/core/providers/OpenAICompatibleAPI.kt`
+- `app/src/main/java/com/blurr/voice/core/providers/OpenAICompatibleAPI.kt`
   - Universal client for OpenAI-compatible APIs
   - Supports all configured providers
   - Vision model support (multimodal)
   - Retry logic with exponential backoff
   - Model listing capability
 
-- `app/src/main/java/com/twent/voice/core/providers/UniversalLLMService.kt`
+- `app/src/main/java/com/blurr/voice/core/providers/UniversalLLMService.kt`
   - Drop-in replacement for GeminiApi
   - Routes to user-configured provider
   - Converts between Gemini and OpenAI message formats
@@ -38,17 +38,17 @@ This document tracks the implementation of Phase 0 - BYOK architecture and depen
 ### 2. Voice Services (STT/TTS)
 
 **Created Files:**
-- `app/src/main/java/com/twent/voice/core/providers/VoiceProvider.kt`
+- `app/src/main/java/com/blurr/voice/core/providers/VoiceProvider.kt`
   - Voice capabilities configuration per provider
   - STT/TTS model lists
   - Voice options
 
-- `app/src/main/java/com/twent/voice/core/providers/UniversalSTTService.kt`
+- `app/src/main/java/com/blurr/voice/core/providers/UniversalSTTService.kt`
   - Speech-to-Text using Whisper APIs
   - Supports OpenAI, AIMLAPI, Groq
   - Audio file transcription
 
-- `app/src/main/java/com/twent/voice/core/providers/UniversalTTSService.kt`
+- `app/src/main/java/com/blurr/voice/core/providers/UniversalTTSService.kt`
   - Text-to-Speech synthesis
   - Supports OpenAI, AIMLAPI TTS models
   - Multiple voice options
@@ -56,7 +56,7 @@ This document tracks the implementation of Phase 0 - BYOK architecture and depen
 ### 3. User Interface
 
 **Created Files:**
-- `app/src/main/java/com/twent/voice/ui/BYOKSettingsActivity.kt`
+- `app/src/main/java/com/blurr/voice/ui/BYOKSettingsActivity.kt`
   - Provider selection UI
   - API key input (encrypted storage)
   - Model selection dropdown
@@ -173,11 +173,11 @@ This document tracks the implementation of Phase 0 - BYOK architecture and depen
 
 ### Files to Delete
 
-- [ ] `app/src/main/java/com/twent/voice/utilities/ApiKeyManager.kt`
-- [ ] `app/src/main/java/com/twent/voice/api/GeminiApi.kt` (after migration)
-- [ ] `app/src/main/java/com/twent/voice/api/GoogleTTS.kt` (after migration)
-- [ ] `app/src/main/java/com/twent/voice/api/PicovoiceKeyManager.kt`
-- [ ] `app/src/main/java/com/twent/voice/api/PorcupineWakeWordDetector.kt`
+- [ ] `app/src/main/java/com/blurr/voice/utilities/ApiKeyManager.kt`
+- [ ] `app/src/main/java/com/blurr/voice/api/GeminiApi.kt` (after migration)
+- [ ] `app/src/main/java/com/blurr/voice/api/GoogleTTS.kt` (after migration)
+- [ ] `app/src/main/java/com/blurr/voice/api/PicovoiceKeyManager.kt`
+- [ ] `app/src/main/java/com/blurr/voice/api/PorcupineWakeWordDetector.kt`
 
 ---
 

@@ -383,7 +383,7 @@ draw = ImageDraw.Draw(img)
 
 # Add watermark
 font = ImageFont.truetype('/system/fonts/Roboto-Regular.ttf', 40)
-draw.text((10, 10), 'Twent AI', fill='white', font=font)
+draw.text((10, 10), 'Blurr AI', fill='white', font=font)
 
 # Save
 img.save('product_watermarked.png')
@@ -618,7 +618,7 @@ app/src/main/python/
       ├── image_utils.py      # Helper functions for images
       └── document_utils.py   # Helper functions for documents
 
-app/src/main/java/com/twent/voice/tools/
+app/src/main/java/com/blurr/voice/tools/
   └── PythonShellTool.kt
 ```
 

@@ -1,11 +1,11 @@
-package com.twent.voice
+package com.blurr.voice
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.twent.voice.data.Memory
+import com.blurr.voice.data.Memory
 import java.text.SimpleDateFormat
 import java.util.*
 

@@ -1,4 +1,4 @@
-package com.twent.voice.services
+package com.blurr.voice.services
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -10,9 +10,9 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.twent.voice.MainActivity
-import com.twent.voice.R
-import com.twent.voice.api.WakeWordDetector
+import com.blurr.voice.MainActivity
+import com.blurr.voice.R
+import com.blurr.voice.api.WakeWordDetector
 
 class WakeWordService : Service() {
 
@@ -49,7 +49,7 @@ class WakeWordService : Service() {
         )
 
         val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Twent Wake Word")
+            .setContentTitle("Blurr Wake Word")
             .setContentText("Listening for 'Panda'...")
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentIntent(pendingIntent)

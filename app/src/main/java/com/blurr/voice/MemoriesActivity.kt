@@ -1,4 +1,4 @@
-package com.twent.voice
+package com.blurr.voice
 
 import android.content.Intent
 import android.os.Bundle
@@ -18,12 +18,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.twent.voice.data.Memory
-import com.twent.voice.data.MemoryManager
-//import com.twent.voice.v2.llm.GeminiApi
-import com.twent.voice.v2.llm.GeminiMessage
-import com.twent.voice.v2.llm.MessageRole
-import com.twent.voice.v2.llm.TextPart
+import com.blurr.voice.data.Memory
+import com.blurr.voice.data.MemoryManager
+//import com.blurr.voice.v2.llm.GeminiApi
+import com.blurr.voice.v2.llm.GeminiMessage
+import com.blurr.voice.v2.llm.MessageRole
+import com.blurr.voice.v2.llm.TextPart
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch

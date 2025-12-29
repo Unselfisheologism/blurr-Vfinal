@@ -1,12 +1,12 @@
-package com.twent.voice.tools
+package com.blurr.voice.tools
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
-import com.twent.voice.core.providers.OpenAICompatibleAPI
-import com.twent.voice.core.providers.ProviderKeyManager
+import com.blurr.voice.core.providers.OpenAICompatibleAPI
+import com.blurr.voice.core.providers.ProviderKeyManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient

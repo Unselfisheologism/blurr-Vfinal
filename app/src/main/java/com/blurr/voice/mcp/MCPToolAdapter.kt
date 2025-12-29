@@ -1,10 +1,10 @@
-package com.twent.voice.mcp
+package com.blurr.voice.mcp
 
 import android.util.Log
-import com.twent.voice.core.providers.FunctionTool
-import com.twent.voice.tools.Tool
-import com.twent.voice.tools.ToolParameter
-import com.twent.voice.tools.ToolResult
+import com.blurr.voice.core.providers.FunctionTool
+import com.blurr.voice.tools.Tool
+import com.blurr.voice.tools.ToolParameter
+import com.blurr.voice.tools.ToolResult
 
 /**
  * Adapter that wraps an MCP tool as a regular Tool

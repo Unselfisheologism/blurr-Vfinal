@@ -1,6 +1,6 @@
 # Phase 1: Ultra-Generalist Agent + Core Tools - Technical Specification
 
-**Project**: Twent Mobile AI Super-Assistant  
+**Project**: Blurr Mobile AI Super-Assistant  
 **Phase**: Phase 1 (MVP Launch – Next 3-5 Weeks)  
 **Author**: AI Development Team  
 **Date**: 2024  
@@ -100,7 +100,7 @@ Phase 1 builds on Phase 0's BYOK foundation to create the **Ultra-Generalist AI 
 ### Component Overview
 
 #### 1. Ultra-Generalist Agent Core
-**Location**: `app/src/main/java/com/twent/voice/agents/`
+**Location**: `app/src/main/java/com/blurr/voice/agents/`
 
 ```kotlin
 UltraGeneralistAgent.kt        // Main orchestrator
@@ -118,7 +118,7 @@ SavedToolsManager.kt           // Custom tool persistence
 - Save/load reusable tools
 
 #### 2. MCP Client
-**Location**: `app/src/main/java/com/twent/voice/mcp/`
+**Location**: `app/src/main/java/com/blurr/voice/mcp/`
 
 ```kotlin
 MCPClient.kt                   // MCP protocol implementation
@@ -134,7 +134,7 @@ MCPTransport.kt                // Transport layer (HTTP/WebSocket/stdio)
 - Handle streaming responses
 
 #### 3. Built-in Tools
-**Location**: `app/src/main/java/com/twent/voice/tools/`
+**Location**: `app/src/main/java/com/blurr/voice/tools/`
 
 ```kotlin
 // Web Search
@@ -165,7 +165,7 @@ PhoneControlTool.kt            // Wraps existing ScreenInteractionService
 ```
 
 #### 4. UI Components
-**Location**: `app/src/main/java/com/twent/voice/ui/agent/`
+**Location**: `app/src/main/java/com/blurr/voice/ui/agent/`
 
 ```kotlin
 AgentChatActivity.kt           // Main 1-chat-UI
@@ -184,7 +184,7 @@ ToolExecutionView.kt           // Show tool progress
 #### UltraGeneralistAgent.kt
 
 ```kotlin
-package com.twent.voice.agents
+package com.blurr.voice.agents
 
 class UltraGeneralistAgent(
     private val llmService: UniversalLLMService,
@@ -331,7 +331,7 @@ data class AgentResponse(
 #### ToolRegistry.kt
 
 ```kotlin
-package com.twent.voice.agents
+package com.blurr.voice.agents
 
 class ToolRegistry(
     private val context: Context
@@ -434,7 +434,7 @@ data class ToolResult(
 #### MCPClient.kt
 
 ```kotlin
-package com.twent.voice.mcp
+package com.blurr.voice.mcp
 
 class MCPClient(
     private val context: Context
@@ -513,7 +513,7 @@ class MCPServer(
                     "tools" to emptyMap<String, Any>()
                 ),
                 "clientInfo" to mapOf(
-                    "name" to "Twent AI Assistant",
+                    "name" to "Blurr AI Assistant",
                     "version" to "1.0.0"
                 )
             )

@@ -25,7 +25,7 @@ Additionally:
 
 **Status**: ✅ Already Implemented (Discovered during analysis)
 
-**File**: `app/src/main/java/com/twent/voice/mcp/MCPToolAdapter.kt` (185 lines)
+**File**: `app/src/main/java/com/blurr/voice/mcp/MCPToolAdapter.kt` (185 lines)
 
 **Capabilities**:
 - Wraps MCP tools as standard Tool interface
@@ -44,11 +44,11 @@ Additionally:
 **Status**: ✅ Newly Implemented
 
 **New Files Created**:
-1. `app/src/main/java/com/twent/voice/data/ToolPreferences.kt` (90 lines)
+1. `app/src/main/java/com/blurr/voice/data/ToolPreferences.kt` (90 lines)
    - Manages tool enable/disable state via SharedPreferences
    - Lightweight, local storage (no Appwrite costs)
 
-2. `app/src/main/java/com/twent/voice/ui/tools/ToolSelectionActivity.kt` (380 lines)
+2. `app/src/main/java/com/blurr/voice/ui/tools/ToolSelectionActivity.kt` (380 lines)
    - Material 3 Compose UI
    - Toggle switches for each tool
    - Category badges (Search, Generate, Document, Google, Phone, MCP)
@@ -56,13 +56,13 @@ Additionally:
    - Real-time state updates
 
 **Modified Files**:
-1. `app/src/main/java/com/twent/voice/tools/ToolRegistry.kt`
+1. `app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt`
    - Added `getEnabledTools()` method
    - Updated `getTool()` to check enabled state
    - Updated `describeTools()` to only show enabled tools
    - Updated `toFunctionTools()` to only include enabled tools
 
-2. `app/src/main/java/com/twent/voice/mcp/MCPClient.kt`
+2. `app/src/main/java/com/blurr/voice/mcp/MCPClient.kt`
    - Added `getAllToolsRaw()` for UI (shows all tools)
    - Updated `getAllTools()` to filter by enabled state
    - Updated `describeTools()` to only show enabled tools
@@ -70,7 +70,7 @@ Additionally:
 3. `app/src/main/AndroidManifest.xml`
    - Registered ToolSelectionActivity
 
-4. `app/src/main/java/com/twent/voice/SettingsActivity.kt`
+4. `app/src/main/java/com/blurr/voice/SettingsActivity.kt`
    - Added navigation to Tool Selection screen
 
 5. `WHATIWANT.md`

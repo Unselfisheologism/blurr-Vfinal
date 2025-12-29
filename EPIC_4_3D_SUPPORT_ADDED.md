@@ -61,7 +61,7 @@ Future<MediaLayerNode?> generate3DModel({
 ---
 
 ### 3. Platform Bridge
-**File**: `app/src/main/kotlin/com/twent/voice/flutter/MediaCanvasBridge.kt`
+**File**: `app/src/main/kotlin/com/blurr/voice/flutter/MediaCanvasBridge.kt`
 
 ```kotlin
 private fun generate3DModel(prompt: String, result: MethodChannel.Result) {
@@ -168,7 +168,7 @@ const _$MediaLayerTypeEnumMap = {
 ## 🎯 Existing Tool Integration
 
 ### Model3DGenerationTool.kt
-**Location**: `app/src/main/java/com/twent/voice/tools/Model3DGenerationTool.kt`
+**Location**: `app/src/main/java/com/blurr/voice/tools/Model3DGenerationTool.kt`
 
 **Tool Details**:
 - **Name**: `model_3d_generation`
@@ -282,7 +282,7 @@ if (!_canvasState.isPro) {
 6. ✅ `flutter_workflow_editor/lib/media_canvas/widgets/layer_sidebar.dart`
    - Added 3D icon and color
 
-7. ✅ `app/src/main/kotlin/com/twent/voice/flutter/MediaCanvasBridge.kt`
+7. ✅ `app/src/main/kotlin/com/blurr/voice/flutter/MediaCanvasBridge.kt`
    - Added `generate3DModel()` method
    - Added method channel handler
 

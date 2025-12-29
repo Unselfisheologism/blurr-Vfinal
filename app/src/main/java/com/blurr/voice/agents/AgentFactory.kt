@@ -1,9 +1,9 @@
-package com.twent.voice.agents
+package com.blurr.voice.agents
 
 import android.content.Context
-import com.twent.voice.core.providers.UniversalLLMService
-import com.twent.voice.mcp.MCPClient
-import com.twent.voice.tools.ToolRegistry
+import com.blurr.voice.core.providers.UniversalLLMService
+import com.blurr.voice.mcp.MCPClient
+import com.blurr.voice.tools.ToolRegistry
 
 /**
  * Factory for creating Ultra-Generalist Agent instances

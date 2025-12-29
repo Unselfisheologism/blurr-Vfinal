@@ -1,4 +1,4 @@
-package com.twent.voice.utilities
+package com.blurr.voice.utilities
 
 import android.Manifest
 import android.content.Context
@@ -9,8 +9,8 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import com.twent.voice.R
-import com.twent.voice.services.EnhancedWakeWordService
+import com.blurr.voice.R
+import com.blurr.voice.services.EnhancedWakeWordService
 import kotlinx.coroutines.launch
 
 class WakeWordManager(

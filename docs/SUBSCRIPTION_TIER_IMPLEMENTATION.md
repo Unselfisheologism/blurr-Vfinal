@@ -71,7 +71,7 @@ This ensures we only pay for Composio when users actually upgrade to PRO!
 
 ### 1. FreemiumManager Enhancement
 
-**File**: `app/src/main/java/com/twent/voice/utilities/FreemiumManager.kt`
+**File**: `app/src/main/java/com/blurr/voice/utilities/FreemiumManager.kt`
 
 Added new method:
 ```kotlin
@@ -95,13 +95,13 @@ suspend fun hasComposioAccess(): Boolean = withContext(Dispatchers.IO) {
 
 ### 2. ComposioTool Gating
 
-**File**: `app/src/main/java/com/twent/voice/tools/ComposioTool.kt`
+**File**: `app/src/main/java/com/blurr/voice/tools/ComposioTool.kt`
 
 Added subscription check at the beginning of `execute()`:
 ```kotlin
 override suspend fun execute(params: Map<String, Any>): ToolResult = withContext(Dispatchers.IO) {
     // Check subscription status - Composio is PRO only!
-    val freemiumManager = com.twent.voice.utilities.FreemiumManager()
+    val freemiumManager = com.blurr.voice.utilities.FreemiumManager()
     if (!freemiumManager.hasComposioAccess()) {
         return@withContext ToolResult.error(
             toolName = name,
@@ -140,15 +140,15 @@ override suspend fun execute(params: Map<String, Any>): ToolResult = withContext
 
 ### 3. ToolRegistry Updates
 
-**File**: `app/src/main/java/com/twent/voice/tools/ToolRegistry.kt`
+**File**: `app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt`
 
 Reordered registration to emphasize FREE tools:
 ```kotlin
 // Google Workspace integrations - FREE for all users!
-val googleAuthManager = com.twent.voice.auth.GoogleAuthManager(context)
-registerTool(com.twent.voice.tools.google.GmailTool(context, googleAuthManager))
-registerTool(com.twent.voice.tools.google.GoogleCalendarTool(context, googleAuthManager))
-registerTool(com.twent.voice.tools.google.GoogleDriveTool(context, googleAuthManager))
+val googleAuthManager = com.blurr.voice.auth.GoogleAuthManager(context)
+registerTool(com.blurr.voice.tools.google.GmailTool(context, googleAuthManager))
+registerTool(com.blurr.voice.tools.google.GoogleCalendarTool(context, googleAuthManager))
+registerTool(com.blurr.voice.tools.google.GoogleDriveTool(context, googleAuthManager))
 
 // Composio integrations - PRO ONLY!
 // Tool is registered but gated at execution time
@@ -431,14 +431,14 @@ override suspend fun execute(params: Map<String, Any>): ToolResult {
 ## 📝 Files Modified
 
 ### Modified Files (4)
-1. ✅ `app/src/main/java/com/twent/voice/utilities/FreemiumManager.kt`
+1. ✅ `app/src/main/java/com/blurr/voice/utilities/FreemiumManager.kt`
    - Added `hasComposioAccess()` method
    
-2. ✅ `app/src/main/java/com/twent/voice/tools/ComposioTool.kt`
+2. ✅ `app/src/main/java/com/blurr/voice/tools/ComposioTool.kt`
    - Added subscription check at execution time
    - Added friendly error message with upgrade prompt
    
-3. ✅ `app/src/main/java/com/twent/voice/tools/ToolRegistry.kt`
+3. ✅ `app/src/main/java/com/blurr/voice/tools/ToolRegistry.kt`
    - Updated comments to clarify FREE vs PRO tools
    - Reordered to emphasize FREE tools first
    
@@ -460,7 +460,7 @@ override suspend fun execute(params: Map<String, Any>): ToolResult {
 
 **Play Store Configuration**:
 - Product ID: `pro_subscription`
-- Title: "Twent Voice PRO"
+- Title: "Blurr Voice PRO"
 - Price: $14.99/month (or $149.99/year)
 - Benefits:
   - ✨ 2,000+ integrations (Notion, Slack, GitHub, etc.)

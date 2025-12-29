@@ -1,4 +1,4 @@
-package com.twent.voice
+package com.blurr.voice
 
 import android.Manifest
 import android.accessibilityservice.AccessibilityServiceInfo
@@ -29,7 +29,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
-import com.twent.voice.utilities.OnboardingManager
+import com.blurr.voice.utilities.OnboardingManager
 import android.widget.VideoView
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
@@ -91,9 +91,9 @@ class OnboardingPermissionsActivity : AppCompatActivity() {
 
     private fun startVideoDownloads() {
         val videos = listOf(
-            "https://storage.googleapis.com/twent-app-assets/a11y_permission.mp4" to "a11y_permission.mp4",
-            "https://storage.googleapis.com/twent-app-assets/display_over_other_app.mp4" to "display_over_other_app.mp4",
-            "https://storage.googleapis.com/twent-app-assets/default_assitant.mp4" to "default_assitant.mp4"
+            "https://storage.googleapis.com/blurr-app-assets/a11y_permission.mp4" to "a11y_permission.mp4",
+            "https://storage.googleapis.com/blurr-app-assets/display_over_other_app.mp4" to "display_over_other_app.mp4",
+            "https://storage.googleapis.com/blurr-app-assets/default_assitant.mp4" to "default_assitant.mp4"
         )
 
         for ((url, fileName) in videos) {
@@ -147,7 +147,7 @@ class OnboardingPermissionsActivity : AppCompatActivity() {
                 iconRes = R.drawable.a11y_v2,
                 isGranted = { accessibilityServiceChecker.isAccessibilityServiceEnabled() },
                 action = { showAccessibilityConsentDialog() },
-                videoUrl = "https://storage.googleapis.com/twent-app-assets/a11y_permission.mp4",
+                videoUrl = "https://storage.googleapis.com/blurr-app-assets/a11y_permission.mp4",
                 videoFileName = "a11y_permission.mp4"
             )
         )
@@ -178,7 +178,7 @@ class OnboardingPermissionsActivity : AppCompatActivity() {
                 descRes = R.string.overlay_permission_desc,
                 iconRes = R.drawable.display,
                 isGranted = { Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(this) },
-                videoUrl = "https://storage.googleapis.com/twent-app-assets/display_over_other_app.mp4",
+                videoUrl = "https://storage.googleapis.com/blurr-app-assets/display_over_other_app.mp4",
                 videoFileName = "display_over_other_app.mp4",
                 action = {
                     val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
@@ -223,7 +223,7 @@ class OnboardingPermissionsActivity : AppCompatActivity() {
                     action = {
                         startActivity(Intent(this, RoleRequestActivity::class.java))
                     },
-                    videoUrl = "https://storage.googleapis.com/twent-app-assets/default_assitant.mp4",
+                    videoUrl = "https://storage.googleapis.com/blurr-app-assets/default_assitant.mp4",
                     videoFileName = "default_assitant.mp4"
                 )
             )

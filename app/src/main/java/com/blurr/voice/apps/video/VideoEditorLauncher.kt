@@ -1,8 +1,8 @@
-package com.twent.voice.apps.video
+package com.blurr.voice.apps.video
 
 import android.content.Context
 import android.content.Intent
-import com.twent.voice.VideoEditorActivity
+import com.blurr.voice.VideoEditorActivity
 
 /**
  * Launcher utility for the AI-Native Video Editor.

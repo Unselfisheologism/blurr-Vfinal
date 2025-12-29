@@ -1,8 +1,8 @@
-package com.twent.voice.tools
+package com.blurr.voice.tools
 
 import android.content.Context
 import android.util.Log
-import com.twent.voice.core.providers.FunctionTool
+import com.blurr.voice.core.providers.FunctionTool
 
 /**
  * Registry of all available tools
@@ -12,11 +12,11 @@ import com.twent.voice.core.providers.FunctionTool
  */
 class ToolRegistry(
     private val context: Context,
-    private val confirmationHandler: com.twent.voice.agents.UserConfirmationHandler? = null
+    private val confirmationHandler: com.blurr.voice.agents.UserConfirmationHandler? = null
 ) {
     private val tools = mutableMapOf<String, Tool>()
     private val toolPreferences by lazy { 
-        com.twent.voice.data.ToolPreferences(context) 
+        com.blurr.voice.data.ToolPreferences(context) 
     }
     
     companion object {
@@ -46,10 +46,10 @@ class ToolRegistry(
         }
         
         // Google Workspace integrations - FREE for all users! (Story 4.13 + 4.15 + 4.16)
-        val googleAuthManager = com.twent.voice.auth.GoogleAuthManager(context)
-        registerTool(com.twent.voice.tools.google.GmailTool(context, googleAuthManager))
-        registerTool(com.twent.voice.tools.google.GoogleCalendarTool(context, googleAuthManager))
-        registerTool(com.twent.voice.tools.google.GoogleDriveTool(context, googleAuthManager))
+        val googleAuthManager = com.blurr.voice.auth.GoogleAuthManager(context)
+        registerTool(com.blurr.voice.tools.google.GmailTool(context, googleAuthManager))
+        registerTool(com.blurr.voice.tools.google.GoogleCalendarTool(context, googleAuthManager))
+        registerTool(com.blurr.voice.tools.google.GoogleDriveTool(context, googleAuthManager))
         
         // Composio integrations (2,000+ tools) - PRO ONLY! (Story 4.14 + 4.16)
         // Note: Actual gating happens at execution time via ComposioTool.execute()

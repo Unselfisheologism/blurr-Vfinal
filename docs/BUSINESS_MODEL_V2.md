@@ -1,4 +1,4 @@
-# Twent AI Assistant - Business Model V2.0
+# Blurr AI Assistant - Business Model V2.0
 
 ## 🎯 Core Principle: No Limits + Value-Added Premium
 
@@ -43,7 +43,7 @@
 - ✅ **Unlimited AI agent runs** (no caps, no limits, ever)
 - ✅ **Unlimited conversations** with Ultra-Generalist AI
 - ✅ **Full BYOK support** (6+ providers: OpenRouter, AIMLAPI, Groq, etc.)
-- ✅ **Complete phone automation** (Twent/PhoneAgent UI control)
+- ✅ **Complete phone automation** (Blurr/PhoneAgent UI control)
 - ✅ **Home button long-press** activation (Android) / Hover assistant (iOS)
 - ✅ **Basic tool access** (screen reading, clicking, typing, basic MCP support)
 - ✅ **Context preservation** across sessions
@@ -244,7 +244,7 @@
 
 **Welcome Screen:**
 ```
-Welcome to Twent AI Assistant
+Welcome to Blurr AI Assistant
 Your Mobile AI Operating System
 
 ✨ Unlimited AI agent runs - forever free
@@ -764,7 +764,7 @@ fun checkSubscriptionStatus(callback: (Plan) -> Unit) {
 **AIMLAPI Integration:**
 ```kotlin
 object AffiliateLinks {
-    const val AIMLAPI_SIGNUP = "https://aimlapi.com/?via=twent"  // 30% recurring commission
+    const val AIMLAPI_SIGNUP = "https://aimlapi.com/?via=blurr"  // 30% recurring commission
     const val OPENROUTER_SIGNUP = "https://openrouter.ai"
     const val GROQ_SIGNUP = "https://console.groq.com"
     
@@ -874,7 +874,7 @@ data class User(
 
 **Homepage / App Store:**
 ```
-Twent AI Assistant
+Blurr AI Assistant
 Your Mobile AI Operating System
 
 ✨ Unlimited AI - Forever Free
@@ -899,7 +899,7 @@ Pro Tier ($14.99/mo):
 
 **Value Proposition:**
 ```
-Why Twent is Different:
+Why Blurr is Different:
 
 ❌ Other AI Apps:
 • Pay subscription for AI access
@@ -907,7 +907,7 @@ Why Twent is Different:
 • No control over costs
 • Locked to one provider
 
-✅ Twent:
+✅ Blurr:
 • Unlimited free core usage
 • You control AI costs (BYOK)
 • Choose any provider
@@ -926,7 +926,7 @@ Result: Fair, transparent, unlimited.
 
 ### 7.3 Competitive Positioning
 
-| Feature | Other AI Apps | Twent |
+| Feature | Other AI Apps | Blurr |
 |---------|---------------|-------|
 | AI Usage | Limited by subscription | ✅ Unlimited free |
 | API Control | App's keys | ✅ Your keys (BYOK) |
@@ -1032,7 +1032,7 @@ A: God Mode adds team features (5 users, shared workflows), enterprise capabilit
 
 ---
 
-**This business model positions Twent as a premium, user-respecting mobile AI OS that eliminates the predatory freemium tactics of competitors while building a sustainable business through genuine value-add features.**
+**This business model positions Blurr as a premium, user-respecting mobile AI OS that eliminates the predatory freemium tactics of competitors while building a sustainable business through genuine value-add features.**
 
 **Next Steps:**
 1. Update all documentation to reflect new model

@@ -1,5 +1,5 @@
 // Bridge for DAW Editor platform communication
-package com.twent.voice.flutter
+package com.blurr.voice.flutter
 
 import android.content.Context
 import android.util.Log
@@ -16,7 +16,7 @@ class DawEditorBridge(
     private val flutterEngine: FlutterEngine
 ) {
     companion object {
-        private const val CHANNEL = "com.twent.voice/daw_editor"
+        private const val CHANNEL = "com.blurr.voice/daw_editor"
         private const val TAG = "DawEditorBridge"
     }
     

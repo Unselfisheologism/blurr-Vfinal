@@ -45,7 +45,7 @@ class _AIPromptPanelState extends State<AIPromptPanel> {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
-            twentadius: 8,
+            blurradius: 8,
             offset: const Offset(0, -2),
           ),
         ],
