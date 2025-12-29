@@ -109,23 +109,23 @@ class WorkflowEditorHandler(
                     return@withContext
                 }
                 
-                // Get connected integrations
-                val integrations = composioManager.getConnectedIntegrations()
+                // Get popular integrations (or all available integrations)
+                val integrationsResult = composioManager.getPopularIntegrations()
+                
+                if (integrationsResult.isFailure) {
+                    result.success(emptyList<Map<String, Any>>())
+                    return@withContext
+                }
+                
+                val integrations = integrationsResult.getOrNull() ?: emptyList()
                 
                 val tools = integrations.map { integration ->
                     mapOf(
-                        "id" to integration.id,
+                        "id" to integration.key,
                         "name" to integration.name,
-                        "description" to integration.description,
-                        "connected" to integration.connected,
-                        "actions" to integration.availableActions.map { action ->
-                            mapOf(
-                                "id" to action.id,
-                                "name" to action.name,
-                                "description" to action.description,
-                                "parameters" to action.parameters
-                            )
-                        }
+                        "description" to (integration.description ?: ""),
+                        "connected" to false, // Check connected status separately
+                        "actions" to emptyList<Map<String, Any>>() // Actions loaded separately if needed
                     )
                 }
                 
@@ -144,17 +144,25 @@ class WorkflowEditorHandler(
                 val actionId = call.argument<String>("actionId") ?: throw IllegalArgumentException("actionId required")
                 val parameters = call.argument<Map<String, Any>>("parameters") ?: emptyMap()
                 
-                if (composioClient == null) {
-                    result.error("COMPOSIO_ERROR", "Composio client not available", null)
+                if (composioManager == null) {
+                    result.error("COMPOSIO_ERROR", "Composio manager not available", null)
                     return@withContext
                 }
                 
-                val actionResult = composioClient.executeAction(toolId, actionId, parameters)
+                val actionResult = composioManager.executeAction(toolId, actionId, parameters)
                 
-                result.success(mapOf(
-                    "success" to true,
-                    "result" to actionResult
-                ))
+                if (actionResult.isSuccess) {
+                    result.success(mapOf(
+                        "success" to true,
+                        "result" to actionResult.getOrNull()
+                    ))
+                } else {
+                    result.error(
+                        "COMPOSIO_ERROR",
+                        actionResult.exceptionOrNull()?.message,
+                        null
+                    )
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Composio action execution failed", e)
                 result.error("COMPOSIO_ERROR", e.message, null)
@@ -170,23 +178,16 @@ class WorkflowEditorHandler(
                     return@withContext
                 }
                 
-                val servers = mcpClient.getConnectedServers()
+                val serversInfo = mcpClient.getAllServerInfo()
                 
-                val serversData = servers.map { server ->
+                val serversData = serversInfo.map { serverInfo ->
                     mapOf(
-                        "id" to server.id,
-                        "name" to server.name,
-                        "description" to server.description,
-                        "connected" to server.connected,
-                        "status" to server.status,
-                        "tools" to server.tools.map { tool ->
-                            mapOf(
-                                "id" to tool.id,
-                                "name" to tool.name,
-                                "description" to tool.description,
-                                "parameters" to tool.parameters
-                            )
-                        }
+                        "id" to serverInfo.name,
+                        "name" to serverInfo.serverName,
+                        "description" to "MCP Server v${serverInfo.serverVersion}",
+                        "connected" to serverInfo.isConnected,
+                        "status" to "active",
+                        "tools" to emptyList<Map<String, Any>>() // Tools are accessed separately
                     )
                 }
                 
@@ -210,11 +211,21 @@ class WorkflowEditorHandler(
                     return@withContext
                 }
                 
-                val toolResult = mcpClient.executeTool(serverId, toolId, parameters)
+                // Get the tool and execute it
+                val toolName = "$serverId:$toolId"
+                val tool = mcpClient.getTool(toolName)
+                
+                if (tool == null) {
+                    result.error("MCP_ERROR", "Tool not found: $toolName", null)
+                    return@withContext
+                }
+                
+                val toolResult = tool.execute(parameters, emptyList())
                 
                 result.success(mapOf(
-                    "success" to true,
-                    "result" to toolResult
+                    "success" to toolResult.success,
+                    "result" to (toolResult.data ?: toolResult.output),
+                    "error" to toolResult.error
                 ))
             } catch (e: Exception) {
                 Log.e(TAG, "MCP tool execution failed", e)

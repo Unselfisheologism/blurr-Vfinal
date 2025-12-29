@@ -132,4 +132,7 @@ dependencies {
     ksp("androidx.room:room-compiler:2.6.1")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     
+    // Flutter stubs: allow compilation when Flutter SDK/artifacts are not available.
+    // When integrating a real Flutter module, remove this and depend on the generated Flutter module.
+    implementation(project(":flutter_stubs"))
 }

@@ -3,7 +3,9 @@ package com.blurr.voice.flutter
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import com.blurr.voice.utilities.FreemiumManager
 import com.blurr.voice.integrations.ComposioIntegrationManager
@@ -136,7 +138,7 @@ class WorkflowEditorBridge(
     }
 
     private fun handleExecuteComposioAction(
-        call: MethodChannel.MethodCall,
+        call: MethodCall,
         result: MethodChannel.Result
     ) {
         val toolId = call.argument<String>("toolId")
@@ -191,7 +193,7 @@ class WorkflowEditorBridge(
     }
 
     private fun handleExecuteMcpRequest(
-        call: MethodChannel.MethodCall,
+        call: MethodCall,
         result: MethodChannel.Result
     ) {
         // TODO: Implement MCP request execution
@@ -230,7 +232,7 @@ class WorkflowEditorBridge(
     }
 
     private fun handleExecuteGoogleWorkspaceAction(
-        call: MethodChannel.MethodCall,
+        call: MethodCall,
         result: MethodChannel.Result
     ) {
         val service = call.argument<String>("service")
@@ -261,9 +263,9 @@ class WorkflowEditorBridge(
                 // Execute the action based on service
                 val actionResult = withContext(Dispatchers.IO) {
                     when (service) {
-                        "gmail" -> executeGmailAction(actionName, parameters)
-                        "calendar" -> executeCalendarAction(actionName, parameters)
-                        "drive" -> executeDriveAction(actionName, parameters)
+                        "gmail" -> executeGmailAction(actionName as String, parameters as Map<String, Any>)
+                        "calendar" -> executeCalendarAction(actionName as String, parameters as Map<String, Any>)
+                        "drive" -> executeDriveAction(actionName as String, parameters as Map<String, Any>)
                         else -> throw Exception("Unknown service: $service")
                     }
                 }
@@ -364,7 +366,7 @@ class WorkflowEditorBridge(
     // ==================== Workflow Storage ====================
     
     private fun handleSaveWorkflow(
-        call: MethodChannel.MethodCall,
+        call: MethodCall,
         result: MethodChannel.Result
     ) {
         val workflow = call.argument<Map<String, Any>>("workflow")
@@ -390,7 +392,7 @@ class WorkflowEditorBridge(
     }
 
     private fun handleLoadWorkflow(
-        call: MethodChannel.MethodCall,
+        call: MethodCall,
         result: MethodChannel.Result
     ) {
         val workflowId = call.argument<String>("workflowId")
@@ -439,7 +441,7 @@ class WorkflowEditorBridge(
     // ==================== UI ====================
     
     private fun handleShowProUpgradeDialog(
-        call: MethodChannel.MethodCall,
+        call: MethodCall,
         result: MethodChannel.Result
     ) {
         // Navigate to ProPurchaseActivity
@@ -479,7 +481,7 @@ class WorkflowEditorBridge(
     }
 
     private fun handleExecuteSystemTool(
-        call: MethodChannel.MethodCall,
+        call: MethodCall,
         result: MethodChannel.Result
     ) {
         val toolId = call.argument<String>("toolId")
