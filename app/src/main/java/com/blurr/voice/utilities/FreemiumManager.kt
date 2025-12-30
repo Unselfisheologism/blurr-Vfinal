@@ -1,16 +1,26 @@
 package com.blurr.voice.utilities
 
+import android.content.Context
 import com.android.billingclient.api.BillingClient
 import com.blurr.voice.MyApplication
 import com.blurr.voice.data.AppwriteDb
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-class FreemiumManager {
+class FreemiumManager(
+    @Suppress("UNUSED_PARAMETER") private val context: Context? = null
+) {
     private val billingClient: BillingClient = MyApplication.billingClient
+
+    fun hasActiveSubscription(): Boolean {
+        return runCatching {
+            runBlocking(Dispatchers.IO) { isUserSubscribed() }
+        }.getOrDefault(false)
+    }
 
     companion object {
         const val DAILY_TASK_LIMIT = 15

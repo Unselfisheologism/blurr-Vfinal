@@ -13,4 +13,8 @@ public class NavigationChannel {
     public void pushRoute(@NonNull String route) {
         // no-op
     }
+
+    public void popRoute() {
+        // no-op
+    }
 }
