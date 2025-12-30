@@ -17,7 +17,7 @@ securityCrypto = "1.1.0-alpha06"
 playServicesAuth = "21.4.0"
 playServicesBasement = "18.9.0"
 appwrite = "5.0.0"
-ffmpegKit = "6.0-2"
+ffmpegKit = "6.0.2"
 smartException = "0.2.1"
 
 [libraries]
