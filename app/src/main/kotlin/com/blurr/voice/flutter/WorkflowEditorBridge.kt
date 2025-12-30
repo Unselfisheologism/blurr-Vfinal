@@ -302,7 +302,7 @@ class WorkflowEditorBridge(
         val toolResult = gmailTool.execute(toolParams, emptyList())
         
         return if (toolResult.success) {
-            toolResult.data ?: emptyMap()
+            (toolResult.data as? Map<String, Any>) ?: emptyMap<String, Any>()
         } else {
             throw Exception(toolResult.error ?: "Gmail action failed")
         }
@@ -329,7 +329,7 @@ class WorkflowEditorBridge(
         val toolResult = calendarTool.execute(toolParams, emptyList())
         
         return if (toolResult.success) {
-            toolResult.data ?: emptyMap()
+            (toolResult.data as? Map<String, Any>) ?: emptyMap<String, Any>()
         } else {
             throw Exception(toolResult.error ?: "Calendar action failed")
         }
@@ -357,7 +357,7 @@ class WorkflowEditorBridge(
         val toolResult = driveTool.execute(toolParams, emptyList())
         
         return if (toolResult.success) {
-            toolResult.data ?: emptyMap()
+            (toolResult.data as? Map<String, Any>) ?: emptyMap<String, Any>()
         } else {
             throw Exception(toolResult.error ?: "Drive action failed")
         }
