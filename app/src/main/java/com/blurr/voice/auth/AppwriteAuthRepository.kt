@@ -9,6 +9,8 @@ import io.appwrite.models.Session
 import io.appwrite.models.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 import io.appwrite.services.Account
 
@@ -44,19 +46,16 @@ class AppwriteAuthRepository(
         }
     }
 
+    private fun buildOAuthUrl(provider: String, redirectUrl: String): String {
+        val endpoint = BuildConfig.APPWRITE_PUBLIC_ENDPOINT.trimEnd('/')
+        val projectId = BuildConfig.APPWRITE_PROJECT_ID
+        val encodedRedirect = URLEncoder.encode(redirectUrl, StandardCharsets.UTF_8.toString())
+        return "${endpoint}/account/sessions/oauth2/${provider}?project=${projectId}&success=${encodedRedirect}&failure=${encodedRedirect}"
+    }
+
     override suspend fun loginWithGoogle(redirectUrl: String): Result<String> = withContext(Dispatchers.IO) {
         try {
-            // This method should redirect the user to the OAuth provider
-            // In Android, this would typically be handled by calling the SDK method
-            // which opens a browser for the user to authenticate
-            val url = accountService.createOAuth2Session(
-                provider = "google",
-                successUrl = redirectUrl,
-                failureUrl = redirectUrl
-            )
-            Result.Success(url)
-        } catch (e: AppwriteException) {
-            Result.Error(mapException(e))
+            Result.Success(buildOAuthUrl("google", redirectUrl))
         } catch (e: Exception) {
             Result.Error(AIError(AIError.UNKNOWN, e.message ?: "OAuth error"))
         }
@@ -64,14 +63,7 @@ class AppwriteAuthRepository(
 
     override suspend fun loginWithFacebook(redirectUrl: String): Result<String> = withContext(Dispatchers.IO) {
         try {
-            val url = accountService.createOAuth2Session(
-                provider = "facebook",
-                successUrl = redirectUrl,
-                failureUrl = redirectUrl
-            )
-            Result.Success(url)
-        } catch (e: AppwriteException) {
-            Result.Error(mapException(e))
+            Result.Success(buildOAuthUrl("facebook", redirectUrl))
         } catch (e: Exception) {
             Result.Error(AIError(AIError.UNKNOWN, e.message ?: "OAuth error"))
         }
@@ -79,14 +71,7 @@ class AppwriteAuthRepository(
 
     override suspend fun loginWithGithub(redirectUrl: String): Result<String> = withContext(Dispatchers.IO) {
         try {
-            val url = accountService.createOAuth2Session(
-                provider = "github",
-                successUrl = redirectUrl,
-                failureUrl = redirectUrl
-            )
-            Result.Success(url)
-        } catch (e: AppwriteException) {
-            Result.Error(mapException(e))
+            Result.Success(buildOAuthUrl("github", redirectUrl))
         } catch (e: Exception) {
             Result.Error(AIError(AIError.UNKNOWN, e.message ?: "OAuth error"))
         }
@@ -94,14 +79,7 @@ class AppwriteAuthRepository(
 
     override suspend fun loginWithApple(redirectUrl: String): Result<String> = withContext(Dispatchers.IO) {
         try {
-            val url = accountService.createOAuth2Session(
-                provider = "apple",
-                successUrl = redirectUrl,
-                failureUrl = redirectUrl
-            )
-            Result.Success(url)
-        } catch (e: AppwriteException) {
-            Result.Error(mapException(e))
+            Result.Success(buildOAuthUrl("apple", redirectUrl))
         } catch (e: Exception) {
             Result.Error(AIError(AIError.UNKNOWN, e.message ?: "OAuth error"))
         }
