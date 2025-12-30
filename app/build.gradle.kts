@@ -55,6 +55,9 @@ android {
 
         buildConfigField("boolean", "ENABLE_LOGGING", "true")
 
+        // Legacy proxy configuration (now unused but kept for compatibility)
+        buildConfigField("String", "GCLOUD_PROXY_URL", "\"\"")
+        buildConfigField("String", "GCLOUD_PROXY_URL_KEY", "\"\"")
 
     }
 
@@ -142,18 +145,36 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.play.services.basement)
     
-    // Firebase for analytics (optional)
+    // Firebase for analytics and auth
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-auth-ktx")
     
     // Google Play Billing
     implementation("com.android.billingclient:billing:6.2.0")
+    implementation("com.android.billingclient:billing-ktx:6.2.0")
     
     // Room database dependencies
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
+    
+    // Lifecycle ViewModel Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.0")
+    
+    // Compose Material Icons Extended (for KeyboardVoice and other icons)
+    implementation("androidx.compose.material:material-icons-extended:1.7.6")
+    
+    // Security/Crypto for encrypted preferences
+    implementation(libs.security.crypto)
+    
+    // Mozilla Rhino for JavaScript execution
+    implementation("org.mozilla:rhino:1.7.14")
+    
+    // FFmpeg Kit for video processing
+    implementation("com.arthenica:ffmpeg-kit-full:6.0-2")
     
     // Flutter stubs: allow compilation when Flutter SDK/artifacts are not available.
     // When integrating a real Flutter module, remove this and depend on the generated Flutter module.

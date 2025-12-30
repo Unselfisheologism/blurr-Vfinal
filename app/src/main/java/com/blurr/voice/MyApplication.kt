@@ -41,6 +41,8 @@ class MyApplication : Application(), PurchasesUpdatedListener {
         // Initialize Appwrite
         com.blurr.voice.auth.AppwriteManager.init(this)
 
+        // Initialize GoogleTts wrapper
+        com.blurr.voice.api.GoogleTts.initialize(this)
 
         billingClient = BillingClient.newBuilder(this)
             .setListener(this)

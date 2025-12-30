@@ -182,8 +182,8 @@ class PhoneControlTool(
      * Execute tap action at coordinates
      */
     private suspend fun executeTap(params: Map<String, Any>): ToolResult {
-        val x = getRequiredParam<Number>(params, "x").toFloat()
-        val y = getRequiredParam<Number>(params, "y").toFloat()
+        val x = getRequiredParam<Number>(params, "x").toInt()
+        val y = getRequiredParam<Number>(params, "y").toInt()
         
         return withContext(Dispatchers.Main) {
             try {
@@ -206,8 +206,8 @@ class PhoneControlTool(
      * Execute long press action at coordinates
      */
     private suspend fun executeLongPress(params: Map<String, Any>): ToolResult {
-        val x = getRequiredParam<Number>(params, "x").toFloat()
-        val y = getRequiredParam<Number>(params, "y").toFloat()
+        val x = getRequiredParam<Number>(params, "x").toInt()
+        val y = getRequiredParam<Number>(params, "y").toInt()
         
         return withContext(Dispatchers.Main) {
             try {
@@ -230,15 +230,15 @@ class PhoneControlTool(
      * Execute swipe gesture
      */
     private suspend fun executeSwipe(params: Map<String, Any>): ToolResult {
-        val x1 = getRequiredParam<Number>(params, "x").toFloat()
-        val y1 = getRequiredParam<Number>(params, "y").toFloat()
-        val x2 = getRequiredParam<Number>(params, "x2").toFloat()
-        val y2 = getRequiredParam<Number>(params, "y2").toFloat()
-        val duration = getOptionalParam(params, "duration", 300).toLong()
+        val x1 = getRequiredParam<Number>(params, "x").toInt()
+        val y1 = getRequiredParam<Number>(params, "y").toInt()
+        val x2 = getRequiredParam<Number>(params, "x2").toInt()
+        val y2 = getRequiredParam<Number>(params, "y2").toInt()
+        val duration = getOptionalParam(params, "duration", 300).toInt()
         
         return withContext(Dispatchers.Main) {
             try {
-                finger.swipe(x1, y1, x2, y2, duration)
+                finger.swipe(x1, y1, x2, y2, duration.toLong())
                 ToolResult.success(
                     toolName = name,
                     result = "Swiped from ($x1, $y1) to ($x2, $y2) over ${duration}ms",
@@ -342,7 +342,7 @@ class PhoneControlTool(
     private suspend fun executePressBack(): ToolResult {
         return withContext(Dispatchers.Main) {
             try {
-                finger.pressBack()
+                finger.back()
                 ToolResult.success(
                     toolName = name,
                     result = "Pressed back button",
@@ -363,7 +363,7 @@ class PhoneControlTool(
     private suspend fun executePressHome(): ToolResult {
         return withContext(Dispatchers.Main) {
             try {
-                finger.pressHome()
+                finger.home()
                 ToolResult.success(
                     toolName = name,
                     result = "Pressed home button",
@@ -384,7 +384,7 @@ class PhoneControlTool(
     private suspend fun executePressRecents(): ToolResult {
         return withContext(Dispatchers.Main) {
             try {
-                finger.pressRecents()
+                finger.switchApp()
                 ToolResult.success(
                     toolName = name,
                     result = "Pressed recents button (app switcher)",
@@ -406,7 +406,7 @@ class PhoneControlTool(
     private suspend fun executePressEnter(): ToolResult {
         return withContext(Dispatchers.Main) {
             try {
-                finger.pressEnter()
+                finger.enter()
                 ToolResult.success(
                     toolName = name,
                     result = "Pressed enter/done button",

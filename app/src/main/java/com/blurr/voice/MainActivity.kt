@@ -361,30 +361,6 @@ class MainActivity : BaseNavigationActivity() {
         }
     }
 
-    private fun launchWorkflowEditor() {
-        startActivity(Intent(this, WorkflowEditorActivity::class.java))
-    }
-
-    private fun launchTextEditor() {
-        TextEditorLauncher.launchNewDocument(this)
-    }
-
-    private fun launchSpreadsheetEditor() {
-        SpreadsheetEditorLauncher.launchNewSpreadsheet(this)
-    }
-
-    private fun launchDawEditor() {
-        DawEditorLauncher.launchNewProject(this)
-    }
-
-    private fun launchLearningPlatform() {
-        LearningPlatformLauncher.launch(this)
-    }
-
-    private fun launchVideoEditor() {
-        VideoEditorLauncher.launch(this)
-    }
-
     private fun requestLimitIncrease() {
         // TODO: Get email from Appwrite
         val userEmail = "migrated_user@example.com" // Placeholder for now
