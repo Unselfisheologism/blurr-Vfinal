@@ -1,5 +1,8 @@
 package com.blurr.voice.core.providers
 
+import org.json.JSONArray
+import org.json.JSONObject
+
 /**
  * OpenRouter-specific configuration and constants
  * Based on OpenRouter.ai official documentation
@@ -511,7 +514,12 @@ data class OpenRouterRequestOptions(
     /**
      * Store conversation (OpenAI-specific)
      */
-    val store: Boolean? = null
+    val store: Boolean? = null,
+
+    /**
+     * Temperature override for generation (0.0 - 2.0)
+     */
+    val temperature: Double? = null
 ) {
     companion object {
         /**
