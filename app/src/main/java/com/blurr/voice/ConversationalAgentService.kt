@@ -57,6 +57,7 @@ import org.json.JSONObject
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
+import com.google.firebase.auth.FirebaseAuth
 
 /**
  * Simple text content part for conversation history (replaces Generative AI TextPart)
@@ -85,6 +86,7 @@ class ConversationalAgentService : Service() {
     private var isTextModeActive = false
     private val freemiumManager by lazy { FreemiumManager() }
     private val servicePermissionManager by lazy { ServicePermissionManager(this) }
+    private val auth = FirebaseAuth.getInstance()
 
     private var clarificationAttempts = 0
     private val maxClarificationAttempts = 1
@@ -1215,6 +1217,7 @@ class ConversationalAgentService : Service() {
      */
     private fun trackConversationStart() {
         val currentUser = auth.currentUser
+        val uid = currentUser?.uid
         if (uid == null) {
             Log.w("ConvAgent", "Cannot track conversation, user is not logged in.")
             return
@@ -1255,7 +1258,8 @@ class ConversationalAgentService : Service() {
      */
     private fun trackMessage(role: String, message: String, messageType: String = "text") {
         val currentUser = auth.currentUser
-        if (currentUser == null || conversationId == null) {
+        val uid = currentUser?.uid
+        if (uid == null || conversationId == null) {
             return
         }
 
@@ -1286,7 +1290,8 @@ class ConversationalAgentService : Service() {
      */
     private fun trackConversationEnd(endReason: String, tasksRequested: Int = 0, tasksExecuted: Int = 0) {
         val currentUser = auth.currentUser
-        if (currentUser == null || conversationId == null) {
+        val uid = currentUser?.uid
+        if (uid == null || conversationId == null) {
             return
         }
 
