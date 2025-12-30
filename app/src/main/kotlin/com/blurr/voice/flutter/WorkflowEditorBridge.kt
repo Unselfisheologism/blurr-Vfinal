@@ -10,7 +10,7 @@ import io.flutter.plugin.common.MethodChannel
 import com.blurr.voice.utilities.FreemiumManager
 import com.blurr.voice.integrations.ComposioIntegrationManager
 import com.blurr.voice.auth.GoogleAuthManager
-import com.blurr.voice.activities.GoogleSignInActivity
+import com.blurr.voice.ui.GoogleSignInActivity
 import com.blurr.voice.tools.ToolResult
 import com.blurr.voice.data.WorkflowPreferences
 import com.google.gson.Gson
