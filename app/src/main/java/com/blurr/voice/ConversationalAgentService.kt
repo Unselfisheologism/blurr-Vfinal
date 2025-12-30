@@ -102,9 +102,7 @@ class ConversationalAgentService : Service() {
     private val eyes by lazy { Eyes(this) }
     private lateinit var perception: Perception
 
-    
-    // Firebase tracking removed (Phase 0)    private var conversationId: String? = null // Track current conversation session
-
+    private var conversationId: String? = null
 
     companion object {
         const val NOTIFICATION_ID = 3
@@ -1216,38 +1214,33 @@ class ConversationalAgentService : Service() {
      * This method is inspired by AgentService's task tracking operations.
      */
     private fun trackConversationStart() {
-        val currentUser = auth.currentUser
-        val uid = currentUser?.uid
+        val uid = auth.currentUser?.uid
         if (uid == null) {
             Log.w("ConvAgent", "Cannot track conversation, user is not logged in.")
             return
         }
 
-        // Generate a unique conversation ID
-        conversationId = "${System.currentTimeMillis()}_${uid.take(8)}"
+        val convoId = "${System.currentTimeMillis()}_${uid.take(8)}"
+        conversationId = convoId
 
         serviceScope.launch {
             try {
-                val conversationEntry = mapOf(
-                    "conversationId" to conversationId,
+                val conversationEntry: Map<String, Any> = mapOf(
+                    "conversationId" to convoId,
                     "startedAt" to java.time.format.DateTimeFormatter.ISO_INSTANT.format(java.time.Instant.now()),
-                    "endedAt" to null,
                     "messageCount" to 0,
                     "textModeUsed" to false,
                     "clarificationAttempts" to 0,
                     "sttErrorAttempts" to 0,
-                    "endReason" to null, // "graceful", "instant", "command", "model", "stt_errors"
                     "tasksRequested" to 0,
                     "tasksExecuted" to 0
                 )
 
-                // Append the conversation to the user's conversationHistory array
                 com.blurr.voice.data.AppwriteDb.appendToUserArrayField(uid, "conversationHistory", conversationEntry)
 
-                Log.d("ConvAgent", "Tracked conversation start for user $uid: $conversationId")
+                Log.d("ConvAgent", "Tracked conversation start for user $uid: $convoId")
             } catch (e: Exception) {
                 Log.e("ConvAgent", "Failed to track conversation start", e)
-                // Don't fail the conversation if tracking fails
             }
         }
     }
@@ -1257,24 +1250,20 @@ class ConversationalAgentService : Service() {
      * Fire and forget operation.
      */
     private fun trackMessage(role: String, message: String, messageType: String = "text") {
-        val currentUser = auth.currentUser
-        val uid = currentUser?.uid
-        if (uid == null || conversationId == null) {
-            return
-        }
+        val uid = auth.currentUser?.uid ?: return
+        val convoId = conversationId ?: return
 
         serviceScope.launch {
             try {
-                val messageEntry = mapOf(
-                    "conversationId" to conversationId,
-                    "role" to role, // "user" or "model"
-                    "message" to message.take(500), // Limit message length for storage
-                    "messageType" to messageType, // "text", "task", "clarification"
+                val messageEntry: Map<String, Any> = mapOf(
+                    "conversationId" to convoId,
+                    "role" to role,
+                    "message" to message.take(500),
+                    "messageType" to messageType,
                     "timestamp" to java.time.format.DateTimeFormatter.ISO_INSTANT.format(java.time.Instant.now()),
                     "inputMode" to if (isTextModeActive) "text" else "voice"
                 )
 
-                // Append the message to the user's messageHistory array
                 com.blurr.voice.data.AppwriteDb.appendToUserArrayField(uid, "messageHistory", messageEntry)
 
                 Log.d("ConvAgent", "Tracked message: $role - ${message.take(50)}...")
@@ -1289,16 +1278,13 @@ class ConversationalAgentService : Service() {
      * Fire and forget operation.
      */
     private fun trackConversationEnd(endReason: String, tasksRequested: Int = 0, tasksExecuted: Int = 0) {
-        val currentUser = auth.currentUser
-        val uid = currentUser?.uid
-        if (uid == null || conversationId == null) {
-            return
-        }
+        val uid = auth.currentUser?.uid ?: return
+        val convoId = conversationId ?: return
 
         serviceScope.launch {
             try {
-                val completionEntry = mapOf(
-                    "conversationId" to conversationId,
+                val completionEntry: Map<String, Any> = mapOf(
+                    "conversationId" to convoId,
                     "endedAt" to java.time.format.DateTimeFormatter.ISO_INSTANT.format(java.time.Instant.now()),
                     "messageCount" to conversationHistory.size,
                     "textModeUsed" to isTextModeActive,
@@ -1310,10 +1296,9 @@ class ConversationalAgentService : Service() {
                     "status" to "completed"
                 )
 
-                // Append the completion status to the user's conversationHistory array
                 com.blurr.voice.data.AppwriteDb.appendToUserArrayField(uid, "conversationHistory", completionEntry)
 
-                Log.d("ConvAgent", "Tracked conversation end: $conversationId ($endReason)")
+                Log.d("ConvAgent", "Tracked conversation end: $convoId ($endReason)")
             } catch (e: Exception) {
                 Log.e("ConvAgent", "Failed to track conversation end", e)
             }

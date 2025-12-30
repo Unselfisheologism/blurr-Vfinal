@@ -156,15 +156,22 @@ class WorkflowEditorBridge(
                 
                 val actionResult = withContext(Dispatchers.IO) {
                     manager.executeAction(
-                        integration = toolId,
+                        integrationKey = toolId,
                         actionName = actionName,
-                        params = parameters,
+                        parameters = parameters,
                         userId = "current_user"
                     )
                 }
 
                 if (actionResult.isSuccess) {
-                    result.success(actionResult.getOrNull() ?: emptyMap<String, Any>())
+                    val payload = actionResult.getOrNull()
+                    result.success(
+                        mapOf(
+                            "success" to (payload?.success ?: false),
+                            "data" to payload?.data,
+                            "error" to payload?.error
+                        )
+                    )
                 } else {
                     result.error(
                         "COMPOSIO_ACTION_ERROR",
