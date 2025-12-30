@@ -174,7 +174,7 @@ dependencies {
     implementation("org.mozilla:rhino:1.7.14")
     
     // FFmpeg Kit for video processing
-    implementation("com.arthenica:ffmpeg-kit-full:6.0.LTS")
+    implementation("com.arthenica:ffmpeg-kit-full:5.1")
     
     // Flutter stubs: allow compilation when Flutter SDK/artifacts are not available.
     // When integrating a real Flutter module, remove this and depend on the generated Flutter module.
