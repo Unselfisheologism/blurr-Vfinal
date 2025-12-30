@@ -39,6 +39,14 @@ class UltraGeneralistAgent(
         private const val MAX_TOOL_RETRIES = 2
         private const val MAX_PLAN_STEPS = 10
     }
+
+    /**
+     * Backwards-compatible wrapper for app integrations which construct a custom system prompt.
+     */
+    suspend fun processRequest(userRequest: String, systemPrompt: String): String {
+        conversationManager.addSystemMessage(systemPrompt)
+        return processMessage(userRequest).text
+    }
     
     /**
      * Main entry point for processing user messages

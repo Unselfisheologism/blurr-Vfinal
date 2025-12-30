@@ -2,6 +2,7 @@ package com.blurr.voice.apps.daw
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.blurr.voice.agents.AgentFactory
 import com.blurr.voice.agents.UltraGeneralistAgent
 import com.blurr.voice.agents.ToolExecutor
 import com.blurr.voice.apps.base.AgentIntegration
@@ -60,7 +61,7 @@ class DawEditorActivity : AppCompatActivity() {
         
         // Initialize agent services
         llmService = UniversalLLMService(this)
-        agent = UltraGeneralistAgent(this, llmService)
+        agent = AgentFactory.getAgent(this)
         agentIntegration = AgentIntegration(llmService, agent)
         toolExecutor = ToolExecutor()
 

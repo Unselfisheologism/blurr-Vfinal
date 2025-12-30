@@ -2,6 +2,7 @@ package com.blurr.voice.apps.texteditor
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.blurr.voice.agents.AgentFactory
 import com.blurr.voice.agents.UltraGeneralistAgent
 import com.blurr.voice.apps.base.AgentIntegration
 import com.blurr.voice.apps.base.AgentResult
@@ -51,7 +52,7 @@ class TextEditorActivity : AppCompatActivity() {
         
         // Initialize agent services
         llmService = UniversalLLMService(this)
-        agent = UltraGeneralistAgent(this, llmService)
+        agent = AgentFactory.getAgent(this)
         agentIntegration = AgentIntegration(llmService, agent)
 
         // Set up Flutter

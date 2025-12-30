@@ -57,8 +57,6 @@ import org.json.JSONObject
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 
 /**
  * Simple text content part for conversation history (replaces Generative AI TextPart)
@@ -530,7 +528,7 @@ class ConversationalAgentService : Service() {
                 pandaStateManager.setState(PandaState.PROCESSING)
                 visualFeedbackManager.showThinkingIndicator()
                 val defaultJsonResponse = """{"Type": "Reply", "Reply": "I'm sorry, I had an issue.", "Instruction": "", "Should End": "Continue"}"""
-                val rawModelResponse = getReasoningModelApiResponse(this, conversationHistory) ?: defaultJsonResponse
+                val rawModelResponse = getReasoningModelApiResponse(this@ConversationalAgentService, conversationHistory) ?: defaultJsonResponse
                 visualFeedbackManager.hideThinkingIndicator()
                 val decision = parseModelResponse(rawModelResponse)
                 Log.d("TTS_DEBUG", "Reply received from GeminiApi: -->${rawModelResponse}<--")
