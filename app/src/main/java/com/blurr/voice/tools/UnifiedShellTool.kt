@@ -24,14 +24,14 @@ import kotlinx.coroutines.withContext
  */
 class UnifiedShellTool(
     private val context: Context
-) : Tool {
-    
+) : BaseTool() {
+
     companion object {
         private const val TAG = "UnifiedShellTool"
     }
-    
+
     override val name: String = "unified_shell"
-    
+
     override val description: String = """
         Execute Python or JavaScript code to process files, create visualizations, and perform 
         computational tasks. Supports BOTH languages with automatic detection or explicit specification.
@@ -52,11 +52,34 @@ class UnifiedShellTool(
         - code (required): The code to execute
         - language (optional): "python" or "javascript" to override auto-detection
     """.trimIndent()
-    
+
+    override val parameters: List<ToolParameter> = listOf(
+        ToolParameter(
+            name = "code",
+            type = "string",
+            description = "The Python or JavaScript code to execute.",
+            required = true
+        ),
+        ToolParameter(
+            name = "language",
+            type = "string",
+            description = "Optional: 'python' or 'javascript' to override auto-detection",
+            required = false,
+            enum = listOf("python", "javascript", "py", "js", "auto")
+        )
+    )
+
     private val pythonExecutor by lazy { PythonExecutor(context) }
     private val jsExecutor by lazy { JavaScriptExecutor(context) }
-    
-    override suspend fun execute(params: Map<String, Any>): ToolResult = withContext(Dispatchers.IO) {
+
+    override suspend fun execute(
+        params: Map<String, Any>,
+        context: List<ToolResult>
+    ): ToolResult = withContext(Dispatchers.IO) {
+        val validation = validateParameters(params)
+        if (validation.isFailure) {
+            return@withContext ToolResult.error(name, validation.exceptionOrNull()?.message ?: "Invalid parameters")
+        }
         val code = params["code"] as? String
             ?: return@withContext ToolResult.error(
                 toolName = name,
@@ -138,7 +161,7 @@ class UnifiedShellTool(
     /**
      * Get tool schema for LLM
      */
-    override fun getSchema(): Map<String, Any> = mapOf(
+    fun getSchema(): Map<String, Any> = mapOf(
         "name" to name,
         "description" to description,
         "parameters" to mapOf(

@@ -18,15 +18,15 @@ import kotlinx.coroutines.withContext
  * Coverage: Non-Google integrations (20% of usage)
  */
 class ComposioTool(
-    private val context: Context
-) : Tool {
-    
+    private val appContext: Context
+) : BaseTool() {
+
     companion object {
         private const val TAG = "ComposioTool"
     }
-    
+
     override val name: String = "composio"
-    
+
     override val description: String = """
         Access 2,000+ integrations including Notion, Asana, Linear, Slack, Jira, GitHub, Trello, 
         Monday.com, ClickUp, Todoist, Salesforce, HubSpot, Stripe, and many more.
@@ -43,55 +43,74 @@ class ComposioTool(
         
         **Actions**:
         - `list_integrations`: Show all available integrations (2,000+)
+        - `popular`: Show popular integrations
+        - `search`: Search integrations by keyword
         - `connect`: Connect a new integration (returns OAuth URL)
         - `list_connected`: Show user's connected integrations
         - `execute`: Execute an action on a connected integration
         - `disconnect`: Disconnect an integration
         
         **Parameters**:
-        - action (required): "list_integrations", "connect", "list_connected", "execute", "disconnect"
+        - action (required): one of the actions above
+        - query (for search): search keyword
         - integration (for connect, execute, disconnect): Integration key (e.g., "notion", "asana")
         - action_name (for execute): Action to execute (e.g., "notion_create_page")
         - parameters (for execute): Action parameters as JSON
         - user_id (optional): User identifier (default: "default")
         
-        **Examples**:
-        ```json
-        // List all integrations
-        {"action": "list_integrations"}
-        
-        // Connect Notion
-        {"action": "connect", "integration": "notion"}
-        
-        // Create Notion page
-        {
-          "action": "execute",
-          "integration": "notion",
-          "action_name": "notion_create_page",
-          "parameters": {
-            "title": "My Page",
-            "content": "Page content here"
-          }
-        }
-        
-        // Create Asana task
-        {
-          "action": "execute",
-          "integration": "asana",
-          "action_name": "asana_create_task",
-          "parameters": {
-            "name": "Task name",
-            "notes": "Task description"
-          }
-        }
-        ```
-        
         **Note**: User must first connect an integration before executing actions on it.
     """.trimIndent()
-    
-    private val manager by lazy { ComposioIntegrationManager(context) }
-    
-    override suspend fun execute(params: Map<String, Any>): ToolResult = withContext(Dispatchers.IO) {
+
+    override val parameters: List<ToolParameter> = listOf(
+        ToolParameter(
+            name = "action",
+            type = "string",
+            description = "Action to perform",
+            required = true,
+            enum = listOf("list_integrations", "popular", "search", "connect", "list_connected", "execute", "disconnect")
+        ),
+        ToolParameter(
+            name = "query",
+            type = "string",
+            description = "Search query (for action=search)",
+            required = false
+        ),
+        ToolParameter(
+            name = "integration",
+            type = "string",
+            description = "Integration key (for connect/execute/disconnect)",
+            required = false
+        ),
+        ToolParameter(
+            name = "action_name",
+            type = "string",
+            description = "Action name to execute (for action=execute)",
+            required = false
+        ),
+        ToolParameter(
+            name = "parameters",
+            type = "object",
+            description = "Action parameters (for action=execute)",
+            required = false
+        ),
+        ToolParameter(
+            name = "user_id",
+            type = "string",
+            description = "User identifier (default: default)",
+            required = false
+        )
+    )
+
+    private val manager by lazy { ComposioIntegrationManager(appContext) }
+
+    override suspend fun execute(
+        params: Map<String, Any>,
+        context: List<ToolResult>
+    ): ToolResult = withContext(Dispatchers.IO) {
+        val validation = validateParameters(params)
+        if (validation.isFailure) {
+            return@withContext ToolResult.error(name, validation.exceptionOrNull()?.message ?: "Invalid parameters")
+        }
         // Check subscription status - Composio is PRO only! (Story 4.16)
         val freemiumManager = com.blurr.voice.utilities.FreemiumManager()
         if (!freemiumManager.hasComposioAccess()) {

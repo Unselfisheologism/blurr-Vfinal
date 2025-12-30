@@ -115,7 +115,8 @@ data class ToolParameter(
 data class ToolResult(
     val toolName: String,
     val success: Boolean,
-    val data: Any?,
+    val data: Any? = null,
+    val result: String? = null,
     val error: String? = null,
     val metadata: Map<String, Any> = emptyMap()
 ) {
@@ -123,43 +124,56 @@ data class ToolResult(
         /**
          * Create successful result
          */
-        fun success(toolName: String, data: Any?, metadata: Map<String, Any> = emptyMap()): ToolResult {
+        fun success(
+            toolName: String,
+            data: Any? = null,
+            metadata: Map<String, Any> = emptyMap(),
+            result: String? = null
+        ): ToolResult {
             return ToolResult(
                 toolName = toolName,
                 success = true,
                 data = data,
+                result = result,
                 error = null,
                 metadata = metadata
             )
         }
-        
+
         /**
          * Create error result
          */
-        fun error(toolName: String, error: String, metadata: Map<String, Any> = emptyMap()): ToolResult {
+        fun error(
+            toolName: String,
+            error: String,
+            metadata: Map<String, Any> = emptyMap(),
+            data: Any? = null
+        ): ToolResult {
             return ToolResult(
                 toolName = toolName,
                 success = false,
-                data = null,
+                data = data,
+                result = null,
                 error = error,
                 metadata = metadata
             )
         }
     }
-    
+
     /**
-     * Get data as string (for display)
+     * Get data/result as string (for display)
      */
     fun getDataAsString(): String {
-        return when (data) {
+        val value = result ?: data
+        return when (value) {
             null -> ""
-            is String -> data
-            is Map<*, *> -> data.entries.joinToString("\n") { "${it.key}: ${it.value}" }
-            is List<*> -> data.joinToString("\n")
-            else -> data.toString()
+            is String -> value
+            is Map<*, *> -> value.entries.joinToString("\n") { "${it.key}: ${it.value}" }
+            is List<*> -> value.joinToString("\n")
+            else -> value.toString()
         }
     }
-    
+
     /**
      * Get data as Map (if possible)
      */
@@ -167,7 +181,7 @@ data class ToolResult(
     fun getDataAsMap(): Map<String, Any>? {
         return data as? Map<String, Any>
     }
-    
+
     /**
      * Get data as List (if possible)
      */
@@ -175,14 +189,14 @@ data class ToolResult(
     fun getDataAsList(): List<Any>? {
         return data as? List<Any>
     }
-    
+
     /**
      * Check if result contains specific key in data
      */
     fun hasData(key: String): Boolean {
         return getDataAsMap()?.containsKey(key) == true
     }
-    
+
     /**
      * Get specific data field
      */

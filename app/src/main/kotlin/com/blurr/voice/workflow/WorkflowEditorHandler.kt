@@ -85,7 +85,7 @@ class WorkflowEditorHandler(
                     "inputs" to inputs
                 )
                 
-                val toolResult = unifiedShellTool.execute(params)
+                val toolResult = unifiedShellTool.execute(params, emptyList())
                 
                 val response = mapOf(
                     "success" to toolResult.success,
