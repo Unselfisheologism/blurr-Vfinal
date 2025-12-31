@@ -18,6 +18,7 @@ import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import com.blurr.voice.api.TTSVoice
 import com.blurr.voice.core.providers.UniversalTTSService
 import com.blurr.voice.core.providers.VoiceProviderConfig
 import com.blurr.voice.core.providers.ProviderKeyManager
@@ -291,7 +292,17 @@ class SettingsActivity : BaseNavigationActivity() {
                     sc.playAudioData(audioData)
                     Log.d("SettingsActivity", "Playing cached sample for $voice")
                 } else {
-                    sc.testVoice(TEST_TEXT, voice)
+                    // Convert string voice name to TTSVoice enum
+                    val ttsVoice = when (voice) {
+                        "alloy" -> TTSVoice.ALLOY
+                        "echo" -> TTSVoice.ECHO
+                        "fable" -> TTSVoice.FABLE
+                        "onyx" -> TTSVoice.ONYX
+                        "nova" -> TTSVoice.NOVA
+                        "shimmer" -> TTSVoice.SHIMMER
+                        else -> TTSVoice.ALLOY // default
+                    }
+                    sc.testVoice(TEST_TEXT, ttsVoice)
                     Log.d("SettingsActivity", "Synthesizing test for $voice")
                 }
             } catch (e: Exception) {

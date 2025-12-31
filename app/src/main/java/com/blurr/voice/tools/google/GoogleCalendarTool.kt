@@ -157,9 +157,9 @@ class GoogleCalendarTool(
             }
             
             ToolResult.success(
-                name,
-                mapOf("count" to eventList.size, "events" to eventList),
-                "Found ${eventList.size} upcoming events"
+                toolName = name,
+                data = mapOf("count" to eventList.size, "events" to eventList),
+                result = "Found ${eventList.size} upcoming events"
             )
         }
     }
@@ -269,12 +269,12 @@ class GoogleCalendarTool(
         }
     }
     
-    private fun <T> executeRequest(request: Request, onSuccess: (JSONObject) -> T): ToolResult {
+    private fun <T> executeRequest(request: Request, onSuccess: (JSONObject) -> ToolResult): ToolResult {
         return try {
             client.newCall(request).execute().use { response ->
                 val body = response.body?.string()
                 if (response.isSuccessful && body != null) {
-                    onSuccess(JSONObject(body))
+                    return onSuccess(JSONObject(body))
                 } else {
                     ToolResult.error(name, "API error: ${response.code} - $body")
                 }

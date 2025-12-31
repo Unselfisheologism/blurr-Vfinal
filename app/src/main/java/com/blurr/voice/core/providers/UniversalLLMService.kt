@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import com.blurr.voice.v2.AgentOutput
+import com.blurr.voice.v2.llm.TextPart
 import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.Flow
 
@@ -213,16 +214,17 @@ class UniversalLLMService(private val context: Context) {
      */
     private fun convertChatToMessages(chat: List<Pair<String, List<Any>>>): List<Pair<String, String>> {
         return chat.map { (role, parts) ->
-            val textContent = parts.filterIsInstance<TextPart>()
+            val textContent = parts.filter { it is TextPart }
+                .map { it as TextPart }
                 .joinToString("\n") { it.text }
-            
+
             // Map "model" role to "assistant" for OpenAI compatibility
             val mappedRole = when (role) {
                 "model" -> "assistant"
                 "user" -> "user"
                 else -> role
             }
-            
+
             mappedRole to textContent
         }
     }

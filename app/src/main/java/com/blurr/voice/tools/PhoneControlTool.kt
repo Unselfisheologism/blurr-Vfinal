@@ -238,7 +238,7 @@ class PhoneControlTool(
         
         return withContext(Dispatchers.Main) {
             try {
-                finger.swipe(x1, y1, x2, y2, duration.toLong())
+                finger.swipe(x1, y1, x2, y2, duration)
                 ToolResult.success(
                     toolName = name,
                     result = "Swiped from ($x1, $y1) to ($x2, $y2) over ${duration}ms",
