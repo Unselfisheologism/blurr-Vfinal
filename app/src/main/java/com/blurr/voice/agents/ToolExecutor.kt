@@ -1,10 +1,9 @@
 package com.blurr.voice.agents
 
+import kotlinx.coroutines.*
 import android.util.Log
 import com.blurr.voice.tools.Tool
 import com.blurr.voice.tools.ToolResult
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.withTimeout
 
 /**
  * Tool execution engine with timeout and error handling
@@ -80,9 +79,9 @@ class ToolExecutor {
         context: List<ToolResult> = emptyList(),
         timeoutMs: Long = DEFAULT_TIMEOUT_MS
     ): List<ToolResult> {
-        return kotlinx.coroutines.coroutineScope {
+        return coroutineScope {
             tools.map { (tool, params) ->
-                kotlinx.coroutines.async {
+                async {
                     execute(tool, params, context, timeoutMs)
                 }
             }.map { it.await() }

@@ -17,8 +17,8 @@ import android.view.WindowManager
 import android.widget.TextView
 import com.blurr.voice.BuildConfig
 // TODO: Migrate to UniversalTTSService (Phase 0 - BYOK voice)
-// import com.blurr.voice.api.GoogleTts
-// import com.blurr.voice.api.TTSVoice
+import com.blurr.voice.api.GoogleTts
+import com.blurr.voice.api.TTSVoice
 import com.blurr.voice.core.providers.UniversalTTSService
 import com.blurr.voice.overlay.OverlayDispatcher
 import com.blurr.voice.overlay.OverlayManager
@@ -349,18 +349,21 @@ class TTSManager private constructor(private val context: Context) : TextToSpeec
         
         // Start preloading the first chunk immediately
         val firstChunk = textChunks[0].trim()
-        val firstAudioData = getCachedAudio(firstChunk, selectedVoice) ?: try {
-            GoogleTts.synthesize(firstChunk, selectedVoice).also { audioData ->
-                cacheAudio(firstChunk, audioData, selectedVoice)
+        var firstAudioData = getCachedAudio(firstChunk, selectedVoice)
+        if (firstAudioData == null) {
+            try {
+                firstAudioData = GoogleTts.synthesize(firstChunk, selectedVoice).also { audioData ->
+                    cacheAudio(firstChunk, audioData, selectedVoice)
+                }
+            } catch (e: Exception) {
+                Log.e("TTSManager", "Failed to synthesize first chunk: ${e.message}")
+                return
             }
-        } catch (e: Exception) {
-            Log.e("TTSManager", "Failed to synthesize first chunk: ${e.message}")
-            return
         }
         
         // Add first chunk to queue and start playing
         synchronized(queueMutex) {
-            audioQueue.add(Pair(firstChunk, firstAudioData))
+            audioQueue.add(Pair(firstChunk, firstAudioData!!))
         }
         
         // Start background preloading for remaining chunks
@@ -369,11 +372,14 @@ class TTSManager private constructor(private val context: Context) : TextToSpeec
                 val chunk = textChunks[i].trim()
                 if (chunk.isNotEmpty()) {
                     try {
-                        val audioData = getCachedAudio(chunk, selectedVoice) ?: GoogleTts.synthesize(chunk, selectedVoice).also { audioData ->
-                            cacheAudio(chunk, audioData, selectedVoice)
+                        var audioData = getCachedAudio(chunk, selectedVoice)
+                        if (audioData == null) {
+                            audioData = GoogleTts.synthesize(chunk, selectedVoice).also { data ->
+                                cacheAudio(chunk, data, selectedVoice)
+                            }
                         }
                         synchronized(queueMutex) {
-                            audioQueue.add(Pair(chunk, audioData))
+                            audioQueue.add(Pair(chunk, audioData!!))
                         }
                         Log.d("TTSManager", "Preloaded chunk ${i + 1}/${textChunks.size}: ${chunk.take(50)}...")
                     } catch (e: Exception) {
@@ -529,14 +535,17 @@ class TTSManager private constructor(private val context: Context) : TextToSpeec
     private suspend fun speakChunk(chunk: String, selectedVoice: TTSVoice) {
         try {
             // Check cache first
-            val audioData = getCachedAudio(chunk, selectedVoice) ?: GoogleTts.synthesize(chunk, selectedVoice).also { audioData ->
-                cacheAudio(chunk, audioData, selectedVoice)
+            var audioData = getCachedAudio(chunk, selectedVoice)
+            if (audioData == null) {
+                audioData = GoogleTts.synthesize(chunk, selectedVoice).also { data ->
+                    cacheAudio(chunk, data, selectedVoice)
+                }
             }
 
             // This deferred will complete when onMarkerReached is called.
             googleTtsPlaybackDeferred = CompletableDeferred()
-
-            // Correctly signal start and wait for completion.
+            
+            // ... (rest of the logic)
 
             var currentCaptionId = ""
 
@@ -546,15 +555,13 @@ class TTSManager private constructor(private val context: Context) : TextToSpeec
                     OverlayPriority.CAPTION
                 )
                 utteranceListener?.invoke(true)
-
             }
-
 
             // Write and play audio on a background thread
             withContext(Dispatchers.IO) {
                 audioTrack?.play()
                 // The number of frames is the size of the data divided by the size of each frame (2 bytes for 16-bit audio).
-                val numFrames = audioData.size / 2
+                val numFrames = audioData!!.size / 2
                 audioTrack?.setNotificationMarkerPosition(numFrames)
                 audioTrack?.write(audioData, 0, audioData.size)
             }

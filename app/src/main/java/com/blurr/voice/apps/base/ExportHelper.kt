@@ -153,16 +153,13 @@ class ExportHelper(
                 "action" to "GOOGLEDOCS_CREATE_DOCUMENT",
                 "title" to title,
                 "content" to content
-            ))
+            ), emptyList())
 
-            when (result) {
-                is com.blurr.voice.tools.Tool.ToolResult.Success -> {
-                    // Extract document URL from result if available
-                    ExportResult.Success(null, title, result.result)
-                }
-                is com.blurr.voice.tools.Tool.ToolResult.Error -> {
-                    ExportResult.Error(result.error)
-                }
+            if (result.success) {
+                // Extract document URL from result if available
+                ExportResult.Success(null, title, result.result)
+            } else {
+                ExportResult.Error(result.error ?: "Unknown error")
             }
         } catch (e: Exception) {
             ExportResult.Error(e.message ?: "Failed to export to Google Docs")
@@ -181,15 +178,12 @@ class ExportHelper(
                 "action" to "GOOGLESHEETS_CREATE_SPREADSHEET",
                 "title" to title,
                 "data" to csvData
-            ))
+            ), emptyList())
 
-            when (result) {
-                is com.blurr.voice.tools.Tool.ToolResult.Success -> {
-                    ExportResult.Success(null, title, result.result)
-                }
-                is com.blurr.voice.tools.Tool.ToolResult.Error -> {
-                    ExportResult.Error(result.error)
-                }
+            if (result.success) {
+                ExportResult.Success(null, title, result.result)
+            } else {
+                ExportResult.Error(result.error ?: "Unknown error")
             }
         } catch (e: Exception) {
             ExportResult.Error(e.message ?: "Failed to export to Google Sheets")
@@ -204,15 +198,12 @@ class ExportHelper(
         params: Map<String, Any>
     ): ExportResult = withContext(Dispatchers.IO) {
         try {
-            val result = composioTool.execute(params + ("action" to action))
+            val result = composioTool.execute(params + ("action" to action), emptyList())
 
-            when (result) {
-                is com.blurr.voice.tools.Tool.ToolResult.Success -> {
-                    ExportResult.Success(null, params["title"]?.toString() ?: "Export", result.result)
-                }
-                is com.blurr.voice.tools.Tool.ToolResult.Error -> {
-                    ExportResult.Error(result.error)
-                }
+            if (result.success) {
+                ExportResult.Success(null, params["title"]?.toString() ?: "Export", result.result)
+            } else {
+                ExportResult.Error(result.error ?: "Unknown error")
             }
         } catch (e: Exception) {
             ExportResult.Error(e.message ?: "Export via Composio failed")

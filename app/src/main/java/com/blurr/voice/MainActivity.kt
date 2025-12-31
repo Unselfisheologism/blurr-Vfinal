@@ -481,11 +481,11 @@ class MainActivity : BaseNavigationActivity() {
                 .put("workflow_editor_engine", flutterEngine!!)
             
             // Initialize WorkflowEditorHandler with dependencies
-            val agentService = AgentService.getInstance(this)
+            val unifiedShellTool = com.blurr.voice.tools.UnifiedShellTool(this)
             
             workflowEditorHandler = WorkflowEditorHandler(
                 context = this,
-                unifiedShellTool = agentService.unifiedShellTool,
+                unifiedShellTool = unifiedShellTool,
                 composioClient = null, // TODO: Get from AgentService if available
                 composioManager = null, // TODO: Get from AgentService if available
                 mcpClient = null // TODO: Get from AgentService if available
@@ -518,6 +518,20 @@ class MainActivity : BaseNavigationActivity() {
         } catch (e: Exception) {
             Logger.e("MainActivity", "Failed to launch workflow editor", e)
             Toast.makeText(this, "Failed to open workflow editor", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /**
+     * Launch the video editor
+     */
+    fun launchVideoEditor() {
+        try {
+            val intent = Intent(this, VideoEditorActivity::class.java)
+            startActivity(intent)
+            Logger.d("MainActivity", "Launched video editor")
+        } catch (e: Exception) {
+            Logger.e("MainActivity", "Failed to launch video editor", e)
+            Toast.makeText(this, "Failed to open video editor", Toast.LENGTH_SHORT).show()
         }
     }
     

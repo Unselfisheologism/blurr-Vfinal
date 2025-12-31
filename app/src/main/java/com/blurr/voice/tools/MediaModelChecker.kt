@@ -75,9 +75,15 @@ class MediaModelChecker(
     suspend fun checkAvailability(mediaType: MediaType): MediaAvailability {
         return try {
             val provider = keyManager.getSelectedProvider()
+                ?: return MediaAvailability(
+                    isAvailable = false,
+                    availableModels = emptyList(),
+                    recommendedModel = null,
+                    providerName = "None"
+                )
             val apiKey = keyManager.getApiKey(provider)
             
-            if (provider == null || apiKey == null) {
+            if (apiKey == null) {
                 return MediaAvailability(
                     isAvailable = false,
                     availableModels = emptyList(),

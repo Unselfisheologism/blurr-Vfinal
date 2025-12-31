@@ -321,6 +321,17 @@
                 android:text="📈 AI Spreadsheet Editor"
                 android:textColor="@android:color/white" />
 
+            <!-- Tool Selection Button -->
+            <Button
+                android:id="@+id/buttonToolSelection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/btn_with_border"
+                android:text="🛠️ Manage Tools"
+                android:textColor="@android:color/white" />
+
             <Button
                 android:id="@+id/buttonSignOut"
                 android:layout_width="wrap_content"

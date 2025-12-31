@@ -45,7 +45,7 @@ object EmbeddingService {
         }
         var attempts = 0
         while (attempts < maxRetries) {
-            val currentApiKey = ApiKeyManager.getNextKey()
+            val currentApiKey = ApiKeyManager.getInstance(com.blurr.voice.MyApplication.appContext).getNextKey()
             Log.d("EmbeddingService", "=== EMBEDDING API REQUEST (Attempt ${attempts + 1}) ===")
             Log.d("EmbeddingService", "Using API key ending in: ...${currentApiKey.takeLast(4)}")
             Log.d("EmbeddingService", "Task type: $taskType")

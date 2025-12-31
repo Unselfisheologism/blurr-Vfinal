@@ -13,6 +13,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.tasks.await
 
 /**
  * Google OAuth Authentication Manager
@@ -144,7 +145,7 @@ class GoogleAuthManager(private val context: Context) {
             
             val token = GoogleAuthUtil.getToken(
                 context,
-                account.account,
+                account.email!!,
                 "oauth2:${SCOPES.joinToString(" ")}"
             )
             
@@ -177,7 +178,7 @@ class GoogleAuthManager(private val context: Context) {
             // Invalidate old token
             val oldToken = GoogleAuthUtil.getToken(
                 context,
-                account.account,
+                account.email!!,
                 "oauth2:${SCOPES.joinToString(" ")}"
             )
             GoogleAuthUtil.invalidateToken(context, oldToken)
@@ -185,7 +186,7 @@ class GoogleAuthManager(private val context: Context) {
             // Get new token
             val newToken = GoogleAuthUtil.getToken(
                 context,
-                account.account,
+                account.email!!,
                 "oauth2:${SCOPES.joinToString(" ")}"
             )
             
@@ -251,11 +252,4 @@ class GoogleAuthManager(private val context: Context) {
     fun getGrantedScopes(): Set<Scope> {
         return getSignedInAccount()?.grantedScopes ?: emptySet()
     }
-}
-
-/**
- * Extension function to await Google Sign-In tasks
- */
-private suspend fun <T> com.google.android.gms.tasks.Task<T>.await(): T {
-    return kotlinx.coroutines.tasks.await(this)
 }

@@ -255,7 +255,7 @@ class SettingsActivity : BaseNavigationActivity() {
     private fun setupAutoSavingListeners() {
         var isInitialLoad = true
 
-        ttsVoicePicker.setOnValueChangedListener { _, newVal ->
+        ttsVoicePicker.setOnValueChangedListener { _, _, newVal ->
             val selectedVoice = availableVoices[newVal]
             saveSelectedVoice(selectedVoice)
 
@@ -351,7 +351,8 @@ class SettingsActivity : BaseNavigationActivity() {
     }
 
     private fun saveSelectedVoice(voice: String) {
-        VoicePreferenceManager.saveSelectedVoice(this, voice)
+        val voiceEnum = com.blurr.voice.api.TTSVoice.fromName(voice.uppercase())
+        VoicePreferenceManager.saveSelectedVoice(this, voiceEnum)
         Log.d("SettingsActivity", "Saved voice: $voice")
     }
 

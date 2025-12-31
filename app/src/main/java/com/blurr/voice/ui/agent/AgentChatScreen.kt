@@ -476,8 +476,7 @@ fun ChatInputBar(
                 FloatingActionButton(
                     onClick = onSend,
                     modifier = Modifier.size(48.dp),
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    enabled = enabled
+                    containerColor = MaterialTheme.colorScheme.primary
                 ) {
                     Icon(
                         imageVector = Icons.Default.Send,
