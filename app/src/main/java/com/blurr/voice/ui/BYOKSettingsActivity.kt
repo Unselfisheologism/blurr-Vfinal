@@ -43,6 +43,10 @@ class BYOKSettingsActivity : BaseNavigationActivity() {
     private lateinit var availableModelsCard: LinearLayout
     private lateinit var availableModelsText: TextView
     
+    override fun getContentLayoutId(): Int = R.layout.activity_byok_settings
+    
+    override fun getCurrentNavItem(): BaseNavigationActivity.NavItem = BaseNavigationActivity.NavItem.SETTINGS
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_byok_settings)

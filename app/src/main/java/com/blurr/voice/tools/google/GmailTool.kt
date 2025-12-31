@@ -258,14 +258,14 @@ class GmailTool(
         
         return executeRequest(accessToken, request) { response ->
             ToolResult.success(
-                name,
-                mapOf(
+                toolName = name,
+                data = mapOf(
                     "message_id" to response.optString("id"),
                     "thread_id" to response.optString("threadId"),
                     "to" to to,
                     "subject" to subject
                 ),
-                "Email sent successfully to $to"
+                result = "Email sent successfully to $to"
             )
         }
     }
@@ -312,7 +312,7 @@ class GmailTool(
         }
     }
     
-    private fun <T> executeRequest(
+    private fun executeRequest(
         accessToken: String,
         request: Request,
         onSuccess: (JSONObject) -> ToolResult

@@ -292,13 +292,13 @@ class AgentService : Service() {
 
         try {
             val now = java.time.Instant.now()
-            val taskEntry: Map<String, Any?> = mapOf(
+            val taskEntry: Map<String, Any> = mapOf(
                 "task" to task,
                 "status" to "started",
                 "startedAt" to java.time.format.DateTimeFormatter.ISO_INSTANT.format(now),
-                "completedAt" to null,
-                "success" to null,
-                "errorMessage" to null
+                "completedAt" to "",
+                "success" to false,
+                "errorMessage" to ""
             )
             com.blurr.voice.data.AppwriteDb.appendToUserArrayField(uid, "taskHistory", taskEntry)
             Log.d(TAG, "Tracked task start for user $uid: $task")
@@ -322,13 +322,13 @@ class AgentService : Service() {
 
         try {
             val now = java.time.Instant.now()
-            val completionEntry: Map<String, Any?> = mapOf(
+            val completionEntry: Map<String, Any> = mapOf(
                 "task" to task,
                 "status" to if (success) "completed" else "failed",
-                "startedAt" to null,
+                "startedAt" to "",
                 "completedAt" to java.time.format.DateTimeFormatter.ISO_INSTANT.format(now),
                 "success" to success,
-                "errorMessage" to errorMessage
+                "errorMessage" to (errorMessage ?: "")
             )
 
             com.blurr.voice.data.AppwriteDb.appendToUserArrayField(uid, "taskHistory", completionEntry)

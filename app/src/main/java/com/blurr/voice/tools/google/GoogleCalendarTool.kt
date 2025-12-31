@@ -147,12 +147,14 @@ class GoogleCalendarTool(
             
             for (i in 0 until events.length()) {
                 val event = events.getJSONObject(i)
+                val startJson = event.optJSONObject("start")
+                val endJson = event.optJSONObject("end")
                 eventList.add(mapOf(
                     "id" to event.optString("id"),
                     "summary" to event.optString("summary"),
                     "description" to event.optString("description"),
-                    "start" to event.optJSONObject("start")?.optString("dateTime") ?: event.optJSONObject("start")?.optString("date"),
-                    "end" to event.optJSONObject("end")?.optString("dateTime") ?: event.optJSONObject("end")?.optString("date")
+                    "start" to (startJson?.optString("dateTime") ?: startJson?.optString("date") ?: ""),
+                    "end" to (endJson?.optString("dateTime") ?: endJson?.optString("date") ?: "")
                 ))
             }
             
@@ -194,13 +196,13 @@ class GoogleCalendarTool(
         
         return executeRequest(request) { response ->
             ToolResult.success(
-                name,
-                mapOf(
+                toolName = name,
+                data = mapOf(
                     "id" to response.optString("id"),
                     "summary" to response.optString("summary"),
                     "htmlLink" to response.optString("htmlLink")
                 ),
-                "Event created: $summary"
+                result = "Event created: $summary"
             )
         }
     }
@@ -216,8 +218,8 @@ class GoogleCalendarTool(
         
         return executeRequest(request) { response ->
             ToolResult.success(
-                name,
-                mapOf(
+                toolName = name,
+                data = mapOf(
                     "id" to response.optString("id"),
                     "summary" to response.optString("summary"),
                     "description" to response.optString("description"),
@@ -225,7 +227,7 @@ class GoogleCalendarTool(
                     "end" to response.optJSONObject("end")?.optString("dateTime"),
                     "htmlLink" to response.optString("htmlLink")
                 ),
-                "Event retrieved"
+                result = "Event retrieved"
             )
         }
     }
@@ -248,9 +250,9 @@ class GoogleCalendarTool(
         
         return executeRequest(request) { response ->
             ToolResult.success(
-                name,
-                mapOf("id" to response.optString("id"), "updated" to response.optString("updated")),
-                "Event updated"
+                toolName = name,
+                data = mapOf("id" to response.optString("id"), "updated" to response.optString("updated")),
+                result = "Event updated"
             )
         }
     }
@@ -265,11 +267,11 @@ class GoogleCalendarTool(
             .build()
         
         return executeRequest(request) { _ ->
-            ToolResult.success(name, mapOf("id" to eventId), "Event deleted")
+            ToolResult.success(toolName = name, data = mapOf("id" to eventId), result = "Event deleted")
         }
     }
     
-    private fun <T> executeRequest(request: Request, onSuccess: (JSONObject) -> ToolResult): ToolResult {
+    private fun executeRequest(request: Request, onSuccess: (JSONObject) -> ToolResult): ToolResult {
         return try {
             client.newCall(request).execute().use { response ->
                 val body = response.body?.string()
