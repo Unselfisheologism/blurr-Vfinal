@@ -139,7 +139,7 @@ import ffmpeg
 - ✅ LLMs know this library well
 - ✅ Clean, readable code
 
-#### Option 2: ffmpeg-kit-android (via subprocess)
+#### Option 2: mobile-ffmpeg (via subprocess)
 ```python
 import subprocess
 
@@ -159,7 +159,7 @@ subprocess.run([
 
 #### Option 3: Both! (Recommended)
 - Use ffmpeg-python for complex operations (better API)
-- Use ffmpeg-kit-android as the backend engine
+- Use mobile-ffmpeg as the backend engine
 - Best of both worlds
 
 ---
@@ -603,7 +603,7 @@ android {
 
 // FFmpeg binary for Android
 dependencies {
-    implementation 'com.arthenica:ffmpeg-kit-full:5.1'
+    implementation 'com.arthenica:mobile-ffmpeg-full:4.4.LTS'
 }
 ```
 

@@ -173,8 +173,8 @@ dependencies {
     // Mozilla Rhino for JavaScript execution
     implementation("org.mozilla:rhino:1.7.14")
     
-    // FFmpeg Kit for video processing
-    implementation(libs.ffmpeg.kit.full)
+    // Mobile FFmpeg for video processing
+    implementation(libs.mobile.ffmpeg.full)
     implementation(libs.smart.exception.java)
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
     
