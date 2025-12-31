@@ -105,6 +105,35 @@ Please set the JAVA_HOME variable in your environment to match the
 location of your Java installation."
 fi
 
+# Android Gradle Plugin 8+ requires Java 17 to run. GitHub Codespaces images may
+# default to an older JDK (e.g. Java 11). If the currently selected JVM is too
+# old, try to locate a Java 17+ installation in common locations and use it.
+java_major_version() {
+    version_line=`"$1" -version 2>&1 | head -n 1`
+    major=`echo "$version_line" | sed -n 's/.*version "\([0-9][0-9]*\)\..*/\1/p'`
+    if [ -z "$major" ] ; then
+        major=`echo "$version_line" | sed -n 's/.*version "\([0-9][0-9]*\)".*/\1/p'`
+    fi
+    if [ "$major" = "1" ] ; then
+        major=`echo "$version_line" | sed -n 's/.*version "1\.\([0-9][0-9]*\)\..*/\1/p'`
+    fi
+    echo "$major"
+}
+
+current_java_major=`java_major_version "$JAVACMD"`
+if [ -n "$current_java_major" ] && [ "$current_java_major" -lt 17 ] ; then
+    for candidate in /opt/java/17* /usr/lib/jvm/*17* /usr/local/sdkman/candidates/java/17* /usr/local/sdkman/candidates/java/current /Library/Java/JavaVirtualMachines/*17*.jdk/Contents/Home ; do
+        if [ -x "$candidate/bin/java" ] ; then
+            candidate_major=`java_major_version "$candidate/bin/java"`
+            if [ -n "$candidate_major" ] && [ "$candidate_major" -ge 17 ] ; then
+                JAVA_HOME="$candidate"
+                JAVACMD="$JAVA_HOME/bin/java"
+                break
+            fi
+        fi
+    done
+fi
+
 # Increase the maximum file descriptors if we can.
 if [ "$cygwin" = "false" -a "$darwin" = "false" -a "$nonstop" = "false" ] ; then
     MAX_FD_LIMIT=`ulimit -H -n`
