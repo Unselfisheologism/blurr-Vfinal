@@ -3,7 +3,8 @@ package com.blurr.voice.core.providers
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
-import com.google.ai.client.generativeai.type.TextPart
+import com.blurr.voice.v2.AgentOutput
+import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -178,6 +179,33 @@ class UniversalLLMService(private val context: Context) {
         }
     }
     
+    /**
+     * Generates structured AgentOutput for V2 Agent
+     */
+    suspend fun generateAgentOutput(messages: List<Pair<String, String>>): AgentOutput? {
+        val options = OpenRouterRequestOptions(
+            temperature = 0.2,
+            topP = 0.95
+        )
+        
+        val response = generateChatCompletion(messages, emptyList(), options = options)
+            ?: return null
+            
+        return try {
+            // Find JSON in response if it's wrapped in markdown or other text
+            val jsonStart = response.indexOf("{")
+            val jsonEnd = response.lastIndexOf("}")
+            if (jsonStart == -1 || jsonEnd == -1) return null
+            
+            val jsonStr = response.substring(jsonStart, jsonEnd + 1)
+            val json = Json { ignoreUnknownKeys = true }
+            json.decodeFromString<AgentOutput>(jsonStr)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to parse AgentOutput JSON: ${e.message}")
+            null
+        }
+    }
+
     /**
      * Converts the Gemini-style chat format to OpenAI message format
      * Gemini format: List<Pair<String, List<Any>>> where Any can be TextPart, ImagePart, etc.

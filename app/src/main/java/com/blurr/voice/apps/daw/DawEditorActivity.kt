@@ -390,7 +390,7 @@ class DawEditorActivity : AppCompatActivity() {
                     // Use the existing ToolExecutor for music generation
                     // This would connect to MusicGenerationTool or AudioGenerationTool
                     agentIntegration.executeWithPrompt(
-                        basePrompt = AgentIntegration.DAW,
+                        basePrompt = com.blurr.voice.apps.base.SystemPrompts.DAW,
                         context = buildContextMap(operation, prompt, context),
                         userRequest = prompt
                     )

@@ -292,7 +292,7 @@ class AgentService : Service() {
 
         try {
             val now = java.time.Instant.now()
-            val taskEntry = mapOf(
+            val taskEntry: Map<String, Any?> = mapOf(
                 "task" to task,
                 "status" to "started",
                 "startedAt" to java.time.format.DateTimeFormatter.ISO_INSTANT.format(now),
@@ -322,7 +322,7 @@ class AgentService : Service() {
 
         try {
             val now = java.time.Instant.now()
-            val completionEntry = mapOf(
+            val completionEntry: Map<String, Any?> = mapOf(
                 "task" to task,
                 "status" to if (success) "completed" else "failed",
                 "startedAt" to null,

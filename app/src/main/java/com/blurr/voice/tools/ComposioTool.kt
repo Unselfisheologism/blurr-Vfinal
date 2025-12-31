@@ -358,7 +358,7 @@ class ComposioTool(
         }
     }
     
-    override fun getSchema(): Map<String, Any> = mapOf(
+    fun getSchema(): Map<String, Any> = mapOf(
         "name" to name,
         "description" to description,
         "parameters" to mapOf(
