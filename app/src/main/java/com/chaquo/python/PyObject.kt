@@ -13,6 +13,10 @@ open class PyObject {
         throw UnsupportedOperationException("Chaquopy is not available in this build.")
     }
 
+    open fun get(name: String): PyObject? {
+        throw UnsupportedOperationException("Chaquopy is not available in this build.")
+    }
+
     override fun toString(): String {
         return "<PyObject stub>"
     }
