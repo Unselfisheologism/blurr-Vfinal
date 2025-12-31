@@ -121,7 +121,7 @@ data class AudioTrack(
 ```
 
 **FFmpeg for Android**:
-- Library: `mobile-ffmpeg` or `ffmpeg-kit-android`
+- Library: `mobile-ffmpeg` (actively maintained)
 - Can do everything: video editing, audio mixing, format conversion
 - Open source, well-maintained
 - Used by professional video apps
@@ -372,7 +372,7 @@ FFmpegWrapper.kt (FFmpeg integration ~200 lines)
 
 **Dependencies**:
 ```gradle
-implementation 'com.arthenica:ffmpeg-kit-full:5.1'
+implementation 'com.arthenica:mobile-ffmpeg-full:4.4.LTS'
 ```
 
 **Capabilities**:
@@ -484,8 +484,8 @@ class FFmpegWrapper {
         output: String
     ): Boolean {
         val cmd = buildFFmpegCommand(images, audioTracks, output)
-        val session = FFmpegKit.execute(cmd)
-        return session.returnCode.isValueSuccess
+        val rc = FFmpeg.execute(cmd)
+        return rc == 0
     }
 }
 ```

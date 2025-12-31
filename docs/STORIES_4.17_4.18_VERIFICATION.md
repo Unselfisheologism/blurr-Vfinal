@@ -141,7 +141,7 @@
 ✅ python { pip { install("numpy==1.24.3") } }
 ✅ python { pip { install("requests==2.31.0") } }
 ✅ python { buildPython("python3.8") }
-✅ implementation("com.arthenica:ffmpeg-kit-full:5.1")
+✅ implementation("com.arthenica:mobile-ffmpeg-full:4.4.LTS")
 ```
 
 ### ✅ Code Quality Checks

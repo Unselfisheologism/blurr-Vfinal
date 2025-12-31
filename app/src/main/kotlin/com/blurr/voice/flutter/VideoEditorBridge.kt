@@ -4,8 +4,8 @@ package com.blurr.voice.flutter
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.util.Log
-import com.arthenica.ffmpegkit.FFmpegKit
-import com.arthenica.ffmpegkit.ReturnCode
+import com.arthenica.mobileffmpeg.Config
+import com.arthenica.mobileffmpeg.FFmpeg
 import com.blurr.voice.agents.AgentFactory
 import com.blurr.voice.utilities.FreemiumManager
 import io.flutter.embedding.engine.FlutterEngine
@@ -25,7 +25,7 @@ import java.io.File
  * - Pro gating checks
  * - AI-assisted actions via UltraGeneralistAgent
  * - Media metadata probing
- * - Timeline export via FFmpegKit
+ * - Timeline export via Mobile FFmpeg
  */
 class VideoEditorBridge(
     private val context: Context,
@@ -702,11 +702,10 @@ class VideoEditorBridge(
     }
 
     private fun runFfmpeg(cmd: String) {
-        val session = FFmpegKit.execute(cmd)
-        val rc = session.returnCode
-        if (!ReturnCode.isSuccess(rc)) {
-            val stackTrace = session.failStackTrace
-            throw IllegalStateException("FFmpeg failed (code=${rc?.value}): $stackTrace")
+        val rc = FFmpeg.execute(cmd)
+        if (rc != 0) {
+            val output = Config.getLastCommandOutput()
+            throw IllegalStateException("FFmpeg failed (code=$rc): $output")
         }
     }
 

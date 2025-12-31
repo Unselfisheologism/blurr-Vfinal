@@ -803,7 +803,7 @@ android {
 
 dependencies {
     // FFmpeg for Android (native binary)
-    implementation 'com.arthenica:ffmpeg-kit-full:5.1'
+    implementation 'com.arthenica:mobile-ffmpeg-full:4.4.LTS'
 }
 ```
 

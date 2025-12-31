@@ -39,7 +39,7 @@
    - Package caching system
 
 5. **FFmpeg Integration** ✅
-   - Added ffmpeg-kit-full library
+   - Added mobile-ffmpeg-full library
    - Native video/audio processing
    - Works with ffmpeg-python
 
@@ -94,7 +94,7 @@ defaultConfig {
 }
 
 dependencies {
-    implementation("com.arthenica:ffmpeg-kit-full:5.1")
+    implementation("com.arthenica:mobile-ffmpeg-full:4.4.LTS")
 }
 ```
 
