@@ -151,12 +151,12 @@ class GmailTool(
             }
             
             ToolResult.success(
-                name,
-                mapOf(
+                toolName = name,
+                data = mapOf(
                     "count" to emailList.size,
                     "emails" to emailList
                 ),
-                "Found ${emailList.size} emails"
+                result = "Found ${emailList.size} emails"
             )
         }
     }
@@ -182,15 +182,16 @@ class GmailTool(
             val parts = response.optJSONObject("payload")?.optJSONArray("parts")
             var body = ""
             if (parts?.length() ?: 0 > 0) {
-                body = parts?.getJSONObject(0)?.optString("body")?.optString("data") ?: ""
+                val bodyObj = parts?.getJSONObject(0)?.optJSONObject("body")
+                body = bodyObj?.optString("data") ?: ""
                 if (body.isNotEmpty()) {
                     body = String(Base64.getUrlDecoder().decode(body))
                 }
             }
             
             ToolResult.success(
-                name,
-                mapOf(
+                toolName = name,
+                data = mapOf(
                     "message_id" to messageId,
                     "from" to from,
                     "subject" to subject,
@@ -198,7 +199,7 @@ class GmailTool(
                     "body" to body,
                     "snippet" to snippet
                 ),
-                "Email retrieved successfully"
+                result = "Email retrieved successfully"
             )
         }
     }
@@ -226,13 +227,13 @@ class GmailTool(
             }
             
             ToolResult.success(
-                name,
-                mapOf(
+                toolName = name,
+                data = mapOf(
                     "query" to query,
                     "count" to emailList.size,
                     "emails" to emailList
                 ),
-                "Found ${emailList.size} emails matching: $query"
+                result = "Found ${emailList.size} emails matching: $query"
             )
         }
     }
@@ -314,13 +315,13 @@ class GmailTool(
     private fun <T> executeRequest(
         accessToken: String,
         request: Request,
-        onSuccess: (JSONObject) -> T
+        onSuccess: (JSONObject) -> ToolResult
     ): ToolResult {
         return try {
             client.newCall(request).execute().use { response ->
                 val body = response.body?.string()
                 if (response.isSuccessful && body != null) {
-                    onSuccess(JSONObject(body))
+                    return onSuccess(JSONObject(body))
                 } else {
                     ToolResult.error(name, "API error: ${response.code} - $body")
                 }
