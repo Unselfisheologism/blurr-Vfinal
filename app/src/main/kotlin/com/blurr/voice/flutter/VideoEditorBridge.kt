@@ -4,8 +4,8 @@ package com.blurr.voice.flutter
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.util.Log
-import com.arthenica.mobileffmpeg.Config
-import com.arthenica.mobileffmpeg.FFmpeg
+import com.moizhassan.ffmpeg.Config
+import com.moizhassan.ffmpeg.FFmpeg
 import com.blurr.voice.agents.AgentFactory
 import com.blurr.voice.utilities.FreemiumManager
 import io.flutter.embedding.engine.FlutterEngine
@@ -25,7 +25,7 @@ import java.io.File
  * - Pro gating checks
  * - AI-assisted actions via UltraGeneralistAgent
  * - Media metadata probing
- * - Timeline export via Mobile FFmpeg
+ * - Timeline export via FFmpeg Kit 16KB
  */
 class VideoEditorBridge(
     private val context: Context,

@@ -17,8 +17,7 @@ securityCrypto = "1.1.0-alpha06"
 playServicesAuth = "21.4.0"
 playServicesBasement = "18.9.0"
 appwrite = "5.0.0"
-mobileFFmpeg = "4.4.LTS"
-smartException = "0.2.1"
+ffmpegKit = "6.1.0"
 
 [libraries]
 androidx-core = { module = "androidx.core:core", version.ref = "coreKtxVersion" }
@@ -44,8 +43,7 @@ security-crypto = { group = "androidx.security", name = "security-crypto", versi
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 play-services-basement = { module = "com.google.android.gms:play-services-basement", version.ref = "playServicesBasement" }
 appwrite-sdk = { group = "io.appwrite", name = "sdk-for-android", version.ref = "appwrite" }
-mobile-ffmpeg-full = { group = "com.arthenica", name = "mobile-ffmpeg-full", version.ref = "mobileFFmpeg" }
-smart-exception-java = { group = "com.arthenica", name = "smart-exception-java", version.ref = "smartException" }
+ffmpeg-kit-16kb = { group = "com.moizhassan.ffmpeg", name = "ffmpeg-kit-16kb", version.ref = "ffmpegKit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

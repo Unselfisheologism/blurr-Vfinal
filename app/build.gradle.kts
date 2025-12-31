@@ -172,10 +172,9 @@ dependencies {
     
     // Mozilla Rhino for JavaScript execution
     implementation("org.mozilla:rhino:1.7.14")
-    
-    // Mobile FFmpeg for video processing
-    implementation(libs.mobile.ffmpeg.full)
-    implementation(libs.smart.exception.java)
+
+    // FFmpeg Kit 16KB for video processing (community-maintained fork of mobile-ffmpeg)
+    implementation(libs.ffmpeg.kit.16kb)
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
     
     // Flutter stubs: allow compilation when Flutter SDK/artifacts are not available.
