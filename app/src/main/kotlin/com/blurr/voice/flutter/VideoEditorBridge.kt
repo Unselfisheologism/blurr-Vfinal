@@ -4,8 +4,8 @@ package com.blurr.voice.flutter
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.util.Log
-import com.moizhassan.ffmpeg.Config
-import com.moizhassan.ffmpeg.FFmpeg
+import com.arthenica.ffmpegkit.Config
+import com.arthenica.ffmpegkit.FFmpeg
 import com.blurr.voice.agents.AgentFactory
 import com.blurr.voice.utilities.FreemiumManager
 import io.flutter.embedding.engine.FlutterEngine
