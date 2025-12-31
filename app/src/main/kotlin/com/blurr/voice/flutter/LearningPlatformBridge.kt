@@ -438,7 +438,7 @@ result_text = "\n\n".join(text_parts)
             """.trimIndent()
         )
 
-        val out = main.getAttr("result_text")?.toString() ?: ""
+        val out = main.get("result_text")?.toString() ?: ""
         return out
     }
 
@@ -459,7 +459,7 @@ result_text = "\n".join(paras)
             """.trimIndent()
         )
 
-        val out = main.getAttr("result_text")?.toString() ?: ""
+        val out = main.get("result_text")?.toString() ?: ""
         return out
     }
 

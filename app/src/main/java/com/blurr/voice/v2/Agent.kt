@@ -8,6 +8,8 @@ import com.blurr.voice.v2.actions.ActionExecutor
 import com.blurr.voice.v2.fs.FileSystem
 import com.blurr.voice.core.providers.UniversalLLMService
 import com.blurr.voice.v2.llm.GeminiMessage
+import com.blurr.voice.v2.llm.MessageRole
+import com.blurr.voice.v2.llm.TextPart
 import com.blurr.voice.v2.message_manager.MemoryManager
 import com.blurr.voice.v2.perception.Perception
 import com.blurr.voice.utilities.SpeechCoordinator
@@ -81,7 +83,16 @@ class Agent(
             // 3. THINK (Get Decision): Send the prepared messages to the LLM.
             Log.d(TAG,"🤔 Asking LLM for next action...")
             val messages = memoryManager.getMessages()
-            val agentOutput = llmApi.generateAgentOutput(messages)
+            val convertedMessages = messages.map { message ->
+                val role = when (message.role) {
+                    MessageRole.USER -> "user"
+                    MessageRole.MODEL -> "assistant"
+                    MessageRole.TOOL -> "tool"
+                }
+                val text = message.parts.filterIsInstance<TextPart>().joinToString("\n") { it.text }
+                role to text
+            }
+            val agentOutput = llmApi.generateAgentOutput(convertedMessages)
 
             // --- Handle LLM Failure ---
             if (agentOutput == null) {

@@ -256,7 +256,7 @@ class ToolSelectionViewModel(
     }
     
     private fun loadTools() {
-        androidx.lifecycle.viewModelScope.launch {
+        viewModelScope.launch {
             // Load built-in tools
             val builtInTools = toolRegistry.getAllTools().map { tool ->
                 ToolItem(

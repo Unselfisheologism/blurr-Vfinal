@@ -179,9 +179,9 @@ class GoogleDriveTool(
             }
             
             ToolResult.success(
-                name,
-                mapOf("query" to query, "count" to fileList.size, "files" to fileList),
-                "Found ${fileList.size} files matching: $query"
+                toolName = name,
+                data = mapOf("query" to query, "count" to fileList.size, "files" to fileList),
+                result = "Found ${fileList.size} files matching: $query"
             )
         }
     }
@@ -207,13 +207,13 @@ class GoogleDriveTool(
         
         return executeRequest(request) { response ->
             ToolResult.success(
-                name,
-                mapOf(
+                toolName = name,
+                data = mapOf(
                     "id" to response.optString("id"),
                     "name" to response.optString("name"),
                     "mimeType" to response.optString("mimeType")
                 ),
-                "Folder created: $name"
+                result = "Folder created: $name"
             )
         }
     }
@@ -228,7 +228,7 @@ class GoogleDriveTool(
             .build()
         
         return executeRequest(request) { _ ->
-            ToolResult.success(name, mapOf("id" to fileId), "File deleted")
+            ToolResult.success(toolName = name, data = mapOf("id" to fileId), result = "File deleted")
         }
     }
     
@@ -243,8 +243,8 @@ class GoogleDriveTool(
         
         return executeRequest(request) { response ->
             ToolResult.success(
-                name,
-                mapOf(
+                toolName = name,
+                data = mapOf(
                     "id" to response.optString("id"),
                     "name" to response.optString("name"),
                     "mimeType" to response.optString("mimeType"),
@@ -253,12 +253,12 @@ class GoogleDriveTool(
                     "webViewLink" to response.optString("webViewLink"),
                     "webContentLink" to response.optString("webContentLink")
                 ),
-                "File details retrieved"
+                result = "File details retrieved"
             )
         }
     }
     
-    private fun <T> executeRequest(request: Request, onSuccess: (JSONObject) -> ToolResult): ToolResult {
+    private fun executeRequest(request: Request, onSuccess: (JSONObject) -> ToolResult): ToolResult {
         return try {
             client.newCall(request).execute().use { response ->
                 val body = response.body?.string()
