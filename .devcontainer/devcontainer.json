@@ -1,0 +1,14 @@
+{
+  "image": "mcr.microsoft.com", // A versatile base image
+  "features": {
+    "ghcr.io/devcontainers/features/flutter:1": {} // Feature to install Flutter SDK
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Dart-Code.flutter" // Install Flutter extension
+      ]
+    }
+  },
+  "forwardPorts": [3000] // Forward the port for web apps
+}
