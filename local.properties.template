@@ -6,10 +6,12 @@
 # Users configure their own keys through Settings → API Keys (BYOK)
 
 # Appwrite configuration (still needed for backend)
-APPWRITE_PROJECT_ID=your_project_id
-APPWRITE_DATABASE_ID=your_database_id
-APPWRITE_USERS_COLLECTION_ID=your_users_collection_id
-APPWRITE_TASKS_COLLECTION_ID=your_tasks_collection_id
+APPWRITE_PUBLIC_ENDPOINT=https://sfo.cloud.appwrite.io/v1
+APPWRITE_PROJECT_ID=69466d6d002944e62a34
+APPWRITE_DATABASE_ID=blurr-db
+APPWRITE_USERS_COLLECTION_ID=users
+APPWRITE_CONVERSATIONS_COLLECTION_ID=conversations
+APPWRITE_WORKFLOWS_COLLECTION_ID=workflows
 
 # SDK location (automatically set by Android Studio)
 sdk.dir=/path/to/Android/sdk

@@ -45,12 +45,19 @@ android {
         buildConfigField("boolean", "SPEAK_INSTRUCTIONS", "true")
 
         // Appwrite configuration
-        buildConfigField("String", "APPWRITE_PUBLIC_ENDPOINT", "\"https://cloud.appwrite.io/v1\"")
-        buildConfigField("String", "APPWRITE_PROJECT_ID", "\"blurr\"")
-        buildConfigField("String", "APPWRITE_DATABASE_ID", "\"blurr-db\"")
-        buildConfigField("String", "APPWRITE_USERS_COLLECTION_ID", "\"users\"")
-        buildConfigField("String", "APPWRITE_CONVERSATIONS_COLLECTION_ID", "\"conversations\"")
-        buildConfigField("String", "APPWRITE_WORKFLOWS_COLLECTION_ID", "\"workflows\"")
+        val appwriteEndpoint = localProperties.getProperty("APPWRITE_PUBLIC_ENDPOINT", "https://sfo.cloud.appwrite.io/v1")
+        val appwriteProjectId = localProperties.getProperty("APPWRITE_PROJECT_ID", "69466d6d002944e62a34")
+        val appwriteDatabaseId = localProperties.getProperty("APPWRITE_DATABASE_ID", "blurr-db")
+        val appwriteUsersCollectionId = localProperties.getProperty("APPWRITE_USERS_COLLECTION_ID", "users")
+        val appwriteConversationsCollectionId = localProperties.getProperty("APPWRITE_CONVERSATIONS_COLLECTION_ID", "conversations")
+        val appwriteWorkflowsCollectionId = localProperties.getProperty("APPWRITE_WORKFLOWS_COLLECTION_ID", "workflows")
+
+        buildConfigField("String", "APPWRITE_PUBLIC_ENDPOINT", "\"$appwriteEndpoint\"")
+        buildConfigField("String", "APPWRITE_PROJECT_ID", "\"$appwriteProjectId\"")
+        buildConfigField("String", "APPWRITE_DATABASE_ID", "\"$appwriteDatabaseId\"")
+        buildConfigField("String", "APPWRITE_USERS_COLLECTION_ID", "\"$appwriteUsersCollectionId\"")
+        buildConfigField("String", "APPWRITE_CONVERSATIONS_COLLECTION_ID", "\"$appwriteConversationsCollectionId\"")
+        buildConfigField("String", "APPWRITE_WORKFLOWS_COLLECTION_ID", "\"$appwriteWorkflowsCollectionId\"")
         buildConfigField("boolean", "DEBUG", "true")
 
         buildConfigField("boolean", "ENABLE_LOGGING", "true")
