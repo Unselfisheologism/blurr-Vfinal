@@ -23,6 +23,8 @@ if (versionPropsFile.exists()) {
     versionProps.load(FileInputStream(versionPropsFile))
 }
 
+val hasEmbeddedFlutterModule = rootProject.findProject(":flutter_workflow_editor") != null
+
 android {
     namespace = "com.blurr.voice"
     compileSdk = 35
@@ -39,7 +41,13 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
         // Common build config fields - applies to all build types
-        
+
+        buildConfigField(
+            "boolean",
+            "HAS_EMBEDDED_FLUTTER_MODULE",
+            hasEmbeddedFlutterModule.toString()
+        )
+
         buildConfigField("boolean", "ENABLE_DIRECT_APP_OPENING", "true")
 
         buildConfigField("boolean", "SPEAK_INSTRUCTIONS", "true")
@@ -185,7 +193,12 @@ dependencies {
     implementation("com.moizhassan.ffmpeg:ffmpeg-kit-16kb:6.1.1")
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
     
-    // Flutter stubs: allow compilation when Flutter SDK/artifacts are not available.
-    // When integrating a real Flutter module, remove this and depend on the generated Flutter module.
-    implementation(project(":flutter_stubs"))
+    // Flutter integration:
+    // - When the generated Flutter module exists (:flutter_workflow_editor), depend on it.
+    // - Otherwise fall back to lightweight stubs so the Android app can still compile.
+    if (hasEmbeddedFlutterModule) {
+        implementation(project(":flutter_workflow_editor"))
+    } else {
+        implementation(project(":flutter_stubs"))
+    }
 }
