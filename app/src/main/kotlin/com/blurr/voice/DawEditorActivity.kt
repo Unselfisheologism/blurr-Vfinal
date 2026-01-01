@@ -3,11 +3,12 @@ package com.blurr.voice
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.blurr.voice.flutter.FlutterRuntime
+import com.blurr.voice.flutter.DawEditorBridge
 import io.flutter.embedding.android.FlutterFragment
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.embedding.engine.dart.DartExecutor
-import com.blurr.voice.flutter.DawEditorBridge
 
 /**
  * Activity for hosting the Flutter DAW (Digital Audio Workstation) editor
@@ -24,18 +25,28 @@ class DawEditorActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (!FlutterRuntime.isAvailable()) {
+            FlutterRuntime.showUnavailableScreen(
+                activity = this,
+                featureTitle = "AI DAW Studio",
+                featureDescription = "AI-native DAW for music creation (multi-track timeline, stems, generation)."
+            )
+            return
+        }
+
         setContentView(R.layout.activity_daw_editor)
-        
+
         // Get or create Flutter engine
         val flutterEngine = FlutterEngineCache.getInstance().get(ENGINE_ID)
             ?: createFlutterEngine()
-        
+
         // Create bridge for platform communication
         bridge = DawEditorBridge(this, flutterEngine)
-        
+
         // Handle intent extras (project_name, project_path from main app)
         handleIntentExtras()
-        
+
         // Add Flutter fragment if not already added
         if (savedInstanceState == null) {
             supportFragmentManager
@@ -59,17 +70,17 @@ class DawEditorActivity : AppCompatActivity() {
     }
     
     private fun createFlutterEngine(): FlutterEngine {
-        // Create new Flutter engine
         val engine = FlutterEngine(this)
-        
-        // Start executing Dart code with DAW entry point
+
+        engine.navigationChannel.setInitialRoute("/daw_editor")
+
         engine.dartExecutor.executeDartEntrypoint(
             DartExecutor.DartEntrypoint.createDefault()
         )
-        
+
         // Cache the engine for reuse
         FlutterEngineCache.getInstance().put(ENGINE_ID, engine)
-        
+
         return engine
     }
     

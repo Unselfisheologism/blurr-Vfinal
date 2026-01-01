@@ -308,6 +308,24 @@
             android:windowSoftInputMode="adjustResize"
             android:exported="false" />
 
+        <!-- Flutter Text Editor Activity -->
+        <activity
+            android:name=".apps.texteditor.TextEditorActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="false" />
+
+        <!-- Flutter DAW Studio Activity -->
+        <activity
+            android:name=".DawEditorActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="false" />
+
         <!-- Flutter Video Editor Activity -->
         <activity
             android:name=".VideoEditorActivity"

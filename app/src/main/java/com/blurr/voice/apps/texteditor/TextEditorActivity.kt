@@ -9,10 +9,12 @@ import com.blurr.voice.apps.base.AgentResult
 import com.blurr.voice.apps.base.ProGatingManager
 import com.blurr.voice.apps.base.SystemPrompts
 import com.blurr.voice.core.providers.UniversalLLMService
+import com.blurr.voice.flutter.FlutterRuntime
 import com.blurr.voice.utilities.FreemiumManager
 import io.flutter.embedding.android.FlutterView
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
+import io.flutter.embedding.engine.dart.DartExecutor
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,12 +46,21 @@ class TextEditorActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
+        if (!FlutterRuntime.isAvailable()) {
+            FlutterRuntime.showUnavailableScreen(
+                activity = this,
+                featureTitle = "AI Text Editor",
+                featureDescription = "AI-native rich text editor with rewrite, summarize, translate and generate actions."
+            )
+            return
+        }
+
         // Initialize managers
         freemiumManager = FreemiumManager(this)
         proGatingManager = ProGatingManager(this)
         proGatingManager.updateSubscriptionStatus(freemiumManager.hasActiveSubscription())
-        
+
         // Initialize agent services
         llmService = UniversalLLMService(this)
         agent = AgentFactory.getAgent(this)
@@ -62,14 +73,19 @@ class TextEditorActivity : AppCompatActivity() {
     private fun setupFlutterEngine() {
         // Get or create Flutter engine
         flutterEngine = FlutterEngineCache.getInstance().get(FLUTTER_ENGINE_ID)
-        
-        if (flutterEngine == null) {
-            flutterEngine = FlutterEngine(this)
-            FlutterEngineCache.getInstance().put(FLUTTER_ENGINE_ID, flutterEngine!!)
-        }
 
-        // Navigate to text editor route
-        flutterEngine?.navigationChannel?.pushRoute(TEXT_EDITOR_ROUTE)
+        if (flutterEngine == null) {
+            flutterEngine = FlutterEngine(this).also { engine ->
+                engine.navigationChannel.setInitialRoute(TEXT_EDITOR_ROUTE)
+                engine.dartExecutor.executeDartEntrypoint(
+                    DartExecutor.DartEntrypoint.createDefault()
+                )
+            }
+            FlutterEngineCache.getInstance().put(FLUTTER_ENGINE_ID, flutterEngine!!)
+        } else {
+            // Ensure we land on the correct screen when reusing the cached engine.
+            flutterEngine?.navigationChannel?.pushRoute(TEXT_EDITOR_ROUTE)
+        }
 
         // Set up method channel for AI assistance
         setupAIAssistanceChannel()

@@ -2,6 +2,7 @@ package com.blurr.voice
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.blurr.voice.flutter.FlutterRuntime
 import com.blurr.voice.flutter.LearningPlatformBridge
 import io.flutter.embedding.android.FlutterFragment
 import io.flutter.embedding.engine.FlutterEngine
@@ -22,6 +23,16 @@ class LearningPlatformActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (!FlutterRuntime.isAvailable()) {
+            FlutterRuntime.showUnavailableScreen(
+                activity = this,
+                featureTitle = "AI-Native Learning Hub",
+                featureDescription = "NotebookLM-style study workspace: upload docs, generate summaries, quizzes, flashcards."
+            )
+            return
+        }
+
         setContentView(R.layout.activity_learning_platform)
 
         val engine = FlutterEngineCache.getInstance().get(ENGINE_ID) ?: createFlutterEngine()
