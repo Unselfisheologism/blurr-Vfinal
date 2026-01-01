@@ -175,8 +175,7 @@ dependencies {
 
     // FFmpeg Kit 16KB for video processing (community-maintained fork for Android 16KB page size)
     // From: https://github.com/moizhassan/ffmpeg-kit-android-16kb
-    // Maven: com.moizhassan.ffmpeg:ffmpeg-kit-16kb:6.1.1
-    implementation(libs.ffmpeg.kit)
+    implementation("com.moizhassan.ffmpeg:ffmpeg-kit-16kb:6.1.1")
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
     
     // Flutter stubs: allow compilation when Flutter SDK/artifacts are not available.
