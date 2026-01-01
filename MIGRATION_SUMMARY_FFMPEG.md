@@ -3,7 +3,7 @@
 ## Date: January 18, 2025
 
 ## Overview
-Migrated from the retired `com.arthenica:mobile-ffmpeg-full` to the community-maintained fork `moizhassankh/ffmpeg-kit-android-16KB`.
+Migrated from the retired `com.arthenica:mobile-ffmpeg-full` to the community-maintained fork `moizhassan/ffmpeg-kit-android-16kb`.
 
 ## Changes Made
 
@@ -24,7 +24,7 @@ Migrated from the retired `com.arthenica:mobile-ffmpeg-full` to the community-ma
 - `implementation(libs.smart.exception.java)`
 
 **Added:**
-- `implementation(libs.ffmpeg.kit.16kb)`
+- `implementation(libs.ffmpeg.kit)` (accessed via version catalog alias `ffmpeg-kit`)
 - Updated comment to: `// FFmpeg Kit 16KB for video processing (community-maintained fork of mobile-ffmpeg)`
 
 ### 3. VideoEditorBridge.kt
@@ -35,9 +35,20 @@ Migrated from the retired `com.arthenica:mobile-ffmpeg-full` to the community-ma
 - From: `com.arthenica.mobileffmpeg.FFmpeg`
 - To: `com.moizhassan.ffmpeg.FFmpeg`
 
+**Note:** The Maven coordinate is `com.moizhassan.ffmpeg:ffmpeg-kit-16kb:6.1.0`, so the package imports are `com.moizhassan.ffmpeg.*` (not `moizhassankh`).
+
 **Updated documentation comment:**
 - From: `Timeline export via Mobile FFmpeg`
 - To: `Timeline export via FFmpeg Kit 16KB`
+
+### 4. app/proguard-rules.pro
+**Added:**
+```
+# FFmpeg Kit 16KB (Community-maintained fork)
+-keep class com.moizhassan.ffmpeg.** { *; }
+-keep interface com.moizhassan.ffmpeg.** { *; }
+-dontwarn com.moizhassan.ffmpeg.**
+```
 
 ## API Compatibility
 ✅ The migration is API-compatible. No code changes were needed beyond updating imports:
