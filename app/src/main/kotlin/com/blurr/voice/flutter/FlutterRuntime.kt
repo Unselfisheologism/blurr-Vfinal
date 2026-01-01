@@ -35,7 +35,7 @@ object FlutterRuntime {
             }
             append(
                 "This build does not include the embedded Flutter module, so the editor cannot be displayed. " +
-                    "If you're building from source, generate the Flutter Android artifacts (see flutter_workflow_editor/INTEGRATION_GUIDE.md) and rebuild."
+                    "If you're building from source, generate the Flutter Android artifacts (see flutter_workflow_editor/IMPLEMENTATION_GUIDE.md) and rebuild."
             )
         }
 

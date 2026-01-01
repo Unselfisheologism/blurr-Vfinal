@@ -94,12 +94,21 @@ GEMINI_API_KEYS=
     cd blurr
     ```
 
-2.  **Build & Run:**
+2.  **Generate Flutter Android Artifacts** (Required for AI-Native Apps):
+    ```bash
+    cd flutter_workflow_editor
+    flutter pub get
+    flutter build aar --release
+    cd ..
+    ```
+    > **Note:** The Flutter workflow editor powers the AI-Native Apps (workflow editor, spreadsheet, DAW, video editor). If you skip this step and try to open these features, you'll see an error message. See `flutter_workflow_editor/IMPLEMENTATION_GUIDE.md` for detailed instructions.
+
+3.  **Build & Run:**
     * Open the project in Android Studio.
     * Let Gradle sync all the dependencies.
     * Run the app on your selected device or emulator.
 
-3.  **Enable Accessibility Service:**
+4.  **Enable Accessibility Service:**
     * On the first run, the app will prompt you to grant Accessibility permission.
     * Click "Grant Access" and enable the "Panda" service in your phone's settings. This is required for the agent to see and control the screen.
 
