@@ -12,6 +12,18 @@ object FlutterRuntime {
     /**
      * In this repo we sometimes build without the real Flutter engine/artifacts and fall back to
      * lightweight stubs (see :flutter_stubs). Those stubs compile but cannot render Flutter UI.
+     *
+     * This check looks for io.flutter.embedding.engine.loader.FlutterLoader, which exists in the
+     * real Flutter SDK but not in our stubs. This allows us to:
+     * 1. Compile the Android app without Flutter SDK installed
+     * 2. Detect at runtime whether Flutter is available
+     * 3. Show a helpful error screen directing users to generate artifacts
+     *
+     * To enable Flutter features, run:
+     *   cd flutter_workflow_editor && flutter pub get && flutter build aar --release
+     * Then update app/build.gradle.kts to depend on :flutter_workflow_editor instead of :flutter_stubs
+     *
+     * See /FLUTTER_INTEGRATION_STATUS.md for complete documentation.
      */
     fun isAvailable(): Boolean {
         return runCatching {

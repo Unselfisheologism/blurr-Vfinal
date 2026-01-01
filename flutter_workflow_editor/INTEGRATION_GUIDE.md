@@ -2,14 +2,55 @@
 
 Complete guide for integrating the Flutter workflow editor module into the Blurr Voice Android app.
 
+## ⚠️ Important: Artifacts Not Generated Yet
+
+This guide is **fully documented and implemented**, but the **Flutter Android artifacts described below have NOT been generated yet**.
+
+**Current Status:**
+- ✅ Flutter module code exists (Dart files in `lib/`)
+- ✅ Integration guide is complete (this document)
+- ✅ Android bridge code is implemented
+- ❌ Flutter Android artifacts (`.android/Flutter/`) - NOT generated yet
+
+**If you're seeing an error screen:**
+> "This build does not include the embedded Flutter module..."
+
+This is **expected behavior**. The app currently uses Flutter stubs for compilation. To enable Flutter features, follow the "Generate Flutter Artifacts" section below.
+
+**For a complete explanation:** See `/FLUTTER_INTEGRATION_STATUS.md` in the root of the repository.
+
+---
+
 ## Table of Contents
-1. [Prerequisites](#prerequisites)
-2. [Android Integration](#android-integration)
-3. [Platform Channel Setup](#platform-channel-setup)
-4. [Composio Integration](#composio-integration)
-5. [MCP Integration](#mcp-integration)
-6. [Testing](#testing)
-7. [Troubleshooting](#troubleshooting)
+1. [Generate Flutter Artifacts](#generate-flutter-artifacts)
+2. [Prerequisites](#prerequisites)
+3. [Android Integration](#android-integration)
+4. [Platform Channel Setup](#platform-channel-setup)
+5. [Composio Integration](#composio-integration)
+6. [MCP Integration](#mcp-integration)
+7. [Testing](#testing)
+8. [Troubleshooting](#troubleshooting)
+
+---
+
+## Generate Flutter Artifacts
+
+Before following the integration steps below, you must generate the Flutter Android artifacts:
+
+```bash
+# Navigate to the Flutter module
+cd flutter_workflow_editor
+
+# Install dependencies
+flutter pub get
+
+# Generate AAR for Android
+flutter build aar --release
+```
+
+This will create the `.android/Flutter/` directory with all necessary Gradle build files and AAR archives.
+
+**Note:** This requires Flutter SDK to be installed. See https://flutter.dev/docs/get-started/install
 
 ---
 

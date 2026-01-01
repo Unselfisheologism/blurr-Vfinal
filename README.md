@@ -47,6 +47,35 @@ Panda is built on a sophisticated multi-agent system written entirely in Kotlin.
 * Android Studio (latest version recommended)
 * An Android device or emulator with API level 26+
 * Some Gemini keys, sample ENV
+
+### Flutter Module (Optional)
+
+The app includes Flutter-based AI-Native apps (Workflow Editor, Spreadsheet, Text Editor, DAW, Media Canvas, Video Editor, Learning Platform).
+
+**By default, the app builds in "stubs mode"** - it compiles without Flutter SDK, but AI-Native apps will show an error screen when opened.
+
+To enable AI-Native apps:
+1. Install Flutter SDK from https://flutter.dev/docs/get-started/install
+2. Run `cd flutter_workflow_editor && flutter pub get && flutter build aar --release`
+3. Edit `app/build.gradle.kts` and replace `project(":flutter_stubs")` with `project(":flutter_workflow_editor")`
+4. Rebuild the Android app
+
+**See [FLUTTER_INTEGRATION_STATUS.md](FLUTTER_INTEGRATION_STATUS.md) for detailed instructions.**
+
+### Note on AI-Native App Error Screen
+
+If you try to open Workflow Editor, Spreadsheet Editor, or other AI-Native apps and see an error message saying "This build does not include the embedded Flutter module," this is **expected behavior** in the default build configuration.
+
+**Why this happens:**
+- The app uses Flutter stubs for compilation without requiring Flutter SDK
+- The runtime check detects missing Flutter artifacts and shows a helpful error screen
+- This allows Android development to proceed while Flutter is being prepared
+
+**How to fix:**
+Follow the Flutter Module setup above to generate the necessary artifacts. The integration is fully documented in `flutter_workflow_editor/INTEGRATION_GUIDE.md` - you just need to run the build commands.
+
+**For more details:** See [FLUTTER_INTEGRATION_STATUS.md](FLUTTER_INTEGRATION_STATUS.md) for a complete explanation of the current state and how to enable Flutter features.
+
 ```python
 # the name of these keys donot mean you need google cloud, you can use any servers that can accept requests, i will improve the developer experience in the future by making openapi compatible
 GCLOUD_PROXY_URL=<url-of-any-backend-that-accept-responses-like-below-payload>
