@@ -4,8 +4,8 @@ package com.blurr.voice.flutter
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.util.Log
-import com.moizhassan.ffmpeg.Config
-import com.moizhassan.ffmpeg.FFmpeg
+import com.arthenica.ffmpegkit.FFmpegKit
+import com.arthenica.ffmpegkit.ReturnCode
 import com.blurr.voice.agents.AgentFactory
 import com.blurr.voice.utilities.FreemiumManager
 import io.flutter.embedding.engine.FlutterEngine
@@ -702,10 +702,12 @@ class VideoEditorBridge(
     }
 
     private fun runFfmpeg(cmd: String) {
-        val rc = FFmpeg.execute(cmd)
-        if (rc != 0) {
-            val output = Config.getLastCommandOutput()
-            throw IllegalStateException("FFmpeg failed (code=$rc): $output")
+        val session = FFmpegKit.execute(cmd)
+        if (!ReturnCode.isSuccess(session.returnCode)) {
+            val output = session.output
+            val state = session.state
+            val rc = session.returnCode
+            throw IllegalStateException("FFmpeg failed (state=$state, rc=$rc): $output")
         }
     }
 
