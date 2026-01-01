@@ -246,6 +246,18 @@ class SettingsActivity : BaseNavigationActivity() {
             SpreadsheetEditorLauncher.launchNewSpreadsheet(this)
         }
 
+        // Learning Platform button
+        findViewById<Button?>(R.id.buttonLearningPlatform)?.setOnClickListener {
+            val intent = Intent(this, LearningPlatformActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Video Editor button
+        findViewById<Button?>(R.id.buttonVideoEditor)?.setOnClickListener {
+            val intent = Intent(this, VideoEditorActivity::class.java)
+            startActivity(intent)
+        }
+
         // Add Tool Selection button click listener (if button exists in layout)
         findViewById<Button?>(R.id.buttonToolSelection)?.setOnClickListener {
             val intent = Intent(this, com.blurr.voice.ui.tools.ToolSelectionActivity::class.java)

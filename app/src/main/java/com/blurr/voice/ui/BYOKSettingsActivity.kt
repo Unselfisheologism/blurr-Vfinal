@@ -49,10 +49,9 @@ class BYOKSettingsActivity : BaseNavigationActivity() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_byok_settings)
-        
+
         keyManager = ProviderKeyManager(this)
-        
+
         initializeViews()
         setupProviderSpinner()
         setupListeners()

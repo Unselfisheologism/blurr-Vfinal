@@ -2,6 +2,7 @@ package com.blurr.voice.apps.texteditor
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.blurr.voice.R
 import com.blurr.voice.agents.AgentFactory
 import com.blurr.voice.agents.UltraGeneralistAgent
 import com.blurr.voice.apps.base.AgentIntegration
@@ -10,7 +11,7 @@ import com.blurr.voice.apps.base.ProGatingManager
 import com.blurr.voice.apps.base.SystemPrompts
 import com.blurr.voice.core.providers.UniversalLLMService
 import com.blurr.voice.utilities.FreemiumManager
-import io.flutter.embedding.android.FlutterView
+import io.flutter.embedding.android.FlutterFragment
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.plugin.common.MethodChannel
@@ -28,7 +29,7 @@ import kotlinx.coroutines.withContext
 class TextEditorActivity : AppCompatActivity() {
     
     companion object {
-        private const val FLUTTER_ENGINE_ID = "blurr_flutter_engine"
+        private const val FLUTTER_ENGINE_ID = "text_editor_engine"
         private const val AI_ASSISTANCE_CHANNEL = "ai_assistance"
         private const val TEXT_EDITOR_ROUTE = "/text_editor"
     }
@@ -44,12 +45,13 @@ class TextEditorActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+        setContentView(R.layout.activity_text_editor)
+
         // Initialize managers
         freemiumManager = FreemiumManager(this)
         proGatingManager = ProGatingManager(this)
         proGatingManager.updateSubscriptionStatus(freemiumManager.hasActiveSubscription())
-        
+
         // Initialize agent services
         llmService = UniversalLLMService(this)
         agent = AgentFactory.getAgent(this)
@@ -62,23 +64,34 @@ class TextEditorActivity : AppCompatActivity() {
     private fun setupFlutterEngine() {
         // Get or create Flutter engine
         flutterEngine = FlutterEngineCache.getInstance().get(FLUTTER_ENGINE_ID)
-        
-        if (flutterEngine == null) {
-            flutterEngine = FlutterEngine(this)
-            FlutterEngineCache.getInstance().put(FLUTTER_ENGINE_ID, flutterEngine!!)
-        }
-
-        // Navigate to text editor route
-        flutterEngine?.navigationChannel?.pushRoute(TEXT_EDITOR_ROUTE)
+            ?: createFlutterEngine()
 
         // Set up method channel for AI assistance
         setupAIAssistanceChannel()
 
-        // Create Flutter view and attach engine
-        val flutterView = FlutterView(this)
-        flutterView.attachToFlutterEngine(flutterEngine!!)
+        // Add Flutter fragment if not already added
+        if (savedInstanceState == null) {
+            supportFragmentManager
+                .beginTransaction()
+                .add(
+                    R.id.flutter_container,
+                    FlutterFragment.withCachedEngine(FLUTTER_ENGINE_ID).build()
+                )
+                .commit()
+        }
+    }
 
-        setContentView(flutterView)
+    private fun createFlutterEngine(): FlutterEngine {
+        val engine = FlutterEngine(this)
+
+        // Navigate to text editor route
+        engine.navigationChannel.setInitialRoute(TEXT_EDITOR_ROUTE)
+        engine.dartExecutor.executeDartEntrypoint(
+            io.flutter.embedding.engine.dart.DartExecutor.DartEntrypoint.createDefault()
+        )
+
+        FlutterEngineCache.getInstance().put(FLUTTER_ENGINE_ID, engine)
+        return engine
     }
 
     private fun setupAIAssistanceChannel() {

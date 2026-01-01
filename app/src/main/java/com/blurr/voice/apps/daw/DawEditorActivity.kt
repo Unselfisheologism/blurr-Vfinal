@@ -2,6 +2,7 @@ package com.blurr.voice.apps.daw
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.blurr.voice.R
 import com.blurr.voice.agents.AgentFactory
 import com.blurr.voice.agents.UltraGeneralistAgent
 import com.blurr.voice.agents.ToolExecutor
@@ -12,7 +13,7 @@ import com.blurr.voice.core.providers.UniversalLLMService
 import com.blurr.voice.tools.MusicGenerationTool
 import com.blurr.voice.tools.AudioGenerationTool
 import com.blurr.voice.utilities.FreemiumManager
-import io.flutter.embedding.android.FlutterView
+import io.flutter.embedding.android.FlutterFragment
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.plugin.common.MethodChannel
@@ -32,7 +33,7 @@ import java.io.File
 class DawEditorActivity : AppCompatActivity() {
     
     companion object {
-        private const val FLUTTER_ENGINE_ID = "blurr_flutter_engine"
+        private const val FLUTTER_ENGINE_ID = "daw_editor_engine"
         private const val DAW_AUDIO_CHANNEL = "daw_audio"
         private const val DAW_AI_CHANNEL = "daw_ai"
         private const val DAW_PLATFORM_CHANNEL = "com.blurr.voice/daw_editor"
@@ -53,12 +54,13 @@ class DawEditorActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+        setContentView(R.layout.activity_daw_editor)
+
         // Initialize managers
         freemiumManager = FreemiumManager(this)
         proGatingManager = ProGatingManager(this)
         proGatingManager.updateSubscriptionStatus(freemiumManager.hasActiveSubscription())
-        
+
         // Initialize agent services
         llmService = UniversalLLMService(this)
         agent = AgentFactory.getAgent(this)
@@ -72,25 +74,36 @@ class DawEditorActivity : AppCompatActivity() {
     private fun setupFlutterEngine() {
         // Get or create Flutter engine
         flutterEngine = FlutterEngineCache.getInstance().get(FLUTTER_ENGINE_ID)
-        
-        if (flutterEngine == null) {
-            flutterEngine = FlutterEngine(this)
-            FlutterEngineCache.getInstance().put(FLUTTER_ENGINE_ID, flutterEngine!!)
-        }
-
-        // Navigate to DAW editor route
-        flutterEngine?.navigationChannel?.pushRoute(DAW_ROUTE)
+            ?: createFlutterEngine()
 
         // Set up method channels for DAW operations
         setupAudioChannel()
         setupAIChannel()
         setupPlatformChannel()
 
-        // Create Flutter view and attach engine
-        val flutterView = FlutterView(this)
-        flutterView.attachToFlutterEngine(flutterEngine!!)
+        // Add Flutter fragment if not already added
+        if (savedInstanceState == null) {
+            supportFragmentManager
+                .beginTransaction()
+                .add(
+                    R.id.flutter_container,
+                    FlutterFragment.withCachedEngine(FLUTTER_ENGINE_ID).build()
+                )
+                .commit()
+        }
+    }
 
-        setContentView(flutterView)
+    private fun createFlutterEngine(): FlutterEngine {
+        val engine = FlutterEngine(this)
+
+        // Navigate to DAW editor route
+        engine.navigationChannel.setInitialRoute(DAW_ROUTE)
+        engine.dartExecutor.executeDartEntrypoint(
+            io.flutter.embedding.engine.dart.DartExecutor.DartEntrypoint.createDefault()
+        )
+
+        FlutterEngineCache.getInstance().put(FLUTTER_ENGINE_ID, engine)
+        return engine
     }
 
     private fun setupAudioChannel() {

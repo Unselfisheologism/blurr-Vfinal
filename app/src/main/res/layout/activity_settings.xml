@@ -321,6 +321,28 @@
                 android:text="📈 AI Spreadsheet Editor"
                 android:textColor="@android:color/white" />
 
+            <!-- Learning Platform Button -->
+            <Button
+                android:id="@+id/buttonLearningPlatform"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/btn_with_border"
+                android:text="🎓 AI-Native Learning Hub"
+                android:textColor="@android:color/white" />
+
+            <!-- Video Editor Button -->
+            <Button
+                android:id="@+id/buttonVideoEditor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/btn_with_border"
+                android:text="🎬 AI Video Editor"
+                android:textColor="@android:color/white" />
+
             <!-- Tool Selection Button -->
             <Button
                 android:id="@+id/buttonToolSelection"
