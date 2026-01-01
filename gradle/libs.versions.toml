@@ -17,7 +17,8 @@ securityCrypto = "1.1.0-alpha06"
 playServicesAuth = "21.4.0"
 playServicesBasement = "18.9.0"
 appwrite = "5.0.0"
-ffmpegKit = "6.1.0"
+# FFmpeg Kit 16KB - community-maintained fork for Android API 35+ (16KB page size)
+ffmpegKit = "6.1.1"
 
 [libraries]
 androidx-core = { module = "androidx.core:core", version.ref = "coreKtxVersion" }

@@ -173,7 +173,9 @@ dependencies {
     // Mozilla Rhino for JavaScript execution
     implementation("org.mozilla:rhino:1.7.14")
 
-    // FFmpeg Kit 16KB for video processing (community-maintained fork of mobile-ffmpeg)
+    // FFmpeg Kit 16KB for video processing (community-maintained fork for Android 16KB page size)
+    // From: https://github.com/moizhassan/ffmpeg-kit-android-16kb
+    // Maven: com.moizhassan.ffmpeg:ffmpeg-kit-16kb:6.1.1
     implementation(libs.ffmpeg.kit)
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
     
