@@ -9,6 +9,7 @@ import com.blurr.voice.apps.base.AgentIntegration
 import com.blurr.voice.apps.base.AgentResult
 import com.blurr.voice.apps.base.ProGatingManager
 import com.blurr.voice.core.providers.UniversalLLMService
+import com.blurr.voice.flutter.FlutterRuntime
 import com.blurr.voice.tools.MusicGenerationTool
 import com.blurr.voice.tools.AudioGenerationTool
 import com.blurr.voice.utilities.FreemiumManager
@@ -53,12 +54,21 @@ class DawEditorActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
+        if (!FlutterRuntime.isAvailable()) {
+            FlutterRuntime.showUnavailableScreen(
+                activity = this,
+                featureTitle = "AI DAW Studio",
+                featureDescription = "AI-native music studio with timeline, tracks, AI generation, and export."
+            )
+            return
+        }
+
         // Initialize managers
         freemiumManager = FreemiumManager(this)
         proGatingManager = ProGatingManager(this)
         proGatingManager.updateSubscriptionStatus(freemiumManager.hasActiveSubscription())
-        
+
         // Initialize agent services
         llmService = UniversalLLMService(this)
         agent = AgentFactory.getAgent(this)

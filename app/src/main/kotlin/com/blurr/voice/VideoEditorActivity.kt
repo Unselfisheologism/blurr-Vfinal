@@ -3,6 +3,7 @@ package com.blurr.voice
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.blurr.voice.flutter.FlutterRuntime
 import com.blurr.voice.flutter.VideoEditorBridge
 import io.flutter.embedding.android.FlutterFragment
 import io.flutter.embedding.engine.FlutterEngine
@@ -25,6 +26,16 @@ class VideoEditorActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (!FlutterRuntime.isAvailable()) {
+            FlutterRuntime.showUnavailableScreen(
+                activity = this,
+                featureTitle = "AI Video Editor",
+                featureDescription = "CapCut-style multi-track editor with AI tooling and export."
+            )
+            return
+        }
+
         setContentView(R.layout.activity_video_editor)
 
         val flutterEngine = FlutterEngineCache.getInstance().get(ENGINE_ID) ?: createFlutterEngine()

@@ -14,7 +14,7 @@ object DawEditorLauncher {
      * Launch DAW Editor with a new empty project
      */
     fun launchNewProject(context: Context) {
-        val intent = Intent(context, DawEditorActivity::class.java)
+        val intent = Intent(context, com.blurr.voice.DawEditorActivity::class.java)
         context.startActivity(intent)
     }
 
@@ -22,8 +22,8 @@ object DawEditorLauncher {
      * Launch DAW Editor with a specific project
      */
     fun launchProject(context: Context, projectName: String) {
-        val intent = Intent(context, DawEditorActivity::class.java).apply {
-            putExtra("projectName", projectName)
+        val intent = Intent(context, com.blurr.voice.DawEditorActivity::class.java).apply {
+            putExtra("project_name", projectName)
         }
         context.startActivity(intent)
     }
@@ -32,8 +32,8 @@ object DawEditorLauncher {
      * Launch DAW Editor with AI generation mode
      */
     fun launchWithAiGeneration(context: Context) {
-        val intent = Intent(context, DawEditorActivity::class.java).apply {
-            putExtra("startWithAi", true)
+        val intent = Intent(context, com.blurr.voice.DawEditorActivity::class.java).apply {
+            putExtra("start_with_ai", true)
         }
         context.startActivity(intent)
     }

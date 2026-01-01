@@ -2,12 +2,12 @@ package com.blurr.voice.ui
 
 import android.os.Bundle
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import com.blurr.voice.BaseNavigationActivity
 import com.blurr.voice.R
 import com.blurr.voice.core.providers.LLMProvider
 import com.blurr.voice.core.providers.ProviderKeyManager
 import com.blurr.voice.core.providers.VoiceProviderConfig
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.CoroutineScope
@@ -36,11 +36,11 @@ class BYOKSettingsActivity : BaseNavigationActivity() {
     private lateinit var modelSpinner: Spinner
     private lateinit var statusText: TextView
     private lateinit var voiceCapabilitiesText: TextView
-    private lateinit var connectionStatusCard: LinearLayout
+    private lateinit var connectionStatusCard: MaterialCardView
     private lateinit var connectionStatusText: TextView
-    private lateinit var providerCapabilitiesCard: LinearLayout
+    private lateinit var providerCapabilitiesCard: MaterialCardView
     private lateinit var providerCapabilitiesText: TextView
-    private lateinit var availableModelsCard: LinearLayout
+    private lateinit var availableModelsCard: MaterialCardView
     private lateinit var availableModelsText: TextView
     
     override fun getContentLayoutId(): Int = R.layout.activity_byok_settings

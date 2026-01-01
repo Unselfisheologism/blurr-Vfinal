@@ -3,11 +3,12 @@ package com.blurr.voice
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.blurr.voice.flutter.FlutterRuntime
+import com.blurr.voice.flutter.SpreadsheetEditorBridge
 import io.flutter.embedding.android.FlutterFragment
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.embedding.engine.dart.DartExecutor
-import com.blurr.voice.flutter.SpreadsheetEditorBridge
 
 /**
  * Activity for hosting the Flutter spreadsheet editor
@@ -28,18 +29,28 @@ class SpreadsheetEditorActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (!FlutterRuntime.isAvailable()) {
+            FlutterRuntime.showUnavailableScreen(
+                activity = this,
+                featureTitle = "AI Spreadsheet Editor",
+                featureDescription = "Spreadsheet editor with AI assistance (formulas, tables, analysis)."
+            )
+            return
+        }
+
         setContentView(R.layout.activity_spreadsheet_editor)
-        
+
         // Get or create Flutter engine
         val flutterEngine = FlutterEngineCache.getInstance().get(ENGINE_ID)
             ?: createFlutterEngine()
-        
+
         // Create bridge for platform communication
         bridge = SpreadsheetEditorBridge(this, flutterEngine)
-        
+
         // Handle intent extras
         handleIntentExtras()
-        
+
         // Add Flutter fragment if not already added
         if (savedInstanceState == null) {
             supportFragmentManager
@@ -67,17 +78,18 @@ class SpreadsheetEditorActivity : AppCompatActivity() {
     }
     
     private fun createFlutterEngine(): FlutterEngine {
-        // Create new Flutter engine
         val engine = FlutterEngine(this)
-        
-        // Start executing Dart code
+
+        // Ensure the embedded engine boots directly into the spreadsheet editor.
+        engine.navigationChannel.setInitialRoute("/spreadsheet_editor")
+
         engine.dartExecutor.executeDartEntrypoint(
             DartExecutor.DartEntrypoint.createDefault()
         )
-        
+
         // Cache the engine for reuse
         FlutterEngineCache.getInstance().put(ENGINE_ID, engine)
-        
+
         return engine
     }
     
