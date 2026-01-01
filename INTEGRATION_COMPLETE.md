@@ -2,7 +2,26 @@
 
 ## 🎉 All Integration Steps Completed
 
-Following the `INTEGRATION_GUIDE.md`, all integration steps have been successfully completed!
+Following the `flutter_workflow_editor/INTEGRATION_GUIDE.md`, all integration steps have been successfully completed!
+
+> **Important:** If you see the error "this build does not include the embedded Flutter module" when trying to open any AI-native app (workflow editor, spreadsheet, DAW, video editor, etc.), you need to generate the Flutter Android artifacts first. See `flutter_workflow_editor/IMPLEMENTATION_GUIDE.md` for step-by-step instructions.
+
+## Documentation Guide
+
+Two guides are available for the Flutter workflow editor:
+
+1. **`flutter_workflow_editor/IMPLEMENTATION_GUIDE.md`** (NEW)
+   - Generate Flutter Android artifacts (.android/Flutter directory)
+   - Create AAR files for Android integration
+   - Required step before the Flutter module can be used
+   - **Do this first!**
+
+2. **`flutter_workflow_editor/INTEGRATION_GUIDE.md`**
+   - Set up platform channels between Flutter and Kotlin
+   - Configure WorkflowEditorHandler
+   - Register method handlers
+   - Launch Flutter activities/fragments
+   - **Do this after generating artifacts**
 
 ---
 
