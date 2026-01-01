@@ -69,3 +69,10 @@
 # 7. UI Automator (Since you included it in 'implementation')
 # ----------------------------------------------------------------------------
 -dontwarn androidx.test.uiautomator.**
+
+# ----------------------------------------------------------------------------
+# 8. FFmpeg Kit 16KB (Community-maintained fork)
+# ----------------------------------------------------------------------------
+-keep class com.moizhassan.ffmpeg.** { *; }
+-keep interface com.moizhassan.ffmpeg.** { *; }
+-dontwarn com.moizhassan.ffmpeg.**
