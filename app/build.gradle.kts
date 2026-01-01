@@ -185,7 +185,11 @@ dependencies {
     implementation("com.moizhassan.ffmpeg:ffmpeg-kit-16kb:6.1.1")
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
     
-    // Flutter stubs: allow compilation when Flutter SDK/artifacts are not available.
-    // When integrating a real Flutter module, remove this and depend on the generated Flutter module.
+    // Flutter module integration
+    // Use flutter_stubs for compilation when Flutter SDK/artifacts are not available
+    // When integrating a real Flutter module, generate artifacts with:
+    //   cd flutter_workflow_editor && flutter pub get && flutter build aar --release
+    // Then replace the stubs dependency below with:
+    //   implementation(project(":flutter_workflow_editor"))
     implementation(project(":flutter_stubs"))
 }
