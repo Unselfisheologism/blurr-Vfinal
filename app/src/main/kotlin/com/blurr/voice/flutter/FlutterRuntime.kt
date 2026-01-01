@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Button
 import android.widget.TextView
+import com.blurr.voice.BuildConfig
 import com.blurr.voice.R
 
 object FlutterRuntime {
@@ -14,6 +15,8 @@ object FlutterRuntime {
      * lightweight stubs (see :flutter_stubs). Those stubs compile but cannot render Flutter UI.
      */
     fun isAvailable(): Boolean {
+        if (!BuildConfig.HAS_EMBEDDED_FLUTTER_MODULE) return false
+
         return runCatching {
             Class.forName("io.flutter.embedding.engine.loader.FlutterLoader")
         }.isSuccess
@@ -34,7 +37,7 @@ object FlutterRuntime {
                 append("\n\n")
             }
             append(
-                "This build does not include the embedded Flutter module, so the editor cannot be displayed. " +
+                "This build does not include the embedded Flutter module, so this feature cannot be displayed. " +
                     "If you're building from source, generate the Flutter Android artifacts (see flutter_workflow_editor/INTEGRATION_GUIDE.md) and rebuild."
             )
         }
