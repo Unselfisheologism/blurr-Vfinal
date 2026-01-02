@@ -1,0 +1,8 @@
+# This file tracks properties of this Flutter project.
+# Used by Flutter tool to analyze consistency and support project migrations.
+
+version:
+  revision: "2663184aa76c692c7e2c3c3a2f5b00eb98d9e0ab"
+  channel: stable
+
+project_type: module
