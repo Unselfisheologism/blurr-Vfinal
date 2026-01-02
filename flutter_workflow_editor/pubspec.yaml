@@ -12,7 +12,7 @@ dependencies:
     sdk: flutter
   
   # Core node editor engine
-  fl_nodes:
+  fl_nodes_workspace:
     git:
       url: https://github.com/WilliamKarolDiCioccio/fl_nodes.git
       ref: main
@@ -119,6 +119,9 @@ dev_dependencies:
   flutter_lints: ^3.0.1
 
 flutter:
+  module:
+    androidPackage: com.blurr.voice.workflow
+    iosBundleIdentifier: com.blurr.voice.workflow
   uses-material-design: true
   
   fonts:
