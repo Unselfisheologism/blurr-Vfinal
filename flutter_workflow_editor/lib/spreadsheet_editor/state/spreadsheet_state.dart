@@ -129,7 +129,7 @@ class SpreadsheetState extends ChangeNotifier {
     if (cell == null) return;
 
     final updatedCell = cell.copyWith(format: format);
-    final (row, col) = _parseC ellId(cellId);
+    final (row, col) = _parseCellId(cellId);
     final updatedSheet = currentSheet!.setCell(row, col, updatedCell);
     _updateCurrentSheet(updatedSheet);
   }

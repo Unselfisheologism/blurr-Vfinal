@@ -296,8 +296,11 @@ class DawAiIntegration {
       // In a real implementation, this would call the native AI service
       final suggestions = <String, double>{};
       for (final track in trackInfo) {
-        suggestions['${track['id']}_volume'] = 0.7 + (0.3 * (track['clipCount'] as int % 3) / 3);
-        suggestions['${track['id']}_pan'] = (track['name'].toString().hashCode % 3 - 1) * 0.3;
+        final clipCount = track['clipCount'] as int? ?? 0;
+        final id = track['id'];
+        suggestions['${id}_volume'] = 0.7 + (0.3 * ((clipCount % 3) / 3));
+        suggestions['${id}_pan'] =
+            (track['name'].toString().hashCode % 3 - 1) * 0.3;
       }
 
       return suggestions;
