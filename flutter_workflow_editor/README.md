@@ -1,6 +1,6 @@
-# flutter_workflow_editor_module
+# flutter_workflow_editor
 
-A new Flutter module project.
+Flutter module that provides Blurr's AI-native editors (workflow, spreadsheet, text, DAW, media canvas, video, learning hub).
 
 ## Getting Started
 

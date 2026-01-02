@@ -186,8 +186,15 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
     
     // Flutter module integration
-    // Using real Flutter module with Android artifacts
-    // To generate Flutter AAR artifacts, run:
+    // Prefer the real Flutter module once its Android artifacts have been generated.
+    // If the module isn't available (e.g. no Flutter SDK/artifacts on this machine yet),
+    // fall back to lightweight stubs so the project can still compile.
+    //
+    // To generate Flutter Android artifacts:
     //   cd flutter_workflow_editor && flutter pub get && flutter build aar --release
-    implementation(project(":flutter_workflow_editor"))
+    if (rootProject.findProject(":flutter_workflow_editor") != null) {
+        implementation(project(":flutter_workflow_editor"))
+    } else {
+        implementation(project(":flutter_stubs"))
+    }
 }
