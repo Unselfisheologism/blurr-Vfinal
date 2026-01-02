@@ -1,0 +1,5 @@
+version:
+  revision: "2663184aa76c692c7e2c3c3a2f5b00eb98d9e0ab"
+  channel: "stable"
+
+project_type: "module"
