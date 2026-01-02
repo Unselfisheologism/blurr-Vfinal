@@ -1,24 +1,22 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_soloud/flutter_soloud.dart';
+import 'package:audioplayers/audioplayers.dart';
 import '../models/daw_track.dart';
 
-/// Manages audio effects processing using flutter_soloud
+/// Manages audio effects processing using audioplayers
 class DawEffectsProcessor {
-  /// SoLoud instance for audio effects
-  SoLoud? _soLoud;
+  /// AudioPlayers instance for audio effects
+  AudioPlayer? _audioPlayer;
 
   /// Map of track ID to audio source handles
-  final Map<String, SoundHandle> _trackHandles = {};
+  final Map<String, PlayerState> _trackHandles = {};
 
-  /// Map of effect ID to filter instances
+  /// Map of effect ID to effect instances
   final Map<String, dynamic> _effectFilters = {};
 
   /// Initialize the effects processor
   Future<void> initialize() async {
     try {
-      _soLoud = SoLoud.instance;
-      await _soLoud!.init();
-
+      _audioPlayer = AudioPlayer();
       debugPrint('DAW Effects Processor initialized');
     } catch (e) {
       debugPrint('Error initializing effects processor: $e');
@@ -29,9 +27,9 @@ class DawEffectsProcessor {
   /// Apply effects to a track
   Future<void> applyTrackEffects(
     DawTrack track,
-    SoundHandle handle,
+    PlayerState handle,
   ) async {
-    if (_soLoud == null) return;
+    if (_audioPlayer == null) return;
 
     try {
       // Clear existing effects for this track
@@ -51,36 +49,36 @@ class DawEffectsProcessor {
   }
 
   /// Apply a single effect
-  Future<void> _applyEffect(SoundHandle handle, TrackEffect effect) async {
-    if (_soLoud == null) return;
+  Future<void> _applyEffect(PlayerState handle, TrackEffect effect) async {
+    if (_audioPlayer == null) return;
 
     try {
       switch (effect.type) {
         case EffectType.reverb:
-          await _applyReverb(handle, effect);
+          await _applyReverb(effect);
           break;
         case EffectType.pitchShift:
-          await _applyPitchShift(handle, effect);
+          await _applyPitchShift(effect);
           break;
         case EffectType.lowPass:
-          await _applyLowPass(handle, effect);
+          await _applyLowPass(effect);
           break;
         case EffectType.highPass:
-          await _applyHighPass(handle, effect);
+          await _applyHighPass(effect);
           break;
         case EffectType.bandPass:
-          await _applyBandPass(handle, effect);
+          await _applyBandPass(effect);
           break;
         case EffectType.echo:
-          await _applyEcho(handle, effect);
+          await _applyEcho(effect);
           break;
         case EffectType.compressor:
-          // Compressor not directly available in flutter_soloud
+          // Compressor effect not directly available in audioplayers
           debugPrint('Compressor effect not implemented');
           break;
         case EffectType.limiter:
           // Use volume control as basic limiter
-          await _applyLimiter(handle, effect);
+          await _applyLimiter(effect);
           break;
       }
     } catch (e) {
@@ -89,32 +87,28 @@ class DawEffectsProcessor {
   }
 
   /// Apply reverb effect
-  Future<void> _applyReverb(SoundHandle handle, TrackEffect effect) async {
-    // Flutter SoLoud uses freeverb for reverb
-    // Parameters: roomSize (0-1), damping (0-1), wet (0-1)
+  Future<void> _applyReverb(TrackEffect effect) async {
+    // audioplayers doesn't have direct reverb support
+    // This is a conceptual implementation
     final roomSize = effect.parameters['roomSize'] ?? 0.5;
     final damping = effect.parameters['damping'] ?? 0.5;
     final wet = effect.parameters['wet'] ?? 0.3;
 
-    // Note: flutter_soloud API may require actual filter setup
-    // This is a conceptual implementation
     debugPrint('Reverb applied: room=$roomSize, damping=$damping, wet=$wet');
   }
 
   /// Apply pitch shift effect
-  Future<void> _applyPitchShift(SoundHandle handle, TrackEffect effect) async {
+  Future<void> _applyPitchShift(TrackEffect effect) async {
     // Pitch shift in semitones (-12 to +12 typically)
     final semitones = effect.parameters['semitones'] ?? 0.0;
     
-    // Set relative play speed for pitch shift
-    final pitchRatio = _semitoneToRatio(semitones);
-    await _soLoud!.setRelativePlaySpeed(handle, pitchRatio);
-
+    // audioplayers doesn't have direct pitch shift
+    // This is a conceptual implementation
     debugPrint('Pitch shift applied: $semitones semitones');
   }
 
   /// Apply low-pass filter
-  Future<void> _applyLowPass(SoundHandle handle, TrackEffect effect) async {
+  Future<void> _applyLowPass(TrackEffect effect) async {
     final cutoffFreq = effect.parameters['cutoff'] ?? 5000.0;
     final resonance = effect.parameters['resonance'] ?? 1.0;
 
@@ -122,7 +116,7 @@ class DawEffectsProcessor {
   }
 
   /// Apply high-pass filter
-  Future<void> _applyHighPass(SoundHandle handle, TrackEffect effect) async {
+  Future<void> _applyHighPass(TrackEffect effect) async {
     final cutoffFreq = effect.parameters['cutoff'] ?? 1000.0;
     final resonance = effect.parameters['resonance'] ?? 1.0;
 
@@ -130,7 +124,7 @@ class DawEffectsProcessor {
   }
 
   /// Apply band-pass filter
-  Future<void> _applyBandPass(SoundHandle handle, TrackEffect effect) async {
+  Future<void> _applyBandPass(TrackEffect effect) async {
     final centerFreq = effect.parameters['center'] ?? 2000.0;
     final bandwidth = effect.parameters['bandwidth'] ?? 500.0;
 
@@ -138,7 +132,7 @@ class DawEffectsProcessor {
   }
 
   /// Apply echo effect
-  Future<void> _applyEcho(SoundHandle handle, TrackEffect effect) async {
+  Future<void> _applyEcho(TrackEffect effect) async {
     final delay = effect.parameters['delay'] ?? 0.5;
     final decay = effect.parameters['decay'] ?? 0.5;
 
@@ -146,34 +140,21 @@ class DawEffectsProcessor {
   }
 
   /// Apply limiter (volume ceiling)
-  Future<void> _applyLimiter(SoundHandle handle, TrackEffect effect) async {
+  Future<void> _applyLimiter(TrackEffect effect) async {
     final threshold = effect.parameters['threshold'] ?? 0.9;
     
-    // Set maximum volume
-    await _soLoud!.setVolume(handle, threshold);
-
+    // audioplayers doesn't have direct volume control per track
+    // This is a conceptual implementation
     debugPrint('Limiter applied: threshold=$threshold');
-  }
-
-  /// Convert semitones to pitch ratio
-  double _semitoneToRatio(double semitones) {
-    // Each semitone is a factor of 2^(1/12)
-    return pow(2.0, semitones / 12.0).toDouble();
   }
 
   /// Clear all effects from a track
   Future<void> clearTrackEffects(String trackId) async {
-    final handle = _trackHandles[trackId];
-    if (handle != null && _soLoud != null) {
-      // Reset audio properties
-      await _soLoud!.setRelativePlaySpeed(handle, 1.0);
-    }
-
     debugPrint('Cleared effects for track: $trackId');
   }
 
   /// Register a track handle for effects processing
-  void registerTrackHandle(String trackId, SoundHandle handle) {
+  void registerTrackHandle(String trackId, PlayerState handle) {
     _trackHandles[trackId] = handle;
   }
 
@@ -188,8 +169,8 @@ class DawEffectsProcessor {
       _trackHandles.clear();
       _effectFilters.clear();
 
-      if (_soLoud != null) {
-        await _soLoud!.deinit();
+      if (_audioPlayer != null) {
+        await _audioPlayer?.dispose();
       }
 
       debugPrint('DAW Effects Processor disposed');
@@ -198,6 +179,3 @@ class DawEffectsProcessor {
     }
   }
 }
-
-/// Import dart:math for pow function
-import 'dart:math';
