@@ -22,3 +22,11 @@ app/google-services.json
 *.class
 *.kotlin_module
 META-INF/
+
+# Flutter build artifacts (generated during CI)
+flutter_workflow_editor/.android/
+flutter_workflow_editor/build/
+flutter_workflow_editor/.flutter-plugins
+flutter_workflow_editor/.flutter-plugins-dependencies
+flutter_workflow_editor/.packages
+flutter_workflow_editor/pubspec.lock
