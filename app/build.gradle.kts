@@ -186,10 +186,15 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
     
     // Flutter module integration
-    // Use flutter_stubs for compilation when Flutter SDK/artifacts are not available
-    // When integrating a real Flutter module, generate artifacts with:
-    //   cd flutter_workflow_editor && flutter pub get && flutter build aar --release
-    // Then replace the stubs dependency below with:
-    //   implementation(project(":flutter_workflow_editor"))
-    implementation(project(":flutter_stubs"))
+    // When Flutter SDK/artifacts are available and AAR is built, use real Flutter module
+    // Otherwise use flutter_stubs for compilation
+    // To build Flutter artifacts: cd flutter_workflow_editor && flutter pub get && flutter build aar --release
+    val flutterModuleExists = file("../flutter_workflow_editor/.android/Flutter").exists()
+    if (flutterModuleExists) {
+        println("Using real Flutter module: flutter_workflow_editor")
+        implementation(project(":flutter_workflow_editor"))
+    } else {
+        println("Flutter module not built, using flutter_stubs for compilation only")
+        implementation(project(":flutter_stubs"))
+    }
 }

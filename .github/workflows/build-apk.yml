@@ -11,6 +11,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # Get the app source
+      - name: Get the source
+        uses: actions/checkout@v3
+
       - name: Setup Gradle Cache
         uses: actions/cache@v3
         with:
@@ -20,10 +24,6 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-
-      # Get the app source
-      - name: Get the source
-        uses: actions/checkout@v3
 
       - name: Setup JDK
         uses: actions/setup-java@v4
@@ -35,6 +35,28 @@ jobs:
       # Set up Android SDK
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+
+      # Set up Flutter SDK
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      # Verify Flutter installation
+      - name: Verify Flutter installation
+        run: |
+          flutter doctor
+          flutter --version
+
+      # Build Flutter AAR artifacts for Android integration
+      - name: Build Flutter Module
+        run: |
+          cd flutter_workflow_editor
+          flutter pub get
+          flutter build aar --release
+          echo "Flutter AAR artifacts built successfully"
+          ls -la .android/Flutter/
 
       # Make gradlew executable and fix line endings
       - name: Fix gradlew permissions and line endings
