@@ -21,7 +21,8 @@ object FlutterRuntime {
      *
      * To enable Flutter features, run:
      *   cd flutter_workflow_editor && flutter pub get && flutter build aar --release
-     * Then update app/build.gradle.kts to depend on :flutter_workflow_editor instead of :flutter_stubs
+     * Then rebuild the Android app. Gradle will automatically use the real Flutter module when the
+     * generated Android project exists; otherwise it will fall back to :flutter_stubs.
      *
      * See /FLUTTER_INTEGRATION_STATUS.md for complete documentation.
      */

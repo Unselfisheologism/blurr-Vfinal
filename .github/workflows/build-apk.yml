@@ -36,13 +36,52 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Install Android SDK packages
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # android-actions/setup-android sets ANDROID_SDK_ROOT/ANDROID_HOME on PATH, but be defensive.
+          SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
+          if [ -z "${SDK_ROOT}" ]; then
+            echo "ANDROID_SDK_ROOT/ANDROID_HOME not set" >&2
+            exit 1
+          fi
+
+          SDKMANAGER="${SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "${SDKMANAGER}" ]; then
+            SDKMANAGER="sdkmanager"
+          fi
+
+          yes | "${SDKMANAGER}" --licenses
+          "${SDKMANAGER}" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+      # Set up Flutter SDK (required to embed Flutter UI into the APK)
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.24.5'
+          cache: true
+
+      - name: Flutter doctor
+        run: flutter doctor -v
+
+      # Generate Flutter Android artifacts (.android/Flutter) so Gradle includes :flutter_workflow_editor
+      - name: Build Flutter AAR (add-to-app)
+        working-directory: flutter_workflow_editor
+        run: |
+          flutter pub get
+          yes | flutter doctor --android-licenses
+          flutter build aar --release
+
       # Make gradlew executable and fix line endings
       - name: Fix gradlew permissions and line endings
         run: |
           chmod +x ./gradlew
           dos2unix ./gradlew || true
 
-      # Clean and compile the apk
+      # Clean and compile the apk (now includes embedded Flutter module)
       - name: Clean and Generate Debug APK
         run: |
           ./gradlew clean assembleDebug --warning-mode=all --stacktrace

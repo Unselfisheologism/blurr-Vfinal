@@ -1,5 +1,5 @@
-name: workflow_editor
-description: Advanced node-based workflow editor for AI super assistant (powered by fl_nodes)
+name: flutter_workflow_editor
+description: Advanced node-based workflow editor for AI super assistant
 version: 1.0.0
 publish_to: 'none'
 
@@ -10,104 +10,95 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  
-  # Core node editor engine
-  fl_nodes:
-    git:
-      url: https://github.com/WilliamKarolDiCioccio/fl_nodes.git
-      ref: main
-  
+
   # State management
   provider: ^6.1.1
   riverpod: ^2.4.9
   flutter_riverpod: ^2.4.9
-  
+
   # Local storage
   shared_preferences: ^2.2.2
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   path_provider: ^2.1.1
-  
+
   # JSON handling
   json_annotation: ^4.8.1
   freezed_annotation: ^2.4.1
-  
+
   # UUID generation
   uuid: ^4.3.3
-  
+
   # Platform channels for native communication
   flutter_platform_widgets: ^6.0.2
-  
+
   # UI components
   flutter_svg: ^2.0.9
   dotted_border: ^2.1.0
   animations: ^2.0.11
   flutter_colorpicker: ^1.0.3
   font_awesome_flutter: ^10.6.0
-  
+
   # Code editor for Unified Shell node
   flutter_code_editor: ^0.3.0
   flutter_highlight: ^0.7.0
   highlight: ^0.7.0
-  
+
   # Expression parser for data transformation
   expressions: ^0.2.5+1
-  
+
   # HTTP for webhook/API nodes
   http: ^1.1.2
   dio: ^5.4.0
-  
+
   # Cron parser for scheduling
   cron: ^0.5.1
-  
+
   # File picker for import/export
   file_picker: ^6.1.1
-  
+
   # Collection utilities
   collection: ^1.18.0
-  
+
   # Async utilities
   async: ^2.11.0
   rxdart: ^0.27.7
-  
+
   # Rich text editor for AI-Native Text Editor app
   flutter_quill: ^9.4.6
   flutter_quill_extensions: ^9.4.6
   vsc_quill_delta_to_html: ^1.0.0
-  
+
   # PDF generation for text editor exports
   pdf: ^3.10.7
   printing: ^5.12.0
-  
+
   # Image picker for text editor embeds
   image_picker: ^1.0.7
-  
+
   # Video preview
   video_player: ^2.8.6
-  
+
   # File sharing
   share_plus: ^7.2.1
-  
-  # File system paths
-  path_provider: ^2.1.1
-  
+
   # Image handling
   image: ^4.1.3
-  
+
   # Syncfusion packages for Spreadsheets (Epic 3)
   syncfusion_flutter_datagrid: ^24.2.9
   syncfusion_flutter_core: ^24.2.9
   syncfusion_flutter_charts: ^24.2.9
   syncfusion_flutter_xlsio: ^24.2.9
-  
+
   # Excel file operations
   open_file: ^3.3.2
-  
+
   # Audio packages for DAW (Epic 5)
   audio_waveforms: ^1.0.5
   just_audio: ^0.9.36
-  flutter_soloud: ^2.3.2
-  
+  flutter_soloud: ^3.2.7
+
   # Audio file handling
   audioplayers: ^5.2.1
   record: ^5.0.4
@@ -123,13 +114,24 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  
+
   fonts:
     - family: JetBrainsMono
       fonts:
         - asset: packages/flutter_code_editor/fonts/JetBrainsMono-Regular.ttf
-  
+
   assets:
     - assets/icons/
     - assets/templates/
     - assets/node_icons/
+
+  # This section identifies your Flutter project as a module meant for
+  # embedding in a native host app.  These identifiers should _not_ ordinarily
+  # be changed after generation - they are used to ensure that the tooling can
+  # maintain consistency when adding or modifying assets and plugins.
+  # They also do not have any bearing on your native host application's
+  # identifiers, which may be completely independent or the same as these.
+  module:
+    androidX: true
+    androidPackage: com.blurr.flutter_workflow_editor
+    iosBundleIdentifier: com.blurr.flutterWorkflowEditor
