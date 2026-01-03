@@ -55,6 +55,12 @@ jobs:
           cd flutter_workflow_editor
           # Ensure .android directory exists
           mkdir -p .android
+          # Copy init.gradle to Gradle's init.d directory for automatic application
+          mkdir -p ~/.gradle/init.d
+          if [ -f .android/init.gradle ]; then
+            cp .android/init.gradle ~/.gradle/init.d/
+            echo "Copied init.gradle to ~/.gradle/init.d/"
+          fi
           # Display Gradle configuration for debugging
           echo "=== gradle.properties ==="
           cat .android/gradle.properties || echo "No gradle.properties found"
@@ -74,7 +80,7 @@ jobs:
           
           while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
             echo "Attempting Flutter AAR build (attempt $((RETRY_COUNT + 1))/$MAX_RETRIES)..."
-            if flutter build aar --release --verbose --init-script=.android/init.gradle; then
+            if flutter build aar --release --verbose; then
               echo "Flutter AAR artifacts built successfully"
               ls -la .android/Flutter/
               exit 0
