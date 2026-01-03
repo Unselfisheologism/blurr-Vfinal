@@ -1,0 +1,3 @@
+// Minimal Flutter module settings.gradle
+include ':flutter_workflow_editor'
+project(':flutter_workflow_editor').projectDir = file('.')

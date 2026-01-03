@@ -1,0 +1,51 @@
+// Minimal Flutter module build.gradle for AAR generation
+// This allows the build to work without requiring full Flutter SDK
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.1.0'
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    namespace 'io.flutter'
+    compileSdk 33
+    
+    defaultConfig {
+        minSdk 24
+        targetSdk 33
+        
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+    
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'androidx.annotation:annotation:1.7.0'
+    implementation 'androidx.fragment:fragment:1.7.1'
+    implementation 'com.google.android.material:material:1.11.0'
+    
+    // Flutter embedding dependencies (stub versions)
+    // These are minimal stubs that allow compilation without Flutter SDK
+    implementation 'io.flutter:flutter_embedding_debug:1.0.0'
+    implementation 'io.flutter:flutter_embedding_release:1.0.0'
+}
