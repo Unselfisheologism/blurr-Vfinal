@@ -4,7 +4,7 @@ library;
 
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:fl_nodes_workspace/fl_nodes.dart';
+import 'package:fl_nodes/fl_nodes.dart';
 import '../models/workflow.dart';
 import '../models/workflow_node.dart';
 import 'platform_bridge.dart';

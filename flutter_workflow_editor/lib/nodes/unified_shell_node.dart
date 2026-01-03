@@ -2,7 +2,7 @@
 /// Exposes the app's powerful multi-language shell to workflows
 library;
 
-import 'package:fl_nodes_workspace/fl_nodes.dart';
+import 'package:fl_nodes/fl_nodes.dart';
 import 'package:flutter/material.dart';
 
 /// Unified Shell node prototype factory - CORRECTED
@@ -160,7 +160,7 @@ class UnifiedShellNodePrototype {
               ? [
                   BoxShadow(
                     color: const Color(0xFFFF9800).withOpacity(0.5),
-                    blurradius: 10,
+                    blurRadius: 10,
                     spreadRadius: 2,
                   )
                 ]

@@ -84,6 +84,7 @@ class DawAiIntegration {
     double duration = 10.0,
     int? tempo,
     String? style,
+    Map<String, dynamic>? additionalParams,
   }) async {
     try {
       debugPrint('Generating AI stem: ${stemType.name}');
@@ -95,6 +96,7 @@ class DawAiIntegration {
         duration: duration,
         tempo: tempo,
         style: style,
+        additionalParams: additionalParams,
       );
 
       // Call the AI agent to generate audio via platform bridge

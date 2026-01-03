@@ -23,7 +23,7 @@ class CellFormat {
   final double? fontSize;
   final String? textColor; // Color as hex string
   final String? backgroundColor;
-  final TextAlign? alignment;
+  final Alignment? alignment;
   final String? numberFormat; // e.g., "0.00", "$#,##0.00"
 
   const CellFormat({
@@ -49,7 +49,7 @@ class CellFormat {
     double? fontSize,
     String? textColor,
     String? backgroundColor,
-    TextAlign? alignment,
+    Alignment? alignment,
     String? numberFormat,
   }) {
     return CellFormat(

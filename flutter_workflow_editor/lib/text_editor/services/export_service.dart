@@ -7,6 +7,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flutter_quill/quill_delta.dart';
 import 'package:vsc_quill_delta_to_html/vsc_quill_delta_to_html.dart';
 import '../models/document.dart';
 
@@ -385,7 +386,7 @@ class ExportService {
                   color: PdfColors.grey300,
                   borderRadius: pw.BorderRadius.circular(4),
                 ),
-                child: pw.Text(text, style: pw.TextStyle(fontFamily: 'Courier')),
+                child: pw.Text(text, style: pw.TextStyle(font: pw.Font.courier())),
               ),
             );
             continue;

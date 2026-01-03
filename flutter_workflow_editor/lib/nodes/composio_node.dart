@@ -2,7 +2,7 @@
 /// Dynamically loads and executes user-connected Composio tools
 library;
 
-import 'package:fl_nodes_workspace/fl_nodes.dart';
+import 'package:fl_nodes/fl_nodes.dart';
 import 'package:flutter/material.dart';
 
 /// Composio action node prototype - CORRECTED

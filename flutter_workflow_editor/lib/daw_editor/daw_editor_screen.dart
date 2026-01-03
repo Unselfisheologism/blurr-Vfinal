@@ -8,6 +8,7 @@ import 'widgets/daw_transport_controls.dart';
 import 'widgets/daw_mixer_panel.dart';
 import 'widgets/daw_track_list.dart';
 import 'widgets/daw_ai_toolbar.dart';
+import 'services/daw_export_service.dart';
 
 /// Main DAW Editor Screen - Entry point for the Digital Audio Workstation
 class DawEditorScreen extends StatefulWidget {

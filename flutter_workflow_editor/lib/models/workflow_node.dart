@@ -1,6 +1,7 @@
 /// Base workflow node model
 library;
 
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'workflow_node.g.dart';
@@ -61,14 +62,14 @@ enum PortType {
 class WorkflowNode {
   final String id;
   final String name;
-  final NodeType type;
-  final Map<String, dynamic> parameters;
+  final String type;
+  final Map<String, dynamic> data;
   final List<NodePort> inputs;
   final List<NodePort> outputs;
   
   // Position for vertical layout (top-to-bottom)
-  double x;
-  double y;
+  final double x;
+  final double y;
   
   // Visual properties
   final String? icon;
@@ -90,7 +91,7 @@ class WorkflowNode {
     required this.id,
     required this.name,
     required this.type,
-    this.parameters = const {},
+    this.data = const {},
     this.inputs = const [],
     this.outputs = const [],
     this.x = 0,
@@ -104,6 +105,8 @@ class WorkflowNode {
     this.executionError,
   });
 
+  Offset get position => Offset(x, y);
+
   factory WorkflowNode.fromJson(Map<String, dynamic> json) =>
       _$WorkflowNodeFromJson(json);
 
@@ -112,12 +115,13 @@ class WorkflowNode {
   WorkflowNode copyWith({
     String? id,
     String? name,
-    NodeType? type,
-    Map<String, dynamic>? parameters,
+    String? type,
+    Map<String, dynamic>? data,
     List<NodePort>? inputs,
     List<NodePort>? outputs,
     double? x,
     double? y,
+    Offset? position,
     String? icon,
     String? color,
     bool? disabled,
@@ -130,11 +134,11 @@ class WorkflowNode {
       id: id ?? this.id,
       name: name ?? this.name,
       type: type ?? this.type,
-      parameters: parameters ?? this.parameters,
+      data: data ?? this.data,
       inputs: inputs ?? this.inputs,
       outputs: outputs ?? this.outputs,
-      x: x ?? this.x,
-      y: y ?? this.y,
+      x: position?.dx ?? x ?? this.x,
+      y: position?.dy ?? y ?? this.y,
       icon: icon ?? this.icon,
       color: color ?? this.color,
       disabled: disabled ?? this.disabled,

@@ -842,8 +842,8 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
               children: [
                 // Standard Quill Toolbar
                 QuillSimpleToolbar(
-                  controller: _controller,
-                  config: QuillSimpleToolbarConfig(
+                  configurations: QuillSimpleToolbarConfigurations(
+                    controller: _controller,
                     multiRowsDisplay: false,
                     showAlignmentButtons: true,
                     showBackgroundColorButton: false,
@@ -903,10 +903,10 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
                 // Editor
                 Expanded(
                   child: QuillEditor(
-                    controller: _controller,
                     scrollController: _scrollController,
                     focusNode: _focusNode,
-                    config: QuillEditorConfig(
+                    configurations: QuillEditorConfigurations(
+                      controller: _controller,
                       padding: const EdgeInsets.all(16),
                       autoFocus: false,
                       expands: true,

@@ -182,10 +182,7 @@ class DawExportService {
       debugPrint('Loading project file: $filePath');
 
       // Call native load service via platform bridge
-      final result = await DawPlatformBridge.loadProject(null, null,
-        projectName: null,
-        projectPath: filePath,
-      );
+      final result = await DawPlatformBridge.loadProject(null, filePath);
 
       if (result != null) {
         // Deserialize to project
@@ -214,7 +211,7 @@ class DawExportService {
           final status = await Permission.storage.request();
           return status.isGranted;
         }
-      } else if (Platform.isiOS) {
+      } else if (Platform.isIOS) {
         // iOS doesn't require storage permission for app documents
         return true;
       }
