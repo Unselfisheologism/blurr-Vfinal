@@ -55,17 +55,11 @@ jobs:
           cd flutter_workflow_editor
           # Ensure .android directory exists
           mkdir -p .android
-          # Copy init.gradle to Gradle's init.d directory for automatic application
-          mkdir -p ~/.gradle/init.d
-          if [ -f .android/init.gradle ]; then
-            cp .android/init.gradle ~/.gradle/init.d/
-            echo "Copied init.gradle to ~/.gradle/init.d/"
-          fi
           # Display Gradle configuration for debugging
           echo "=== gradle.properties ==="
           cat .android/gradle.properties || echo "No gradle.properties found"
-          echo "=== init.gradle ==="
-          cat .android/init.gradle || echo "No init.gradle found"
+          echo "=== settings.gradle ==="
+          cat .android/settings.gradle || echo "No settings.gradle found"
 
       - name: Build Flutter Module (with retry)
         run: |
