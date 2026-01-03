@@ -62,7 +62,7 @@ class WorkflowNode {
   final String id;
   final String name;
   final NodeType type;
-  final Map<String, dynamic> parameters;
+  final Map<String, dynamic> data;
   final List<NodePort> inputs;
   final List<NodePort> outputs;
   
@@ -90,7 +90,7 @@ class WorkflowNode {
     required this.id,
     required this.name,
     required this.type,
-    this.parameters = const {},
+    this.data = const {},
     this.inputs = const [],
     this.outputs = const [],
     this.x = 0,
@@ -113,7 +113,7 @@ class WorkflowNode {
     String? id,
     String? name,
     NodeType? type,
-    Map<String, dynamic>? parameters,
+    Map<String, dynamic>? data,
     List<NodePort>? inputs,
     List<NodePort>? outputs,
     double? x,
@@ -130,7 +130,7 @@ class WorkflowNode {
       id: id ?? this.id,
       name: name ?? this.name,
       type: type ?? this.type,
-      parameters: parameters ?? this.parameters,
+      data: data ?? this.data,
       inputs: inputs ?? this.inputs,
       outputs: outputs ?? this.outputs,
       x: x ?? this.x,

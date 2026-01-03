@@ -76,7 +76,7 @@ class WorkflowState extends ChangeNotifier {
     notifyListeners();
   }
   
-  void addNodeFromFlNode(NodeInstance flNode) {
+  void addNodeFromFlNode(dynamic flNode) {
     addNode(
       type: flNode.prototype.idName,
       name: flNode.prototype.displayName,
@@ -186,7 +186,7 @@ class WorkflowState extends ChangeNotifier {
     notifyListeners();
   }
   
-  void addConnectionFromFlLink(LinkInstance flLink) {
+  void addConnectionFromFlLink(dynamic flLink) {
     addConnection(
       sourceNodeId: flLink.sourceNodeId,
       targetNodeId: flLink.targetNodeId,

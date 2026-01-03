@@ -74,7 +74,7 @@ jobs:
           
           while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
             echo "Attempting Flutter AAR build (attempt $((RETRY_COUNT + 1))/$MAX_RETRIES)..."
-            if flutter build aar --release --verbose; then
+            if flutter build aar --release; then
               echo "Flutter AAR artifacts built successfully"
               ls -la .android/Flutter/
               exit 0

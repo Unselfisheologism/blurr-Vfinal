@@ -30,8 +30,8 @@ class VerticalLayoutAdapter {
   
   /// Calculate optimal position for a new node
   Offset calculateNewNodePosition(
-    List<NodeInstance> existingNodes,
-    NodeInstance? parentNode,
+    List<dynamic> existingNodes,
+    dynamic parentNode,
   ) {
     if (parentNode != null) {
       // Position below parent
@@ -57,7 +57,7 @@ class VerticalLayoutAdapter {
   }
   
   /// Auto-arrange all nodes vertically
-  void autoArrangeNodes(List<NodeInstance> nodes, List<LinkInstance> connections) {
+  void autoArrangeNodes(List<dynamic> nodes, List<dynamic> connections) {
     if (!config.autoArrange || nodes.isEmpty) return;
     
     // Build dependency graph
@@ -71,10 +71,10 @@ class VerticalLayoutAdapter {
     final roots = nodes.where((n) => !hasIncoming.contains(n.id)).toList();
     
     // Perform level-based layout
-    final levels = <int, List<NodeInstance>>{};
+    final levels = <int, List<dynamic>>{};
     final visited = <String>{};
     
-    void assignLevel(NodeInstance node, int level) {
+    void assignLevel(dynamic node, int level) {
       if (visited.contains(node.id)) return;
       visited.add(node.id);
       
@@ -109,7 +109,7 @@ class VerticalLayoutAdapter {
   }
   
   /// Validate vertical flow (no upward connections)
-  List<String> validateVerticalFlow(List<NodeInstance> nodes, List<LinkInstance> connections) {
+  List<String> validateVerticalFlow(List<dynamic> nodes, List<dynamic> connections) {
     final errors = <String>[];
     
     for (final conn in connections) {
