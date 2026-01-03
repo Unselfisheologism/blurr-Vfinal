@@ -182,7 +182,7 @@ class DawExportService {
       debugPrint('Loading project file: $filePath');
 
       // Call native load service via platform bridge
-      final result = await DawPlatformBridge.loadProject(
+      final result = await DawPlatformBridge.loadProject(null, null,
         projectName: null,
         projectPath: filePath,
       );

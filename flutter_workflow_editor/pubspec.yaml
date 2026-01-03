@@ -63,6 +63,9 @@ dependencies:
   # File picker for import/export
   file_picker: ^8.1.6
   
+  # Network image caching
+  cached_network_image: ^3.4.1
+  
   # Collection utilities
   collection: ^1.18.0
   
