@@ -31,7 +31,7 @@ Implemented multiple layers of resilience to handle transient network failures:
   - Initial delay: 30 seconds
   - Exponential backoff: delay doubles on each retry (30s, 60s, 120s)
 - Uses `--verbose` flag for better debugging
-- Applies init script to configure repository priority
+- Copies init.gradle to `~/.gradle/init.d/` for automatic application during build
 
 ### 4. Build Configuration Step
 Added a preparatory step to ensure `.android` directory and configuration files exist before build.
@@ -52,7 +52,11 @@ Added a preparatory step to ensure `.android` directory and configuration files 
 To test locally before pushing:
 ```bash
 cd flutter_workflow_editor
-flutter build aar --release --verbose --init-script=.android/init.gradle
+# Copy init.gradle to Gradle's init.d directory
+mkdir -p ~/.gradle/init.d
+cp .android/init.gradle ~/.gradle/init.d/
+# Build the AAR
+flutter build aar --release --verbose
 ```
 
 ## Notes

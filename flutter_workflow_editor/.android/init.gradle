@@ -1,7 +1,7 @@
 // Gradle init script to configure repositories and network timeouts
 // This helps mitigate transient Maven Central 403 errors
 //
-// Usage: flutter build aar --init-script=.android/init.gradle
+// Usage: Copy to ~/.gradle/init.d/ directory, then run: flutter build aar
 
 allprojects {
     repositories {
