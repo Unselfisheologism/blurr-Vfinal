@@ -24,7 +24,11 @@ app/google-services.json
 META-INF/
 
 # Flutter build artifacts (generated during CI)
-flutter_workflow_editor/.android/
+flutter_workflow_editor/.android/app/
+flutter_workflow_editor/.android/build/
+flutter_workflow_editor/.android/gradle/
+flutter_workflow_editor/.android/local.properties
+flutter_workflow_editor/.android/.gradle/
 flutter_workflow_editor/build/
 flutter_workflow_editor/.flutter-plugins
 flutter_workflow_editor/.flutter-plugins-dependencies

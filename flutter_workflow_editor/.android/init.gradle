@@ -1,0 +1,21 @@
+// Gradle init script to configure repositories and network timeouts
+// This helps mitigate transient Maven Central 403 errors
+//
+// Usage: flutter build aar --init-script=.android/init.gradle
+
+allprojects {
+    repositories {
+        // Prioritize Google Maven for better reliability
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    
+    // Configure build optimization
+    configurations.all {
+        resolutionStrategy {
+            cacheDynamicVersionsFor(10, 'minutes')
+            cacheChangingModulesFor(0, 'seconds')
+        }
+    }
+}
