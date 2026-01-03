@@ -123,11 +123,11 @@ class SpreadsheetDataSource extends DataGridSource {
   }
 
   @override
-  void onCellSubmit(
+  Future<void> onCellSubmit(
     DataGridRow dataGridRow,
     RowColumnIndex rowColumnIndex,
     GridColumn column,
-  ) {
+  ) async {
     final rowIndex = rowColumnIndex.rowIndex;
     final colIndex = _getColumnIndex(column.columnName);
 
@@ -154,11 +154,11 @@ class SpreadsheetDataSource extends DataGridSource {
   }
 
   @override
-  bool canSubmitCell(
+  Future<bool> canSubmitCell(
     DataGridRow dataGridRow,
     RowColumnIndex rowColumnIndex,
     GridColumn column,
-  ) {
+  ) async {
     // Always allow submission
     return true;
   }
@@ -199,6 +199,7 @@ class SpreadsheetDataSource extends DataGridSource {
     if (alignment == null) return TextAlign.left;
     if (alignment == Alignment.centerRight) return TextAlign.right;
     if (alignment == Alignment.center) return TextAlign.center;
+    if (alignment == Alignment.centerLeft) return TextAlign.left;
     return TextAlign.left;
   }
 

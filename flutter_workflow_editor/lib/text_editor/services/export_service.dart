@@ -386,7 +386,7 @@ class ExportService {
                   color: PdfColors.grey300,
                   borderRadius: pw.BorderRadius.circular(4),
                 ),
-                child: pw.Text(text, style: pw.TextStyle(fontFamily: 'Courier')),
+                child: pw.Text(text, style: pw.TextStyle(font: pw.Font.courier())),
               ),
             );
             continue;

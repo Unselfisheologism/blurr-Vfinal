@@ -375,7 +375,10 @@ enum ToolMode {
 class ProjectHistory {
   final List<DawProject> undoStack = [];
   final List<DawProject> redoStack = [];
-  static const int maxHistorySize = 50;
+  final int maxHistorySize = 50;
+
+  bool get canUndo => undoStack.isNotEmpty;
+  bool get canRedo => redoStack.isNotEmpty;
 }
 
 /// Empty constructor for DawState to create an empty project

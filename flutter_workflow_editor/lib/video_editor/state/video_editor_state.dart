@@ -195,7 +195,7 @@ class VideoEditorState extends ChangeNotifier {
 
     final nextIndex = _project!.tracks.where((t) => t.type == type).length + 1;
     final newTrack = VideoTrack(
-      id: '${type.name}_$nextIndex_${DateTime.now().millisecondsSinceEpoch}',
+      id: '${type.name}_${nextIndex}_${DateTime.now().millisecondsSinceEpoch}',
       name: '${type.name[0].toUpperCase()}${type.name.substring(1)} $nextIndex',
       type: type,
     );

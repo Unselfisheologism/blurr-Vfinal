@@ -12,10 +12,9 @@ dependencies:
     sdk: flutter
   
   # Core node editor engine
-  fl_nodes_workspace:
+  fl_nodes:
     git:
       url: https://github.com/WilliamKarolDiCioccio/fl_nodes.git
-      ref: main
   
   # State management
   provider: ^6.1.1

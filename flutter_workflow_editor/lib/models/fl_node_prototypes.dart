@@ -2,7 +2,7 @@
 /// Converts our node definitions into fl_nodes compatible prototypes
 library;
 
-import 'package:fl_nodes_workspace/fl_nodes.dart';
+import 'package:fl_nodes/fl_nodes.dart';
 import 'package:flutter/material.dart';
 import 'node_definitions.dart';
 

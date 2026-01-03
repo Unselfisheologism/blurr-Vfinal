@@ -1,8 +1,8 @@
 /// Workflow state management with undo/redo
 library;
 
-import 'package:flutter/foundation.dart';
-import 'package:fl_nodes_workspace/fl_nodes.dart';
+import 'package:flutter/material.dart';
+import 'package:fl_nodes/fl_nodes.dart';
 import '../models/workflow.dart';
 import '../models/workflow_node.dart';
 import '../models/workflow_connection.dart';
