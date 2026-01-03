@@ -2,7 +2,9 @@
 buildscript {
     repositories {
         maven { url = uri("https://chaquo.com/maven") }
-        mavenCentral() 
+        google()
+        mavenCentral()
+        maven("https://maven.google.com")
     }
     dependencies {
         classpath("com.chaquo.python:gradle:17.0.0")

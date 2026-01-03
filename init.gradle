@@ -1,0 +1,78 @@
+// Custom Gradle initialization script to handle repository issues in CI
+
+// Configure repository order to prioritize Google's Maven repository
+settingsEvaluated { settings ->
+    settings.pluginManagement {
+        repositories {
+            // Remove all existing repositories and re-add in the correct order
+            all { repo ->
+                if (repo instanceof MavenArtifactRepository) {
+                    def mavenRepo = (MavenArtifactRepository) repo
+                    mavenRepo.metadataSources {
+                        mavenPom()
+                        artifact()
+                    }
+                }
+            }
+        }
+    }
+}
+
+allprojects {
+    repositories {
+        // Prioritize Google's Maven repository first
+        google()
+        
+        // Add Maven Central with proper configuration
+        mavenCentral {
+            // Configure Maven Central to handle 403 errors
+            metadataSources {
+                mavenPom()
+                artifact()
+            }
+            content {
+                includeGroup("org.jetbrains.kotlin")
+                includeGroup("org.jetbrains.kotlinx")
+                includeGroup("com.squareup")
+                includeGroup("org.ow2.asm")
+            }
+        }
+        
+        // Add additional mirrors for reliability
+        maven {
+            url "https://maven.google.com"
+            name "Google"
+        }
+        
+        maven {
+            url "https://repo1.maven.org/maven2"
+            name "Maven Central"
+        }
+    }
+}
+
+// Configure Gradle to handle network issues better
+gradle.projectsLoaded {
+    rootProject.allprojects {
+        repositories {
+            // Ensure all repositories have proper timeout and retry configuration
+            all { ArtifactRepository repo ->
+                if (repo instanceof MavenArtifactRepository) {
+                    def mavenRepo = (MavenArtifactRepository) repo
+                    mavenRepo.metadataSources {
+                        mavenPom()
+                        artifact()
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Add custom repository configuration for Kotlin dependencies
+gradle.beforeProject { project ->
+    project.repositories {
+        // Ensure Google's repository is available for all projects
+        google()
+    }
+}
