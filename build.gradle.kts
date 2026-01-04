@@ -17,10 +17,10 @@ plugins {
     alias(libs.plugins.kotlin.compose) apply false
 }
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url = uri("https://chaquo.com/maven") }
-    }
-}
+// allprojects {
+//     repositories {
+//         google()
+//         mavenCentral()
+//         maven { url = uri("https://chaquo.com/maven") }
+//     }
+// }
