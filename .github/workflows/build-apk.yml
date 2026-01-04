@@ -49,8 +49,8 @@ jobs:
           flutter doctor
           flutter --version
 
-      # Build Flutter AAR artifacts for Android integration
-      - name: Prepare Flutter Android Gradle configuration
+      # Build Flutter dependencies without AAR (avoid GeneratedPluginRegistrant issues)
+      - name: Prepare Flutter Module
         run: |
           cd flutter_workflow_editor
           # Ensure .android directory exists
@@ -61,35 +61,11 @@ jobs:
           echo "=== settings.gradle ==="
           cat .android/settings.gradle || echo "No settings.gradle found"
 
-      - name: Build Flutter Module (with retry)
+      - name: Prepare Flutter Dependencies
         run: |
           cd flutter_workflow_editor
           flutter pub get
           flutter pub run build_runner build --delete-conflicting-outputs
-          
-          # Retry logic for Flutter AAR build (handles transient Maven 403 errors)
-          MAX_RETRIES=3
-          RETRY_COUNT=0
-          DELAY=30
-          
-          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-            echo "Attempting Flutter AAR build (attempt $((RETRY_COUNT + 1))/$MAX_RETRIES)..."
-            if flutter build aar --release; then
-              echo "Flutter AAR artifacts built successfully"
-              ls -la .android/Flutter/
-              exit 0
-            else
-              RETRY_COUNT=$((RETRY_COUNT + 1))
-              if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
-                echo "Build failed, waiting ${DELAY}s before retry..."
-                sleep $DELAY
-                DELAY=$((DELAY * 2))  # Exponential backoff
-              else
-                echo "Flutter AAR build failed after $MAX_RETRIES attempts"
-                exit 1
-              fi
-            fi
-          done
 
       # Make gradlew executable and fix line endings
       - name: Fix gradlew permissions and line endings
