@@ -11,10 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
   
-  # Core node editor engine
-  fl_nodes_workspace:
-    git:
-      url: https://github.com/WilliamKarolDiCioccio/fl_nodes.git
+  # Core node editor engine - Using stubs for now
+  # fl_nodes_workspace: # Disabled due to API incompatibility
   
   # State management
   provider: ^6.1.1
@@ -59,7 +57,7 @@ dependencies:
   # Cron parser for scheduling
   cron: ^0.5.1
   
-  # File picker for import/export
+  # File picker for import/export - Using compatible version
   file_picker: ^8.1.6
   
   # Network image caching
@@ -93,22 +91,22 @@ dependencies:
   # Image handling
   image: ^4.1.3
   
-  # Syncfusion packages for Spreadsheets (Epic 3)
-  syncfusion_flutter_datagrid: ^24.2.9
-  syncfusion_flutter_core: ^24.2.9
-  syncfusion_flutter_charts: ^24.2.9
-  syncfusion_flutter_xlsio: ^24.2.9
+  # Syncfusion packages for Spreadsheets (Epic 3) - Using compatible versions
+  syncfusion_flutter_datagrid: ^24.2.8
+  syncfusion_flutter_core: ^24.2.8
+  syncfusion_flutter_charts: ^24.2.8
+  syncfusion_flutter_xlsio: ^24.2.8
   
   # Excel file operations
   open_file: ^3.3.2
   
-  # Audio packages for DAW (Epic 5)
+  # Audio packages for DAW (Epic 5) - Removed problematic record package
   audio_waveforms: ^1.0.5
   just_audio: ^0.9.36
   
   # Audio file handling
   audioplayers: ^5.2.1
-  record: ^5.0.4
+  # record: ^5.0.4 # Disabled - causes compilation issues
   permission_handler: ^11.3.0
 
 dev_dependencies:

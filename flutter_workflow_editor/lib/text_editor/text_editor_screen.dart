@@ -287,9 +287,9 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
     }
 
     final selectedText = selection.isCollapsed
-        ? _controller.document.toPlainText()
+        ? _controller.document.getPlainText()
         : _controller.document
-            .toPlainText()
+            .getPlainText()
             .substring(selection.start, selection.end);
 
     if (selectedText.trim().isEmpty && operation != AIAssistantService.operationContinue) {
@@ -911,7 +911,6 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
                       autoFocus: false,
                       expands: true,
                       placeholder: 'Start writing...',
-                      readOnly: false,
                       customStyles: DefaultStyles(
                         h1: DefaultTextBlockStyle(
                           const TextStyle(
