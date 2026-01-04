@@ -15,6 +15,7 @@ dependencies:
   fl_nodes:
     git:
       url: https://github.com/WilliamKarolDiCioccio/fl_nodes.git
+      path: packages/fl_nodes
   
   # State management
   provider: ^6.1.1
@@ -121,6 +122,10 @@ dev_dependencies:
 
 dependency_overrides:
   intl: ^0.20.0
+  fl_nodes_core:
+    git:
+      url: https://github.com/WilliamKarolDiCioccio/fl_nodes.git
+      path: packages/fl_nodes_core
 
 flutter:
   module:

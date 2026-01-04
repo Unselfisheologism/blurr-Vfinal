@@ -1,14 +1,4 @@
-buildscript {
-    ext.kotlin_version = '1.9.24'
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:8.3.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
+// Generated file. Do not edit.
 
 allprojects {
     repositories {
@@ -17,14 +7,14 @@ allprojects {
     }
 }
 
-rootProject.buildDir = '../build'
-subprojects {
-    project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
-    project.evaluationDependsOn(':app')
-}
+apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
 
-tasks.register("clean", Delete) {
-    delete rootProject.buildDir
+android {
+    namespace = "com.blurr.voice.workflow"
+    compileSdk = 36
+    defaultConfig {
+        minSdk = 24
+        targetSdk = 36
+    }
 }
