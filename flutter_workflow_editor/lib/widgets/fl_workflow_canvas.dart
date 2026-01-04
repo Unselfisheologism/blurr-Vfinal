@@ -3,7 +3,7 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:fl_nodes/fl_nodes.dart';
+import 'package:fl_nodes_workspace/fl_nodes.dart';
 import 'package:provider/provider.dart';
 import '../state/workflow_state.dart';
 import '../core/vertical_layout_adapter.dart';
