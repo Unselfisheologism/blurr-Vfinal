@@ -3,7 +3,7 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:fl_nodes_workspace/fl_nodes.dart';
+import '../stubs/fl_nodes_stubs.dart';
 
 /// Vertical layout configuration
 class VerticalLayoutConfig {

@@ -54,6 +54,11 @@ class DawState extends ChangeNotifier {
 
   DawState(DawProject project) : _project = project;
 
+  /// Create an empty DawState
+  static DawState empty() {
+    return DawState(DawProject.empty('Untitled Project'));
+  }
+
  // Getters
   DawProject get project => _project;
   bool get isInitialized => _isInitialized;
@@ -379,11 +384,4 @@ class ProjectHistory {
 
   bool get canUndo => undoStack.isNotEmpty;
   bool get canRedo => redoStack.isNotEmpty;
-}
-
-/// Empty constructor for DawState to create an empty project
-extension DawStateEmpty on DawState {
-  static DawState empty() {
-    return DawState(DawProject.empty('Untitled Project'));
-  }
 }

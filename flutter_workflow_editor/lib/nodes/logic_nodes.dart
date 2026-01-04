@@ -1,7 +1,7 @@
 /// Logic node prototypes (IF/ELSE, Switch, Loop, Merge) - CORRECTED API
 library;
 
-import 'package:fl_nodes_workspace/fl_nodes.dart';
+import '../stubs/fl_nodes_stubs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 

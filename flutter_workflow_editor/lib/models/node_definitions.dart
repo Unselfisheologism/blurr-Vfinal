@@ -2,7 +2,7 @@
 /// Defines all available node types with their prototypes
 library;
 
-import 'package:fl_nodes_workspace/fl_nodes.dart';
+import '../stubs/fl_nodes_stubs.dart';
 import 'package:flutter/material.dart';
 
 /// Node category for organization in palette

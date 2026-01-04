@@ -112,6 +112,83 @@ class FlNodeHeaderStyle {
   });
 }
 
+class FlNodeEditorController {
+  final dynamic projectSaver;
+  final dynamic projectLoader;
+  final dynamic projectCreator;
+  final runner = FlRunnerStub();
+
+  FlNodeEditorController({
+    this.projectSaver,
+    this.projectLoader,
+    this.projectCreator,
+  });
+}
+
+class FlRunnerStub {
+  Future<void> executeGraph() async {}
+}
+
+class FlNodeEditorWidget extends StatelessWidget {
+  final FlNodeEditorController controller;
+  final bool expandToParent;
+  final dynamic style;
+  final dynamic overlay;
+
+  const FlNodeEditorWidget({
+    super.key,
+    required this.controller,
+    this.expandToParent = false,
+    this.style,
+    this.overlay,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
+
+class FlNodeEditorStyle {
+  final dynamic decoration;
+  final dynamic gridStyle;
+
+  const FlNodeEditorStyle({
+    this.decoration,
+    this.gridStyle,
+  });
+}
+
+class FlGridStyle {
+  final double gridSpacingX;
+  final double gridSpacingY;
+  final Color lineColor;
+  final bool showGrid;
+
+  const FlGridStyle({
+    this.gridSpacingX = 20.0,
+    this.gridSpacingY = 20.0,
+    this.lineColor = Colors.grey,
+    this.showGrid = true,
+  });
+}
+
+class FlOverlayData {
+  final double? top;
+  final double? bottom;
+  final double? left;
+  final double? right;
+  final Widget child;
+
+  const FlOverlayData({
+    this.top,
+    this.bottom,
+    this.left,
+    this.right,
+    required this.child,
+  });
+}
+
 // Stub extension for firstOrNull
 extension<T> on Iterable<T> {
   T? get firstOrNull => isEmpty ? null : first;

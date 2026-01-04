@@ -2,7 +2,7 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:fl_nodes_workspace/fl_nodes.dart';
+import '../stubs/fl_nodes_stubs.dart';
 import '../models/workflow.dart';
 import '../models/workflow_node.dart';
 import '../models/workflow_connection.dart';
@@ -64,7 +64,8 @@ class WorkflowState extends ChangeNotifier {
       id: _uuid.v4(),
       type: type,
       name: name,
-      position: position ?? Offset.zero,
+      x: position?.dx ?? 0,
+      y: position?.dy ?? 0,
       data: data,
     );
     

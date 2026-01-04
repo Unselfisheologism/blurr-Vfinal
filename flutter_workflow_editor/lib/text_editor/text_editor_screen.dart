@@ -287,9 +287,9 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
     }
 
     final selectedText = selection.isCollapsed
-        ? _controller.document.getPlainText()
+        ? _controller.document.toPlainText()
         : _controller.document
-            .getPlainText()
+            .toPlainText()
             .substring(selection.start, selection.end);
 
     if (selectedText.trim().isEmpty && operation != AIAssistantService.operationContinue) {
