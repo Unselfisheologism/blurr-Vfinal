@@ -45,6 +45,7 @@ dependencyResolutionManagement {
         // Add additional mirrors for reliability
         maven("https://maven.google.com")
         maven("https://repo1.maven.org/maven2")
+        maven("https://chaquo.com/maven")
     }
 }
 
@@ -54,6 +55,10 @@ include(":flutter_stubs")
 
 // Flutter module integration
 val flutterProjectDir = file("flutter_workflow_editor")
-val androidProjectPath = File(flutterProjectDir, ".android/Flutter")
+val androidProjectPath = if (File(flutterProjectDir, ".android/Flutter").exists()) {
+    File(flutterProjectDir, ".android/Flutter")
+} else {
+    File(flutterProjectDir, ".android/app")
+}
 include(":flutter_workflow_editor")
 project(":flutter_workflow_editor").projectDir = androidProjectPath
