@@ -129,7 +129,8 @@ class EditorDocument {
   /// Get plain text content
   String getPlainText() {
     final delta = toDelta();
-    return delta.toPlainText();
+    // Use toString() or convertDeltaToPlainText depending on the API
+    return delta.toString();
   }
 
   /// Get word count

@@ -14,8 +14,11 @@ class ExcelService {
     final xlsio.Workbook workbook = xlsio.Workbook();
     
     // Remove default worksheet if multiple sheets
-    if (document.sheets.length > 1) {
-      workbook.worksheets.clear();
+    if (document.sheets.length > 1 && workbook.worksheets.count > 0) {
+      // Instead of clear(), remove worksheets individually
+      while (workbook.worksheets.count > 0) {
+        workbook.worksheets.removeAt(0);
+      }
     }
     
     // Add sheets
@@ -33,7 +36,7 @@ class ExcelService {
         } else if (cell.value is num) {
           range.number = (cell.value as num).toDouble();
         } else if (cell.value is bool) {
-          range.boolean = cell.value as bool;
+          range.value = cell.value as bool;
         } else if (cell.value is DateTime) {
           range.dateTime = cell.value as DateTime;
         } else {

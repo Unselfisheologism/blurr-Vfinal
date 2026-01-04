@@ -208,7 +208,7 @@ class ExportService {
     required Delta delta,
   }) async {
     try {
-      final plainText = delta.toPlainText();
+      final plainText = delta.toString();
       
       // Save to temporary file
       final output = await getTemporaryDirectory();
