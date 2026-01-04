@@ -18,6 +18,10 @@ pluginManagement {
     repositories {
         // Prioritize Google's Maven repository first
         google()
+
+        // Flutter engine artifacts (io.flutter:*), required when building the Flutter module as a Gradle subproject
+        maven("https://storage.googleapis.com/download.flutter.io")
+
         gradlePluginPortal()
         // Use Maven Central but prioritize Google's repository
         mavenCentral()
@@ -29,6 +33,9 @@ dependencyResolutionManagement {
     repositories {
         // Prioritize Google's Maven repository first
         google()
+
+        // Flutter engine artifacts (io.flutter:*), required for :flutter_workflow_editor dependency resolution
+        maven("https://storage.googleapis.com/download.flutter.io")
         
         // Add Maven Central with proper configuration
         mavenCentral {
