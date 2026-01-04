@@ -126,11 +126,6 @@ flutter:
     iosBundleIdentifier: com.blurr.voice.workflow
   uses-material-design: true
   
-  fonts:
-    - family: JetBrainsMono
-      fonts:
-        - asset: packages/flutter_code_editor/fonts/JetBrainsMono-Regular.ttf
-  
   assets:
     - assets/icons/
     - assets/templates/
