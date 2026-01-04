@@ -104,11 +104,13 @@ class FlNodeHeaderStyle {
   final dynamic decoration;
   final dynamic textStyle;
   final dynamic icon;
+  final dynamic padding;
 
   const FlNodeHeaderStyle({
     this.decoration,
     this.textStyle,
     this.icon,
+    this.padding,
   });
 }
 
@@ -117,16 +119,52 @@ class FlNodeEditorController {
   final dynamic projectLoader;
   final dynamic projectCreator;
   final runner = FlRunnerStub();
+  
+  // Add missing project property
+  final FlProjectStub project = FlProjectStub();
+  
+  // Add listener functionality
+  final _listeners = <VoidCallback>{};
+  
+  // Store registered prototypes
+  final _prototypes = <NodePrototype>[];
 
   FlNodeEditorController({
     this.projectSaver,
     this.projectLoader,
     this.projectCreator,
   });
+  
+  // Add missing registerNodePrototype method
+  void registerNodePrototype(NodePrototype prototype) {
+    _prototypes.add(prototype);
+  }
+  
+  // Add missing addListener method
+  void addListener(VoidCallback listener) {
+    _listeners.add(listener);
+  }
+  
+  // Add missing dispose method
+  void dispose() {
+    _listeners.clear();
+  }
+  
+  // Helper to notify listeners
+  void _notifyListeners() {
+    for (final listener in _listeners) {
+      listener();
+    }
+  }
 }
 
 class FlRunnerStub {
   Future<void> executeGraph() async {}
+}
+
+class FlProjectStub {
+  final Map<String, dynamic> nodes = {};
+  final Map<String, dynamic> links = {};
 }
 
 class FlNodeEditorWidget extends StatelessWidget {
