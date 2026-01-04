@@ -23,6 +23,7 @@ class CellFormat {
   final double? fontSize;
   final String? textColor; // Color as hex string
   final String? backgroundColor;
+  @AlignmentConverter()
   final Alignment? alignment;
   final String? numberFormat; // e.g., "0.00", "$#,##0.00"
 
@@ -75,6 +76,59 @@ class CellFormat {
   Color? get backgroundColorValue {
     if (backgroundColor == null) return null;
     return Color(int.parse(backgroundColor!.replaceFirst('#', '0xFF')));
+  }
+}
+
+/// Converter for Flutter's Alignment class to/from JSON
+class AlignmentConverter implements JsonConverter<Alignment?, String?> {
+  const AlignmentConverter();
+
+  @override
+  Alignment? fromJson(String? json) {
+    if (json == null) return null;
+    switch (json) {
+      case 'topLeft':
+        return Alignment.topLeft;
+      case 'topCenter':
+        return Alignment.topCenter;
+      case 'topRight':
+        return Alignment.topRight;
+      case 'centerLeft':
+        return Alignment.centerLeft;
+      case 'center':
+        return Alignment.center;
+      case 'centerRight':
+        return Alignment.centerRight;
+      case 'bottomLeft':
+        return Alignment.bottomLeft;
+      case 'bottomCenter':
+        return Alignment.bottomCenter;
+      case 'bottomRight':
+        return Alignment.bottomRight;
+      default:
+        try {
+          final parts = json.split(',');
+          if (parts.length == 2) {
+            return Alignment(double.parse(parts[0]), double.parse(parts[1]));
+          }
+        } catch (_) {}
+        return Alignment.center;
+    }
+  }
+
+  @override
+  String? toJson(Alignment? object) {
+    if (object == null) return null;
+    if (object == Alignment.topLeft) return 'topLeft';
+    if (object == Alignment.topCenter) return 'topCenter';
+    if (object == Alignment.topRight) return 'topRight';
+    if (object == Alignment.centerLeft) return 'centerLeft';
+    if (object == Alignment.center) return 'center';
+    if (object == Alignment.centerRight) return 'centerRight';
+    if (object == Alignment.bottomLeft) return 'bottomLeft';
+    if (object == Alignment.bottomCenter) return 'bottomCenter';
+    if (object == Alignment.bottomRight) return 'bottomRight';
+    return '${object.x},${object.y}';
   }
 }
 
