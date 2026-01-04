@@ -1,4 +1,20 @@
 pluginManagement {
+    val flutterSdkPath = System.getenv("FLUTTER_ROOT") ?: System.getenv("FLUTTER_HOME") ?: run {
+        val properties = java.util.Properties()
+        val propertiesFile = file("local.properties")
+        if (propertiesFile.exists()) {
+            propertiesFile.inputStream().use { properties.load(it) }
+        }
+        properties.getProperty("flutter.sdk")
+    }
+
+    if (flutterSdkPath != null) {
+        val flutterPluginPath = file("$flutterSdkPath/packages/flutter_tools/gradle")
+        if (flutterPluginPath.exists()) {
+            includeBuild(flutterPluginPath)
+        }
+    }
+
     repositories {
         // Prioritize Google's Maven repository first
         google()
