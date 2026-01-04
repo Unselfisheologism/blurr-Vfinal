@@ -24,6 +24,26 @@ pluginManagement {
             }
         }
         gradlePluginPortal()
+        maven {
+            url 'https://maven.google.com'
+            name 'Google'
+        }
+        maven {
+            url 'https://jitpack.io'
+            name 'JitPack'
+        }
+        maven {
+            url 'https://repo1.maven.org/maven2/'
+            name 'MavenCentral'
+        }
+        maven {
+            url 'https://dl.google.com/dl/android/maven2/'
+            name 'GoogleAndroid'
+        }
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+            name 'GradlePlugins'
+        }
     }
 }
 
@@ -48,6 +68,26 @@ dependencyResolutionManagement {
                 mavenPom()
                 artifact()
             }
+        }
+        maven {
+            url 'https://maven.google.com'
+            name 'Google'
+        }
+        maven {
+            url 'https://jitpack.io'
+            name 'JitPack'
+        }
+        maven {
+            url 'https://repo1.maven.org/maven2/'
+            name 'MavenCentral'
+        }
+        maven {
+            url 'https://dl.google.com/dl/android/maven2/'
+            name 'GoogleAndroid'
+        }
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+            name 'GradlePlugins'
         }
     }
 }

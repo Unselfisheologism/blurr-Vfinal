@@ -3,6 +3,26 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url 'https://maven.google.com'
+            name 'Google'
+        }
+        maven {
+            url 'https://jitpack.io'
+            name 'JitPack'
+        }
+        maven {
+            url 'https://repo1.maven.org/maven2/'
+            name 'MavenCentral'
+        }
+        maven {
+            url 'https://dl.google.com/dl/android/maven2/'
+            name 'GoogleAndroid'
+        }
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+            name 'GradlePlugins'
+        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.3.2'
@@ -14,6 +34,26 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url 'https://maven.google.com'
+            name 'Google'
+        }
+        maven {
+            url 'https://jitpack.io'
+            name 'JitPack'
+        }
+        maven {
+            url 'https://repo1.maven.org/maven2/'
+            name 'MavenCentral'
+        }
+        maven {
+            url 'https://dl.google.com/dl/android/maven2/'
+            name 'GoogleAndroid'
+        }
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+            name 'GradlePlugins'
+        }
     }
 }
 
