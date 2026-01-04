@@ -24,6 +24,7 @@ app/google-services.json
 META-INF/
 
 # Flutter build artifacts (generated during CI)
+flutter_workflow_editor/.android/Flutter/
 flutter_workflow_editor/.android/app/build/
 flutter_workflow_editor/.android/build/
 flutter_workflow_editor/.android/gradle/caches/
