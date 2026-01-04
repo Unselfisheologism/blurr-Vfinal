@@ -13,17 +13,19 @@ class ExcelService {
     // Create a new Excel document
     final xlsio.Workbook workbook = xlsio.Workbook();
     
-    // Remove default worksheet if multiple sheets
-    if (document.sheets.length > 1 && workbook.worksheets.count > 0) {
-      // Instead of clear(), remove worksheets individually
-      while (workbook.worksheets.count > 0) {
-        workbook.worksheets.removeAt(0);
-      }
-    }
-    
     // Add sheets
-    for (final sheet in document.sheets) {
-      final xlsio.Worksheet worksheet = workbook.worksheets.addWithName(sheet.name);
+    for (int i = 0; i < document.sheets.length; i++) {
+      final sheet = document.sheets[i];
+      xlsio.Worksheet worksheet;
+      
+      if (i == 0 && workbook.worksheets.count > 0) {
+        // Use the default first worksheet
+        worksheet = workbook.worksheets[0];
+        worksheet.name = sheet.name;
+      } else {
+        // Add new worksheet
+        worksheet = workbook.worksheets.addWithName(sheet.name);
+      }
       
       // Add cell data
       sheet.cells.forEach((cellId, cell) {
