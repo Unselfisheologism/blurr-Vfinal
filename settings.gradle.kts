@@ -90,7 +90,7 @@ val flutterGradlePluginDir = flutterSdkPathForModule?.let { File(it, "packages/f
 // handles all Flutter integration internally without needing to compile the
 // .android/Flutter subproject separately.
 //
-// If the Android wrapper project is missing, 
+// If the Android wrapper project is missing,
 // skip including the real module and fall back to :flutter_stubs.
 // This ensures the build doesn't fail if "flutter pub get" hasn't been run yet.
 if (flutterGradlePluginDir != null
@@ -99,4 +99,15 @@ if (flutterGradlePluginDir != null
 ) {
     include(":flutter_workflow_editor")
     project(":flutter_workflow_editor").projectDir = flutterAndroidProjectDir
+
+    // Enforce Gradle 8+ evaluation order: ensure :flutter_workflow_editor is evaluated
+    // before :app. The Flutter Gradle plugin registers afterEvaluate callbacks that need
+    // to execute in a specific order. Without this enforcement, :app can be evaluated
+    // before :flutter_workflow_editor, causing the Flutter plugin to fail with
+    // "Project with path ':flutter' could not be found in project ':flutter_workflow_editor'"
+    gradle.beforeProject {
+        if (project.name == "app") {
+            evaluationDependsOn(":flutter_workflow_editor")
+        }
+    }
 }
