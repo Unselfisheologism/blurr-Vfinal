@@ -88,4 +88,11 @@ val flutterGradlePluginDir = flutterSdkPathForModule?.let { File(it, "packages/f
 if (flutterGradlePluginDir != null && flutterGradlePluginDir.exists() && flutterAndroidProjectDir.exists()) {
     include(":flutter_workflow_editor")
     project(":flutter_workflow_editor").projectDir = flutterAndroidProjectDir
+    
+    // Also include the :flutter project which is required by the Flutter Gradle plugin for modules
+    val flutterProjectLibDir = File(flutterProjectDir, ".android/Flutter")
+    if (flutterProjectLibDir.exists()) {
+        include(":flutter")
+        project(":flutter").projectDir = flutterProjectLibDir
+    }
 }
