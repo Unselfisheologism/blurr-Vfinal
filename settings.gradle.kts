@@ -90,18 +90,13 @@ val flutterGradlePluginDir = flutterSdkPathForModule?.let { File(it, "packages/f
 // handles all Flutter integration internally without needing to compile the
 // .android/Flutter subproject separately.
 //
-// If the Android wrapper project OR the Flutter engine project is missing, 
+// If the Android wrapper project is missing, 
 // skip including the real module and fall back to :flutter_stubs.
 // This ensures the build doesn't fail if "flutter pub get" hasn't been run yet.
-val flutterEngineDir = File(flutterProjectDir, ".android/Flutter")
 if (flutterGradlePluginDir != null
     && flutterGradlePluginDir.exists()
     && flutterAndroidProjectDir.exists()
-    && flutterEngineDir.exists()
 ) {
     include(":flutter_workflow_editor")
     project(":flutter_workflow_editor").projectDir = flutterAndroidProjectDir
-
-    include(":flutter")
-    project(":flutter").projectDir = flutterEngineDir
 }
