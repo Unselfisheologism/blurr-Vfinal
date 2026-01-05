@@ -61,11 +61,31 @@ include(":app")
 include(":flutter_stubs")
 
 // Flutter module integration
+//
+// Only include the real Flutter module if a Flutter SDK is configured for this build.
+// This keeps local/CI builds without Flutter working via :flutter_stubs.
+//
+// We point Gradle at the Flutter module's Android library project (".android/app").
+// The ".android/Flutter" directory is an artifact of AAR generation and can contain a
+// GeneratedPluginRegistrant.java that references plugins not on the classpath when used as
+// a standalone Gradle project.
 val flutterProjectDir = file("flutter_workflow_editor")
-val androidProjectPath = if (File(flutterProjectDir, ".android/Flutter").exists()) {
-    File(flutterProjectDir, ".android/Flutter")
-} else {
-    File(flutterProjectDir, ".android/app")
+val flutterAndroidProjectDir = File(flutterProjectDir, ".android/app")
+
+val flutterSdkPathForModule = System.getenv("FLUTTER_ROOT")
+    ?: System.getenv("FLUTTER_HOME")
+    ?: run {
+        val properties = java.util.Properties()
+        val propertiesFile = file("local.properties")
+        if (propertiesFile.exists()) {
+            propertiesFile.inputStream().use { properties.load(it) }
+        }
+        properties.getProperty("flutter.sdk")
+    }
+
+val flutterGradlePluginDir = flutterSdkPathForModule?.let { File(it, "packages/flutter_tools/gradle") }
+
+if (flutterGradlePluginDir != null && flutterGradlePluginDir.exists() && flutterAndroidProjectDir.exists()) {
+    include(":flutter_workflow_editor")
+    project(":flutter_workflow_editor").projectDir = flutterAndroidProjectDir
 }
-include(":flutter_workflow_editor")
-project(":flutter_workflow_editor").projectDir = androidProjectPath

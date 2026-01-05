@@ -186,6 +186,11 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
     
     // Flutter module integration
-    // Using real Flutter module as requested in FLUTTER_INTEGRATION_STATUS.md
-    implementation(project(":flutter_workflow_editor"))
+    // Use the real Flutter module when it's available/configured; otherwise fall back to stubs
+    // so Android-only builds can still compile without a Flutter SDK.
+    if (rootProject.findProject(":flutter_workflow_editor") != null) {
+        implementation(project(":flutter_workflow_editor"))
+    } else {
+        implementation(project(":flutter_stubs"))
+    }
 }

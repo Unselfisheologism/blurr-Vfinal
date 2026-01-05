@@ -24,7 +24,7 @@ plugins {
 //
 // Ensuring the Flutter module is evaluated first keeps the plugin's configuration safe.
 gradle.beforeProject {
-    if (path == ":app") {
+    if (path == ":app" && rootProject.findProject(":flutter_workflow_editor") != null) {
         evaluationDependsOn(":flutter_workflow_editor")
     }
 }
