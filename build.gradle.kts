@@ -18,14 +18,28 @@ plugins {
 }
 
 // Work around Gradle 8+ strict lifecycle checks:
-// The Flutter Gradle plugin may register `afterEvaluate` callbacks on the Android app project.
-// If the app project is evaluated before the Flutter module project, Gradle throws:
+//
+// The Flutter Gradle plugin wires together multiple projects (typically :flutter, the Android
+// wrapper library project, and the host :app). Internally it uses `afterEvaluate` callbacks.
+//
+// Gradle 8+ throws if a plugin tries to register an `afterEvaluate` callback on a project that
+// has already finished evaluation:
 // "Cannot run Project.afterEvaluate(Action) when the project is already evaluated."
 //
-// Ensuring the Flutter module is evaluated first keeps the plugin's configuration safe.
+// Ensure Flutter-related projects are evaluated before the host app (and before the wrapper
+// library project) to keep the plugin configuration lifecycle-safe.
 gradle.beforeProject {
-    if (path == ":app" && rootProject.findProject(":flutter_workflow_editor") != null) {
-        evaluationDependsOn(":flutter_workflow_editor")
+    if (path == ":flutter_workflow_editor" && rootProject.findProject(":flutter") != null) {
+        evaluationDependsOn(":flutter")
+    }
+
+    if (path == ":app") {
+        if (rootProject.findProject(":flutter") != null) {
+            evaluationDependsOn(":flutter")
+        }
+        if (rootProject.findProject(":flutter_workflow_editor") != null) {
+            evaluationDependsOn(":flutter_workflow_editor")
+        }
     }
 }
 
