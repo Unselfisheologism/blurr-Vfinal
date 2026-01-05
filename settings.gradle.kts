@@ -71,6 +71,7 @@ include(":flutter_stubs")
 // a standalone Gradle project.
 val flutterProjectDir = file("flutter_workflow_editor")
 val flutterAndroidProjectDir = File(flutterProjectDir, ".android/app")
+val flutterProjectLibDir = File(flutterProjectDir, ".android/Flutter")
 
 val flutterSdkPathForModule = System.getenv("FLUTTER_ROOT")
     ?: System.getenv("FLUTTER_HOME")
@@ -85,14 +86,18 @@ val flutterSdkPathForModule = System.getenv("FLUTTER_ROOT")
 
 val flutterGradlePluginDir = flutterSdkPathForModule?.let { File(it, "packages/flutter_tools/gradle") }
 
-if (flutterGradlePluginDir != null && flutterGradlePluginDir.exists() && flutterAndroidProjectDir.exists()) {
+// The Flutter Gradle plugin for modules expects both the Android wrapper project (.android/app)
+// and the Flutter library project (.android/Flutter) to be present.
+//
+// If either one is missing, skip including the real module and fall back to :flutter_stubs.
+if (flutterGradlePluginDir != null
+    && flutterGradlePluginDir.exists()
+    && flutterAndroidProjectDir.exists()
+    && flutterProjectLibDir.exists()
+) {
     include(":flutter_workflow_editor")
     project(":flutter_workflow_editor").projectDir = flutterAndroidProjectDir
-    
-    // Also include the :flutter project which is required by the Flutter Gradle plugin for modules
-    val flutterProjectLibDir = File(flutterProjectDir, ".android/Flutter")
-    if (flutterProjectLibDir.exists()) {
-        include(":flutter")
-        project(":flutter").projectDir = flutterProjectLibDir
-    }
+
+    include(":flutter")
+    project(":flutter").projectDir = flutterProjectLibDir
 }
