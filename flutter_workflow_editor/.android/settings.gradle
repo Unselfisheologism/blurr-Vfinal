@@ -93,5 +93,3 @@ dependencyResolutionManagement {
 }
 
 include ":app"
-include ":flutter"
-project(":flutter").projectDir = new File(settingsDir, "Flutter")
