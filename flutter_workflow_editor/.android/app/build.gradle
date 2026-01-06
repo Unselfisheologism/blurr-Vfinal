@@ -34,10 +34,6 @@ android {
     }
 }
 
-flutter {
-    source '../..'
-}
-
 dependencies {
     // Kotlin stdlib is added automatically by the Kotlin Gradle plugin.
 }
