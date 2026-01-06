@@ -76,7 +76,7 @@ jobs:
       # Clean and compile the apk
       - name: Clean and Generate Debug APK
         run: |
-          ./gradlew clean assembleDebug --warning-mode=all --stacktrace
+          ./gradlew clean :app:assembleDebug --warning-mode=all --stacktrace
 
       # Upload the action artifact
       - name: Upload Debug APK (artifact)
@@ -94,7 +94,7 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           echo $SIGNING_KEY | base64 -d > keystore.jks
-          ./gradlew clean assembleRelease --warning-mode=all --stacktrace -Pandroid.signingConfig.storeFile=keystore.jks -Pandroid.signingConfig.storePassword=$SIGNING_PASSWORD -Pandroid.signingConfig.keyAlias=$KEY_ALIAS -Pandroid.signingConfig.keyPassword=$KEY_PASSWORD
+          ./gradlew clean :app:assembleRelease --warning-mode=all --stacktrace -Pandroid.signingConfig.storeFile=keystore.jks -Pandroid.signingConfig.storePassword=$SIGNING_PASSWORD -Pandroid.signingConfig.keyAlias=$KEY_ALIAS -Pandroid.signingConfig.keyPassword=$KEY_PASSWORD
 
       # Upload Release APK
       - name: Upload Release APK (artifact)
