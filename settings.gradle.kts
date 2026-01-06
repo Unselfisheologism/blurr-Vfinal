@@ -71,7 +71,7 @@ include(":flutter_stubs")
 // a standalone Gradle project. We exclude it and let the Flutter Gradle plugin handle
 // plugin registration internally through the :flutter_workflow_editor project.
 val flutterProjectDir = file("flutter_workflow_editor")
-val flutterAndroidProjectDir = File(flutterProjectDir, ".android/app")
+val flutterAndroidProjectDir = File(flutterProjectDir, ".android")
 
 val flutterSdkPathForModule = System.getenv("FLUTTER_ROOT")
     ?: System.getenv("FLUTTER_HOME")
