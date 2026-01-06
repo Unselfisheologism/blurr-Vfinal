@@ -48,6 +48,17 @@ jobs:
         run: |
           flutter doctor
           flutter --version
+          echo "Flutter SDK path: $FLUTTER_ROOT"
+
+      # Create local.properties with Flutter SDK path for Gradle
+      - name: Configure Flutter SDK for Gradle
+        run: |
+          FLUTTER_PATH=$(which flutter)
+          FLUTTER_SDK=$(dirname $(dirname $FLUTTER_PATH))
+          echo "sdk.dir=$ANDROID_HOME" > local.properties
+          echo "flutter.sdk=$FLUTTER_SDK" >> local.properties
+          echo "Created local.properties with Flutter SDK: $FLUTTER_SDK"
+          cat local.properties
 
       # Build Flutter dependencies without AAR (avoid GeneratedPluginRegistrant issues)
       - name: Prepare Flutter Module
@@ -55,11 +66,12 @@ jobs:
           cd flutter_workflow_editor
           # Ensure .android directory exists
           mkdir -p .android
-          # Display Gradle configuration for debugging
-          echo "=== gradle.properties ==="
-          cat .android/gradle.properties || echo "No gradle.properties found"
-          echo "=== settings.gradle ==="
-          cat .android/settings.gradle || echo "No settings.gradle found"
+          # Create local.properties for the Flutter module's Android wrapper
+          FLUTTER_PATH=$(which flutter)
+          FLUTTER_SDK=$(dirname $(dirname $FLUTTER_PATH))
+          echo "sdk.dir=$ANDROID_HOME" > .android/local.properties
+          echo "flutter.sdk=$FLUTTER_SDK" >> .android/local.properties
+          echo "Created .android/local.properties"
 
       - name: Prepare Flutter Dependencies
         run: |
@@ -73,10 +85,15 @@ jobs:
           chmod +x ./gradlew
           dos2unix ./gradlew || true
 
-      # Clean and compile the apk
+      # Build from repository root - this integrates the Flutter module via settings.gradle.kts
+      # DO NOT build from flutter_workflow_editor/.android - it's not a standalone Android project
       - name: Clean and Generate Debug APK
+        env:
+          FLUTTER_ROOT: ${{ env.FLUTTER_ROOT }}
         run: |
-          ./gradlew clean assembleDebug --warning-mode=all --stacktrace
+          echo "Building from repository root..."
+          echo "FLUTTER_ROOT: $FLUTTER_ROOT"
+          ./gradlew clean :app:assembleDebug --warning-mode=all --stacktrace
 
       # Upload the action artifact
       - name: Upload Debug APK (artifact)
@@ -92,9 +109,12 @@ jobs:
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          FLUTTER_ROOT: ${{ env.FLUTTER_ROOT }}
         run: |
+          echo "Building Release APK from repository root..."
+          echo "FLUTTER_ROOT: $FLUTTER_ROOT"
           echo $SIGNING_KEY | base64 -d > keystore.jks
-          ./gradlew clean assembleRelease --warning-mode=all --stacktrace -Pandroid.signingConfig.storeFile=keystore.jks -Pandroid.signingConfig.storePassword=$SIGNING_PASSWORD -Pandroid.signingConfig.keyAlias=$KEY_ALIAS -Pandroid.signingConfig.keyPassword=$KEY_PASSWORD
+          ./gradlew clean :app:assembleRelease --warning-mode=all --stacktrace -Pandroid.signingConfig.storeFile=keystore.jks -Pandroid.signingConfig.storePassword=$SIGNING_PASSWORD -Pandroid.signingConfig.keyAlias=$KEY_ALIAS -Pandroid.signingConfig.keyPassword=$KEY_PASSWORD
 
       # Upload Release APK
       - name: Upload Release APK (artifact)
