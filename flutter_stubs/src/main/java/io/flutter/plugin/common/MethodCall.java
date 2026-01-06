@@ -37,4 +37,29 @@ public class MethodCall {
         }
         return false;
     }
+
+    /**
+     * Additional stub methods for compatibility
+     */
+    public String methodName() {
+        return method;
+    }
+
+    public Object methodArguments() {
+        return arguments;
+    }
+
+    /**
+     * Helper method to get method as String
+     */
+    public String getMethod() {
+        return method;
+    }
+
+    /**
+     * Helper method to get arguments as Object
+     */
+    public Object getArguments() {
+        return arguments;
+    }
 }

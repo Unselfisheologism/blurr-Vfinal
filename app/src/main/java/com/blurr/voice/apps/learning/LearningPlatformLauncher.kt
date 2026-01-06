@@ -1,16 +1,22 @@
-package com.blurr.voice.apps.learning
+package com.blurr.voice.apps.learning;
 
-import android.content.Context
-import android.content.Intent
-import com.blurr.voice.LearningPlatformActivity
+import android.content.Context;
+import android.content.Intent;
 
 /**
- * Launcher utility for the AI-Native Learning Platform.
+ * Stub LearningPlatform launcher for Android builds without Flutter SDK.
  */
-object LearningPlatformLauncher {
-
-    fun launch(context: Context) {
-        val intent = Intent(context, LearningPlatformActivity::class.java)
-        context.startActivity(intent)
+class LearningPlatformLauncher {
+    
+    public static void launchLearningPlatform(Context context) {
+        // Stub implementation
+    }
+    
+    public static Intent createLearningPlatformIntent(Context context) {
+        return new Intent();
+    }
+    
+    public static boolean isLearningPlatformAvailable() {
+        return false;
     }
 }

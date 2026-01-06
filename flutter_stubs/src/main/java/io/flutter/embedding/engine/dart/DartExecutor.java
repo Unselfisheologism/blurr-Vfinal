@@ -22,4 +22,23 @@ public class DartExecutor {
     public void executeDartEntrypoint(@NonNull DartEntrypoint entrypoint) {
         // no-op
     }
+
+    /**
+     * Additional stub methods for compatibility
+     */
+    public Object binaryMessenger() {
+        return binaryMessenger;
+    }
+
+    public boolean isRunning() {
+        return false;
+    }
+
+    public void onAttached() {
+        // no-op
+    }
+
+    public void onDetached() {
+        // no-op
+    }
 }

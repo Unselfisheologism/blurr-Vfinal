@@ -33,4 +33,19 @@ public class MethodChannel {
     public void invokeMethod(@NonNull String method, @Nullable Object arguments, @Nullable Result callback) {
         // no-op
     }
+
+    /**
+     * Static factory method for compatibility
+     */
+    public static MethodChannel create(@NonNull Object messenger, @NonNull String name) {
+        return new MethodChannel(messenger, name);
+    }
+
+    /**
+     * Set method call handler with fluent API
+     */
+    public MethodChannel withMethodHandler(@Nullable MethodCallHandler handler) {
+        setMethodCallHandler(handler);
+        return this;
+    }
 }

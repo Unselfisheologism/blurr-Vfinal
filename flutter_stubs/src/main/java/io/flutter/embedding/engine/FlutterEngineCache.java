@@ -29,4 +29,20 @@ public class FlutterEngineCache {
     public FlutterEngine remove(@NonNull String engineId) {
         return cache.remove(engineId);
     }
+
+    public void clear() {
+        cache.clear();
+    }
+
+    public boolean contains(@NonNull String engineId) {
+        return cache.containsKey(engineId);
+    }
+
+    public int size() {
+        return cache.size();
+    }
+
+    public boolean isEmpty() {
+        return cache.isEmpty();
+    }
 }

@@ -1,40 +1,22 @@
-package com.blurr.voice.apps.daw
+package com.blurr.voice.apps.daw;
 
-import android.content.Context
-import android.content.Intent
+import android.content.Context;
+import android.content.Intent;
 
 /**
- * Launcher utility for DAW Editor
- * 
- * Provides convenient methods to launch the DAW Editor from anywhere in the app.
+ * Stub DawEditor launcher for Android builds without Flutter SDK.
  */
-object DawEditorLauncher {
+class DawEditorLauncher {
     
-    /**
-     * Launch DAW Editor with a new empty project
-     */
-    fun launchNewProject(context: Context) {
-        val intent = Intent(context, com.blurr.voice.DawEditorActivity::class.java)
-        context.startActivity(intent)
+    public static void launchDawEditor(Context context) {
+        // Stub implementation
     }
-
-    /**
-     * Launch DAW Editor with a specific project
-     */
-    fun launchProject(context: Context, projectName: String) {
-        val intent = Intent(context, com.blurr.voice.DawEditorActivity::class.java).apply {
-            putExtra("project_name", projectName)
-        }
-        context.startActivity(intent)
+    
+    public static Intent createDawEditorIntent(Context context) {
+        return new Intent();
     }
-
-    /**
-     * Launch DAW Editor with AI generation mode
-     */
-    fun launchWithAiGeneration(context: Context) {
-        val intent = Intent(context, com.blurr.voice.DawEditorActivity::class.java).apply {
-            putExtra("start_with_ai", true)
-        }
-        context.startActivity(intent)
+    
+    public static boolean isDawEditorAvailable() {
+        return false;
     }
 }

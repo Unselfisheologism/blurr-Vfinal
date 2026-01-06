@@ -1,16 +1,22 @@
-package com.blurr.voice.apps.video
+package com.blurr.voice.apps.video;
 
-import android.content.Context
-import android.content.Intent
-import com.blurr.voice.VideoEditorActivity
+import android.content.Context;
+import android.content.Intent;
 
 /**
- * Launcher utility for the AI-Native Video Editor.
+ * Stub VideoEditor launcher for Android builds without Flutter SDK.
  */
-object VideoEditorLauncher {
-
-    fun launch(context: Context) {
-        val intent = Intent(context, VideoEditorActivity::class.java)
-        context.startActivity(intent)
+class VideoEditorLauncher {
+    
+    public static void launchVideoEditor(Context context) {
+        // Stub implementation
+    }
+    
+    public static Intent createVideoEditorIntent(Context context) {
+        return new Intent();
+    }
+    
+    public static boolean isVideoEditorAvailable() {
+        return false;
     }
 }

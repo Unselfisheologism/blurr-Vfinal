@@ -1,40 +1,22 @@
-package com.blurr.voice.apps.texteditor
+package com.blurr.voice.apps.texteditor;
 
-import android.content.Context
-import android.content.Intent
+import android.content.Context;
+import android.content.Intent;
 
 /**
- * Launcher utility for Text Editor
- * 
- * Provides convenient methods to launch the Text Editor from anywhere in the app.
+ * Stub TextEditor launcher for Android builds without Flutter SDK.
  */
-object TextEditorLauncher {
+class TextEditorLauncher {
     
-    /**
-     * Launch Text Editor with a new empty document
-     */
-    fun launchNewDocument(context: Context) {
-        val intent = Intent(context, TextEditorActivity::class.java)
-        context.startActivity(intent)
+    public static void launchTextEditor(Context context) {
+        // Stub implementation
     }
-
-    /**
-     * Launch Text Editor with a specific document
-     */
-    fun launchDocument(context: Context, documentId: String) {
-        val intent = Intent(context, TextEditorActivity::class.java).apply {
-            putExtra("documentId", documentId)
-        }
-        context.startActivity(intent)
+    
+    public static Intent createTextEditorIntent(Context context) {
+        return new Intent();
     }
-
-    /**
-     * Launch Text Editor with template picker
-     */
-    fun launchWithTemplate(context: Context) {
-        val intent = Intent(context, TextEditorActivity::class.java).apply {
-            putExtra("startWithTemplate", true)
-        }
-        context.startActivity(intent)
+    
+    public static boolean isTextEditorAvailable() {
+        return false;
     }
 }

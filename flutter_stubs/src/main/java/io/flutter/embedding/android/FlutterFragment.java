@@ -1,34 +1,50 @@
 package io.flutter.embedding.android;
 
+import android.content.Context;
+import android.os.Bundle;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import io.flutter.embedding.engine.FlutterEngine;
+import io.flutter.embedding.engine.dart.DartExecutor;
 
 /**
  * Stub implementation of FlutterFragment for build compatibility.
  */
 public class FlutterFragment extends Fragment {
+    private FlutterEngine flutterEngine;
 
-    public static class Builder {
-        private String engineId;
-
-        public Builder() {
-        }
-
-        public Builder engineId(@NonNull String engineId) {
-            this.engineId = engineId;
-            return this;
-        }
-
-        public FlutterFragment build() {
-            return new FlutterFragment();
-        }
+    public FlutterFragment() {
+        // Default constructor
     }
 
-    public static Builder withCachedEngine(@NonNull String engineId) {
-        return new Builder().engineId(engineId);
+    @Nullable
+    public FlutterEngine getFlutterEngine() {
+        return flutterEngine;
     }
 
-    public static Builder withNewEngine() {
-        return new Builder();
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        flutterEngine = new FlutterEngine(requireContext());
+    }
+
+    @Override
+    public void onDestroy() {
+        if (flutterEngine != null) {
+            flutterEngine.destroy();
+        }
+        super.onDestroy();
+    }
+
+    /**
+     * Additional stub methods for compatibility
+     */
+    public static FlutterEngine provideFlutterEngine(@NonNull Context context) {
+        return new FlutterEngine(context);
+    }
+
+    public DartExecutor getDartExecutor() {
+        return flutterEngine != null ? flutterEngine.getDartExecutor() : null;
     }
 }

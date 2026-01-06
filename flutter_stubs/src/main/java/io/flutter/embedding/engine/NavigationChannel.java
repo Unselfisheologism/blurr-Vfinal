@@ -17,4 +17,19 @@ public class NavigationChannel {
     public void popRoute() {
         // no-op
     }
+
+    /**
+     * Additional stub methods for compatibility
+     */
+    public void invokeMethod(@NonNull String method, Object arguments) {
+        // no-op
+    }
+
+    public boolean isListening() {
+        return false;
+    }
+
+    public void setMethodHandler(Object handler) {
+        // no-op
+    }
 }
