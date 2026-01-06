@@ -16,14 +16,14 @@ pluginManagement {
     }
 
     repositories {
-        // Prioritize Google's Maven repository first
+        // Prioritize Google's Maven repository first - it has Kotlin and Android artifacts cached
         google()
 
         // Flutter engine artifacts (io.flutter:*), required when building the Flutter module as a Gradle subproject
         maven("https://storage.googleapis.com/download.flutter.io")
 
         gradlePluginPortal()
-        // Use Maven Central but prioritize Google's repository
+        // Maven Central as fallback - repository order ensures Google's Maven is checked first
         mavenCentral()
         maven("https://jitpack.io")
     }
@@ -31,27 +31,18 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
     repositories {
-        // Prioritize Google's Maven repository first
+        // Google's Maven is the primary source for all Kotlin and Android dependencies
         google()
 
         // Flutter engine artifacts (io.flutter:*), required for :flutter_workflow_editor dependency resolution
         maven("https://storage.googleapis.com/download.flutter.io")
-        
-        // Add Maven Central with proper configuration
-        mavenCentral {
-            content {
-                includeGroup("org.jetbrains.kotlin")
-                includeGroup("org.jetbrains.kotlinx")
-                includeGroup("com.squareup")
-                includeGroup("org.ow2.asm")
-            }
-        }
-        
+
         maven("https://jitpack.io")
-        
-        // Add additional mirrors for reliability
-        maven("https://maven.google.com")
-        maven("https://repo1.maven.org/maven2")
+
+        // Maven Central as fallback - repository order ensures Google's Maven is checked first
+        mavenCentral()
+
+        // Chaquo Maven for Python integration
         maven("https://chaquo.com/maven")
     }
 }

@@ -1,10 +1,12 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     repositories {
+        // Prioritize Google's Maven for Kotlin and Android dependencies
         google()
-        mavenCentral()
+        maven { url = uri("https://storage.googleapis.com/download.flutter.io") }
         maven { url = uri("https://chaquo.com/maven") }
-        maven { url = uri("https://maven.google.com") }
+        // Maven Central as fallback - repository order ensures Google's Maven is checked first
+        mavenCentral()
     }
     dependencies {
         classpath("com.chaquo.python:gradle:17.0.0")
