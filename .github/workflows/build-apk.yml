@@ -43,11 +43,12 @@ jobs:
           channel: 'stable'
           cache: true
 
-      # Verify Flutter installation
+      # Verify Flutter installation and set FLUTTER_ROOT
       - name: Verify Flutter installation
         run: |
           flutter doctor
           flutter --version
+          echo "FLUTTER_ROOT=$(dirname $(dirname $(which flutter)))" >> $GITHUB_ENV
 
       # Build Flutter dependencies without AAR (avoid GeneratedPluginRegistrant issues)
       - name: Prepare Flutter Module
