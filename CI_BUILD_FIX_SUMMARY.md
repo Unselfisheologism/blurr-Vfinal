@@ -80,6 +80,27 @@ cd flutter_workflow_editor/.android && ./gradlew app:assembleRelease
 ./gradlew :app:assembleRelease  # From repository root
 ```
 
+### What Does `:app:assembleDebug` Build?
+
+The `:app` module is the **main Android application module** that contains:
+- ✅ All Kotlin source code (app/src/main/kotlin/)
+- ✅ All Java source code (app/src/main/java/)
+- ✅ All resources, layouts, and assets
+- ✅ AndroidManifest.xml
+- ✅ All dependencies including `:flutter_workflow_editor`
+
+When you run `./gradlew :app:assembleDebug`, Gradle:
+1. First builds all dependencies (`:flutter_workflow_editor`, `:flutter_stubs`)
+2. Then compiles all Kotlin and Java code in `:app`
+3. Processes all resources
+4. Produces the final APK
+
+**Both commands work correctly:**
+- `./gradlew assembleDebug` - Runs on all modules (less specific)
+- `./gradlew :app:assembleDebug` - Targets the app module explicitly (recommended)
+
+The `:app:` prefix doesn't limit the build - it's just being explicit about which module produces the APK.
+
 ## Environment Variables
 - `FLUTTER_ROOT`: Set by `subosito/flutter-action@v2`
 - `ANDROID_HOME`: Set by `android-actions/setup-android@v3`
