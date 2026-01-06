@@ -1,0 +1,68 @@
+// Flutter module settings.gradle
+// This file configures the Gradle environment for the Flutter Android module.
+// It should NOT include a ':flutter' subproject, as that doesn't exist in the module structure.
+
+pluginManagement {
+    // Resolve Flutter SDK path from environment variables or local.properties
+    def flutterSdkPath = System.getenv("FLUTTER_ROOT") ?: System.getenv("FLUTTER_HOME") ?: {
+        def properties = new Properties()
+        def propertiesFile = new File(rootProject.projectDir.parentFile.parentFile, "local.properties")
+        if (propertiesFile.exists()) {
+            propertiesFile.withInputStream { properties.load(it) }
+        }
+        return properties.getProperty("flutter.sdk")
+    }()
+
+    if (flutterSdkPath != null) {
+        def flutterPluginPath = new File(flutterSdkPath, "packages/flutter_tools/gradle")
+        if (flutterPluginPath.exists()) {
+            includeBuild flutterPluginPath
+        }
+    }
+
+    repositories {
+        google()
+        maven {
+            url "https://storage.googleapis.com/download.flutter.io"
+        }
+        gradlePluginPortal()
+        mavenCentral()
+        maven {
+            url "https://jitpack.io"
+        }
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        google()
+        maven {
+            url "https://storage.googleapis.com/download.flutter.io"
+        }
+        mavenCentral {
+            content {
+                includeGroup "org.jetbrains.kotlin"
+                includeGroup "org.jetbrains.kotlinx"
+                includeGroup "com.squareup"
+                includeGroup "org.ow2.asm"
+            }
+        }
+        maven {
+            url "https://jitpack.io"
+        }
+        maven {
+            url "https://maven.google.com"
+        }
+        maven {
+            url "https://repo1.maven.org/maven2"
+        }
+    }
+}
+
+// Include only the :app project, which is the actual Android library
+// Do NOT include :flutter or any other subproject that doesn't exist
+include ':app'
+
+// Set the project name for clarity
+rootProject.name = "flutter_workflow_editor"
