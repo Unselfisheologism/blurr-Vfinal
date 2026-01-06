@@ -18,7 +18,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application
-        android:name=".MyApplication"
+        android:name="com.blurr.voice.MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -28,6 +28,7 @@
         android:roundIcon="@drawable/panda_logo_v1_512"
         android:supportsRtl="true"
         android:theme="@style/Theme.Blurr"
+        tools:replace="android:label,android:name"
         tools:targetApi="31">
 
         <!-- Your Activities -->
