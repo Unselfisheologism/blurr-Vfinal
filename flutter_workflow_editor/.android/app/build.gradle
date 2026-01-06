@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace "com.blurr.voice.workflow"
-    compileSdkVersion 34
+    compileSdk 34
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -23,8 +23,8 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 34
+        minSdk 21
+        targetSdk 34
     }
 
     buildTypes {
