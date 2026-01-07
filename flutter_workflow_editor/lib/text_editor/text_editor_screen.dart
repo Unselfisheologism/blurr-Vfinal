@@ -35,7 +35,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
   final ImagePicker _imagePicker = ImagePicker();
 
   // Quill editor controller
-  late QuillController _controller;
+  QuillController? _controller;
   final FocusNode _focusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
 
@@ -44,6 +44,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
   bool _isModified = false;
   bool _isSaving = false;
   bool _isProcessingAI = false;
+  bool _isInitializing = false;
 
   // UI state
   bool _showDocumentList = false;
@@ -56,26 +57,41 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
   }
 
   Future<void> _initialize() async {
-    await _documentService.initialize();
+    if (_isInitializing) return;
     
-    // Check Pro status
-    _isProUser = await _aiService.checkProAccess();
+    setState(() {
+      _isInitializing = true;
+    });
 
-    if (widget.documentId != null) {
-      // Load existing document
-      await _loadDocument(widget.documentId!);
-    } else if (widget.startWithTemplate) {
-      // Show template picker
-      _showTemplatePicker();
-    } else {
-      // Create new empty document
-      _createNewDocument();
+    try {
+      // Ensure document service is fully initialized
+      await _documentService.initialize();
+      
+      // Check Pro status
+      _isProUser = await _aiService.checkProAccess();
+
+      if (widget.documentId != null) {
+        // Load existing document
+        await _loadDocument(widget.documentId!);
+      } else if (widget.startWithTemplate) {
+        // Show template picker
+        _showTemplatePicker();
+      } else {
+        // Create new empty document
+        _createNewDocument();
+      }
+
+      // Listen for document changes
+      if (_controller != null) {
+        _controller!.addListener(_onDocumentChanged);
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isInitializing = false;
+        });
+      }
     }
-
-    // Listen for document changes
-    _controller.addListener(_onDocumentChanged);
-
-    setState(() {});
   }
 
   void _createNewDocument({EditorDocument? template}) {
@@ -124,7 +140,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
   }
 
   Future<void> _saveDocument() async {
-    if (_currentDocument == null) return;
+    if (_currentDocument == null || _controller == null) return;
 
     setState(() {
       _isSaving = true;
@@ -132,11 +148,11 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
 
     try {
       final updatedDocument = _currentDocument!.copyWithDelta(
-        _controller.document.toDelta(),
+        _controller!.document.toDelta(),
       );
 
       await _documentService.saveDocument(updatedDocument);
-      
+
       _currentDocument = updatedDocument;
       _isModified = false;
 
@@ -279,16 +295,21 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
     String? instruction,
     Map<String, dynamic>? context,
   }) async {
+    if (_controller == null) {
+      _showError('Editor not ready');
+      return;
+    }
+
     // Get selected text
-    final selection = _controller.selection;
+    final selection = _controller!.selection;
     if (!selection.isValid || selection.isCollapsed && operation != AIAssistantService.operationContinue) {
       _showError('Please select some text first');
       return;
     }
 
     final selectedText = selection.isCollapsed
-        ? _controller.document.toPlainText()
-        : _controller.document
+        ? _controller!.document.toPlainText()
+        : _controller!.document
             .toPlainText()
             .substring(selection.start, selection.end);
 
@@ -332,18 +353,20 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
   }
 
   void _replaceSelection(String newText) {
-    final selection = _controller.selection;
-    
+    if (_controller == null) return;
+
+    final selection = _controller!.selection;
+
     if (selection.isCollapsed) {
       // Insert at cursor
-      _controller.document.insert(selection.baseOffset, newText);
-      _controller.updateSelection(
+      _controller!.document.insert(selection.baseOffset, newText);
+      _controller!.updateSelection(
         TextSelection.collapsed(offset: selection.baseOffset + newText.length),
         ChangeSource.local,
       );
     } else {
       // Replace selection
-      _controller.replaceText(
+      _controller!.replaceText(
         selection.start,
         selection.end - selection.start,
         newText,
@@ -360,6 +383,11 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
 
   /// Insert image from gallery or camera
   Future<void> _insertImage() async {
+    if (_controller == null) {
+      _showError('Editor not ready');
+      return;
+    }
+
     final source = await showDialog<ImageSource>(
       context: context,
       builder: (context) => AlertDialog(
@@ -394,20 +422,20 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
 
       if (image != null) {
         // Insert image into document
-        final index = _controller.selection.baseOffset;
-        final length = _controller.selection.extentOffset - index;
+        final index = _controller!.selection.baseOffset;
+        final length = _controller!.selection.extentOffset - index;
 
         // For now, insert as a simple image embed
         // In production, you'd want to handle image storage properly
-        _controller.document.insert(index, BlockEmbed.image(image.path));
-        _controller.updateSelection(
+        _controller!.document.insert(index, BlockEmbed.image(image.path));
+        _controller!.updateSelection(
           TextSelection.collapsed(offset: index + 1),
           ChangeSource.local,
         );
 
         _isModified = true;
         setState(() {});
-        
+
         _showSnackBar('Image inserted', success: true);
       }
     } catch (e) {
@@ -417,6 +445,11 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
 
   /// Insert video from gallery (Pro feature)
   Future<void> _insertVideo() async {
+    if (_controller == null) {
+      _showError('Editor not ready');
+      return;
+    }
+
     if (!_isProUser) {
       _showProUpgradeDialog();
       return;
@@ -430,18 +463,18 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
 
       if (video != null) {
         // Insert video into document
-        final index = _controller.selection.baseOffset;
+        final index = _controller!.selection.baseOffset;
 
         // For now, insert as a simple video embed
-        _controller.document.insert(index, BlockEmbed.video(video.path));
-        _controller.updateSelection(
+        _controller!.document.insert(index, BlockEmbed.video(video.path));
+        _controller!.updateSelection(
           TextSelection.collapsed(offset: index + 1),
           ChangeSource.local,
         );
 
         _isModified = true;
-        setState(() {});
-        
+        setState(() {};
+
         _showSnackBar('Video inserted', success: true);
       }
     } catch (e) {
@@ -547,12 +580,14 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
   }
 
   Future<void> _exportAsPlainText() async {
+    if (_currentDocument == null || _controller == null) return;
+
     _showSnackBar('Exporting as plain text...', success: true);
-    
+
     try {
       final result = await _exportService.exportAsPlainText(
         document: _currentDocument!,
-        delta: _controller.document.toDelta(),
+        delta: _controller!.document.toDelta(),
       );
 
       if (result.success) {
@@ -567,12 +602,14 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
   }
 
   Future<void> _exportAsMarkdown() async {
+    if (_currentDocument == null || _controller == null) return;
+
     _showSnackBar('Exporting as Markdown...', success: true);
-    
+
     try {
       final result = await _exportService.exportAsMarkdown(
         document: _currentDocument!,
-        delta: _controller.document.toDelta(),
+        delta: _controller!.document.toDelta(),
       );
 
       if (result.success) {
@@ -586,12 +623,14 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
   }
 
   Future<void> _exportAsHTML() async {
+    if (_currentDocument == null || _controller == null) return;
+
     _showSnackBar('Exporting as HTML...', success: true);
-    
+
     try {
       final result = await _exportService.exportAsHTML(
         document: _currentDocument!,
-        delta: _controller.document.toDelta(),
+        delta: _controller!.document.toDelta(),
       );
 
       if (result.success) {
@@ -605,12 +644,14 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
   }
 
   Future<void> _exportAsPDF() async {
+    if (_currentDocument == null || _controller == null) return;
+
     _showSnackBar('Generating PDF...', success: true);
-    
+
     try {
       final result = await _exportService.exportAsPDF(
         document: _currentDocument!,
-        delta: _controller.document.toDelta(),
+        delta: _controller!.document.toDelta(),
       );
 
       if (result.success) {
@@ -681,12 +722,14 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
   }
 
   Future<void> _shareDocument(ShareFormat format) async {
+    if (_currentDocument == null || _controller == null) return;
+
     _showSnackBar('Preparing to share...', success: true);
-    
+
     try {
       final result = await _exportService.shareDocument(
         document: _currentDocument!,
-        delta: _controller.document.toDelta(),
+        delta: _controller!.document.toDelta(),
         format: format,
       );
 
@@ -700,12 +743,14 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
   }
 
   Future<void> _printDocument() async {
+    if (_currentDocument == null || _controller == null) return;
+
     _showSnackBar('Preparing to print...', success: true);
-    
+
     try {
       await _exportService.printDocument(
         document: _currentDocument!,
-        delta: _controller.document.toDelta(),
+        delta: _controller!.document.toDelta(),
       );
     } catch (e) {
       _showError('Failed to print: $e');
@@ -715,7 +760,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
   @override
   void dispose() {
     _autoSave();
-    _controller.dispose();
+    _controller?.dispose();
     _focusNode.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -723,7 +768,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_currentDocument == null) {
+    if (_isInitializing || _currentDocument == null) {
       return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
@@ -838,28 +883,33 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
         ),
         body: Stack(
           children: [
-            Column(
-              children: [
-                // Standard Quill Toolbar
-                QuillSimpleToolbar(
-                  configurations: QuillSimpleToolbarConfigurations(
-                    controller: _controller,
-                    multiRowsDisplay: false,
-                    showAlignmentButtons: true,
-                    showBackgroundColorButton: false,
-                    showClearFormat: true,
-                    showCodeBlock: true,
-                    showColorButton: true,
-                    showFontSize: true,
-                    showHeaderStyle: true,
-                    showIndent: true,
-                    showInlineCode: true,
-                    showLink: true,
-                    showListBullets: true,
-                    showListCheck: true,
-                    showListNumbers: true,
-                    showQuote: true,
-                    showSearchButton: true,
+            if (_isInitializing)
+              const Center(child: CircularProgressIndicator())
+            else if (_controller == null)
+              const Center(child: Text('Error loading editor'))
+            else
+              Column(
+                children: [
+                  // Standard Quill Toolbar
+                  QuillSimpleToolbar(
+                    configurations: QuillSimpleToolbarConfigurations(
+                      controller: _controller!,
+                      multiRowsDisplay: false,
+                      showAlignmentButtons: true,
+                      showBackgroundColorButton: false,
+                      showClearFormat: true,
+                      showCodeBlock: true,
+                      showColorButton: true,
+                      showFontSize: true,
+                      showHeaderStyle: true,
+                      showIndent: true,
+                      showInlineCode: true,
+                      showLink: true,
+                      showListBullets: true,
+                      showListCheck: true,
+                      showListNumbers: true,
+                      showQuote: true,
+                      showSearchButton: true,
                     showStrikeThrough: true,
                     showUnderLineButton: true,
                     // Custom embed buttons
@@ -892,7 +942,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
                 
                 // Custom AI Toolbar
                 AIToolbar(
-                  controller: _controller,
+                  controller: _controller!,
                   isProcessing: _isProcessingAI,
                   isProUser: _isProUser,
                   onAIOperation: _handleAIOperation,
@@ -906,7 +956,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
                     scrollController: _scrollController,
                     focusNode: _focusNode,
                     configurations: QuillEditorConfigurations(
-                      controller: _controller,
+                      controller: _controller!,
                       padding: const EdgeInsets.all(16),
                       autoFocus: false,
                       expands: true,
@@ -1151,5 +1201,13 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
 
   String _formatDate(DateTime date) {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    _focusNode.dispose();
+    _scrollController.dispose();
+    super.dispose();
   }
 }

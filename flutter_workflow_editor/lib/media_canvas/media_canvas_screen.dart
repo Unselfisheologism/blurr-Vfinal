@@ -28,22 +28,42 @@ class _MediaCanvasScreenState extends State<MediaCanvasScreen> {
   final AIGenerationService _aiService = AIGenerationService();
   bool _isGenerating = false;
   late CanvasState _canvasState;
+  bool _isInitializing = false;
 
   @override
   void initState() {
     super.initState();
+    // Initialize state immediately in initState to avoid race conditions
+    _canvasState = context.read<CanvasState>();
     _initializeCanvas();
   }
 
   Future<void> _initializeCanvas() async {
-    _canvasState = context.read<CanvasState>();
+    if (_isInitializing) return;
+    
+    setState(() {
+      _isInitializing = true;
+    });
 
-    if (widget.documentId != null) {
-      await _canvasState.loadCanvas(widget.documentId!);
-    } else if (widget.initialPrompt != null) {
-      await _createFromPrompt(widget.initialPrompt!);
-    } else {
-      await _canvasState.createNewCanvas('Untitled Canvas');
+    try {
+      // Ensure state is fully initialized
+      if (!_canvasState.isInitialized) {
+        await _canvasState.initialize();
+      }
+
+      if (widget.documentId != null) {
+        await _canvasState.loadCanvas(widget.documentId!);
+      } else if (widget.initialPrompt != null) {
+        await _createFromPrompt(widget.initialPrompt!);
+      } else {
+        await _canvasState.createNewCanvas('Untitled Canvas');
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isInitializing = false;
+        });
+      }
     }
   }
 
@@ -63,7 +83,7 @@ class _MediaCanvasScreenState extends State<MediaCanvasScreen> {
     return Scaffold(
       body: Consumer<CanvasState>(
         builder: (context, state, child) {
-          if (state.isLoading) {
+          if (_isInitializing || state.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 

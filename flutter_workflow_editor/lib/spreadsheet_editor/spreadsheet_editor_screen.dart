@@ -30,28 +30,48 @@ class _SpreadsheetEditorScreenState extends State<SpreadsheetEditorScreen> {
   SpreadsheetDataSource? _dataSource;
   late SpreadsheetState _spreadsheetState;
   final PlatformBridge _platformBridge = PlatformBridge();
+  bool _isInitializing = false;
 
   @override
   void initState() {
     super.initState();
+    // Initialize state immediately in initState to avoid race conditions
+    _spreadsheetState = context.read<SpreadsheetState>();
     _initializeSpreadsheet();
   }
 
   Future<void> _initializeSpreadsheet() async {
-    _spreadsheetState = context.read<SpreadsheetState>();
+    if (_isInitializing) return;
+    
+    setState(() {
+      _isInitializing = true;
+    });
 
-    if (widget.documentId != null) {
-      // Load existing document
-      await _spreadsheetState.loadSpreadsheet(widget.documentId!);
-    } else if (widget.initialPrompt != null) {
-      // Create from AI prompt
-      await _createFromPrompt(widget.initialPrompt!);
-    } else {
-      // Create blank spreadsheet
-      await _spreadsheetState.createNewSpreadsheet('Untitled Spreadsheet');
+    try {
+      // Ensure state is fully initialized
+      if (!_spreadsheetState.isInitialized) {
+        await _spreadsheetState.initialize();
+      }
+
+      if (widget.documentId != null) {
+        // Load existing document
+        await _spreadsheetState.loadSpreadsheet(widget.documentId!);
+      } else if (widget.initialPrompt != null) {
+        // Create from AI prompt
+        await _createFromPrompt(widget.initialPrompt!);
+      } else {
+        // Create blank spreadsheet
+        await _spreadsheetState.createNewSpreadsheet('Untitled Spreadsheet');
+      }
+
+      _refreshDataSource();
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isInitializing = false;
+        });
+      }
     }
-
-    _refreshDataSource();
   }
 
   Future<void> _createFromPrompt(String prompt) async {
@@ -90,11 +110,17 @@ class _SpreadsheetEditorScreenState extends State<SpreadsheetEditorScreen> {
   }
 
   @override
+  void dispose() {
+    _dataGridController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Consumer<SpreadsheetState>(
         builder: (context, state, child) {
-          if (state.isLoading) {
+          if (_isInitializing || state.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
