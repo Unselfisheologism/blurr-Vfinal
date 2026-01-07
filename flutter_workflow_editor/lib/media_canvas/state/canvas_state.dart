@@ -8,6 +8,7 @@ class CanvasState extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   bool _isPro = false;
+  bool _initialized = false;
 
   // View state
   double _zoom = 1.0;
@@ -21,6 +22,7 @@ class CanvasState extends ChangeNotifier {
   final CanvasStorageService _storageService = CanvasStorageService();
 
   // Getters
+  bool get isInitialized => _initialized;
   CanvasDocument? get currentDocument => _currentDocument;
   bool get isLoading => _isLoading;
   String? get error => _error;
@@ -35,6 +37,25 @@ class CanvasState extends ChangeNotifier {
   int get maxLayers => _isPro ? 9999 : 50;
   bool get canUseVideo => _isPro;
   bool get canUseAdvancedAI => _isPro;
+
+  /// Initialize storage service
+  Future<void> initialize() async {
+    if (_initialized) return;
+
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _storageService.initialize();
+      _initialized = true;
+    } catch (e) {
+      _error = 'Failed to initialize storage: $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 
   /// Set Pro status
   void setProStatus(bool isPro) {

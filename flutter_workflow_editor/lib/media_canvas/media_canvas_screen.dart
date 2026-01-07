@@ -32,11 +32,17 @@ class _MediaCanvasScreenState extends State<MediaCanvasScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeCanvas();
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _initializeCanvas();
+    });
   }
 
   Future<void> _initializeCanvas() async {
     _canvasState = context.read<CanvasState>();
+
+    // Initialize storage first
+    await _canvasState.initialize();
 
     if (widget.documentId != null) {
       await _canvasState.loadCanvas(widget.documentId!);

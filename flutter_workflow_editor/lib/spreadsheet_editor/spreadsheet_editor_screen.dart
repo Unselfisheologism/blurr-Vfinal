@@ -34,11 +34,17 @@ class _SpreadsheetEditorScreenState extends State<SpreadsheetEditorScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeSpreadsheet();
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _initializeSpreadsheet();
+    });
   }
 
   Future<void> _initializeSpreadsheet() async {
     _spreadsheetState = context.read<SpreadsheetState>();
+
+    // Initialize storage first
+    await _spreadsheetState.initialize();
 
     if (widget.documentId != null) {
       // Load existing document

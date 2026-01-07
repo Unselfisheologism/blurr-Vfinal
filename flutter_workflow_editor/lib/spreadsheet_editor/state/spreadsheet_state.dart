@@ -14,12 +14,14 @@ class SpreadsheetState extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   bool _isPro = false;
+  bool _initialized = false;
 
   final SpreadsheetStorageService _storageService = SpreadsheetStorageService();
   final UndoRedoService _undoRedoService = UndoRedoService();
   final SortFilterService _sortFilterService = SortFilterService();
 
   // Getters
+  bool get isInitialized => _initialized;
   SpreadsheetDocument? get currentDocument => _currentDocument;
   SpreadsheetSheet? get currentSheet =>
       _currentDocument != null && _currentDocument!.sheets.isNotEmpty
@@ -39,6 +41,25 @@ class SpreadsheetState extends ChangeNotifier {
   int get maxSheets => _isPro ? 999 : 10;
   int get maxRows => _isPro ? 999999 : 1000;
   int get maxColumns => _isPro ? 999 : 26;
+
+  /// Initialize storage service
+  Future<void> initialize() async {
+    if (_initialized) return;
+
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _storageService.initialize();
+      _initialized = true;
+    } catch (e) {
+      _error = 'Failed to initialize storage: $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 
   /// Create a new spreadsheet
   Future<void> createNewSpreadsheet(String name) async {

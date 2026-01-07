@@ -7,17 +7,30 @@ class CanvasStorageService {
   static const String _boxName = 'media_canvas';
   static const String _listKey = 'canvas_list';
 
-  /// Get or open Hive box
-  Future<Box> _getBox() async {
-    if (!Hive.isBoxOpen(_boxName)) {
-      return await Hive.openBox(_boxName);
+  Box? _box;
+
+  /// Initialize storage service by opening Hive box
+  Future<void> initialize() async {
+    if (_box == null || !_box!.isOpen) {
+      _box = await Hive.openBox(_boxName);
     }
-    return Hive.box(_boxName);
+  }
+
+  void _ensureInitialized() {
+    if (_box == null || !_box!.isOpen) {
+      throw StateError('CanvasStorageService not initialized. Call initialize() first.');
+    }
+  }
+
+  /// Get Hive box
+  Box _getBox() {
+    _ensureInitialized();
+    return _box!;
   }
 
   /// Save canvas document
   Future<void> saveDocument(CanvasDocument document) async {
-    final box = await _getBox();
+    final box = _getBox();
     await box.put(document.id, jsonEncode(document.toJson()));
     
     // Update document list
@@ -26,7 +39,7 @@ class CanvasStorageService {
 
   /// Load canvas document
   Future<CanvasDocument> loadDocument(String documentId) async {
-    final box = await _getBox();
+    final box = _getBox();
     final jsonString = box.get(documentId) as String?;
     
     if (jsonString == null) {
@@ -39,7 +52,7 @@ class CanvasStorageService {
 
   /// Delete canvas document
   Future<void> deleteDocument(String documentId) async {
-    final box = await _getBox();
+    final box = _getBox();
     await box.delete(documentId);
     
     // Remove from document list
@@ -50,7 +63,7 @@ class CanvasStorageService {
 
   /// Get list of all canvases
   Future<List<Map<String, dynamic>>> getDocumentList() async {
-    final box = await _getBox();
+    final box = _getBox();
     final listJson = box.get(_listKey) as String?;
     
     if (listJson == null) {
@@ -63,7 +76,7 @@ class CanvasStorageService {
 
   /// Update document list
   Future<void> _updateDocumentList(String id, String name) async {
-    final box = await _getBox();
+    final box = _getBox();
     final list = await getDocumentList();
     
     // Remove existing entry
