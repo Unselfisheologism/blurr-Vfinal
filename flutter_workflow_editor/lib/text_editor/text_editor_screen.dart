@@ -36,6 +36,13 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
 
   // Quill editor controller
   QuillController? _controller;
+  /// Returns a non-null controller, creating one if necessary
+  QuillController get _safeController {
+    return _controller ??= QuillController(
+      document: Document.fromJson([]),
+      selection: const TextSelection.collapsed(offset: 0),
+    );
+  }
   final FocusNode _focusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
 
@@ -879,7 +886,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
                 // Standard Quill Toolbar
                 QuillSimpleToolbar(
                   configurations: QuillSimpleToolbarConfigurations(
-                    controller: _controller,
+                    controller: _safeController,
                     multiRowsDisplay: false,
                     showAlignmentButtons: true,
                     showBackgroundColorButton: false,
@@ -928,7 +935,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
                 
                 // Custom AI Toolbar
                 AIToolbar(
-                  controller: _controller,
+                  controller: _safeController,
                   isProcessing: _isProcessingAI,
                   isProUser: _isProUser,
                   onAIOperation: _handleAIOperation,
@@ -942,7 +949,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
                     scrollController: _scrollController,
                     focusNode: _focusNode,
                     configurations: QuillEditorConfigurations(
-                      controller: _controller,
+                      controller: _safeController,
                       padding: const EdgeInsets.all(16),
                       autoFocus: false,
                       expands: true,
