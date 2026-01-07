@@ -1202,12 +1202,4 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
   String _formatDate(DateTime date) {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
-
-  @override
-  void dispose() {
-    _controller?.dispose();
-    _focusNode.dispose();
-    _scrollController.dispose();
-    super.dispose();
-  }
 }
