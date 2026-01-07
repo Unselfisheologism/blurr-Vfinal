@@ -728,10 +728,4 @@ class _SpreadsheetEditorScreenState extends State<SpreadsheetEditorScreen> {
       SnackBar(content: Text(message)),
     );
   }
-
-  @override
-  void dispose() {
-    _dataGridController.dispose();
-    super.dispose();
-  }
 }
