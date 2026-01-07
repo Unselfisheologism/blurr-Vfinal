@@ -473,7 +473,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
         );
 
         _isModified = true;
-        setState(() {};
+        setState(() {});
 
         _showSnackBar('Video inserted', success: true);
       }
