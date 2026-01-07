@@ -4,6 +4,7 @@ library workflow_editor;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'workflow_editor_screen.dart';
 import 'state/workflow_state.dart';
 import 'state/app_state.dart';
@@ -21,7 +22,13 @@ import 'learning_platform/state/learning_platform_state.dart';
 import 'video_editor/video_editor_screen.dart';
 import 'video_editor/state/video_editor_state.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Hive for local storage before running the app
+  // This ensures all editors can access Hive boxes without initialization errors
+  await Hive.initFlutter();
+  
   runApp(const WorkflowEditorApp());
 }
 

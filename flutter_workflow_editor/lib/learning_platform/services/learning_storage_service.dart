@@ -14,7 +14,7 @@ class LearningStorageService {
   Box<String>? _trailsBox;
 
   Future<void> initialize() async {
-    await Hive.initFlutter();
+    // Hive is initialized globally in main.dart, so we can directly open boxes
     _documentsBox = await Hive.openBox<String>(_documentsBoxName);
     _trailsBox = await Hive.openBox<String>(_trailsBoxName);
   }
