@@ -46,13 +46,9 @@ class SpreadsheetState extends ChangeNotifier {
   Future<void> initialize() async {
     if (_initialized) return;
 
-    try {
-      await _storageService.initialize();
-      _initialized = true;
-    } catch (e) {
-      _error = 'Failed to initialize storage: $e';
-      notifyListeners();
-    }
+    // Services handle Hive lazily on first use, so no explicit init needed
+    _initialized = true;
+    notifyListeners();
   }
 
   /// Create a new spreadsheet
