@@ -17,7 +17,7 @@ class DocumentService {
 
   /// Initialize the service
   Future<void> initialize() async {
-    await Hive.initFlutter();
+    // Hive is initialized globally in main.dart, so we can directly open boxes
     _documentsBox = await Hive.openBox<String>(_boxName);
     _prefs = await SharedPreferences.getInstance();
   }
