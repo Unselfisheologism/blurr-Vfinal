@@ -56,9 +56,11 @@ class _MediaCanvasScreenState extends State<MediaCanvasScreen> {
       } else if (widget.initialPrompt != null) {
         await _createFromPrompt(widget.initialPrompt!);
       } else {
-        await _canvasState.createNewCanvas('Untitled Canvas');
-      }
-    } finally {
+          await _canvasState.createNewCanvas('Untitled Canvas');
+          // Ensure state change is reflected in UI
+          setState(() {});
+        }
+      } finally {
       if (mounted) {
         setState(() {
           _isInitializing = false;
