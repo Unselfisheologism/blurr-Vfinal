@@ -42,7 +42,7 @@ class CanvasState extends ChangeNotifier {
   Future<void> initialize() async {
     if (_initialized) return;
 
-    // Services handle Hive lazily on first use, so no explicit init needed
+    await _storageService.initialize();
     _initialized = true;
     notifyListeners();
   }

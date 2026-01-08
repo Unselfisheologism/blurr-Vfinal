@@ -1,14 +1,30 @@
 /// Local storage service for spreadsheet documents
 import 'dart:convert';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../models/spreadsheet_document.dart';
 
 class SpreadsheetStorageService {
   static const String _boxName = 'spreadsheets';
   static const String _listKey = 'spreadsheet_list';
 
-  /// Initialize Hive box
+  Box<String>? _box;
+
+  /// Initialize the service
+  Future<void> initialize() async {
+    await Hive.initFlutter();
+    _box = await Hive.openBox<String>(_boxName);
+  }
+
+  /// Ensure service is initialized
+  void _ensureInitialized() {
+    if (_box == null) {
+      throw StateError('SpreadsheetStorageService not initialized. Call initialize() first.');
+    }
+  }
+
+  /// Get or open Hive box
   Future<Box> _getBox() async {
+    _ensureInitialized();
     if (!Hive.isBoxOpen(_boxName)) {
       return await Hive.openBox(_boxName);
     }
