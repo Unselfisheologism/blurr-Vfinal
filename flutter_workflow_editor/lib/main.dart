@@ -22,12 +22,7 @@ import 'learning_platform/state/learning_platform_state.dart';
 import 'video_editor/video_editor_screen.dart';
 import 'video_editor/state/video_editor_state.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Hive BEFORE running the app
-  await Hive.initFlutter();
-  
+void main() {
   runApp(const WorkflowEditorApp());
 }
 
