@@ -267,8 +267,7 @@ class _FlWorkflowCanvasState extends State<FlWorkflowCanvas> {
       _controller.project.links[connection.id] = stubLink;
     }
     
-    // Notify controller listeners about changes
-    _controller._notifyListeners();
+    // Trigger widget rebuild to reflect the synced state
     setState(() {});
   }
   
