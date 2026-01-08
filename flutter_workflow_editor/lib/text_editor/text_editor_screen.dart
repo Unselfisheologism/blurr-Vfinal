@@ -45,6 +45,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
   bool _isSaving = false;
   bool _isProcessingAI = false;
   bool _isInitializing = false;
+  String? _error;
 
   // UI state
   bool _showDocumentList = false;
@@ -85,6 +86,9 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
       if (_controller != null) {
         _controller!.addListener(_onDocumentChanged);
       }
+    } catch (e) {
+      _error = 'Failed to initialize text editor: $e';
+      print('TextEditor Init Error: $e');  // Log for debugging
     } finally {
       if (mounted) {
         setState(() {
@@ -772,6 +776,30 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
       return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (_error != null) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, color: Colors.red, size: 48),
+              const SizedBox(height: 16),
+              Text(
+                _error!,
+                style: const TextStyle(color: Colors.red, fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: _initialize,
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
         ),
       );
     }
