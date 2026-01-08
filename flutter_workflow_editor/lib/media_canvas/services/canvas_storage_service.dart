@@ -1,14 +1,30 @@
 /// Canvas storage service using Hive
 import 'dart:convert';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../models/media_layer_node.dart';
 
 class CanvasStorageService {
   static const String _boxName = 'media_canvas';
   static const String _listKey = 'canvas_list';
 
+  Box<String>? _box;
+
+  /// Initialize the service
+  Future<void> initialize() async {
+    await Hive.initFlutter();
+    _box = await Hive.openBox<String>(_boxName);
+  }
+
+  /// Ensure service is initialized
+  void _ensureInitialized() {
+    if (_box == null) {
+      throw StateError('CanvasStorageService not initialized. Call initialize() first.');
+    }
+  }
+
   /// Get or open Hive box
   Future<Box> _getBox() async {
+    _ensureInitialized();
     if (!Hive.isBoxOpen(_boxName)) {
       return await Hive.openBox(_boxName);
     }
