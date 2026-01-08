@@ -62,9 +62,10 @@ class _SpreadsheetEditorScreenState extends State<SpreadsheetEditorScreen> {
       } else {
         // Create blank spreadsheet
         await _spreadsheetState.createNewSpreadsheet('Untitled Spreadsheet');
+        _refreshDataSource();
+        // Ensure UI reflects the new document
+        setState(() {});
       }
-
-      _refreshDataSource();
     } finally {
       if (mounted) {
         setState(() {
@@ -78,6 +79,8 @@ class _SpreadsheetEditorScreenState extends State<SpreadsheetEditorScreen> {
     try {
       // Create blank spreadsheet first
       await _spreadsheetState.createNewSpreadsheet('AI Generated Spreadsheet');
+      _refreshDataSource();
+      setState(() {});
 
       // Call AI to generate data
       final result = await _platformBridge.executeAgentTask(
@@ -96,17 +99,20 @@ class _SpreadsheetEditorScreenState extends State<SpreadsheetEditorScreen> {
   }
 
   void _refreshDataSource() {
-    if (_spreadsheetState.currentSheet != null) {
-      setState(() {
-        _dataSource = SpreadsheetDataSource(
-          sheet: _spreadsheetState.currentSheet!,
-          onCellValueChanged: (row, col, value) {
-            _spreadsheetState.updateCell(row, col, value);
-            _refreshDataSource(); // Refresh to show updates
-          },
-        );
-      });
-    }
+    // Add a small delay to ensure state has propagated
+    Future.delayed(const Duration(milliseconds: 50), () {
+      if (mounted && _spreadsheetState.currentSheet != null) {
+        setState(() {
+          _dataSource = SpreadsheetDataSource(
+            sheet: _spreadsheetState.currentSheet!,
+            onCellValueChanged: (row, col, value) {
+              _spreadsheetState.updateCell(row, col, value);
+              _refreshDataSource(); // Refresh to show updates
+            },
+          );
+        });
+      }
+    });
   }
 
   @override

@@ -116,6 +116,7 @@ class _TextEditorScreenState extends State<TextEditorScreen> {
     );
 
     _isModified = false;
+    setState(() {}); // Force UI update to show the editor
   }
 
   Future<void> _loadDocument(String documentId) async {
