@@ -21,6 +21,7 @@ class _FlWorkflowCanvasState extends State<FlWorkflowCanvas> {
   // CORRECT: Use FlNodeEditorController instead of NodesCanvas
   late final FlNodeEditorController _controller;
   late VerticalLayoutAdapter _layoutAdapter;
+  WorkflowState? _workflowState;
   
   @override
   void initState() {
@@ -237,10 +238,96 @@ class _FlWorkflowCanvasState extends State<FlWorkflowCanvas> {
     });
   }
   
+  /// Handle WorkflowState changes and sync to controller
+  void _onWorkflowStateChanged() {
+    _syncFromWorkflowState();
+  }
+  
+  /// Sync nodes from WorkflowState to FlNodeEditorController
+  void _syncFromWorkflowState() {
+    if (_workflowState?.currentWorkflow == null) return;
+    
+    // Clear existing nodes in controller
+    _controller.project.nodes.clear();
+    
+    // Add nodes from workflow state to controller
+    for (final node in _workflowState!.currentWorkflow!.nodes) {
+      // Create a stub node that matches the controller's expectations
+      final stubNode = _createNodeFromWorkflowNode(node);
+      _controller.project.nodes[node.id] = stubNode;
+    }
+    
+    // Clear existing links in controller
+    _controller.project.links.clear();
+    
+    // Add connections from workflow state to controller
+    for (final connection in _workflowState!.currentWorkflow!.connections) {
+      // Create a stub link that matches the controller's expectations
+      final stubLink = _createLinkFromWorkflowConnection(connection);
+      _controller.project.links[connection.id] = stubLink;
+    }
+    
+    // Notify controller listeners about changes
+    _controller._notifyListeners();
+    setState(() {});
+  }
+  
+  /// Create a stub node from WorkflowNode
+  dynamic _createNodeFromWorkflowNode(dynamic workflowNode) {
+    // Find the prototype for this node type
+    final prototype = _findPrototypeForNodeType(workflowNode.type);
+    
+    if (prototype == null) return null;
+    
+    // Create a stub node with the required properties
+    return FlNodeStub(
+      id: workflowNode.id,
+      prototype: prototype,
+      position: Offset(workflowNode.x, workflowNode.y),
+      fields: workflowNode.data ?? {},
+    );
+  }
+  
+  /// Create a stub link from WorkflowConnection
+  dynamic _createLinkFromWorkflowConnection(dynamic workflowConnection) {
+    return FlLinkStub(
+      id: workflowConnection.id,
+      sourceNodeId: workflowConnection.sourceNodeId,
+      targetNodeId: workflowConnection.targetNodeId,
+      sourcePortId: workflowConnection.sourcePortId,
+      targetPortId: workflowConnection.targetPortId,
+    );
+  }
+  
+  /// Find prototype for node type
+  NodePrototype? _findPrototypeForNodeType(String nodeType) {
+    // This would search through registered prototypes
+    // For now, return a simple implementation
+    for (final def in NodeDefinitions.all) {
+      if (def.id == nodeType) {
+        return _createNodePrototype(def);
+      }
+    }
+    return null;
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Consumer<WorkflowState>(
       builder: (context, workflowState, child) {
+        // Ensure we're listening to workflow state changes
+        if (_workflowState != workflowState) {
+          // Remove old listener
+          _workflowState?.removeListener(_onWorkflowStateChanged);
+          
+          // Set new state and listener
+          _workflowState = workflowState;
+          _workflowState!.addListener(_onWorkflowStateChanged);
+          
+          // Sync from workflow state
+          _syncFromWorkflowState();
+        }
+        
         return Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
@@ -445,6 +532,9 @@ class _FlWorkflowCanvasState extends State<FlWorkflowCanvas> {
   
   @override
   void dispose() {
+    // Clean up WorkflowState listener
+    _workflowState?.removeListener(_onWorkflowStateChanged);
+    
     _controller.dispose();
     super.dispose();
   }

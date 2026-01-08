@@ -167,6 +167,38 @@ class FlProjectStub {
   final Map<String, dynamic> links = {};
 }
 
+/// Stub class for FlNode to support workflow sync
+class FlNodeStub {
+  final String id;
+  final NodePrototype prototype;
+  Offset position;
+  Map<String, dynamic> fields;
+
+  FlNodeStub({
+    required this.id,
+    required this.prototype,
+    required this.position,
+    this.fields = const {},
+  });
+}
+
+/// Stub class for FlLink to support workflow sync
+class FlLinkStub {
+  final String id;
+  final String sourceNodeId;
+  final String targetNodeId;
+  final String sourcePortId;
+  final String targetPortId;
+
+  const FlLinkStub({
+    required this.id,
+    required this.sourceNodeId,
+    required this.targetNodeId,
+    required this.sourcePortId,
+    required this.targetPortId,
+  });
+}
+
 class FlNodeEditorWidget extends StatelessWidget {
   final FlNodeEditorController controller;
   final bool expandToParent;
