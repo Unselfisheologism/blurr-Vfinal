@@ -306,13 +306,16 @@ class WorkflowNodeFlowController {
       case 'webhook_trigger':
         return [];
 
+      case 'unified_shell':
+        return [input('in', 'Code')];
+
       case 'if_else':
         return [input('in', 'Condition')];
 
       case 'loop':
         return [
-          input('in', 'Input'),
           input('list', 'List'),
+          input('body', 'Body'),
         ];
 
       case 'output':

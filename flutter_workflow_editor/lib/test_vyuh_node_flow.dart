@@ -24,7 +24,7 @@ class _VyuhNodeFlowTestWidgetState extends State<VyuhNodeFlowTestWidget> {
     super.initState();
 
     _controller = NodeFlowController<WorkflowNodeData, dynamic>(
-      config: const NodeFlowConfig(showAttribution: false),
+      config: NodeFlowConfig(showAttribution: false),
     );
 
     _addTestNodes();

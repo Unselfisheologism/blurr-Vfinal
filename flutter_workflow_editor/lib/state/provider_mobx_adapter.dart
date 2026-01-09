@@ -5,7 +5,6 @@ library;
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
 import 'package:vyuh_node_flow/vyuh_node_flow.dart';
 
 import '../models/workflow.dart';
@@ -17,7 +16,6 @@ import 'workflow_state.dart';
 class ProviderMobXAdapter {
   final WorkflowState workflowState;
   final WorkflowNodeFlowController nodeFlowController;
-  final Uuid _uuid = const Uuid();
 
   Timer? _debounceTimer;
   bool _isSyncingFromWorkflowState = false;

@@ -36,20 +36,23 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
 
     // Setup adapter for bidirectional sync
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
       final workflowState = context.read<WorkflowState>();
-      _adapter = ProviderMobXAdapter(
+      final adapter = ProviderMobXAdapter(
         workflowState: workflowState,
         nodeFlowController: _nodeFlowController,
       );
+      _adapter = adapter;
 
       // Sync initial workflow
-      _adapter.syncFromWorkflowState();
+      adapter.syncFromWorkflowState();
     });
   }
 
   @override
   void dispose() {
-    _adapter.dispose();
+    _adapter?.dispose();
     _nodeFlowController.dispose();
     super.dispose();
   }
@@ -81,6 +84,7 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
       theme: _buildTheme(context),
       nodeBuilder: (context, node) => _buildNodeWidget(context, node),
       events: _nodeFlowController.events,
+      behavior: NodeFlowBehavior.design,
     );
   }
 
@@ -112,32 +116,17 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
   /// Build node widget
   Widget _buildNodeWidget(BuildContext context, Node<WorkflowNodeData> node) {
     final definition = NodeDefinitions.getById(node.data.nodeType);
+    final color = definition?.color ?? Theme.of(context).colorScheme.primary;
 
-    return Container(
-      constraints: const BoxConstraints(minWidth: 180),
-      decoration: BoxDecoration(
-        color: definition?.color.withOpacity(0.1) ?? Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: definition?.color ?? Colors.grey,
-          width: 2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Node header
-          _buildNodeHeader(node, definition),
-          // Node body
-          _buildNodeBody(node),
+          _buildNodeHeader(context, node, definition, color),
+          Expanded(
+            child: _buildNodeBody(context, node),
+          ),
         ],
       ),
     );
@@ -145,27 +134,22 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
 
   /// Build node header
   Widget _buildNodeHeader(
+    BuildContext context,
     Node<WorkflowNodeData> node,
     NodeDefinition? definition,
+    Color color,
   ) {
     return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: definition?.color ?? Colors.grey,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(6),
-          topRight: Radius.circular(6),
-        ),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      color: color,
       child: Row(
         children: [
-          if (definition?.icon != null)
-            Icon(
-              definition!.icon,
-              color: Colors.white,
-              size: 16,
-            ),
-          if (definition?.icon != null) const SizedBox(width: 8),
+          Icon(
+            definition?.icon ?? Icons.circle,
+            color: Colors.white,
+            size: 16,
+          ),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
               node.data.name,
@@ -186,86 +170,187 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
               ),
             ),
+          const SizedBox(width: 4),
+          IconButton(
+            tooltip: 'Delete node',
+            icon: const Icon(Icons.close, size: 16, color: Colors.white),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints.tightFor(width: 28, height: 28),
+            onPressed: () async {
+              await _nodeFlowController.controller.requestDeleteNode(node.id);
+            },
+          ),
         ],
       ),
     );
   }
 
   /// Build node body
-  Widget _buildNodeBody(Node<WorkflowNodeData> node) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (node.data.description.isNotEmpty)
-            Text(
-              node.data.description,
-              style: TextStyle(
-                fontSize: 10,
-                color: Colors.grey.shade600,
+  Widget _buildNodeBody(BuildContext context, Node<WorkflowNodeData> node) {
+    final workflowState = context.watch<WorkflowState>();
+
+    switch (node.type) {
+      case 'manual_trigger':
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Start the workflow manually.',
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
               ),
-            ),
-          if (node.data.parameters.isNotEmpty) ...[
-            const SizedBox(height: 4),
-            ...node.data.parameters.entries.take(3).map((entry) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 2),
-                child: Row(
-                  children: [
-                    Text(
-                      '${entry.key}: ',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey.shade700,
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        entry.value.toString(),
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey.shade600,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
+              const Spacer(),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: TextButton.icon(
+                  style: TextButton.styleFrom(
+                    minimumSize: Size.zero,
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  onPressed: workflowState.isExecuting
+                      ? null
+                      : () async {
+                          await workflowState.executeWorkflow();
+                        },
+                  icon: const Icon(Icons.play_arrow, size: 16),
+                  label: const Text('Run'),
                 ),
-              );
-            }),
-          ],
-          if (node.data.executionResult.isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: Colors.green.shade50,
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: Colors.green.shade200),
               ),
-              child: Row(
-                children: [
-                  Icon(Icons.check_circle, size: 12, color: Colors.green.shade700),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      'Executed',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.green.shade700,
-                      ),
+            ],
+          ),
+        );
+
+      case 'unified_shell':
+        final language = node.data.parameters['language']?.toString() ?? 'auto';
+        final code = node.data.parameters['code']?.toString() ?? '';
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Language: $language',
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+              ),
+              const SizedBox(height: 6),
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.04),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    code.isEmpty ? 'No code' : code,
+                    maxLines: 6,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontFamily: 'monospace',
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
-        ],
-      ),
-    );
+            ],
+          ),
+        );
+
+      case 'if_else':
+        final expression = node.data.parameters['expression']?.toString() ?? '';
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Condition',
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+              ),
+              const SizedBox(height: 6),
+              Expanded(
+                child: Text(
+                  expression.isEmpty ? 'No expression' : expression,
+                  maxLines: 6,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 11),
+                ),
+              ),
+            ],
+          ),
+        );
+
+      case 'loop':
+        final items = node.data.parameters['items'];
+        final count = items is List ? items.length : 0;
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Iterate over a list.',
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Items: $count',
+                style: const TextStyle(fontSize: 11),
+              ),
+            ],
+          ),
+        );
+
+      case 'output':
+        final ctx = workflowState.executionEngine?.context;
+        final latest = (ctx != null && ctx.nodeOutputs.isNotEmpty)
+            ? ctx.nodeOutputs.entries.last.value
+            : null;
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Result',
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+              ),
+              const SizedBox(height: 6),
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.04),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    latest == null ? 'No output yet' : latest.toString(),
+                    maxLines: 8,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 11),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+
+      default:
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(
+            node.data.description,
+            style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+          ),
+        );
+    }
   }
 
   /// Build overlay controls
@@ -362,40 +447,4 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
     );
   }
 
-  /// Handle node added event
-  void _onNodeAdded(Node<WorkflowNodeData> node) {
-    final workflowState = context.read<WorkflowState>();
-
-    // Add to workflow state
-    workflowState.addNode(
-      type: node.type,
-      name: node.data.name,
-      data: node.data.parameters,
-      position: node.position.value,
-    );
-  }
-
-  /// Handle node removed event
-  void _onNodeRemoved(String nodeId) {
-    final workflowState = context.read<WorkflowState>();
-    workflowState.removeNode(nodeId);
-  }
-
-  /// Handle connection created event
-  void _onConnectionCreated(Connection connection) {
-    final workflowState = context.read<WorkflowState>();
-
-    workflowState.addConnection(
-      sourceNodeId: connection.sourceNodeId,
-      targetNodeId: connection.targetNodeId,
-      sourcePortId: connection.sourcePortId,
-      targetPortId: connection.targetPortId,
-    );
-  }
-
-  /// Handle connection removed event
-  void _onConnectionRemoved(String connectionId) {
-    final workflowState = context.read<WorkflowState>();
-    workflowState.removeConnection(connectionId);
-  }
 }
