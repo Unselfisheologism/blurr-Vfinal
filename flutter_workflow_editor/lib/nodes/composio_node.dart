@@ -2,8 +2,10 @@
 /// Dynamically loads and executes user-connected Composio tools
 library;
 
-import '../stubs/fl_nodes_stubs.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+
+import '../stubs/fl_nodes_stubs.dart';
 
 /// Composio action node prototype - CORRECTED
 class ComposioNodePrototype {

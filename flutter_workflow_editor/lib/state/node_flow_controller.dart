@@ -3,43 +3,60 @@
 library;
 
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:vyuh_node_flow/vyuh_node_flow.dart';
-import '../models/workflow_node_data.dart';
+
 import '../models/node_definitions.dart';
 import '../models/workflow.dart';
+import '../models/workflow_connection.dart';
+import '../models/workflow_node.dart';
+import '../models/workflow_node_data.dart';
 
 /// Controller for managing workflow nodes with vyuh_node_flow
 class WorkflowNodeFlowController {
-  late final NodeFlowController<WorkflowNodeData> _controller;
+  late final NodeFlowController<WorkflowNodeData, dynamic> _controller;
+  late final NodeFlowEvents<WorkflowNodeData, dynamic> _events;
+
   final _changeController = StreamController<void>.broadcast();
 
-  /// Stream of change events
+  /// Stream of change events (emitted from editor callbacks)
   Stream<void> get onChange => _changeController.stream;
 
   /// Get the underlying vyuh_node_flow controller
-  NodeFlowController<WorkflowNodeData> get controller => _controller;
+  NodeFlowController<WorkflowNodeData, dynamic> get controller => _controller;
+
+  /// Editor events used to emit changes for syncing
+  NodeFlowEvents<WorkflowNodeData, dynamic> get events => _events;
 
   /// Get all nodes
   List<Node<WorkflowNodeData>> get nodes => _controller.nodes;
 
   /// Get all connections
-  List<Connection> get connections => _controller.connections;
+  List<Connection<dynamic>> get connections => _controller.connections;
 
-  WorkflowNodeFlowController({
-    NodeFlowConfig? config,
-  }) {
-    _controller = NodeFlowController<WorkflowNodeData>(
-      config: config ??
-          NodeFlowConfig(
-            theme: NodeFlowTheme.light,
-            gridStyle: GridStyle.dots,
-            connectionStyle: ConnectionStyles.smoothstep,
-          ),
+  WorkflowNodeFlowController({NodeFlowConfig? config}) {
+    _controller = NodeFlowController<WorkflowNodeData, dynamic>(
+      config: config ?? const NodeFlowConfig(),
     );
 
-    // Listen to controller changes
-    _controller.addListener(_onControllerChanged);
+    _events = NodeFlowEvents<WorkflowNodeData, dynamic>(
+      node: NodeEvents<WorkflowNodeData>(
+        onCreated: (_) => _emitChanged(),
+        onDeleted: (_) => _emitChanged(),
+        onDragStop: (_) => _emitChanged(),
+      ),
+      connection: ConnectionEvents<WorkflowNodeData, dynamic>(
+        onCreated: (_) => _emitChanged(),
+        onDeleted: (_) => _emitChanged(),
+      ),
+    );
+  }
+
+  void _emitChanged() {
+    if (!_changeController.isClosed) {
+      _changeController.add(null);
+    }
   }
 
   /// Add a new node to the workflow
@@ -79,36 +96,50 @@ class WorkflowNodeFlowController {
     _controller.removeNode(nodeId);
   }
 
-  /// Update node data
+  /// Update node data.
+  ///
+  /// vyuh_node_flow nodes store data as a final field, so we replace the node
+  /// inside the controller's nodesObservable map.
   void updateNodeData(String nodeId, WorkflowNodeData newData) {
-    final node = _controller.nodes.firstWhere(
-      (n) => n.id == nodeId,
-      orElse: () => throw ArgumentError('Node not found: $nodeId'),
+    final node = _controller.getNode(nodeId);
+    if (node == null) {
+      throw ArgumentError('Node not found: $nodeId');
+    }
+
+    final updatedNode = Node<WorkflowNodeData>(
+      id: node.id,
+      type: node.type,
+      position: node.position.value,
+      data: newData,
+      size: node.size.value,
+      inputPorts: node.inputPorts,
+      outputPorts: node.outputPorts,
+      initialZIndex: node.currentZIndex,
+      visible: node.isVisible,
+      layer: node.layer,
+      locked: node.locked,
+      selectable: node.selectable,
+      widgetBuilder: node.widgetBuilder,
+      theme: node.theme,
     );
 
-    final updatedNode = node.copyWith(data: newData);
-    _controller.updateNode(updatedNode);
+    _controller.nodesObservable[nodeId] = updatedNode;
+    _emitChanged();
   }
 
   /// Update node position
   void updateNodePosition(String nodeId, Offset position) {
-    final node = _controller.nodes.firstWhere(
-      (n) => n.id == nodeId,
-      orElse: () => throw ArgumentError('Node not found: $nodeId'),
-    );
-
-    final updatedNode = node.copyWith(position: position);
-    _controller.updateNode(updatedNode);
+    _controller.setNodePosition(nodeId, position);
   }
 
   /// Create a connection between two nodes
-  Connection createConnection({
+  void createConnection({
     required String sourceNodeId,
     required String sourcePortId,
     required String targetNodeId,
     required String targetPortId,
   }) {
-    return _controller.createConnection(
+    _controller.createConnection(
       sourceNodeId,
       sourcePortId,
       targetNodeId,
@@ -123,16 +154,13 @@ class WorkflowNodeFlowController {
 
   /// Clear all nodes and connections
   void clear() {
-    for (final node in List.from(_controller.nodes)) {
-      _controller.removeNode(node.id);
-    }
+    _controller.clearGraph();
   }
 
   /// Import nodes and connections from a Workflow
   void importFromWorkflow(Workflow workflow) {
     clear();
 
-    // Import nodes
     for (final workflowNode in workflow.nodes) {
       addNode(
         id: workflowNode.id,
@@ -143,14 +171,13 @@ class WorkflowNodeFlowController {
       );
     }
 
-    // Import connections
-    for (final connection in workflow.connections) {
+    for (final conn in workflow.connections) {
       try {
         createConnection(
-          sourceNodeId: connection.sourceNodeId,
-          sourcePortId: connection.sourcePortId,
-          targetNodeId: connection.targetNodeId,
-          targetPortId: connection.targetPortId,
+          sourceNodeId: conn.sourceNodeId,
+          sourcePortId: conn.sourcePortId,
+          targetNodeId: conn.targetNodeId,
+          targetPortId: conn.targetPortId,
         );
       } catch (e) {
         debugPrint('Failed to import connection: $e');
@@ -164,18 +191,19 @@ class WorkflowNodeFlowController {
     required String name,
     required String description,
   }) {
-    final nodes = _controller.nodes.map((node) {
+    final exportedNodes = _controller.nodes.map((node) {
+      final pos = node.position.value;
       return WorkflowNode(
         id: node.id,
         type: node.type,
         name: node.data.name,
-        x: node.position.dx,
-        y: node.position.dy,
+        x: pos.dx,
+        y: pos.dy,
         data: node.data.parameters,
       );
     }).toList();
 
-    final connections = _controller.connections.map((conn) {
+    final exportedConnections = _controller.connections.map((conn) {
       return WorkflowConnection(
         id: conn.id,
         sourceNodeId: conn.sourceNodeId,
@@ -189,110 +217,112 @@ class WorkflowNodeFlowController {
       id: workflowId,
       name: name,
       description: description,
-      nodes: nodes,
-      connections: connections,
+      nodes: exportedNodes,
+      connections: exportedConnections,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
   }
 
-  /// Export to JSON
+  /// Export graph to JSON
   Map<String, dynamic> toJson() {
-    return _controller.toJson();
+    final graph = _controller.exportGraph();
+    return graph.toJson(
+      (t) => t.toJson(),
+      (c) => c,
+    );
   }
 
-  /// Import from JSON
+  /// Import graph from JSON
   Future<void> fromJson(Map<String, dynamic> json) async {
-    await _controller.fromJson(json);
+    final graph = NodeGraph<WorkflowNodeData, dynamic>.fromJson(
+      json,
+      (data) => WorkflowNodeData.fromJson(
+        Map<String, dynamic>.from(data as Map? ?? const {}),
+      ),
+      (data) => data,
+    );
+
+    _controller.loadGraph(graph);
   }
 
-  /// Get default input ports for a node type
   List<Port> _getDefaultInputPorts(String nodeType) {
+    Port input(String id, String name) => Port(
+          id: id,
+          name: name,
+          type: PortType.input,
+          position: PortPosition.left,
+        );
+
     switch (nodeType) {
       case 'manual_trigger':
       case 'schedule_trigger':
       case 'webhook_trigger':
         return [];
 
-      case 'if_else':
-        return [
-          const Port(id: 'in', name: 'Input'),
-        ];
-
-      case 'switch':
-        return [
-          const Port(id: 'in', name: 'Input'),
-        ];
-
       case 'loop':
         return [
-          const Port(id: 'in', name: 'Input'),
-          const Port(id: 'list', name: 'List'),
+          input('in', 'Input'),
+          input('list', 'List'),
         ];
 
       case 'error_handler':
         return [
-          const Port(id: 'in', name: 'Input'),
-          const Port(id: 'error', name: 'Error'),
+          input('in', 'Input'),
+          input('error', 'Error'),
         ];
 
       default:
-        return [
-          const Port(id: 'in', name: 'Input'),
-        ];
+        return [input('in', 'Input')];
     }
   }
 
-  /// Get default output ports for a node type
   List<Port> _getDefaultOutputPorts(String nodeType) {
+    Port output(String id, String name) => Port(
+          id: id,
+          name: name,
+          type: PortType.output,
+          position: PortPosition.right,
+        );
+
     switch (nodeType) {
+      case 'manual_trigger':
+      case 'schedule_trigger':
+      case 'webhook_trigger':
+        return [output('out', 'Output')];
+
       case 'if_else':
         return [
-          const Port(id: 'true', name: 'True'),
-          const Port(id: 'false', name: 'False'),
+          output('true', 'True'),
+          output('false', 'False'),
         ];
 
       case 'switch':
         return [
-          const Port(id: 'case1', name: 'Case 1'),
-          const Port(id: 'case2', name: 'Case 2'),
-          const Port(id: 'case3', name: 'Case 3'),
-          const Port(id: 'default', name: 'Default'),
+          output('case1', 'Case 1'),
+          output('case2', 'Case 2'),
+          output('case3', 'Case 3'),
+          output('default', 'Default'),
         ];
 
       case 'loop':
         return [
-          const Port(id: 'loopBody', name: 'Loop Body'),
-          const Port(id: 'completed', name: 'Completed'),
-          const Port(id: 'element', name: 'Element'),
-          const Port(id: 'index', name: 'Index'),
+          output('loopBody', 'Loop Body'),
+          output('completed', 'Completed'),
+          output('element', 'Element'),
+          output('index', 'Index'),
         ];
 
       case 'error_handler':
-        return [
-          const Port(id: 'success', name: 'Success'),
-        ];
-
-      case 'merge':
-        return [
-          const Port(id: 'out', name: 'Output'),
-        ];
+        return [output('success', 'Success')];
 
       default:
-        return [
-          const Port(id: 'out', name: 'Output'),
-        ];
+        return [output('out', 'Output')];
     }
-  }
-
-  /// Handle controller changes
-  void _onControllerChanged() {
-    _changeController.add(null);
   }
 
   /// Dispose resources
   void dispose() {
-    _controller.removeListener(_onControllerChanged);
     _changeController.close();
   }
 }

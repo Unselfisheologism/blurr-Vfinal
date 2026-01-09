@@ -35,6 +35,23 @@ class WorkflowState extends ChangeNotifier {
   bool get canUndo => _undoStack.isNotEmpty;
   bool get canRedo => _redoStack.isNotEmpty;
   bool get isExecuting => _executionEngine?.state == ExecutionState.running;
+
+  /// Replace the current workflow from the editor/controller without recording
+  /// an undo action.
+  ///
+  /// This is used by the vyuh_node_flow adapter when syncing changes from the
+  /// canvas back into the Provider state.
+  void setCurrentWorkflowFromEditor(Workflow workflow) {
+    _currentWorkflow = workflow;
+
+    if (_selectedNode != null) {
+      final selectedId = _selectedNode!.id;
+      final index = workflow.nodes.indexWhere((n) => n.id == selectedId);
+      _selectedNode = index == -1 ? null : workflow.nodes[index];
+    }
+
+    notifyListeners();
+  }
   
   void _initializeDefaultWorkflow() {
     _currentWorkflow = Workflow(
