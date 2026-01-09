@@ -1,8 +1,7 @@
-/// Comprehensive node type definitions for fl_nodes integration
-/// Defines all available node types with their prototypes
+/// Comprehensive node type definitions for workflow editor
+/// Defines all available node types with their configurations
 library;
 
-import '../stubs/fl_nodes_stubs.dart';
 import 'package:flutter/material.dart';
 
 /// Node category for organization in palette

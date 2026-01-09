@@ -109,8 +109,9 @@ dependencies:
   # record: ^5.0.4 # Disabled - causes compilation issues
   permission_handler: ^11.3.0
 
-  # Node flow editor - Spike test
+  # Node flow editor
   vyuh_node_flow: ^0.23.3
+  flutter_mobx: ^2.3.0
   equatable: ^2.0.7
   mobx: ^2.5.0
 
