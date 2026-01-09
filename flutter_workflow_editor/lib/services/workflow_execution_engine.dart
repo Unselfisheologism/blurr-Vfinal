@@ -4,7 +4,6 @@ library;
 
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import '../stubs/fl_nodes_stubs.dart';
 import '../models/workflow.dart';
 import '../models/workflow_node.dart';
 import 'platform_bridge.dart';
@@ -169,7 +168,7 @@ class WorkflowExecutionEngine extends ChangeNotifier {
       
       // Execute from each trigger
       for (final triggerNode in triggerNodes) {
-        await _executeNode(triggerNode, workflow);
+        await _executeNode(triggerNode, workflow, input: null);
       }
       
       _state = ExecutionState.completed;
@@ -205,27 +204,30 @@ class WorkflowExecutionEngine extends ChangeNotifier {
   /// Execute a single node
   Future<NodeExecutionResult> _executeNode(
     WorkflowNode node,
-    Workflow workflow,
-  ) async {
+    Workflow workflow, {
+    required dynamic input,
+  }) async {
     _currentNodeId = node.id;
     _nodeExecutionController.add(node.id);
-    
+
+    _context?.setVariable('input', input);
+
     _log(
       node.id,
       node.name,
       ExecutionLogLevel.info,
       'Executing node: ${node.type}',
     );
-    
+
     notifyListeners();
-    
+
     try {
       // Execute based on node type
-      final result = await _executeNodeByType(node, workflow);
-      
+      final result = await _executeNodeByType(node, workflow, input: input);
+
       // Store output
       _context!.setNodeOutput(node.id, result.output);
-      
+
       if (result.success) {
         _log(
           node.id,
@@ -234,9 +236,11 @@ class WorkflowExecutionEngine extends ChangeNotifier {
           'Node completed successfully',
           result.output,
         );
-        
-        // Execute connected nodes
-        await _executeConnectedNodes(node, workflow, result);
+
+        // Loop handles execution of its outgoing edges internally.
+        if (node.type != 'loop') {
+          await _executeConnectedNodes(node, workflow, result);
+        }
       } else {
         _log(
           node.id,
@@ -245,7 +249,7 @@ class WorkflowExecutionEngine extends ChangeNotifier {
           'Node failed: ${result.error}',
         );
       }
-      
+
       return result;
     } catch (e, stackTrace) {
       _log(
@@ -255,16 +259,17 @@ class WorkflowExecutionEngine extends ChangeNotifier {
         'Node execution error: $e',
         {'stackTrace': stackTrace.toString()},
       );
-      
+
       return NodeExecutionResult.failure(e.toString());
     }
   }
-  
+
   /// Execute node by its type
   Future<NodeExecutionResult> _executeNodeByType(
     WorkflowNode node,
-    Workflow workflow,
-  ) async {
+    Workflow workflow, {
+    required dynamic input,
+  }) async {
     switch (node.type) {
       case 'manual_trigger':
         return NodeExecutionResult.success({'triggered': true});
@@ -282,13 +287,16 @@ class WorkflowExecutionEngine extends ChangeNotifier {
         return await _executeHttpRequest(node);
       
       case 'if_else':
-        return await _executeIfElse(node);
-      
+        return await _executeIfElse(node, input);
+
       case 'switch':
         return await _executeSwitch(node);
-      
+
       case 'loop':
-        return await _executeLoop(node, workflow);
+        return await _executeLoop(node, workflow, input: input);
+
+      case 'output':
+        return _executeOutput(node, input);
       
       case 'set_variable':
         return _executeSetVariable(node);
@@ -399,12 +407,12 @@ class WorkflowExecutionEngine extends ChangeNotifier {
   }
   
   /// Execute IF/ELSE node
-  Future<NodeExecutionResult> _executeIfElse(WorkflowNode node) async {
+  Future<NodeExecutionResult> _executeIfElse(WorkflowNode node, dynamic input) async {
     final expression = node.data['expression'] as String? ?? 'true';
-    
+
     try {
       // Evaluate expression with context
-      final result = _evaluateExpression(expression);
+      final result = _evaluateExpression(expression, {'input': input});
       return NodeExecutionResult.success(
         result,
         metadata: {'branch': result ? 'true' : 'false'},
@@ -412,6 +420,11 @@ class WorkflowExecutionEngine extends ChangeNotifier {
     } catch (e) {
       return NodeExecutionResult.failure('Expression evaluation failed: $e');
     }
+  }
+
+  /// Execute Output node
+  NodeExecutionResult _executeOutput(WorkflowNode node, dynamic input) {
+    return NodeExecutionResult.success(input);
   }
   
   /// Execute Switch node
@@ -440,31 +453,51 @@ class WorkflowExecutionEngine extends ChangeNotifier {
   /// Execute Loop node
   Future<NodeExecutionResult> _executeLoop(
     WorkflowNode node,
-    Workflow workflow,
-  ) async {
-    final items = node.data['items'] as List? ?? [];
-    final batchSize = node.data['batchSize'] as int? ?? 1;
-    
-    final results = [];
-    
-    for (var i = 0; i < items.length; i += batchSize) {
-      final batch = items.skip(i).take(batchSize).toList();
-      
-      for (var j = 0; j < batch.length; j++) {
-        final item = batch[j];
-        final index = i + j;
-        
-        _context!.setVariable('currentItem', item);
-        _context!.setVariable('index', index);
-        _context!.setVariable('total', items.length);
-        
-        // Execute nodes connected to 'item' output
-        // (Simplified - actual implementation would track connections)
-        results.add(item);
+    Workflow workflow, {
+    required dynamic input,
+  }) async {
+    final itemsFromNode = node.data['items'] as List?;
+    final items = itemsFromNode ?? (input is List ? input : const []);
+
+    final results = <dynamic>[];
+
+    final eachConnections = workflow.connections
+        .where((c) => c.sourceNodeId == node.id && c.sourcePortId == 'each')
+        .toList();
+
+    final completedConnections = workflow.connections
+        .where((c) => c.sourceNodeId == node.id && c.sourcePortId == 'completed')
+        .toList();
+
+    for (var index = 0; index < items.length; index++) {
+      final item = items[index];
+      results.add(item);
+
+      _context!.setVariable('currentItem', item);
+      _context!.setVariable('index', index);
+      _context!.setVariable('total', items.length);
+
+      for (final connection in eachConnections) {
+        final targetNode = workflow.nodes.firstWhere(
+          (n) => n.id == connection.targetNodeId,
+        );
+
+        await _executeNode(targetNode, workflow, input: item);
       }
     }
-    
-    return NodeExecutionResult.success(results);
+
+    for (final connection in completedConnections) {
+      final targetNode = workflow.nodes.firstWhere(
+        (n) => n.id == connection.targetNodeId,
+      );
+
+      await _executeNode(targetNode, workflow, input: results);
+    }
+
+    return NodeExecutionResult.success(
+      results,
+      metadata: {'iterations': items.length},
+    );
   }
   
   /// Execute Set Variable node
@@ -516,19 +549,26 @@ class WorkflowExecutionEngine extends ChangeNotifier {
     Workflow workflow,
     NodeExecutionResult result,
   ) async {
-    // Find connections from this node
-    final outgoingConnections = workflow.connections
+    var outgoingConnections = workflow.connections
         .where((c) => c.sourceNodeId == node.id)
         .toList();
-    
+
+    // Respect branching for IF/ELSE using port IDs ('true' / 'false').
+    if (node.type == 'if_else') {
+      final branch = result.metadata['branch'] as String?;
+      if (branch != null) {
+        outgoingConnections = outgoingConnections
+            .where((c) => c.sourcePortId == branch)
+            .toList();
+      }
+    }
+
     for (final connection in outgoingConnections) {
-      // Find target node
       final targetNode = workflow.nodes.firstWhere(
         (n) => n.id == connection.targetNodeId,
       );
-      
-      // Execute target node
-      await _executeNode(targetNode, workflow);
+
+      await _executeNode(targetNode, workflow, input: result.output);
     }
   }
   

@@ -100,7 +100,7 @@ class _NodePaletteState extends State<NodePalette> {
   }
   
   Widget _buildNodeList() {
-    var nodes = NodeDefinitions.all;
+    var nodes = NodeDefinitions.core;
     
     if (_selectedCategory != null) {
       nodes = nodes.where((n) => n.category == _selectedCategory).toList();

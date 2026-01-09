@@ -64,6 +64,37 @@ class WorkflowState extends ChangeNotifier {
       updatedAt: DateTime.now(),
     );
   }
+
+  Offset _calculateNextNodePosition() {
+    final nodeCount = _currentWorkflow?.nodes.length ?? 0;
+
+    const columns = 3;
+    const startX = 120.0;
+    const startY = 120.0;
+    const spacingX = 260.0;
+    const spacingY = 200.0;
+
+    final row = nodeCount ~/ columns;
+    final col = nodeCount % columns;
+
+    return Offset(
+      startX + (col * spacingX),
+      startY + (row * spacingY),
+    );
+  }
+
+  void _refreshSelectedNode() {
+    if (_currentWorkflow == null) {
+      _selectedNode = null;
+      return;
+    }
+
+    if (_selectedNode == null) return;
+
+    final selectedId = _selectedNode!.id;
+    final index = _currentWorkflow!.nodes.indexWhere((n) => n.id == selectedId);
+    _selectedNode = index == -1 ? null : _currentWorkflow!.nodes[index];
+  }
   
   // Node operations
   void addNode({
@@ -76,12 +107,14 @@ class WorkflowState extends ChangeNotifier {
     
     _saveToUndoStack();
     
+    final resolvedPosition = position ?? _calculateNextNodePosition();
+
     final node = WorkflowNode(
       id: _uuid.v4(),
       type: type,
       name: name,
-      x: position?.dx ?? 0,
-      y: position?.dy ?? 0,
+      x: resolvedPosition.dx,
+      y: resolvedPosition.dy,
       data: data,
     );
     
@@ -89,7 +122,8 @@ class WorkflowState extends ChangeNotifier {
       nodes: [..._currentWorkflow!.nodes, node],
       updatedAt: DateTime.now(),
     );
-    
+
+    _refreshSelectedNode();
     notifyListeners();
   }
   
@@ -157,11 +191,12 @@ class WorkflowState extends ChangeNotifier {
           .toList(),
       updatedAt: DateTime.now(),
     );
-    
+
     if (_selectedNode?.id == nodeId) {
       _selectedNode = null;
     }
-    
+
+    _refreshSelectedNode();
     notifyListeners();
   }
   
@@ -173,12 +208,13 @@ class WorkflowState extends ChangeNotifier {
     
     final updatedNodes = List<WorkflowNode>.from(_currentWorkflow!.nodes);
     updatedNodes[nodeIndex] = updatedNodes[nodeIndex].copyWith(position: position);
-    
+
     _currentWorkflow = _currentWorkflow!.copyWith(
       nodes: updatedNodes,
       updatedAt: DateTime.now(),
     );
-    
+
+    _refreshSelectedNode();
     notifyListeners();
   }
   
@@ -191,26 +227,35 @@ class WorkflowState extends ChangeNotifier {
     if (nodeIndex == -1) return;
     
     final updatedNodes = List<WorkflowNode>.from(_currentWorkflow!.nodes);
-    final currentData = Map<String, dynamic>.from(updatedNodes[nodeIndex].data);
-    currentData.addAll(data);
-    
-    updatedNodes[nodeIndex] = updatedNodes[nodeIndex].copyWith(data: currentData);
-    
+
+    final patch = Map<String, dynamic>.from(data);
+    final newName = patch.remove('name') as String?;
+
+    final currentNode = updatedNodes[nodeIndex];
+    final currentData = Map<String, dynamic>.from(currentNode.data);
+    currentData.addAll(patch);
+
+    updatedNodes[nodeIndex] = currentNode.copyWith(
+      name: newName,
+      data: currentData,
+    );
+
     _currentWorkflow = _currentWorkflow!.copyWith(
       nodes: updatedNodes,
       updatedAt: DateTime.now(),
     );
-    
+
+    _refreshSelectedNode();
     notifyListeners();
   }
   
   void selectNode(String nodeId) {
-    final node = _currentWorkflow?.nodes.firstWhere(
-      (n) => n.id == nodeId,
-      orElse: () => throw StateError('Node not found'),
-    );
-    
-    _selectedNode = node;
+    if (_currentWorkflow == null) return;
+
+    final index = _currentWorkflow!.nodes.indexWhere((n) => n.id == nodeId);
+    if (index == -1) return;
+
+    _selectedNode = _currentWorkflow!.nodes[index];
     notifyListeners();
   }
   
@@ -242,7 +287,8 @@ class WorkflowState extends ChangeNotifier {
       connections: [..._currentWorkflow!.connections, connection],
       updatedAt: DateTime.now(),
     );
-    
+
+    _refreshSelectedNode();
     notifyListeners();
   }
 
@@ -257,7 +303,8 @@ class WorkflowState extends ChangeNotifier {
           .toList(),
       updatedAt: DateTime.now(),
     );
-    
+
+    _refreshSelectedNode();
     notifyListeners();
   }
   
