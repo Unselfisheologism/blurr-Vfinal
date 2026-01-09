@@ -4,7 +4,6 @@ library;
 
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import '../stubs/fl_nodes_stubs.dart';
 import '../models/workflow.dart';
 import '../models/workflow_node.dart';
 import 'platform_bridge.dart';
