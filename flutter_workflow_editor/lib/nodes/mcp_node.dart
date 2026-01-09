@@ -2,8 +2,10 @@
 /// Dynamically loads and calls user-connected MCP servers
 library;
 
-import '../stubs/fl_nodes_stubs.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+
+import '../stubs/fl_nodes_stubs.dart';
 
 /// MCP action node prototype - CORRECTED
 class MCPNodePrototype {

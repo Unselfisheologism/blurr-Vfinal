@@ -31,10 +31,8 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
 
     // Initialize node flow controller
     _nodeFlowController = WorkflowNodeFlowController(
-      config: NodeFlowConfig(
-        theme: NodeFlowTheme.light,
-        gridStyle: GridStyle.dots,
-        connectionStyle: ConnectionStyles.smoothstep,
+      config: const NodeFlowConfig(
+        showAttribution: false,
       ),
     );
 
@@ -80,42 +78,35 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
 
   /// Build the node flow editor
   Widget _buildNodeFlowEditor(BuildContext context) {
-    return NodeFlowEditor<WorkflowNodeData>(
+    return NodeFlowEditor<WorkflowNodeData, dynamic>(
       controller: _nodeFlowController.controller,
       theme: _buildTheme(context),
       nodeBuilder: (context, node) => _buildNodeWidget(context, node),
-      onNodeAdded: (node) {
-        debugPrint('Node added: ${node.id}');
-        _onNodeAdded(node);
-      },
-      onNodeRemoved: (nodeId) {
-        debugPrint('Node removed: $nodeId');
-        _onNodeRemoved(nodeId);
-      },
-      onConnectionCreated: (connection) {
-        debugPrint('Connection created: ${connection.id}');
-        _onConnectionCreated(connection);
-      },
-      onConnectionRemoved: (connectionId) {
-        debugPrint('Connection removed: $connectionId');
-        _onConnectionRemoved(connectionId);
-      },
+      events: _nodeFlowController.events,
     );
   }
 
   /// Build custom theme for the editor
   NodeFlowTheme _buildTheme(BuildContext context) {
-    return NodeFlowTheme.light.copyWith(
-      gridStyle: GridStyle.dots,
-      gridColor: Theme.of(context).dividerColor.withOpacity(0.3),
-      connectionTheme: NodeFlowTheme.light.connectionTheme.copyWith(
-        color: Theme.of(context).primaryColor,
-        strokeWidth: 2.0,
-        hoveredStrokeWidth: 3.0,
+    final base = NodeFlowTheme.light;
+    final theme = Theme.of(context);
+
+    return base.copyWith(
+      backgroundColor: theme.colorScheme.surface,
+      gridTheme: base.gridTheme.copyWith(
+        style: GridStyles.dots,
+        color: theme.dividerColor.withOpacity(0.3),
       ),
-      portTheme: NodeFlowTheme.light.portTheme.copyWith(
-        size: 10.0,
-        hoveredSize: 14.0,
+      connectionTheme: base.connectionTheme.copyWith(
+        style: ConnectionStyles.smoothstep,
+        color: theme.colorScheme.primary,
+        strokeWidth: 2.0,
+        selectedStrokeWidth: 3.0,
+        highlightColor: theme.colorScheme.primary.withOpacity(0.7),
+      ),
+      portTheme: base.portTheme.copyWith(
+        size: const Size(10, 10),
+        highlightColor: theme.colorScheme.primary,
       ),
     );
   }
@@ -349,7 +340,7 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
           ),
           // Export button
           IconButton(
-            icon: const Icon(Icons.file_export),
+            icon: const Icon(Icons.download),
             tooltip: 'Export Workflow',
             onPressed: () async {
               try {
@@ -382,7 +373,7 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
       type: node.type,
       name: node.data.name,
       data: node.data.parameters,
-      position: node.position,
+      position: node.position.value,
     );
   }
 

@@ -3,10 +3,13 @@
 library;
 
 import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'workflow_state.dart';
-import 'node_flow_controller.dart';
 import 'package:uuid/uuid.dart';
+
+import '../models/workflow.dart';
+import 'node_flow_controller.dart';
+import 'workflow_state.dart';
 
 /// Adapter for synchronizing Provider state with MobX node flow controller
 class ProviderMobXAdapter {
@@ -96,7 +99,7 @@ class ProviderMobXAdapter {
       final updatedWorkflow = nodeFlowController.exportToWorkflow(
         workflowId: currentWorkflow.id,
         name: currentWorkflow.name,
-        description: currentWorkflow.description,
+        description: currentWorkflow.description ?? '',
       );
 
       // Update WorkflowState with the new workflow
@@ -127,18 +130,12 @@ class ProviderMobXAdapter {
     }
   }
 
-  /// Update workflow silently without triggering a full state update
-  void _updateWorkflowSilently(dynamic workflow) {
-    // This is a workaround to update the workflow without triggering
-    // the listener that would cause an infinite loop
-    // In a production implementation, we might want to add a method to WorkflowState
-    // that allows for silent updates
-
-    // For now, we'll just skip this update to avoid the infinite loop
-    // The workflow will be updated when the user saves or when needed
-
-    // Alternative: We could save the workflow to persistent storage
-    // without updating the state
+  /// Update workflow state from the node editor.
+  ///
+  /// The adapter guards against sync loops using [_isSyncingFromNodeFlow] and
+  /// [_isSyncingFromWorkflowState].
+  void _updateWorkflowSilently(Workflow workflow) {
+    workflowState.setCurrentWorkflowFromEditor(workflow);
   }
 
   /// Add a node from WorkflowState and sync to NodeFlowController
