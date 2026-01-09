@@ -138,6 +138,46 @@ Panda is currently a powerful proof-of-concept, and the roadmap is focused on ma
 
 * [ ] **NOT UPDATED:** List not updated
 
+## 🔗 MCP Server Integration
+
+This project includes Node.js support to enable integration with [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) servers.
+
+### Prerequisites
+- Node.js (v18 or higher)
+- npm
+
+### Setup
+Run the following command in the project root to install Node.js dependencies:
+```bash
+npm install
+```
+
+### Invoking MCP Servers
+Agents and developers can invoke MCP servers using `npx` or the provided helper script.
+
+**Using npm scripts:**
+```bash
+npm run mcp:hello   # Runs the everything-server
+npm run mcp:example # Runs the example local server
+```
+
+**Using the helper script:**
+```bash
+./scripts/mcp-invoke.sh <package-name> [args...]
+```
+Example:
+```bash
+./scripts/mcp-invoke.sh @modelcontextprotocol/server-everything
+```
+
+**Directly with npx:**
+```bash
+npx @modelcontextprotocol/server-everything
+```
+
+### Configuration
+You can add your own MCP server configurations in `package.json` under the `scripts` section.
+
 ## 🤝 Contributing
 
 Contributions are welcome! If you have ideas for new features or improvements, feel free to open an issue or submit a pull request.

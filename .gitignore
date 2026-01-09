@@ -40,3 +40,10 @@ flutter_workflow_editor/.flutter-plugins
 flutter_workflow_editor/.flutter-plugins-dependencies
 flutter_workflow_editor/.packages
 flutter_workflow_editor/pubspec.lock
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm/
