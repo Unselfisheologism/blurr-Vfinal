@@ -31,7 +31,7 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
 
     // Initialize node flow controller
     _nodeFlowController = WorkflowNodeFlowController(
-      config: const NodeFlowConfig(
+      config: NodeFlowConfig(
         showAttribution: false,
       ),
     );

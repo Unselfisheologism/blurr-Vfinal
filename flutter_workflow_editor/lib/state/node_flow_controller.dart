@@ -10,7 +10,7 @@ import 'package:vyuh_node_flow/vyuh_node_flow.dart';
 import '../models/node_definitions.dart';
 import '../models/workflow.dart';
 import '../models/workflow_connection.dart';
-import '../models/workflow_node.dart';
+import '../models/workflow_node.dart' hide PortType;
 import '../models/workflow_node_data.dart';
 
 /// Controller for managing workflow nodes with vyuh_node_flow
@@ -30,14 +30,14 @@ class WorkflowNodeFlowController {
   NodeFlowEvents<WorkflowNodeData, dynamic> get events => _events;
 
   /// Get all nodes
-  List<Node<WorkflowNodeData>> get nodes => _controller.nodes;
+  List<Node<WorkflowNodeData>> get nodes => _controller.nodes.values.toList();
 
   /// Get all connections
   List<Connection<dynamic>> get connections => _controller.connections;
 
   WorkflowNodeFlowController({NodeFlowConfig? config}) {
     _controller = NodeFlowController<WorkflowNodeData, dynamic>(
-      config: config ?? const NodeFlowConfig(),
+      config: config ?? NodeFlowConfig(),
     );
 
     _events = NodeFlowEvents<WorkflowNodeData, dynamic>(
@@ -191,7 +191,7 @@ class WorkflowNodeFlowController {
     required String name,
     required String description,
   }) {
-    final exportedNodes = _controller.nodes.map((node) {
+    final exportedNodes = _controller.nodes.values.map((node) {
       final pos = node.position.value;
       return WorkflowNode(
         id: node.id,
