@@ -1,15 +1,18 @@
-/// FL Nodes workflow canvas with vertical layout
-/// Mobile-optimized canvas integrating fl_nodes engine
+/// Workflow canvas using vyuh_node_flow
+/// Replaces broken fl_nodes implementation with production-ready vyuh_node_flow
 library;
 
 import 'package:flutter/material.dart';
-import '../stubs/fl_nodes_stubs.dart';
 import 'package:provider/provider.dart';
+import 'package:vyuh_node_flow/vyuh_node_flow.dart';
 import '../state/workflow_state.dart';
-import '../core/vertical_layout_adapter.dart';
+import '../state/node_flow_controller.dart';
+import '../state/provider_mobx_adapter.dart';
 import '../models/node_definitions.dart';
+import '../models/workflow_node_data.dart';
 
-/// Main workflow canvas using FL Nodes - CORRECTED API
+/// Main workflow canvas using vyuh_node_flow
+/// Provides both manual user editing and agent-controlled operations
 class FlWorkflowCanvas extends StatefulWidget {
   const FlWorkflowCanvas({Key? key}) : super(key: key);
   
@@ -18,369 +21,59 @@ class FlWorkflowCanvas extends StatefulWidget {
 }
 
 class _FlWorkflowCanvasState extends State<FlWorkflowCanvas> {
-  // CORRECT: Use FlNodeEditorController instead of NodesCanvas
-  late final FlNodeEditorController _controller;
-  late VerticalLayoutAdapter _layoutAdapter;
-  WorkflowState? _workflowState;
+  late WorkflowNodeFlowController _nodeFlowController;
+  late ProviderMobXAdapter _adapter;
+  late WorkflowState _workflowState;
+  
+  // UI state
+  bool _showMinimap = true;
+  bool _showGrid = true;
+  bool _isDarkTheme = false;
   
   @override
   void initState() {
     super.initState();
     
-    // Initialize layout adapter
-    _layoutAdapter = VerticalLayoutAdapter();
+    // Initialize controllers
+    _nodeFlowController = WorkflowNodeFlowController();
+    _workflowState = context.read<WorkflowState>();
+    _adapter = ProviderMobXAdapter(_workflowState, _nodeFlowController);
     
-    // CORRECT: Initialize FlNodeEditorController
-    _controller = FlNodeEditorController(
-      // Optional: Add project saver/loader if needed
-      projectSaver: (jsonData) async {
-        // Save workflow to platform bridge
-        final workflowState = context.read<WorkflowState>();
-        await workflowState.saveWorkflow();
-        return true;
-      },
-      projectLoader: (isSaved) async {
-        // Load workflow from platform bridge
-        return null; // Return JSON data or null
-      },
-      projectCreator: (isSaved) async {
-        // Create new workflow
-        return true;
-      },
-    );
+    // Set initial theme
+    _nodeFlowController.setTheme(_isDarkTheme ? NodeFlowTheme.dark : NodeFlowTheme.light);
     
-    // Register all node prototypes
-    _registerNodePrototypes();
-    
-    // Setup listeners
-    _setupListeners();
+    // Enable features
+    _nodeFlowController.setMinimapEnabled(_showMinimap);
   }
   
-  /// Register all node prototypes with the controller
-  void _registerNodePrototypes() {
-    final definitions = NodeDefinitions.all;
-    
-    for (final def in definitions) {
-      // CORRECT: Use controller.registerNodePrototype()
-      _controller.registerNodePrototype(
-        _createNodePrototype(def),
-      );
-    }
-  }
-  
-  /// Create a node prototype from definition
-  NodePrototype _createNodePrototype(NodeDefinition definition) {
-    return NodePrototype(
-      idName: definition.id,
-      displayName: definition.displayName,
-      description: definition.description,
-      
-      // CORRECT: Use single 'ports' array, not separate lists
-      ports: _createPorts(definition),
-      
-      // Optional: Custom styling
-      styleBuilder: (state) => FlNodeStyle(
-        decoration: BoxDecoration(
-          color: definition.color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: definition.color,
-            width: 2,
-          ),
-        ),
-        headerStyleBuilder: (state) => FlNodeHeaderStyle(
-          decoration: BoxDecoration(
-            color: definition.color,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(10),
-              topRight: Radius.circular(10),
-            ),
-          ),
-          textStyle: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-          padding: const EdgeInsets.all(12),
-        ),
-      ),
-      
-      // Execution logic - handled by execution engine
-      onExecute: (ports, fields, state, flowTo, passData) async {
-        // This will be called by fl_nodes runner
-        // For now, delegate to our execution engine
-        final workflowState = context.read<WorkflowState>();
-        // Execution handled externally
-      },
-    );
-  }
-  
-  /// Create ports array for node (CORRECTED)
-  List<dynamic> _createPorts(NodeDefinition definition) {
-    final ports = <dynamic>[];
-    
-    // Control input ports (for non-trigger nodes)
-    if (definition.category != NodeCategory.triggers) {
-      ports.add(ControlInputPortPrototype(
-        idName: 'exec',
-        displayName: 'Exec',
-      ));
-    }
-    
-    // Control output ports based on node type
-    switch (definition.id) {
-      case 'if_else':
-        ports.addAll([
-          ControlOutputPortPrototype(idName: 'true', displayName: 'True'),
-          ControlOutputPortPrototype(idName: 'false', displayName: 'False'),
-        ]);
-        break;
-      
-      case 'switch':
-        ports.addAll([
-          ControlOutputPortPrototype(idName: 'case1', displayName: 'Case 1'),
-          ControlOutputPortPrototype(idName: 'case2', displayName: 'Case 2'),
-          ControlOutputPortPrototype(idName: 'case3', displayName: 'Case 3'),
-          ControlOutputPortPrototype(idName: 'default', displayName: 'Default'),
-        ]);
-        break;
-      
-      case 'loop':
-        ports.addAll([
-          ControlOutputPortPrototype(idName: 'loopBody', displayName: 'Loop Body'),
-          ControlOutputPortPrototype(idName: 'completed', displayName: 'Completed'),
-        ]);
-        break;
-      
-      case 'error_handler':
-        ports.addAll([
-          ControlOutputPortPrototype(idName: 'success', displayName: 'Success'),
-          ControlOutputPortPrototype(idName: 'error', displayName: 'Error'),
-        ]);
-        break;
-      
-      default:
-        ports.add(ControlOutputPortPrototype(
-          idName: 'out',
-          displayName: 'Out',
-        ));
-    }
-    
-    // Data input ports (simplified - add specific ones per node type)
-    if (definition.id == 'unified_shell') {
-      ports.addAll([
-        DataInputPortPrototype(
-          idName: 'code',
-          displayName: 'Code',
-          dataType: String,
-        ),
-        DataInputPortPrototype(
-          idName: 'inputs',
-          displayName: 'Inputs',
-          dataType: Map,
-        ),
-      ]);
-    }
-    
-    if (definition.id == 'http_request') {
-      ports.addAll([
-        DataInputPortPrototype(
-          idName: 'url',
-          displayName: 'URL',
-          dataType: String,
-        ),
-        DataInputPortPrototype(
-          idName: 'method',
-          displayName: 'Method',
-          dataType: String,
-        ),
-      ]);
-    }
-    
-    if (definition.id == 'loop') {
-      ports.add(DataInputPortPrototype(
-        idName: 'list',
-        displayName: 'List',
-        dataType: dynamic,
-      ));
-    }
-    
-    // Data output ports
-    ports.add(DataOutputPortPrototype(
-      idName: 'result',
-      displayName: 'Result',
-      dataType: dynamic,
-    ));
-    
-    if (definition.id == 'loop') {
-      ports.addAll([
-        DataOutputPortPrototype(
-          idName: 'listElem',
-          displayName: 'Element',
-          dataType: dynamic,
-        ),
-        DataOutputPortPrototype(
-          idName: 'listIdx',
-          displayName: 'Index',
-          dataType: int,
-        ),
-      ]);
-    }
-    
-    return ports;
-  }
-  
-  /// Setup listeners for controller events
-  void _setupListeners() {
-    // Listen to project changes
-    _controller.addListener(() {
-      // Sync with workflow state if needed
-      setState(() {});
-    });
-  }
-  
-  /// Handle WorkflowState changes and sync to controller
-  void _onWorkflowStateChanged() {
-    _syncFromWorkflowState();
-  }
-  
-  /// Sync nodes from WorkflowState to FlNodeEditorController
-  void _syncFromWorkflowState() {
-    if (_workflowState?.currentWorkflow == null) return;
-    
-    // Clear existing nodes in controller
-    _controller.project.nodes.clear();
-    
-    // Add nodes from workflow state to controller
-    for (final node in _workflowState!.currentWorkflow!.nodes) {
-      // Create a stub node that matches the controller's expectations
-      final stubNode = _createNodeFromWorkflowNode(node);
-      _controller.project.nodes[node.id] = stubNode;
-    }
-    
-    // Clear existing links in controller
-    _controller.project.links.clear();
-    
-    // Add connections from workflow state to controller
-    for (final connection in _workflowState!.currentWorkflow!.connections) {
-      // Create a stub link that matches the controller's expectations
-      final stubLink = _createLinkFromWorkflowConnection(connection);
-      _controller.project.links[connection.id] = stubLink;
-    }
-    
-    // Trigger widget rebuild to reflect the synced state
-    setState(() {});
-  }
-  
-  /// Create a stub node from WorkflowNode
-  dynamic _createNodeFromWorkflowNode(dynamic workflowNode) {
-    // Find the prototype for this node type
-    final prototype = _findPrototypeForNodeType(workflowNode.type);
-    
-    if (prototype == null) return null;
-    
-    // Create a stub node with the required properties
-    return FlNodeStub(
-      id: workflowNode.id,
-      prototype: prototype,
-      position: Offset(workflowNode.x, workflowNode.y),
-      fields: workflowNode.data ?? {},
-    );
-  }
-  
-  /// Create a stub link from WorkflowConnection
-  dynamic _createLinkFromWorkflowConnection(dynamic workflowConnection) {
-    return FlLinkStub(
-      id: workflowConnection.id,
-      sourceNodeId: workflowConnection.sourceNodeId,
-      targetNodeId: workflowConnection.targetNodeId,
-      sourcePortId: workflowConnection.sourcePortId,
-      targetPortId: workflowConnection.targetPortId,
-    );
-  }
-  
-  /// Find prototype for node type
-  NodePrototype? _findPrototypeForNodeType(String nodeType) {
-    // This would search through registered prototypes
-    // For now, return a simple implementation
-    for (final def in NodeDefinitions.all) {
-      if (def.id == nodeType) {
-        return _createNodePrototype(def);
-      }
-    }
-    return null;
+  @override
+  void dispose() {
+    _nodeFlowController.dispose();
+    _adapter.dispose();
+    super.dispose();
   }
   
   @override
   Widget build(BuildContext context) {
     return Consumer<WorkflowState>(
       builder: (context, workflowState, child) {
-        // Ensure we're listening to workflow state changes
-        if (_workflowState != workflowState) {
-          // Remove old listener
-          _workflowState?.removeListener(_onWorkflowStateChanged);
-          
-          // Set new state and listener
-          _workflowState = workflowState;
-          _workflowState!.addListener(_onWorkflowStateChanged);
-          
-          // Sync from workflow state
-          _syncFromWorkflowState();
-        }
-        
-        return Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            border: Border.all(
-              color: Theme.of(context).dividerColor,
-              width: 1,
-            ),
-          ),
-          child: Column(
+        return Scaffold(
+          backgroundColor: _isDarkTheme ? const Color(0xFF1E1E1E) : Colors.white,
+          body: Column(
             children: [
-              // CORRECT: Use FlNodeEditorWidget
+              // Top toolbar
+              _buildToolbar(),
+              
+              // Main editor area
               Expanded(
-                child: FlNodeEditorWidget(
-                  controller: _controller,
-                  expandToParent: true,
-                  
-                  // Style configuration
-                  style: FlNodeEditorStyle(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1E1E1E),
-                    ),
-                    gridStyle: FlGridStyle(
-                      gridSpacingX: 20.0,
-                      gridSpacingY: 20.0,
-                      lineColor: Colors.grey.withOpacity(0.1),
-                      showGrid: true,
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: _isDarkTheme ? Colors.grey[800]! : Colors.grey[300]!,
+                      width: 1,
                     ),
                   ),
-                  
-                  // Overlay widgets (toolbar, minimap, etc.)
-                  overlay: () {
-                    return [
-                      // Execute button overlay
-                      FlOverlayData(
-                        top: 16,
-                        right: 16,
-                        child: _buildControlButtons(),
-                      ),
-                      
-                      // Minimap overlay
-                      FlOverlayData(
-                        bottom: 16,
-                        left: 16,
-                        child: _buildMinimap(),
-                      ),
-                      
-                      // Zoom indicator
-                      FlOverlayData(
-                        top: 16,
-                        left: 16,
-                        child: _buildZoomIndicator(),
-                      ),
-                    ];
-                  },
+                  child: _buildNodeFlowEditor(),
                 ),
               ),
             ],
@@ -390,151 +83,442 @@ class _FlWorkflowCanvasState extends State<FlWorkflowCanvas> {
     );
   }
   
-  /// Build control buttons overlay
-  Widget _buildControlButtons() {
-    return Card(
-      elevation: 4,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+  /// Build top toolbar
+  Widget _buildToolbar() {
+    return Container(
+      height: 56,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: _isDarkTheme ? const Color(0xFF2D2D2D) : const Color(0xFFF5F5F5),
+        border: Border(
+          bottom: BorderSide(
+            color: _isDarkTheme ? Colors.grey[800]! : Colors.grey[300]!,
+            width: 1,
+          ),
+        ),
+      ),
+      child: Row(
         children: [
-          // Execute graph button
+          // Node palette toggle
           IconButton(
-            icon: const Icon(Icons.play_arrow, color: Colors.green),
-            tooltip: 'Execute Workflow',
-            onPressed: () async {
-              // Execute using fl_nodes runner
-              await _controller.runner.executeGraph();
-              
-              // Also trigger our custom execution engine
-              final workflowState = context.read<WorkflowState>();
-              await workflowState.executeWorkflow();
-            },
+            icon: const Icon(Icons.extension_outlined),
+            tooltip: 'Node Palette',
+            onPressed: _showNodePalette,
           ),
           
-          // Auto-arrange button
+          const SizedBox(width: 8),
+          
+          // Execute workflow
           IconButton(
-            icon: const Icon(Icons.vertical_distribute),
-            tooltip: 'Auto Arrange',
-            onPressed: _autoArrangeVertically,
+            icon: Icon(
+              _workflowState.isExecuting ? Icons.stop : Icons.play_arrow,
+              color: _workflowState.isExecuting ? Colors.red : Colors.green,
+            ),
+            tooltip: _workflowState.isExecuting ? 'Stop Workflow' : 'Execute Workflow',
+            onPressed: _workflowState.isExecuting 
+                ? _workflowState.stopExecution 
+                : _executeWorkflow,
           ),
           
-          // Fit to screen
+          const SizedBox(width: 8),
+          
+          // Zoom controls
           IconButton(
-            icon: const Icon(Icons.fit_screen),
-            tooltip: 'Fit to Screen',
+            icon: const Icon(Icons.zoom_out_map),
+            tooltip: 'Zoom to Fit',
+            onPressed: _nodeFlowController.zoomToFit,
+          ),
+          
+          const SizedBox(width: 16),
+          
+          // Divider
+          Container(
+            width: 1,
+            height: 24,
+            color: _isDarkTheme ? Colors.grey[700] : Colors.grey[400],
+          ),
+          
+          const SizedBox(width: 16),
+          
+          // View options
+          IconButton(
+            icon: Icon(_showGrid ? Icons.grid_on : Icons.grid_off),
+            tooltip: _showGrid ? 'Hide Grid' : 'Show Grid',
             onPressed: () {
-              // Zoom to fit all nodes
-              // Note: fl_nodes may not have this directly
+              setState(() {
+                _showGrid = !_showGrid;
+              });
+              // Note: Grid control would need to be passed to NodeFlowEditor
             },
+          ),
+          
+          IconButton(
+            icon: Icon(_showMinimap ? Icons.map : Icons.map_outlined),
+            tooltip: _showMinimap ? 'Hide Minimap' : 'Show Minimap',
+            onPressed: () {
+              setState(() {
+                _showMinimap = !_showMinimap;
+              });
+              _nodeFlowController.setMinimapEnabled(_showMinimap);
+            },
+          ),
+          
+          const SizedBox(width: 16),
+          
+          // Theme toggle
+          IconButton(
+            icon: Icon(_isDarkTheme ? Icons.light_mode : Icons.dark_mode),
+            tooltip: _isDarkTheme ? 'Light Theme' : 'Dark Theme',
+            onPressed: _toggleTheme,
+          ),
+          
+          const Spacer(),
+          
+          // Undo/Redo
+          IconButton(
+            icon: const Icon(Icons.undo),
+            tooltip: 'Undo',
+            onPressed: _workflowState.canUndo ? _workflowState.undo : null,
+          ),
+          
+          IconButton(
+            icon: const Icon(Icons.redo),
+            tooltip: 'Redo',
+            onPressed: _workflowState.canRedo ? _workflowState.redo : null,
+          ),
+          
+          const SizedBox(width: 8),
+          
+          // Save
+          IconButton(
+            icon: const Icon(Icons.save),
+            tooltip: 'Save Workflow',
+            onPressed: _saveWorkflow,
           ),
         ],
       ),
     );
   }
   
-  /// Build minimap overlay
-  Widget _buildMinimap() {
+  /// Build the main NodeFlowEditor
+  Widget _buildNodeFlowEditor() {
+    return NodeFlowEditor<WorkflowNodeData>(
+      controller: _nodeFlowController.controller,
+      theme: _isDarkTheme ? NodeFlowTheme.dark : NodeFlowTheme.light,
+      nodeBuilder: (context, node) => _buildNodeWidget(node),
+    );
+  }
+  
+  /// Build individual node widget
+  Widget _buildNodeWidget(BuildContext context, Node<WorkflowNodeData> node) {
+    final definition = NodeDefinitions.getByNodeType(node.type);
+    final color = definition?.color ?? Colors.grey;
+    
     return Container(
-      width: 150,
-      height: 100,
+      width: 200,
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.7),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.white24),
-      ),
-      child: const Center(
-        child: Text(
-          'Minimap',
-          style: TextStyle(color: Colors.white54, fontSize: 10),
+        color: _isDarkTheme ? const Color(0xFF3D3D3D) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withOpacity(0.8),
+          width: 2,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Node header
+          Row(
+            children: [
+              Icon(
+                definition?.icon ?? Icons.help_outline,
+                color: color,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  node.data.displayName,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: _isDarkTheme ? Colors.white : Colors.black87,
+                    fontSize: 14,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 8),
+          
+          // Node data preview
+          if (node.data.data.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: _isDarkTheme ? const Color(0xFF4D4D4D) : const Color(0xFFF5F5F5),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                _formatNodeData(node.data.data),
+                style: TextStyle(
+                  fontSize: 11,
+                  color: _isDarkTheme ? Colors.grey[300] : Colors.grey[600],
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+        ],
       ),
     );
   }
   
-  /// Build zoom indicator
-  Widget _buildZoomIndicator() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.7),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: const Text(
-        '100%',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-  
-  /// Auto-arrange nodes vertically
-  void _autoArrangeVertically() {
-    // Get all nodes from controller
-    final nodes = _controller.project.nodes.values.toList();
+  /// Format node data for display
+  String _formatNodeData(Map<String, dynamic> data) {
+    if (data.isEmpty) return 'No data';
     
-    if (nodes.isEmpty) return;
+    final entries = data.entries.take(2).map((e) => '${e.key}: ${e.value}');
+    final display = entries.join(', ');
     
-    // Find root nodes (no incoming connections)
-    final hasIncoming = <String>{};
-    for (final link in _controller.project.links.values) {
-      hasIncoming.add(link.targetNodeId);
+    if (data.length > 2) {
+      return '$display...';
     }
     
-    final roots = nodes.where((n) => !hasIncoming.contains(n.id)).toList();
+    return display;
+  }
+  
+  /// Show node palette
+  void _showNodePalette() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: _isDarkTheme ? const Color(0xFF2D2D2D) : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => _buildNodePalette(),
+    );
+  }
+  
+  /// Build node palette
+  Widget _buildNodePalette() {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.7,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                'Add Nodes',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: _isDarkTheme ? Colors.white : Colors.black87,
+                ),
+              ),
+              const Spacer(),
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 20),
+          
+          // Category tabs
+          _buildCategoryTabs(),
+          
+          const SizedBox(height: 20),
+          
+          // Node grid
+          Expanded(
+            child: _buildNodeGrid(),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  /// Build category tabs
+  Widget _buildCategoryTabs() {
+    final categories = NodeCategory.values;
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: categories.map((category) {
+          return Container(
+            margin: const EdgeInsets.only(right: 8),
+            child: FilterChip(
+              label: Text(_getCategoryDisplayName(category)),
+              selected: false,
+              onSelected: (selected) {
+                // Filter by category
+              },
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+  
+  /// Build node grid
+  Widget _buildNodeGrid() {
+    final nodes = NodeDefinitions.all;
     
-    // Position nodes in vertical levels
-    final levels = <int, List<dynamic>>{};
-    final visited = <String>{};
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 1.0,
+      ),
+      itemCount: nodes.length,
+      itemBuilder: (context, index) {
+        final node = nodes[index];
+        return _buildNodePaletteItem(node);
+      },
+    );
+  }
+  
+  /// Build individual node palette item
+  Widget _buildNodePaletteItem(NodeDefinition node) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => _addNodeToCanvas(node),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                node.icon,
+                size: 32,
+                color: node.color,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                node.displayName,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                node.category.name,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Colors.grey[600],
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  
+  /// Add node to canvas
+  void _addNodeToCanvas(NodeDefinition definition) {
+    Navigator.of(context).pop(); // Close palette
     
-    void assignLevel(dynamic node, int level) {
-      if (visited.contains(node.id)) return;
-      visited.add(node.id);
-      
-      levels.putIfAbsent(level, () => []).add(node);
-      
-      // Find children
-      final childLinks = _controller.project.links.values
-          .where((link) => link.sourceNodeId == node.id);
-      
-      for (final link in childLinks) {
-        final childNode = _controller.project.nodes[link.targetNodeId];
-        if (childNode != null) {
-          assignLevel(childNode, level + 1);
-        }
+    // Generate unique ID
+    final nodeId = 'node_${DateTime.now().millisecondsSinceEpoch}';
+    
+    // Add node using adapter
+    _adapter.addNodeFromAgent(
+      type: definition.id,
+      name: definition.displayName,
+      data: {},
+      position: const Offset(200, 200), // Default position
+    );
+  }
+  
+  /// Execute workflow
+  Future<void> _executeWorkflow() async {
+    try {
+      await _workflowState.executeWorkflowFromAgent();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Workflow execution started')),
+        );
       }
-    }
-    
-    // Assign levels
-    for (final root in roots) {
-      assignLevel(root, 0);
-    }
-    
-    // Position nodes
-    for (final entry in levels.entries) {
-      final level = entry.key;
-      final nodesAtLevel = entry.value;
-      
-      for (var i = 0; i < nodesAtLevel.length; i++) {
-        final node = nodesAtLevel[i];
-        node.position = Offset(
-          i * 300.0, // Horizontal spacing
-          level * 150.0 + 100.0, // Vertical spacing with top margin
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Execution failed: $e')),
         );
       }
     }
-    
-    setState(() {});
   }
   
-  @override
-  void dispose() {
-    // Clean up WorkflowState listener
-    _workflowState?.removeListener(_onWorkflowStateChanged);
-    
-    _controller.dispose();
-    super.dispose();
+  /// Save workflow
+  Future<void> _saveWorkflow() async {
+    try {
+      await _workflowState.saveWorkflow();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Workflow saved')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Save failed: $e')),
+        );
+      }
+    }
+  }
+  
+  /// Toggle theme
+  void _toggleTheme() {
+    setState(() {
+      _isDarkTheme = !_isDarkTheme;
+    });
+    _nodeFlowController.setTheme(_isDarkTheme ? NodeFlowTheme.dark : NodeFlowTheme.light);
+  }
+  
+  /// Get category display name
+  String _getCategoryDisplayName(NodeCategory category) {
+    switch (category) {
+      case NodeCategory.triggers:
+        return 'Triggers';
+      case NodeCategory.actions:
+        return 'Actions';
+      case NodeCategory.logic:
+        return 'Logic';
+      case NodeCategory.data:
+        return 'Data';
+      case NodeCategory.integration:
+        return 'Integration';
+      case NodeCategory.system:
+        return 'System';
+      case NodeCategory.ai:
+        return 'AI';
+      case NodeCategory.errorHandling:
+        return 'Error Handling';
+    }
   }
 }

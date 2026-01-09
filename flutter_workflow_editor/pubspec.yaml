@@ -1,5 +1,5 @@
 name: workflow_editor
-description: Advanced node-based workflow editor for AI super assistant (powered by fl_nodes)
+description: Advanced node-based workflow editor for AI super assistant (powered by vyuh_node_flow)
 version: 1.0.0
 publish_to: 'none'
 
@@ -109,10 +109,11 @@ dependencies:
   # record: ^5.0.4 # Disabled - causes compilation issues
   permission_handler: ^11.3.0
 
-  # Node flow editor - Spike test
+  # Node flow editor - Production implementation
   vyuh_node_flow: ^0.23.3
   equatable: ^2.0.7
   mobx: ^2.5.0
+  flutter_mobx: ^2.0.0
 
 dev_dependencies:
   flutter_test:

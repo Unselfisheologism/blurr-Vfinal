@@ -2,7 +2,6 @@
 library;
 
 import 'package:flutter/material.dart';
-import '../stubs/fl_nodes_stubs.dart';
 import '../models/workflow.dart';
 import '../models/workflow_node.dart';
 import '../models/workflow_connection.dart';
@@ -17,7 +16,7 @@ class WorkflowState extends ChangeNotifier {
   Workflow? _currentWorkflow;
   WorkflowNode? _selectedNode;
   WorkflowExecutionEngine? _executionEngine;
-  
+
   // Undo/Redo stacks
   final List<Workflow> _undoStack = [];
   final List<Workflow> _redoStack = [];
@@ -295,6 +294,159 @@ class WorkflowState extends ChangeNotifier {
   
   void _onExecutionStateChanged() {
     notifyListeners();
+  }
+  
+  // Agent Control Methods
+  
+  /// Called by UltraGeneralistAgent to add a node programmatically
+  Future<void> addNodeFromAgent({
+    required String type,
+    required String name,
+    required Map<String, dynamic> data,
+    Offset? position,
+  }) async {
+    addNode(type: type, name: name, data: data, position: position);
+    await saveWorkflow();
+  }
+  
+  /// Called by UltraGeneralistAgent to modify a node
+  Future<void> updateNodeFromAgent(String nodeId, Map<String, dynamic> data) async {
+    updateNodeData(nodeId, data);
+    await saveWorkflow();
+  }
+  
+  /// Called by UltraGeneralistAgent to delete a node
+  Future<void> removeNodeFromAgent(String nodeId) async {
+    removeNode(nodeId);
+    await saveWorkflow();
+  }
+  
+  /// Called by UltraGeneralistAgent to create workflow from scratch
+  Future<void> createWorkflowFromAgent({
+    required String name,
+    required List<dynamic> nodes,
+    required List<dynamic> connections,
+  }) async {
+    _saveToUndoStack();
+    
+    _currentWorkflow = Workflow(
+      id: _uuid.v4(),
+      name: name,
+      description: '',
+      nodes: nodes,
+      connections: connections,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+    
+    await saveWorkflow();
+    notifyListeners();
+  }
+  
+  /// Get workflow as JSON for agent
+  Map<String, dynamic> getWorkflowAsJson() {
+    if (_currentWorkflow == null) return {};
+    
+    return {
+      'id': _currentWorkflow!.id,
+      'name': _currentWorkflow!.name,
+      'description': _currentWorkflow!.description,
+      'nodes': _currentWorkflow!.nodes.map((node) => {
+        'id': node.id,
+        'type': node.type,
+        'name': node.name,
+        'x': node.x,
+        'y': node.y,
+        'data': node.data,
+      }).toList(),
+      'connections': _currentWorkflow!.connections.map((conn) => {
+        'id': conn.id,
+        'sourceNodeId': conn.sourceNodeId,
+        'sourcePortId': conn.sourcePortId,
+        'targetNodeId': conn.targetNodeId,
+        'targetPortId': conn.targetPortId,
+      }).toList(),
+      'createdAt': _currentWorkflow!.createdAt.toIso8601String(),
+      'updatedAt': _currentWorkflow!.updatedAt.toIso8601String(),
+    };
+  }
+  
+  /// Load workflow from JSON (for agent)
+  Future<void> loadWorkflowFromJson(Map<String, dynamic> json) async {
+    try {
+      _saveToUndoStack();
+      
+      final nodes = <dynamic>[];
+      final nodesJson = json['nodes'] as List?;
+      if (nodesJson != null) {
+        for (final nodeJson in nodesJson) {
+          final node = nodeJson as Map<String, dynamic>;
+          nodes.add(WorkflowNode(
+            id: node['id'] as String,
+            type: node['type'] as String,
+            name: node['name'] as String? ?? 'Node',
+            x: (node['x'] as num?)?.toDouble() ?? 0,
+            y: (node['y'] as num?)?.toDouble() ?? 0,
+            data: Map<String, dynamic>.from(node['data'] as Map? ?? {}),
+          ));
+        }
+      }
+      
+      final connections = <dynamic>[];
+      final connectionsJson = json['connections'] as List?;
+      if (connectionsJson != null) {
+        for (final connJson in connectionsJson) {
+          final conn = connJson as Map<String, dynamic>;
+          connections.add(WorkflowConnection(
+            id: conn['id'] as String,
+            sourceNodeId: conn['sourceNodeId'] as String,
+            sourcePortId: conn['sourcePortId'] as String,
+            targetNodeId: conn['targetNodeId'] as String,
+            targetPortId: conn['targetPortId'] as String,
+          ));
+        }
+      }
+      
+      _currentWorkflow = Workflow(
+        id: json['id'] as String? ?? _uuid.v4(),
+        name: json['name'] as String? ?? 'Loaded Workflow',
+        description: json['description'] as String? ?? '',
+        nodes: nodes,
+        connections: connections,
+        createdAt: json['createdAt'] != null 
+            ? DateTime.parse(json['createdAt'] as String)
+            : DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+      
+      _selectedNode = null;
+      _redoStack.clear();
+      
+      await saveWorkflow();
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Failed to load workflow from JSON: $e');
+      rethrow;
+    }
+  }
+  
+  /// Execute workflow (for agent)
+  Future<void> executeWorkflowFromAgent() async {
+    await executeWorkflow();
+  }
+  
+  /// Get current state summary for agent
+  Map<String, dynamic> getStateSummary() {
+    return {
+      'workflowId': _currentWorkflow?.id,
+      'workflowName': _currentWorkflow?.name,
+      'nodeCount': _currentWorkflow?.nodes.length ?? 0,
+      'connectionCount': _currentWorkflow?.connections.length ?? 0,
+      'isExecuting': isExecuting,
+      'canUndo': canUndo,
+      'canRedo': canRedo,
+      'lastUpdated': _currentWorkflow?.updatedAt.toIso8601String(),
+    };
   }
   
   // Undo/Redo
