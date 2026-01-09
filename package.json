@@ -1,0 +1,26 @@
+{
+  "name": "blurr-vfinal",
+  "version": "1.0.0",
+  "description": "Blurr Vfinal Flutter project with Node.js support for MCP server integration",
+  "scripts": {
+    "mcp:hello": "npx @modelcontextprotocol/server-everything",
+    "mcp:example": "npx ts-node scripts/example-mcp-server.ts",
+    "mcp:install": "npm install",
+    "help:mcp": "echo 'To run an MCP server, use: npm run mcp:<server-name> or npx <server-package>'"
+  },
+  "keywords": [
+    "flutter",
+    "mcp",
+    "nodejs"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.1"
+  }
+}
