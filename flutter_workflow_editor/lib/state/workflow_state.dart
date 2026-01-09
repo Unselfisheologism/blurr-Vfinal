@@ -2,7 +2,6 @@
 library;
 
 import 'package:flutter/material.dart';
-import '../stubs/fl_nodes_stubs.dart';
 import '../models/workflow.dart';
 import '../models/workflow_node.dart';
 import '../models/workflow_connection.dart';
@@ -78,6 +77,7 @@ class WorkflowState extends ChangeNotifier {
   }
   
   void addNodeFromFlNode(dynamic flNode) {
+    // Legacy method - kept for compatibility but no longer used
     addNode(
       type: flNode.prototype.idName,
       name: flNode.prototype.displayName,
@@ -85,7 +85,49 @@ class WorkflowState extends ChangeNotifier {
       position: flNode.position,
     );
   }
-  
+
+  /// Called by UltraGeneralistAgent to add a node programmatically
+  Future<void> addNodeFromAgent({
+    required String type,
+    required String name,
+    required Map<String, dynamic> data,
+    Offset? position,
+  }) async {
+    addNode(type: type, name: name, data: data, position: position);
+    await saveWorkflow();
+  }
+
+  /// Called by UltraGeneralistAgent to modify a node
+  Future<void> updateNodeFromAgent(String nodeId, Map<String, dynamic> data) async {
+    updateNodeData(nodeId, data);
+    await saveWorkflow();
+  }
+
+  /// Called by UltraGeneralistAgent to delete a node
+  Future<void> removeNodeFromAgent(String nodeId) async {
+    removeNode(nodeId);
+    await saveWorkflow();
+  }
+
+  /// Called by UltraGeneralistAgent to create workflow from scratch
+  Future<void> createWorkflowFromAgent({
+    required String name,
+    required List<WorkflowNode> nodes,
+    required List<WorkflowConnection> connections,
+  }) async {
+    _currentWorkflow = Workflow(
+      id: _uuid.v4(),
+      name: name,
+      description: 'Created by agent',
+      nodes: nodes,
+      connections: connections,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+    await saveWorkflow();
+    notifyListeners();
+  }
+
   void removeNode(String nodeId) {
     if (_currentWorkflow == null) return;
     
@@ -186,16 +228,7 @@ class WorkflowState extends ChangeNotifier {
     
     notifyListeners();
   }
-  
-  void addConnectionFromFlLink(dynamic flLink) {
-    addConnection(
-      sourceNodeId: flLink.sourceNodeId,
-      targetNodeId: flLink.targetNodeId,
-      sourcePortId: flLink.sourcePortId,
-      targetPortId: flLink.targetPortId,
-    );
-  }
-  
+
   void removeConnection(String connectionId) {
     if (_currentWorkflow == null) return;
     

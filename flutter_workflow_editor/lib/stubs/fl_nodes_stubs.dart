@@ -1,48 +1,42 @@
-// Simple stubs to replace broken fl_nodes_workspace dependency
-// This allows the Flutter module to compile while preserving the structure
+// Legacy stubs - kept for backward compatibility
+// This file will be removed once all fl_nodes references are removed
+
+// Note: The project has migrated to vyuh_node_flow
+// This file is kept temporarily to prevent compilation errors
+// during the transition period
 
 import 'package:flutter/material.dart';
 
-/// Stub classes for fl_nodes_workspace API
+// Empty stubs to allow compilation
 class NodePrototype {
   final String idName;
   final String displayName;
   final String description;
-  final List<dynamic> ports;
-  final Function? onExecute;
-  final Function? styleBuilder;
 
   const NodePrototype({
     required this.idName,
     required this.displayName,
     required this.description,
-    required this.ports,
-    this.onExecute,
-    this.styleBuilder,
   });
 }
 
 class ControlInputPortPrototype {
   final String idName;
   final String displayName;
-  final dynamic style;
 
   const ControlInputPortPrototype({
     required this.idName,
     required this.displayName,
-    this.style,
   });
 }
 
 class ControlOutputPortPrototype {
   final String idName;
   final String displayName;
-  final dynamic style;
 
   const ControlOutputPortPrototype({
     required this.idName,
     required this.displayName,
-    this.style,
   });
 }
 
@@ -50,13 +44,11 @@ class DataInputPortPrototype {
   final String idName;
   final String displayName;
   final dynamic dataType;
-  final dynamic style;
 
   const DataInputPortPrototype({
     required this.idName,
     required this.displayName,
     this.dataType,
-    this.style,
   });
 }
 
@@ -64,30 +56,12 @@ class DataOutputPortPrototype {
   final String idName;
   final String displayName;
   final dynamic dataType;
-  final dynamic style;
 
   const DataOutputPortPrototype({
     required this.idName,
     required this.displayName,
     this.dataType,
-    this.style,
   });
-}
-
-class FlPortStyle {
-  final dynamic shape;
-  final Color color;
-
-  const FlPortStyle({
-    required this.shape,
-    required this.color,
-  });
-}
-
-class FlPortShape {
-  static const circle = 'circle';
-  static const triangle = 'triangle';
-  static const square = 'square';
 }
 
 class FlNodeStyle {
@@ -114,152 +88,18 @@ class FlNodeHeaderStyle {
   });
 }
 
-class FlNodeEditorController {
-  final dynamic projectSaver;
-  final dynamic projectLoader;
-  final dynamic projectCreator;
-  final runner = FlRunnerStub();
-  
-  // Add missing project property
-  final FlProjectStub project = FlProjectStub();
-  
-  // Add listener functionality
-  final _listeners = <VoidCallback>{};
-  
-  // Store registered prototypes
-  final _prototypes = <NodePrototype>[];
+class FlPortStyle {
+  final dynamic shape;
+  final Color color;
 
-  FlNodeEditorController({
-    this.projectSaver,
-    this.projectLoader,
-    this.projectCreator,
-  });
-  
-  // Add missing registerNodePrototype method
-  void registerNodePrototype(NodePrototype prototype) {
-    _prototypes.add(prototype);
-  }
-  
-  // Add missing addListener method
-  void addListener(VoidCallback listener) {
-    _listeners.add(listener);
-  }
-  
-  // Add missing dispose method
-  void dispose() {
-    _listeners.clear();
-  }
-  
-  // Helper to notify listeners
-  void _notifyListeners() {
-    for (final listener in _listeners) {
-      listener();
-    }
-  }
-}
-
-class FlRunnerStub {
-  Future<void> executeGraph() async {}
-}
-
-class FlProjectStub {
-  final Map<String, dynamic> nodes = {};
-  final Map<String, dynamic> links = {};
-}
-
-/// Stub class for FlNode to support workflow sync
-class FlNodeStub {
-  final String id;
-  final NodePrototype prototype;
-  Offset position;
-  Map<String, dynamic> fields;
-
-  FlNodeStub({
-    required this.id,
-    required this.prototype,
-    required this.position,
-    this.fields = const {},
+  const FlPortStyle({
+    required this.shape,
+    required this.color,
   });
 }
 
-/// Stub class for FlLink to support workflow sync
-class FlLinkStub {
-  final String id;
-  final String sourceNodeId;
-  final String targetNodeId;
-  final String sourcePortId;
-  final String targetPortId;
-
-  const FlLinkStub({
-    required this.id,
-    required this.sourceNodeId,
-    required this.targetNodeId,
-    required this.sourcePortId,
-    required this.targetPortId,
-  });
-}
-
-class FlNodeEditorWidget extends StatelessWidget {
-  final FlNodeEditorController controller;
-  final bool expandToParent;
-  final dynamic style;
-  final dynamic overlay;
-
-  const FlNodeEditorWidget({
-    super.key,
-    required this.controller,
-    this.expandToParent = false,
-    this.style,
-    this.overlay,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
-
-class FlNodeEditorStyle {
-  final dynamic decoration;
-  final dynamic gridStyle;
-
-  const FlNodeEditorStyle({
-    this.decoration,
-    this.gridStyle,
-  });
-}
-
-class FlGridStyle {
-  final double gridSpacingX;
-  final double gridSpacingY;
-  final Color lineColor;
-  final bool showGrid;
-
-  const FlGridStyle({
-    this.gridSpacingX = 20.0,
-    this.gridSpacingY = 20.0,
-    this.lineColor = Colors.grey,
-    this.showGrid = true,
-  });
-}
-
-class FlOverlayData {
-  final double? top;
-  final double? bottom;
-  final double? left;
-  final double? right;
-  final Widget child;
-
-  const FlOverlayData({
-    this.top,
-    this.bottom,
-    this.left,
-    this.right,
-    required this.child,
-  });
-}
-
-// Stub extension for firstOrNull
-extension<T> on Iterable<T> {
-  T? get firstOrNull => isEmpty ? null : first;
+class FlPortShape {
+  static const circle = 'circle';
+  static const triangle = 'triangle';
+  static const square = 'square';
 }
