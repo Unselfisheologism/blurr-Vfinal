@@ -6,8 +6,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import 'package:vyuh_node_flow/vyuh_node_flow.dart';
 
 import '../models/workflow.dart';
+import '../models/workflow_node_data.dart';
 import 'node_flow_controller.dart';
 import 'workflow_state.dart';
 
@@ -20,6 +22,7 @@ class ProviderMobXAdapter {
   Timer? _debounceTimer;
   bool _isSyncingFromWorkflowState = false;
   bool _isSyncingFromNodeFlow = false;
+  Workflow? _lastWorkflow;
   static const Duration _debounceDuration = Duration(milliseconds: 300);
 
   // Listeners
@@ -35,8 +38,15 @@ class ProviderMobXAdapter {
 
   /// Setup bidirectional synchronization
   void _setupBidirectionalSync() {
+    _lastWorkflow = workflowState.currentWorkflow;
+
     // Listen to WorkflowState changes
     _workflowStateListener = () {
+      final currentWorkflow = workflowState.currentWorkflow;
+      if (currentWorkflow == _lastWorkflow) return;
+
+      _lastWorkflow = currentWorkflow;
+
       if (!_isSyncingFromNodeFlow) {
         _debouncedSyncFromWorkflowState();
       }
@@ -49,6 +59,18 @@ class ProviderMobXAdapter {
         _debouncedSyncFromNodeFlow();
       }
     });
+
+    // Keep WorkflowState selection in sync with editor selection.
+    nodeFlowController.setSelectionChangeHandler(
+      (SelectionState<WorkflowNodeData, dynamic> selection) {
+        if (selection.nodes.isEmpty) {
+          workflowState.deselectNode();
+          return;
+        }
+
+        workflowState.selectNode(selection.nodes.first.id);
+      },
+    );
 
     // Initial sync
     if (workflowState.currentWorkflow != null) {
@@ -80,6 +102,12 @@ class ProviderMobXAdapter {
 
     try {
       nodeFlowController.importFromWorkflow(workflowState.currentWorkflow!);
+
+      final selectedNode = workflowState.selectedNode;
+      if (selectedNode != null) {
+        nodeFlowController.controller.clearSelection();
+        nodeFlowController.controller.selectNode(selectedNode.id);
+      }
     } catch (e) {
       debugPrint('Error syncing from WorkflowState: $e');
     } finally {

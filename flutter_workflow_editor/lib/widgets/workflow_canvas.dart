@@ -10,7 +10,6 @@ import '../state/node_flow_controller.dart';
 import '../state/provider_mobx_adapter.dart';
 import '../models/node_definitions.dart';
 import '../models/workflow_node_data.dart';
-import 'package:uuid/uuid.dart';
 
 /// Main workflow canvas using vyuh_node_flow
 class WorkflowCanvas extends StatefulWidget {
@@ -22,8 +21,7 @@ class WorkflowCanvas extends StatefulWidget {
 
 class _WorkflowCanvasState extends State<WorkflowCanvas> {
   late WorkflowNodeFlowController _nodeFlowController;
-  late ProviderMobXAdapter _adapter;
-  final Uuid _uuid = const Uuid();
+  ProviderMobXAdapter? _adapter;
 
   @override
   void initState() {

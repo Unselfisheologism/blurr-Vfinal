@@ -16,7 +16,7 @@ import '../models/workflow_node_data.dart';
 /// Controller for managing workflow nodes with vyuh_node_flow
 class WorkflowNodeFlowController {
   late final NodeFlowController<WorkflowNodeData, dynamic> _controller;
-  late final NodeFlowEvents<WorkflowNodeData, dynamic> _events;
+  late NodeFlowEvents<WorkflowNodeData, dynamic> _events;
 
   final _changeController = StreamController<void>.broadcast();
 
@@ -59,17 +59,26 @@ class WorkflowNodeFlowController {
     }
   }
 
+  void setSelectionChangeHandler(
+    ValueChanged<SelectionState<WorkflowNodeData, dynamic>>? handler,
+  ) {
+    _events = _events.copyWith(onSelectionChange: handler);
+    _controller.updateEvents(_events);
+  }
+
   /// Add a new node to the workflow
   Node<WorkflowNodeData> addNode({
     required String id,
     required String type,
     required String name,
-    required Offset position,
+    Offset? position,
     Map<String, dynamic> parameters = const {},
     List<Port>? inputPorts,
     List<Port>? outputPorts,
   }) {
     final nodeDefinition = NodeDefinitions.getById(type);
+
+    final resolvedPosition = position ?? _calculateNextPosition();
 
     final nodeData = WorkflowNodeData(
       name: name,
@@ -81,10 +90,12 @@ class WorkflowNodeFlowController {
     final node = Node<WorkflowNodeData>(
       id: id,
       type: type,
-      position: position,
+      position: resolvedPosition,
       data: nodeData,
+      size: const Size(220, 140),
       inputPorts: inputPorts ?? _getDefaultInputPorts(type),
       outputPorts: outputPorts ?? _getDefaultOutputPorts(type),
+      theme: _getNodeTheme(type),
     );
 
     _controller.addNode(node);
@@ -246,6 +257,41 @@ class WorkflowNodeFlowController {
     _controller.loadGraph(graph);
   }
 
+  Offset _calculateNextPosition() {
+    final nodeCount = _controller.nodes.length;
+
+    const columns = 3;
+    const startX = 120.0;
+    const startY = 120.0;
+    const spacingX = 260.0;
+    const spacingY = 200.0;
+
+    final row = nodeCount ~/ columns;
+    final col = nodeCount % columns;
+
+    return Offset(
+      startX + (col * spacingX),
+      startY + (row * spacingY),
+    );
+  }
+
+  NodeTheme? _getNodeTheme(String nodeType) {
+    final def = NodeDefinitions.getById(nodeType);
+    if (def == null) return null;
+
+    final color = def.color;
+
+    return NodeTheme.light.copyWith(
+      backgroundColor: color.withOpacity(0.08),
+      selectedBackgroundColor: color.withOpacity(0.16),
+      highlightBackgroundColor: color.withOpacity(0.12),
+      borderColor: color.withOpacity(0.85),
+      selectedBorderColor: color,
+      highlightBorderColor: color.withOpacity(0.9),
+      selectedBorderWidth: 3.0,
+    );
+  }
+
   List<Port> _getDefaultInputPorts(String nodeType) {
     Port input(String id, String name) => Port(
           id: id,
@@ -260,17 +306,17 @@ class WorkflowNodeFlowController {
       case 'webhook_trigger':
         return [];
 
+      case 'if_else':
+        return [input('in', 'Condition')];
+
       case 'loop':
         return [
           input('in', 'Input'),
           input('list', 'List'),
         ];
 
-      case 'error_handler':
-        return [
-          input('in', 'Input'),
-          input('error', 'Error'),
-        ];
+      case 'output':
+        return [input('in', 'Data')];
 
       default:
         return [input('in', 'Input')];
@@ -287,9 +333,14 @@ class WorkflowNodeFlowController {
 
     switch (nodeType) {
       case 'manual_trigger':
+        return [output('out', 'Trigger')];
+
       case 'schedule_trigger':
       case 'webhook_trigger':
         return [output('out', 'Output')];
+
+      case 'unified_shell':
+        return [output('out', 'Result')];
 
       case 'if_else':
         return [
@@ -297,24 +348,14 @@ class WorkflowNodeFlowController {
           output('false', 'False'),
         ];
 
-      case 'switch':
-        return [
-          output('case1', 'Case 1'),
-          output('case2', 'Case 2'),
-          output('case3', 'Case 3'),
-          output('default', 'Default'),
-        ];
-
       case 'loop':
         return [
-          output('loopBody', 'Loop Body'),
+          output('each', 'Each Item'),
           output('completed', 'Completed'),
-          output('element', 'Element'),
-          output('index', 'Index'),
         ];
 
-      case 'error_handler':
-        return [output('success', 'Success')];
+      case 'output':
+        return [];
 
       default:
         return [output('out', 'Output')];

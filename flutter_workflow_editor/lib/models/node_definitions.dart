@@ -126,7 +126,7 @@ class NodeDefinitions {
     color: Color(0xFFFF5722),
     tags: ['logic', 'condition', 'branch', 'if'],
   );
-  
+
   static const switchNode = NodeDefinition(
     id: 'switch',
     displayName: 'Switch',
@@ -135,6 +135,17 @@ class NodeDefinitions {
     icon: Icons.alt_route,
     color: Color(0xFFE91E63),
     tags: ['logic', 'switch', 'branch', 'multiple'],
+  );
+
+  // Output node
+  static const outputNode = NodeDefinition(
+    id: 'output',
+    displayName: 'Output',
+    description: 'Display or capture results',
+    category: NodeCategory.data,
+    icon: Icons.outbox_outlined,
+    color: Color(0xFF607D8B),
+    tags: ['output', 'result', 'display'],
   );
   
   static const loopNode = NodeDefinition(
@@ -271,6 +282,15 @@ class NodeDefinitions {
     tags: ['error', 'retry', 'repeat', 'fallback'],
   );
   
+  /// Core node definitions used in the MVP palette.
+  static List<NodeDefinition> get core => [
+    manualTrigger,
+    unifiedShellNode,
+    ifElseNode,
+    loopNode,
+    outputNode,
+  ];
+
   /// Get all node definitions
   static List<NodeDefinition> get all => [
     manualTrigger,
@@ -283,6 +303,7 @@ class NodeDefinitions {
     ifElseNode,
     switchNode,
     loopNode,
+    outputNode,
     mergeNode,
     setVariableNode,
     getVariableNode,
