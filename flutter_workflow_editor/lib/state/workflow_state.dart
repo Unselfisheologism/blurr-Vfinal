@@ -347,22 +347,28 @@ class WorkflowState extends ChangeNotifier {
     }
   }
   
-  Future<void> exportWorkflow() async {
-    if (_currentWorkflow == null) return;
+  Future<String> exportWorkflow() async {
+    if (_currentWorkflow == null) {
+      throw Exception('No workflow to export');
+    }
     
     try {
-      await platformBridge.exportWorkflow(_currentWorkflow!.id);
+      // Get workflow JSON from platform bridge
+      final jsonString = await platformBridge.exportWorkflow(_currentWorkflow!.id);
+      return jsonString;
     } catch (e) {
       debugPrint('Failed to export workflow: $e');
       rethrow;
     }
   }
   
-  Future<void> importWorkflow() async {
+  Future<void> importWorkflow(String jsonString) async {
     try {
-      // This would typically use file_picker
-      // For now, just a placeholder
-      debugPrint('Import workflow not implemented');
+      // Import workflow via platform bridge and get new workflow ID
+      final newWorkflowId = await platformBridge.importWorkflow(jsonString);
+      
+      // Load the newly imported workflow
+      await loadWorkflow(newWorkflowId);
     } catch (e) {
       debugPrint('Failed to import workflow: $e');
       rethrow;
