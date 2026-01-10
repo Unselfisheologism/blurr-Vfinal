@@ -94,20 +94,98 @@ class PlatformBridge {
       );
     }
   }
-  
+
+  /// Connect to MCP server
+  Future<Map<String, dynamic>> connectMCPServer({
+    required String serverName,
+    required String url,
+    required String transport, // 'http', 'sse', 'stdio'
+  }) async {
+    try {
+      final result = await _channel.invokeMethod('connectMCPServer', {
+        'serverName': serverName,
+        'url': url,
+        'transport': transport,
+      });
+
+      return Map<String, dynamic>.from(result as Map);
+    } catch (e) {
+      throw PlatformException(
+        code: 'MCP_CONNECT_ERROR',
+        message: 'Failed to connect MCP server: $e',
+      );
+    }
+  }
+
+  /// Disconnect from MCP server
+  Future<Map<String, dynamic>> disconnectMCPServer(String serverName) async {
+    try {
+      final result = await _channel.invokeMethod('disconnectMCPServer', {
+        'serverName': serverName,
+      });
+
+      return Map<String, dynamic>.from(result as Map);
+    } catch (e) {
+      throw PlatformException(
+        code: 'MCP_DISCONNECT_ERROR',
+        message: 'Failed to disconnect MCP server: $e',
+      );
+    }
+  }
+
+  /// Get MCP tools from server
+  Future<List<Map<String, dynamic>>> getMCPTools({String? serverName}) async {
+    try {
+      final result = await _channel.invokeMethod('getMCPTools', {
+        'serverName': serverName,
+      });
+
+      return List<Map<String, dynamic>>.from(
+        (result as List).map((e) => Map<String, dynamic>.from(e as Map))
+      );
+    } catch (e) {
+      throw PlatformException(
+        code: 'MCP_TOOLS_ERROR',
+        message: 'Failed to get MCP tools: $e',
+      );
+    }
+  }
+
+  /// Validate MCP connection
+  Future<Map<String, dynamic>> validateMCPConnection({
+    required String serverName,
+    required String url,
+    required String transport,
+  }) async {
+    try {
+      final result = await _channel.invokeMethod('validateMCPConnection', {
+        'serverName': serverName,
+        'url': url,
+        'transport': transport,
+      });
+
+      return Map<String, dynamic>.from(result as Map);
+    } catch (e) {
+      throw PlatformException(
+        code: 'MCP_VALIDATE_ERROR',
+        message: 'Failed to validate MCP connection: $e',
+      );
+    }
+  }
+
   /// Execute MCP tool
   Future<Map<String, dynamic>> executeMCPTool({
-    required String serverId,
-    required String toolId,
-    required Map<String, dynamic> parameters,
+    required String serverName,
+    required String toolName,
+    required Map<String, dynamic> arguments,
   }) async {
     try {
       final result = await _channel.invokeMethod('executeMCPTool', {
-        'serverId': serverId,
-        'toolId': toolId,
-        'parameters': parameters,
+        'serverName': serverName,
+        'toolName': toolName,
+        'arguments': arguments,
       });
-      
+
       return Map<String, dynamic>.from(result as Map);
     } catch (e) {
       throw PlatformException(

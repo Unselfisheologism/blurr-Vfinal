@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 import '../state/workflow_state.dart';
 import '../models/workflow_node.dart';
 import '../models/node_definitions.dart';
+import '../services/mcp_server_manager.dart';
+import '../models/mcp_server.dart';
 
 class NodeInspector extends StatelessWidget {
   const NodeInspector({super.key});
@@ -781,32 +783,146 @@ class NodeInspector extends StatelessWidget {
   }
 
   List<Widget> _buildMcpActionProperties(BuildContext context, WorkflowNode node) {
-    return [
+    final mcpManager = MCPServerManager.instance;
+    final servers = mcpManager.servers;
+
+    String selectedServer = node.data['serverName'] ?? '';
+    String selectedTool = node.data['toolName'] ?? '';
+    String argumentsJson = node.data['arguments']?.toString() ?? '{}';
+    int timeout = node.data['timeout'] ?? 30;
+
+    MCPServerConnection? getSelectedServer() {
+      if (selectedServer.isEmpty) return null;
+      return mcpManager.getServer(selectedServer);
+    }
+
+    List<String> getToolNames() {
+      final server = getSelectedServer();
+      if (server == null) return [];
+      return server.tools.map((t) => t.name).toList();
+    }
+
+    String? getToolDescription() {
+      final server = getSelectedServer();
+      if (server == null) return null;
+      final tool = server.tools.firstWhere(
+        (t) => t.name == selectedTool,
+        orElse: () => McpTool(name: '', inputSchema: {}),
+      );
+      return tool.description;
+    }
+
+    List<Widget> properties = [
       _buildSection('MCP Action', [
-        _buildTextField(
-          label: 'Server Name',
-          value: node.data['serverName'] ?? '',
+        // Server selector
+        DropdownButtonFormField<String>(
+          value: selectedServer.isEmpty ? null : selectedServer,
+          decoration: InputDecoration(
+            labelText: 'Server',
+            hintText: 'Select MCP Server',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.cloud),
+          ),
+          items: servers.map((server) {
+            return DropdownMenuItem(
+              value: server.name,
+              child: Row(
+                children: [
+                  Icon(
+                    server.connected ? Icons.cloud_done : Icons.cloud_off,
+                    size: 16,
+                    color: server.connected ? Colors.green : Colors.grey,
+                  ),
+                  SizedBox(width: 8),
+                  Text(server.name),
+                  if (server.connected)
+                    Text(
+                      ' (${server.tools.length} tools)',
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                ],
+              ),
+            );
+          }).toList(),
           onChanged: (value) {
-            context.read<WorkflowState>().updateNodeData(node.id, {'serverName': value});
+            if (value != null) {
+              context.read<WorkflowState>().updateNodeData(
+                node.id,
+                {'serverName': value, 'toolName': ''}, // Reset tool when server changes
+              );
+            }
           },
         ),
-        _buildTextField(
-          label: 'Tool Name',
-          value: node.data['toolName'] ?? '',
+        SizedBox(height: 12),
+
+        // Tool selector
+        DropdownButtonFormField<String>(
+          value: selectedTool.isEmpty ? null : selectedTool,
+          decoration: InputDecoration(
+            labelText: 'Tool',
+            hintText: 'Select Tool',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.build),
+          ),
+          items: getToolNames().map((toolName) {
+            return DropdownMenuItem(
+              value: toolName,
+              child: Text(toolName),
+            );
+          }).toList(),
           onChanged: (value) {
-            context.read<WorkflowState>().updateNodeData(node.id, {'toolName': value});
+            if (value != null) {
+              context.read<WorkflowState>().updateNodeData(
+                node.id,
+                {'toolName': value},
+              );
+            }
           },
+          enabled: selectedServer.isNotEmpty,
         ),
+        SizedBox(height: 8),
+
+        // Tool description
+        if (getToolDescription() != null)
+          Padding(
+            padding: EdgeInsets.only(bottom: 12),
+            child: Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                border: Border.all(color: Colors.blue.shade200),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.info_outline, color: Colors.blue, size: 16),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      getToolDescription()!,
+                      style: TextStyle(fontSize: 12, color: Colors.blue.shade900),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+        // Arguments
         _buildMultilineTextField(
           label: 'Arguments (JSON)',
-          value: node.data['arguments']?.toString() ?? '{}',
+          value: argumentsJson,
+          maxLines: 8,
           onChanged: (value) {
             context.read<WorkflowState>().updateNodeData(node.id, {'arguments': value});
           },
         ),
+
+        // Timeout
         _buildTextField(
           label: 'Timeout (seconds)',
-          value: (node.data['timeout'] ?? 30).toString(),
+          value: timeout.toString(),
           keyboardType: TextInputType.number,
           onChanged: (value) {
             context.read<WorkflowState>().updateNodeData(
@@ -815,8 +931,63 @@ class NodeInspector extends StatelessWidget {
             );
           },
         ),
+
+        // Test button
+        SizedBox(height: 8),
+        ElevatedButton.icon(
+          onPressed: selectedServer.isNotEmpty && selectedTool.isNotEmpty
+              ? () async {
+                  try {
+                    final result = await mcpManager.executeToolAction(
+                      serverName: selectedServer,
+                      toolName: selectedTool,
+                      arguments: _parseJson(argumentsJson),
+                    );
+
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            result['success'] == true
+                                ? 'Tool executed successfully'
+                                : 'Tool execution failed',
+                          ),
+                          backgroundColor:
+                              result['success'] == true ? Colors.green : Colors.red,
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error: $e'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  }
+                }
+              : null,
+          icon: Icon(Icons.play_arrow),
+          label: Text('Test Tool'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+          ),
+        ),
       ]),
     ];
+
+    return properties;
+  }
+
+  Map<String, dynamic> _parseJson(String jsonString) {
+    try {
+      return Map<String, dynamic>.from(jsonDecode(jsonString) as Map);
+    } catch (e) {
+      return {};
+    }
   }
 
   Widget _buildGenericProperties(BuildContext context, WorkflowNode node) {

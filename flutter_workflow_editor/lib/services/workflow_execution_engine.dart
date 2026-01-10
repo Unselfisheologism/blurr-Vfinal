@@ -360,21 +360,35 @@ class WorkflowExecutionEngine extends ChangeNotifier {
   
   /// Execute MCP action node
   Future<NodeExecutionResult> _executeMCPAction(WorkflowNode node) async {
-    final serverId = node.data['server'] as String?;
-    final toolId = node.data['tool'] as String?;
-    final parameters = node.data['parameters'] as Map<String, dynamic>? ?? {};
-    
-    if (serverId == null || toolId == null) {
-      return NodeExecutionResult.failure('Server or tool not selected');
+    final serverName = node.data['serverName'] as String?;
+    final toolName = node.data['toolName'] as String?;
+    final argumentsJson = node.data['arguments'] as String? ?? '{}';
+    final timeout = node.data['timeout'] as int? ?? 30;
+
+    if (serverName == null || serverName.isEmpty) {
+      return NodeExecutionResult.failure('MCP server not selected');
     }
-    
+
+    if (toolName == null || toolName.isEmpty) {
+      return NodeExecutionResult.failure('MCP tool not selected');
+    }
+
+    Map<String, dynamic> arguments;
+    try {
+      arguments = Map<String, dynamic>.from(
+        jsonDecode(argumentsJson) as Map
+      );
+    } catch (e) {
+      return NodeExecutionResult.failure('Invalid arguments JSON: $e');
+    }
+
     try {
       final result = await platformBridge.executeMCPTool(
-        serverId: serverId,
-        toolId: toolId,
-        parameters: parameters,
+        serverName: serverName,
+        toolName: toolName,
+        arguments: arguments,
       );
-      
+
       return NodeExecutionResult.success(result);
     } catch (e) {
       return NodeExecutionResult.failure('MCP action failed: $e');
