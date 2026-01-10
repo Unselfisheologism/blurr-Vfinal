@@ -100,12 +100,12 @@ class _NodePaletteState extends State<NodePalette> {
   }
   
   Widget _buildNodeList() {
-    var nodes = NodeDefinitions.core;
-    
+    var nodes = NodeDefinitions.all;
+
     if (_selectedCategory != null) {
       nodes = nodes.where((n) => n.category == _selectedCategory).toList();
     }
-    
+
     if (_searchQuery.isNotEmpty) {
       nodes = nodes.where((n) =>
         n.displayName.toLowerCase().contains(_searchQuery) ||
@@ -113,7 +113,7 @@ class _NodePaletteState extends State<NodePalette> {
         n.tags.any((t) => t.toLowerCase().contains(_searchQuery))
       ).toList();
     }
-    
+
     if (nodes.isEmpty) {
       return Center(
         child: Column(
@@ -126,7 +126,7 @@ class _NodePaletteState extends State<NodePalette> {
         ),
       );
     }
-    
+
     return ListView.builder(
       padding: const EdgeInsets.all(8),
       itemCount: nodes.length,

@@ -309,6 +309,12 @@ class WorkflowNodeFlowController {
       case 'unified_shell':
         return [input('in', 'Code')];
 
+      case 'http_request':
+        return [
+          input('url', 'URL'),
+          input('headers', 'Headers'),
+        ];
+
       case 'if_else':
         return [input('in', 'Condition')];
 
@@ -317,6 +323,30 @@ class WorkflowNodeFlowController {
           input('list', 'List'),
           input('body', 'Body'),
         ];
+
+      case 'set_variable':
+        return [
+          input('name', 'Name'),
+          input('value', 'Value'),
+        ];
+
+      case 'get_variable':
+        return [input('name', 'Name')];
+
+      case 'ui_automation':
+        return [
+          input('selector', 'Selector'),
+          input('action', 'Action'),
+        ];
+
+      case 'phone_control':
+        return [
+          input('feature', 'Feature'),
+          input('params', 'Params'),
+        ];
+
+      case 'error_handler':
+        return [input('error', 'Error')];
 
       case 'output':
         return [input('in', 'Data')];
@@ -345,6 +375,12 @@ class WorkflowNodeFlowController {
       case 'unified_shell':
         return [output('out', 'Result')];
 
+      case 'http_request':
+        return [
+          output('response', 'Response'),
+          output('status', 'Status'),
+        ];
+
       case 'if_else':
         return [
           output('true', 'True'),
@@ -355,6 +391,30 @@ class WorkflowNodeFlowController {
         return [
           output('each', 'Each Item'),
           output('completed', 'Completed'),
+        ];
+
+      case 'set_variable':
+        return [output('saved', 'Saved')];
+
+      case 'get_variable':
+        return [output('value', 'Value')];
+
+      case 'ui_automation':
+        return [
+          output('result', 'Result'),
+          output('error', 'Error'),
+        ];
+
+      case 'phone_control':
+        return [
+          output('result', 'Result'),
+          output('error', 'Error'),
+        ];
+
+      case 'error_handler':
+        return [
+          output('handle', 'Handle'),
+          output('rethrow', 'Rethrow'),
         ];
 
       case 'output':

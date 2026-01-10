@@ -342,6 +342,271 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
           ),
         );
 
+      case 'schedule_trigger':
+        final cron = node.data.parameters['cron']?.toString() ?? '0 0 * * *';
+        final enabled = node.data.parameters['enabled'] ?? true;
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    enabled ? Icons.check_circle : Icons.cancel,
+                    size: 14,
+                    color: enabled ? Colors.green : Colors.grey,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    enabled ? 'Enabled' : 'Disabled',
+                    style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Schedule',
+                style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+              ),
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.04),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  cron,
+                  style: const TextStyle(fontSize: 10, fontFamily: 'monospace'),
+                ),
+              ),
+            ],
+          ),
+        );
+
+      case 'webhook_trigger':
+        final webhookUrl = node.data.parameters['webhookUrl']?.toString() ?? 'Not generated';
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Webhook URL',
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+              ),
+              const SizedBox(height: 6),
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.04),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  webhookUrl.length > 30 ? '${webhookUrl.substring(0, 30)}...' : webhookUrl,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 9, fontFamily: 'monospace'),
+                ),
+              ),
+            ],
+          ),
+        );
+
+      case 'http_request':
+        final method = node.data.parameters['method']?.toString() ?? 'GET';
+        final url = node.data.parameters['url']?.toString() ?? '';
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: _getMethodColor(method),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      method,
+                      style: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      url.isEmpty ? 'No URL' : url,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 11),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+
+      case 'set_variable':
+        final varName = node.data.parameters['key']?.toString() ?? 'unnamed';
+        final scope = node.data.parameters['scope']?.toString() ?? 'local';
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.save, size: 14, color: Colors.green.shade700),
+                  const SizedBox(width: 6),
+                  Text(
+                    varName,
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Scope: $scope',
+                style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+              ),
+            ],
+          ),
+        );
+
+      case 'get_variable':
+        final varName = node.data.parameters['key']?.toString() ?? 'unnamed';
+        final defaultValue = node.data.parameters['default']?.toString() ?? '';
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.file_download, size: 14, color: Colors.lime.shade700),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      varName,
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+              if (defaultValue.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Text(
+                  'Default: $defaultValue',
+                  style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+                ),
+              ],
+            ],
+          ),
+        );
+
+      case 'ui_automation':
+        final selector = node.data.parameters['selector']?.toString() ?? '';
+        final action = node.data.parameters['action']?.toString() ?? 'click';
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.touch_app, size: 14, color: Colors.blue.shade700),
+                  const SizedBox(width: 6),
+                  Text(
+                    action.toUpperCase(),
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Selector',
+                style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+              ),
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.04),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  selector.isEmpty ? 'No selector' : selector,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 9, fontFamily: 'monospace'),
+                ),
+              ),
+            ],
+          ),
+        );
+
+      case 'phone_control':
+        final feature = node.data.parameters['feature']?.toString() ?? 'call';
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.phone_android, size: 14, color: Colors.cyan.shade700),
+                  const SizedBox(width: 6),
+                  Text(
+                    feature.toUpperCase(),
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Control phone feature',
+                style: TextStyle(fontSize: 10, color: Colors.grey.shade700),
+              ),
+            ],
+          ),
+        );
+
+      case 'error_handler':
+        final errorType = node.data.parameters['errorType']?.toString() ?? 'all';
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.error_outline, size: 14, color: Colors.red.shade700),
+                  const SizedBox(width: 6),
+                  Text(
+                    errorType.toUpperCase(),
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Handle or rethrow errors',
+                style: TextStyle(fontSize: 10, color: Colors.grey.shade700),
+              ),
+            ],
+          ),
+        );
+
       default:
         return Padding(
           padding: const EdgeInsets.all(8),
@@ -350,6 +615,23 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
             style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
           ),
         );
+    }
+  }
+
+  Color _getMethodColor(String method) {
+    switch (method.toUpperCase()) {
+      case 'GET':
+        return Colors.green;
+      case 'POST':
+        return Colors.blue;
+      case 'PUT':
+        return Colors.orange;
+      case 'DELETE':
+        return Colors.red;
+      case 'PATCH':
+        return Colors.purple;
+      default:
+        return Colors.grey;
     }
   }
 

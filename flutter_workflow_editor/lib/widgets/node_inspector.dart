@@ -134,6 +134,16 @@ class NodeInspector extends StatelessWidget {
         return _buildSetVariableProperties(context, node);
       case 'schedule_trigger':
         return _buildScheduleTriggerProperties(context, node);
+      case 'webhook_trigger':
+        return _buildWebhookTriggerProperties(context, node);
+      case 'get_variable':
+        return _buildGetVariableProperties(context, node);
+      case 'ui_automation':
+        return _buildUiAutomationProperties(context, node);
+      case 'phone_control':
+        return _buildPhoneControlProperties(context, node);
+      case 'error_handler':
+        return _buildErrorHandlerProperties(context, node);
       default:
         return [_buildGenericProperties(context, node)];
     }
@@ -233,7 +243,15 @@ class NodeInspector extends StatelessWidget {
             context.read<WorkflowState>().updateNodeData(node.id, {'key': value});
           },
         ),
-        _buildTextField(
+        _buildDropdown(
+          label: 'Scope',
+          value: node.data['scope'] ?? 'local',
+          items: ['local', 'global'],
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'scope': value});
+          },
+        ),
+        _buildMultilineTextField(
           label: 'Value',
           value: node.data['value']?.toString() ?? '',
           onChanged: (value) {
@@ -264,7 +282,121 @@ class NodeInspector extends StatelessWidget {
       ]),
     ];
   }
-  
+
+  List<Widget> _buildWebhookTriggerProperties(BuildContext context, WorkflowNode node) {
+    return [
+      _buildSection('Webhook Configuration', [
+        _buildTextField(
+          label: 'Webhook URL',
+          value: node.data['webhookUrl'] ?? 'Not generated',
+          readOnly: true,
+        ),
+        _buildDropdown(
+          label: 'Method',
+          value: node.data['method'] ?? 'POST',
+          items: ['GET', 'POST', 'PUT', 'DELETE'],
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'method': value});
+          },
+        ),
+      ]),
+    ];
+  }
+
+  List<Widget> _buildGetVariableProperties(BuildContext context, WorkflowNode node) {
+    return [
+      _buildSection('Variable', [
+        _buildTextField(
+          label: 'Variable Name',
+          value: node.data['key'] ?? '',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'key': value});
+          },
+        ),
+        _buildTextField(
+          label: 'Default Value',
+          value: node.data['default']?.toString() ?? '',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'default': value});
+          },
+        ),
+      ]),
+    ];
+  }
+
+  List<Widget> _buildUiAutomationProperties(BuildContext context, WorkflowNode node) {
+    return [
+      _buildSection('UI Automation', [
+        _buildDropdown(
+          label: 'Action Type',
+          value: node.data['action'] ?? 'click',
+          items: ['click', 'type', 'scroll', 'wait', 'swipe', 'tap'],
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'action': value});
+          },
+        ),
+        _buildTextField(
+          label: 'Element Selector',
+          value: node.data['selector'] ?? '',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'selector': value});
+          },
+        ),
+        _buildTextField(
+          label: 'Action Value',
+          value: node.data['value']?.toString() ?? '',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'value': value});
+          },
+        ),
+      ]),
+    ];
+  }
+
+  List<Widget> _buildPhoneControlProperties(BuildContext context, WorkflowNode node) {
+    return [
+      _buildSection('Phone Control', [
+        _buildDropdown(
+          label: 'Control Type',
+          value: node.data['feature'] ?? 'call',
+          items: ['call', 'sms', 'vibrate', 'volume', 'wifi', 'bluetooth', 'location'],
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'feature': value});
+          },
+        ),
+        _buildMultilineTextField(
+          label: 'Parameters (JSON)',
+          value: node.data['params']?.toString() ?? '{}',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'params': value});
+          },
+        ),
+      ]),
+    ];
+  }
+
+  List<Widget> _buildErrorHandlerProperties(BuildContext context, WorkflowNode node) {
+    return [
+      _buildSection('Error Handling', [
+        _buildDropdown(
+          label: 'Error Type',
+          value: node.data['errorType'] ?? 'all',
+          items: ['all', 'network', 'timeout', 'validation', 'custom'],
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'errorType': value});
+          },
+        ),
+        _buildMultilineTextField(
+          label: 'Recovery Action',
+          value: node.data['recoveryAction']?.toString() ?? '',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'recoveryAction': value});
+          },
+        ),
+      ]),
+    ];
+  }
+
   Widget _buildGenericProperties(BuildContext context, WorkflowNode node) {
     return _buildSection('Properties', [
       Text('No specific properties for this node type', style: TextStyle(color: Colors.grey[600])),
