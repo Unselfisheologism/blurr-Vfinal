@@ -3,6 +3,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:convert';
 import '../state/workflow_state.dart';
 import '../models/workflow_node.dart';
 import '../models/node_definitions.dart';
@@ -870,15 +871,16 @@ class NodeInspector extends StatelessWidget {
               child: Text(toolName),
             );
           }).toList(),
-          onChanged: (value) {
-            if (value != null) {
-              context.read<WorkflowState>().updateNodeData(
-                node.id,
-                {'toolName': value},
-              );
-            }
-          },
-          enabled: selectedServer.isNotEmpty,
+          onChanged: selectedServer.isEmpty
+              ? null
+              : (value) {
+                  if (value != null) {
+                    context.read<WorkflowState>().updateNodeData(
+                      node.id,
+                      {'toolName': value},
+                    );
+                  }
+                },
         ),
         SizedBox(height: 8),
 
