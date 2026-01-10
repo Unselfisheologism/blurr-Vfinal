@@ -124,6 +124,8 @@ class NodeInspector extends StatelessWidget {
   
   List<Widget> _buildNodeSpecificProperties(BuildContext context, WorkflowNode node) {
     switch (node.type) {
+      case 'manual_trigger':
+        return _buildManualTriggerProperties(context, node);
       case 'unified_shell':
         return _buildUnifiedShellProperties(context, node);
       case 'http_request':
@@ -144,6 +146,30 @@ class NodeInspector extends StatelessWidget {
         return _buildPhoneControlProperties(context, node);
       case 'error_handler':
         return _buildErrorHandlerProperties(context, node);
+      case 'loop':
+        return _buildLoopProperties(context, node);
+      case 'output':
+        return _buildOutputProperties(context, node);
+      case 'ai_assist':
+        return _buildAiAssistProperties(context, node);
+      case 'llm_call':
+        return _buildLlmCallProperties(context, node);
+      case 'switch':
+        return _buildSwitchProperties(context, node);
+      case 'merge':
+        return _buildMergeProperties(context, node);
+      case 'retry':
+        return _buildRetryProperties(context, node);
+      case 'function':
+        return _buildFunctionProperties(context, node);
+      case 'transform_data':
+        return _buildTransformDataProperties(context, node);
+      case 'notification':
+        return _buildNotificationProperties(context, node);
+      case 'composio_action':
+        return _buildComposioActionProperties(context, node);
+      case 'mcp_action':
+        return _buildMcpActionProperties(context, node);
       default:
         return [_buildGenericProperties(context, node)];
     }
@@ -391,6 +417,402 @@ class NodeInspector extends StatelessWidget {
           value: node.data['recoveryAction']?.toString() ?? '',
           onChanged: (value) {
             context.read<WorkflowState>().updateNodeData(node.id, {'recoveryAction': value});
+          },
+        ),
+      ]),
+    ];
+  }
+
+  List<Widget> _buildManualTriggerProperties(BuildContext context, WorkflowNode node) {
+    return [
+      _buildSection('Trigger Information', [
+        const Text('This node starts the workflow manually when triggered from the dashboard or via API.',
+          style: TextStyle(fontSize: 14),
+        ),
+      ]),
+    ];
+  }
+
+  List<Widget> _buildLoopProperties(BuildContext context, WorkflowNode node) {
+    return [
+      _buildSection('Loop Configuration', [
+        _buildTextField(
+          label: 'Collection Variable',
+          value: node.data['collection'] ?? '',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'collection': value});
+          },
+        ),
+        _buildTextField(
+          label: 'Item Variable Name',
+          value: node.data['itemVariable'] ?? 'item',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'itemVariable': value});
+          },
+        ),
+        _buildDropdown(
+          label: 'Iterate Over',
+          value: node.data['type'] ?? 'array',
+          items: ['array', 'object'],
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'type': value});
+          },
+        ),
+      ]),
+    ];
+  }
+
+  List<Widget> _buildOutputProperties(BuildContext context, WorkflowNode node) {
+    return [
+      _buildSection('Output Settings', [
+        _buildDropdown(
+          label: 'Output Format',
+          value: node.data['format'] ?? 'json',
+          items: ['json', 'text', 'structured'],
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'format': value});
+          },
+        ),
+        _buildTextField(
+          label: 'Label',
+          value: node.data['label'] ?? '',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'label': value});
+          },
+        ),
+        _buildSwitch(
+          label: 'Include Metadata',
+          value: node.data['includeMetadata'] ?? false,
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'includeMetadata': value});
+          },
+        ),
+      ]),
+    ];
+  }
+
+  List<Widget> _buildAiAssistProperties(BuildContext context, WorkflowNode node) {
+    return [
+      _buildSection('AI Assistant', [
+        _buildTextField(
+          label: 'Task Description',
+          value: node.data['task'] ?? '',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'task': value});
+          },
+        ),
+        _buildMultilineTextField(
+          label: 'Context',
+          value: node.data['context'] ?? '',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'context': value});
+          },
+        ),
+        _buildDropdown(
+          label: 'Model Selection',
+          value: node.data['model'] ?? 'gpt-4',
+          items: ['gpt-4', 'gpt-3.5-turbo', 'claude-3-opus', 'claude-3-sonnet', 'llama-3'],
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'model': value});
+          },
+        ),
+      ]),
+    ];
+  }
+
+  List<Widget> _buildLlmCallProperties(BuildContext context, WorkflowNode node) {
+    return [
+      _buildSection('LLM Configuration', [
+        _buildMultilineTextField(
+          label: 'Prompt',
+          value: node.data['prompt'] ?? '',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'prompt': value});
+          },
+        ),
+        _buildDropdown(
+          label: 'Model',
+          value: node.data['model'] ?? 'gpt-4',
+          items: ['gpt-4', 'gpt-3.5-turbo', 'claude-3-opus', 'claude-3-sonnet'],
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'model': value});
+          },
+        ),
+        _buildTextField(
+          label: 'Temperature (0-2)',
+          value: (node.data['temperature'] ?? 0.7).toString(),
+          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(
+              node.id,
+              {'temperature': double.tryParse(value) ?? 0.7},
+            );
+          },
+        ),
+        _buildTextField(
+          label: 'Max Tokens',
+          value: (node.data['maxTokens'] ?? 1000).toString(),
+          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(
+              node.id,
+              {'maxTokens': int.tryParse(value) ?? 1000},
+            );
+          },
+        ),
+      ]),
+    ];
+  }
+
+  List<Widget> _buildSwitchProperties(BuildContext context, WorkflowNode node) {
+    return [
+      _buildSection('Switch Logic', [
+        _buildTextField(
+          label: 'Expression',
+          value: node.data['expression'] ?? '',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'expression': value});
+          },
+        ),
+        _buildTextField(
+          label: 'Number of Cases',
+          value: (node.data['caseCount'] ?? 3).toString(),
+          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(
+              node.id,
+              {'caseCount': int.tryParse(value) ?? 3},
+            );
+          },
+        ),
+        _buildMultilineTextField(
+          label: 'Case Values (JSON List)',
+          value: node.data['caseValues']?.toString() ?? '[]',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'caseValues': value});
+          },
+          maxLines: 5,
+        ),
+      ]),
+    ];
+  }
+
+  List<Widget> _buildMergeProperties(BuildContext context, WorkflowNode node) {
+    return [
+      _buildSection('Merge Configuration', [
+        _buildDropdown(
+          label: 'Merge Strategy',
+          value: node.data['strategy'] ?? 'first-success',
+          items: ['first-success', 'all', 'any', 'sequential'],
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'strategy': value});
+          },
+        ),
+        _buildSwitch(
+          label: 'Wait For All',
+          value: node.data['waitForAll'] ?? true,
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'waitForAll': value});
+          },
+        ),
+      ]),
+    ];
+  }
+
+  List<Widget> _buildRetryProperties(BuildContext context, WorkflowNode node) {
+    return [
+      _buildSection('Retry Policy', [
+        _buildTextField(
+          label: 'Max Attempts',
+          value: (node.data['maxAttempts'] ?? 3).toString(),
+          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(
+              node.id,
+              {'maxAttempts': int.tryParse(value) ?? 3},
+            );
+          },
+        ),
+        _buildDropdown(
+          label: 'Backoff Strategy',
+          value: node.data['backoffStrategy'] ?? 'none',
+          items: ['none', 'linear', 'exponential'],
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'backoffStrategy': value});
+          },
+        ),
+        _buildTextField(
+          label: 'Backoff Delay (ms)',
+          value: (node.data['backoffDelay'] ?? 1000).toString(),
+          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(
+              node.id,
+              {'backoffDelay': int.tryParse(value) ?? 1000},
+            );
+          },
+        ),
+      ]),
+    ];
+  }
+
+  List<Widget> _buildFunctionProperties(BuildContext context, WorkflowNode node) {
+    return [
+      _buildSection('Function Details', [
+        _buildTextField(
+          label: 'Function Name',
+          value: node.data['functionName'] ?? '',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'functionName': value});
+          },
+        ),
+        _buildDropdown(
+          label: 'Language',
+          value: node.data['language'] ?? 'python',
+          items: ['python', 'javascript', 'typescript', 'go', 'rust'],
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'language': value});
+          },
+        ),
+        _buildMultilineTextField(
+          label: 'Parameters (JSON)',
+          value: node.data['parameters']?.toString() ?? '{}',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'parameters': value});
+          },
+        ),
+      ]),
+    ];
+  }
+
+  List<Widget> _buildTransformDataProperties(BuildContext context, WorkflowNode node) {
+    return [
+      _buildSection('Transformation', [
+        _buildDropdown(
+          label: 'Transform Type',
+          value: node.data['transformType'] ?? 'map',
+          items: ['map', 'filter', 'reduce', 'flatten', 'group'],
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'transformType': value});
+          },
+        ),
+        _buildMultilineTextField(
+          label: 'Mapping Rules (JSON)',
+          value: node.data['mappingRules']?.toString() ?? '{}',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'mappingRules': value});
+          },
+        ),
+        _buildDropdown(
+          label: 'Input Format',
+          value: node.data['inputFormat'] ?? 'json',
+          items: ['json', 'csv', 'xml'],
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'inputFormat': value});
+          },
+        ),
+      ]),
+    ];
+  }
+
+  List<Widget> _buildNotificationProperties(BuildContext context, WorkflowNode node) {
+    return [
+      _buildSection('Notification Settings', [
+        _buildDropdown(
+          label: 'Notification Type',
+          value: node.data['type'] ?? 'email',
+          items: ['email', 'sms', 'push', 'slack', 'webhook'],
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'type': value});
+          },
+        ),
+        _buildTextField(
+          label: 'Title',
+          value: node.data['title'] ?? '',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'title': value});
+          },
+        ),
+        _buildMultilineTextField(
+          label: 'Message',
+          value: node.data['message'] ?? '',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'message': value});
+          },
+        ),
+        _buildTextField(
+          label: 'Recipients / Channel',
+          value: node.data['recipients'] ?? '',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'recipients': value});
+          },
+        ),
+      ]),
+    ];
+  }
+
+  List<Widget> _buildComposioActionProperties(BuildContext context, WorkflowNode node) {
+    return [
+      _buildSection('Composio Action', [
+        _buildDropdown(
+          label: 'Tool Selection',
+          value: node.data['tool'] ?? 'github',
+          items: ['github', 'slack', 'google-calendar', 'notion', 'jira'],
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'tool': value});
+          },
+        ),
+        _buildTextField(
+          label: 'Action Type',
+          value: node.data['actionType'] ?? '',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'actionType': value});
+          },
+        ),
+        _buildMultilineTextField(
+          label: 'Parameters (JSON)',
+          value: node.data['parameters']?.toString() ?? '{}',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'parameters': value});
+          },
+        ),
+      ]),
+    ];
+  }
+
+  List<Widget> _buildMcpActionProperties(BuildContext context, WorkflowNode node) {
+    return [
+      _buildSection('MCP Action', [
+        _buildTextField(
+          label: 'Server Name',
+          value: node.data['serverName'] ?? '',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'serverName': value});
+          },
+        ),
+        _buildTextField(
+          label: 'Tool Name',
+          value: node.data['toolName'] ?? '',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'toolName': value});
+          },
+        ),
+        _buildMultilineTextField(
+          label: 'Arguments (JSON)',
+          value: node.data['arguments']?.toString() ?? '{}',
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'arguments': value});
+          },
+        ),
+        _buildTextField(
+          label: 'Timeout (seconds)',
+          value: (node.data['timeout'] ?? 30).toString(),
+          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(
+              node.id,
+              {'timeout': int.tryParse(value) ?? 30},
+            );
           },
         ),
       ]),
