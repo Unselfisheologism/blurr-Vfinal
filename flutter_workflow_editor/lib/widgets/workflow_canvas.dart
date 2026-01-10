@@ -5,6 +5,9 @@ library;
 import 'package:flutter/material.dart';
 import 'package:vyuh_node_flow/vyuh_node_flow.dart';
 import 'package:provider/provider.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
+import 'dart:convert';
 import '../state/workflow_state.dart';
 import '../state/node_flow_controller.dart';
 import '../state/provider_mobx_adapter.dart';
@@ -63,14 +66,22 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
       builder: (context, workflowState, child) {
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surface,
-          body: Stack(
-            children: [
-              // Node flow editor
-              _buildNodeFlowEditor(context),
+          body: LayoutBuilder(
+            builder: (context, constraints) {
+              return Stack(
+                children: [
+                  // Node flow editor - constrained to available space
+                  SizedBox(
+                    width: constraints.maxWidth,
+                    height: constraints.maxHeight,
+                    child: _buildNodeFlowEditor(context),
+                  ),
 
-              // Overlay controls
-              _buildOverlays(context),
-            ],
+                  // Overlay controls - positioned within bounds
+                  _buildOverlays(context, constraints),
+                ],
+              );
+            },
           ),
         );
       },
@@ -101,13 +112,13 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
       ),
       connectionTheme: base.connectionTheme.copyWith(
         style: ConnectionStyles.smoothstep,
-        color: theme.colorScheme.primary,
-        strokeWidth: 2.0,
-        selectedStrokeWidth: 3.0,
-        highlightColor: theme.colorScheme.primary.withOpacity(0.7),
+        color: theme.colorScheme.primary.withOpacity(0.8),
+        strokeWidth: 3.0, // Increased from 2.0 for better visibility
+        selectedStrokeWidth: 4.0, // Increased from 3.0
+        highlightColor: theme.colorScheme.secondary,
       ),
       portTheme: base.portTheme.copyWith(
-        size: const Size(10, 10),
+        size: const Size(12, 12), // Increased from 10x10 for better visibility
         highlightColor: theme.colorScheme.primary,
       ),
     );
@@ -954,11 +965,21 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
   }
 
   /// Build overlay controls
-  Widget _buildOverlays(BuildContext context) {
+  Widget _buildOverlays(BuildContext context, BoxConstraints constraints) {
+    // Ensure buttons stay within screen bounds
+    const buttonWidth = 60.0; // Approximate width of button column
+    const padding = 16.0;
+    
     return Positioned(
-      top: 16,
-      right: 16,
-      child: _buildControlButtons(context),
+      top: padding,
+      right: padding,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: buttonWidth,
+          maxHeight: constraints.maxHeight - (padding * 2),
+        ),
+        child: _buildControlButtons(context),
+      ),
     );
   }
 
@@ -1025,26 +1046,119 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
           IconButton(
             icon: const Icon(Icons.download),
             tooltip: 'Export Workflow',
-            onPressed: () async {
-              try {
-                await workflowState.exportWorkflow();
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Workflow exported')),
-                  );
-                }
-              } catch (e) {
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to export: $e')),
-                  );
-                }
-              }
-            },
+            onPressed: () => _handleExport(context),
+          ),
+          // Import button
+          IconButton(
+            icon: const Icon(Icons.upload),
+            tooltip: 'Import Workflow',
+            onPressed: () => _handleImport(context),
           ),
         ],
       ),
     );
+  }
+
+  /// Handle workflow export to file
+  Future<void> _handleExport(BuildContext context) async {
+    final workflowState = context.read<WorkflowState>();
+    
+    try {
+      // Get workflow JSON
+      final jsonString = await workflowState.exportWorkflow();
+      
+      // Get workflow name for filename
+      final workflowName = workflowState.currentWorkflow?.name ?? 'workflow';
+      final sanitizedName = workflowName.replaceAll(RegExp(r'[^\w\s-]'), '');
+      final timestamp = DateTime.now().toIso8601String().split('T')[0];
+      final filename = '${sanitizedName}_$timestamp.json';
+      
+      // On Android, save to Downloads directory
+      if (Platform.isAndroid) {
+        final downloadsDir = Directory('/storage/emulated/0/Download');
+        if (!await downloadsDir.exists()) {
+          await downloadsDir.create(recursive: true);
+        }
+        
+        final file = File('${downloadsDir.path}/$filename');
+        await file.writeAsString(jsonString);
+        
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Workflow exported to Downloads/$filename')),
+          );
+        }
+      } else {
+        // For other platforms, use file picker
+        final outputFile = await FilePicker.platform.saveFile(
+          dialogTitle: 'Export Workflow',
+          fileName: filename,
+          type: FileType.custom,
+          allowedExtensions: ['json'],
+        );
+        
+        if (outputFile != null) {
+          final file = File(outputFile);
+          await file.writeAsString(jsonString);
+          
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Workflow exported successfully')),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to export: $e')),
+        );
+      }
+    }
+  }
+
+  /// Handle workflow import from file
+  Future<void> _handleImport(BuildContext context) async {
+    final workflowState = context.read<WorkflowState>();
+    
+    try {
+      // Pick file
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+        allowMultiple: false,
+      );
+      
+      if (result == null || result.files.isEmpty) {
+        return; // User cancelled
+      }
+      
+      // Read file
+      final file = File(result.files.first.path!);
+      final jsonString = await file.readAsString();
+      
+      // Validate JSON
+      try {
+        jsonDecode(jsonString);
+      } catch (e) {
+        throw Exception('Invalid JSON file');
+      }
+      
+      // Import workflow
+      await workflowState.importWorkflow(jsonString);
+      
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Workflow imported successfully')),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to import: $e')),
+        );
+      }
+    }
   }
 
 }
