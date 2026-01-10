@@ -2,7 +2,6 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'package:provider/provider.dart';
 import '../state/workflow_state.dart';
 import '../models/workflow_node.dart';
@@ -800,14 +799,14 @@ class NodeInspector extends StatelessWidget {
     List<String> getToolNames() {
       final server = getSelectedServer();
       if (server == null) return [];
-      return server.tools.map((t) => (t as McpTool).name).toList();
+      return server.tools.map((t) => t.name).toList();
     }
 
     String? getToolDescription() {
       final server = getSelectedServer();
       if (server == null) return null;
       final tool = server.tools.firstWhere(
-        (t) => (t as McpTool).name == selectedTool,
+        (t) => t.name == selectedTool,
         orElse: () => McpTool(name: '', inputSchema: {}),
       );
       return tool.description;
@@ -871,16 +870,15 @@ class NodeInspector extends StatelessWidget {
               child: Text(toolName),
             );
           }).toList(),
-          onChanged: selectedServer.isNotEmpty 
-            ? (value) {
-                if (value != null) {
-                  context.read<WorkflowState>().updateNodeData(
-                    node.id,
-                    {'toolName': value},
-                  );
-                }
-              }
-            : null,
+          onChanged: (value) {
+            if (value != null) {
+              context.read<WorkflowState>().updateNodeData(
+                node.id,
+                {'toolName': value},
+              );
+            }
+          },
+          enabled: selectedServer.isNotEmpty,
         ),
         SizedBox(height: 8),
 
