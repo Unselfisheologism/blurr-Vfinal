@@ -5,6 +5,12 @@ import com.blurr.voice.tools.UnifiedShellTool
 import com.blurr.voice.integrations.ComposioClient
 import com.blurr.voice.integrations.ComposioIntegrationManager
 import com.blurr.voice.mcp.MCPClient
+import com.blurr.voice.mcp.MCPTransport
+import com.blurr.voice.mcp.HttpMCPTransport
+import com.blurr.voice.mcp.SSEMCPTransport
+import com.blurr.voice.mcp.StdioMCPTransport
+import com.blurr.voice.mcp.MCPTransportConfig
+import com.blurr.voice.data.MCPServerPreferences
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
@@ -27,9 +33,10 @@ class WorkflowEditorHandler(
     private val composioManager: ComposioIntegrationManager?,
     private val mcpClient: MCPClient?
 ) : MethodChannel.MethodCallHandler {
-    
+
     private val scope = CoroutineScope(Dispatchers.Main)
-    
+    private val mcpPreferences = MCPServerPreferences(context)
+
     companion object {
         private const val TAG = "WorkflowEditorHandler"
         private const val WORKFLOWS_DIR = "workflows"
@@ -42,11 +49,15 @@ class WorkflowEditorHandler(
                     "getPlatformVersion" -> {
                         result.success("Android ${android.os.Build.VERSION.RELEASE}")
                     }
-                    
+
                     "executeUnifiedShell" -> executeUnifiedShell(call, result)
                     "getComposioTools" -> getComposioTools(result)
                     "executeComposioAction" -> executeComposioAction(call, result)
                     "getMCPServers" -> getMCPServers(result)
+                    "connectMCPServer" -> connectMCPServer(call, result)
+                    "disconnectMCPServer" -> disconnectMCPServer(call, result)
+                    "getMCPTools" -> getMCPTools(call, result)
+                    "validateMCPConnection" -> validateMCPConnection(call, result)
                     "executeMCPTool" -> executeMCPTool(call, result)
                     "executeHttpRequest" -> executeHttpRequest(call, result)
                     "executePhoneControl" -> executePhoneControl(call, result)
@@ -60,7 +71,7 @@ class WorkflowEditorHandler(
                     "exportWorkflow" -> exportWorkflow(call, result)
                     "importWorkflow" -> importWorkflow(call, result)
                     "getWorkflowTemplates" -> getWorkflowTemplates(result)
-                    
+
                     else -> result.notImplemented()
                 }
             } catch (e: Exception) {
@@ -198,30 +209,260 @@ class WorkflowEditorHandler(
             }
         }
     }
-    
-    private suspend fun executeMCPTool(call: MethodCall, result: MethodChannel.Result) {
+
+    private suspend fun connectMCPServer(call: MethodCall, result: MethodChannel.Result) {
         withContext(Dispatchers.IO) {
             try {
-                val serverId = call.argument<String>("serverId") ?: throw IllegalArgumentException("serverId required")
-                val toolId = call.argument<String>("toolId") ?: throw IllegalArgumentException("toolId required")
-                val parameters = call.argument<Map<String, Any>>("parameters") ?: emptyMap()
-                
+                val serverName = call.argument<String>("serverName") ?: throw IllegalArgumentException("serverName required")
+                val url = call.argument<String>("url") ?: throw IllegalArgumentException("url required")
+                val transport = call.argument<String>("transport") ?: "http"
+
                 if (mcpClient == null) {
                     result.error("MCP_ERROR", "MCP client not available", null)
                     return@withContext
                 }
-                
-                // Get the tool and execute it
-                val toolName = "$serverId:$toolId"
-                val tool = mcpClient.getTool(toolName)
-                
-                if (tool == null) {
-                    result.error("MCP_ERROR", "Tool not found: $toolName", null)
+
+                // Create transport based on type
+                val mcpTransport: MCPTransport = when (transport.lowercase()) {
+                    "http" -> {
+                        val config = MCPTransportConfig.Http(
+                            url = url,
+                            timeoutMs = 30000
+                        )
+                        HttpMCPTransport(config)
+                    }
+                    "sse" -> {
+                        val config = MCPTransportConfig.Http(
+                            url = url,
+                            timeoutMs = 30000
+                        )
+                        SSEMCPTransport(config)
+                    }
+                    "stdio" -> {
+                        val config = MCPTransportConfig.Stdio(
+                            command = url,
+                            args = emptyList()
+                        )
+                        StdioMCPTransport(config)
+                    }
+                    else -> throw IllegalArgumentException("Unknown transport type: $transport")
+                }
+
+                // Connect to MCP server
+                val connectResult = mcpClient.connect(serverName, mcpTransport)
+
+                if (connectResult.isFailure) {
+                    val error = connectResult.exceptionOrNull()
+                    result.error("MCP_ERROR", error?.message ?: "Connection failed", null)
                     return@withContext
                 }
-                
-                val toolResult = tool.execute(parameters, emptyList())
-                
+
+                // Save server configuration
+                val serverConfig = MCPServerPreferences.MCPServerConfig(
+                    name = serverName,
+                    url = url,
+                    transport = transport,
+                    enabled = true,
+                    lastConnected = System.currentTimeMillis()
+                )
+                mcpPreferences.saveServer(serverConfig)
+
+                // Get tool count
+                val serverInfo = mcpClient.getServerInfo(serverName)
+                val toolCount = serverInfo?.toolCount ?: 0
+
+                result.success(mapOf(
+                    "success" to true,
+                    "message" to "Connected successfully",
+                    "toolCount" to toolCount,
+                    "serverInfo" to mapOf(
+                        "name" to serverName,
+                        "version" to serverInfo?.serverVersion,
+                        "protocolVersion" to serverInfo?.protocolVersion
+                    )
+                ))
+
+                Log.d(TAG, "Connected to MCP server: $serverName with $toolCount tools")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to connect MCP server", e)
+                result.error("MCP_ERROR", e.message, null)
+            }
+        }
+    }
+
+    private suspend fun disconnectMCPServer(call: MethodCall, result: MethodChannel.Result) {
+        withContext(Dispatchers.IO) {
+            try {
+                val serverName = call.argument<String>("serverName") ?: throw IllegalArgumentException("serverName required")
+
+                if (mcpClient == null) {
+                    result.error("MCP_ERROR", "MCP client not available", null)
+                    return@withContext
+                }
+
+                // Disconnect from MCP server
+                mcpClient.disconnect(serverName)
+
+                // Remove from preferences
+                mcpPreferences.removeServer(serverName)
+
+                result.success(mapOf(
+                    "success" to true,
+                    "message" to "Disconnected successfully"
+                ))
+
+                Log.d(TAG, "Disconnected from MCP server: $serverName")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to disconnect MCP server", e)
+                result.error("MCP_ERROR", e.message, null)
+            }
+        }
+    }
+
+    private suspend fun getMCPTools(call: MethodCall, result: MethodChannel.Result) {
+        withContext(Dispatchers.IO) {
+            try {
+                val serverName = call.argument<String>("serverName")
+
+                if (mcpClient == null) {
+                    result.error("MCP_ERROR", "MCP client not available", null)
+                    return@withContext
+                }
+
+                val tools = if (serverName != null) {
+                    // Get tools from specific server
+                    val serverTools = mcpClient.getAllToolsRaw()
+                        .filter { it is com.blurr.voice.mcp.MCPToolAdapter }
+                        .map { it as com.blurr.voice.mcp.MCPToolAdapter }
+                        .filter { it.mcpServer.server.name == serverName }
+                    serverTools.map { toolAdapter ->
+                        mapOf(
+                            "name" to toolAdapter.mcpTool.name,
+                            "description" to (toolAdapter.mcpTool.description ?: ""),
+                            "inputSchema" to toolAdapter.mcpTool.inputSchema,
+                            "outputSchema" to (toolAdapter.mcpTool.outputSchema ?: emptyMap<String, Any>())
+                        )
+                    }
+                } else {
+                    // Get all tools
+                    val allTools = mcpClient.getAllToolsRaw()
+                        .filter { it is com.blurr.voice.mcp.MCPToolAdapter }
+                        .map { it as com.blurr.voice.mcp.MCPToolAdapter }
+                    allTools.map { toolAdapter ->
+                        mapOf(
+                            "name" to toolAdapter.mcpTool.name,
+                            "description" to (toolAdapter.mcpTool.description ?: ""),
+                            "inputSchema" to toolAdapter.mcpTool.inputSchema,
+                            "outputSchema" to (toolAdapter.mcpTool.outputSchema ?: emptyMap<String, Any>())
+                        )
+                    }
+                }
+
+                result.success(tools)
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to get MCP tools", e)
+                result.success(emptyList<Map<String, Any>>())
+            }
+        }
+    }
+
+    private suspend fun validateMCPConnection(call: MethodCall, result: MethodChannel.Result) {
+        withContext(Dispatchers.IO) {
+            try {
+                val serverName = call.argument<String>("serverName") ?: throw IllegalArgumentException("serverName required")
+                val url = call.argument<String>("url") ?: throw IllegalArgumentException("url required")
+                val transport = call.argument<String>("transport") ?: "http"
+
+                // Create test transport
+                val mcpTransport: MCPTransport = when (transport.lowercase()) {
+                    "http" -> {
+                        val config = MCPTransportConfig.Http(
+                            url = url,
+                            timeoutMs = 30000
+                        )
+                        HttpMCPTransport(config)
+                    }
+                    "sse" -> {
+                        val config = MCPTransportConfig.Http(
+                            url = url,
+                            timeoutMs = 30000
+                        )
+                        SSEMCPTransport(config)
+                    }
+                    "stdio" -> {
+                        val config = MCPTransportConfig.Stdio(
+                            command = url,
+                            args = emptyList()
+                        )
+                        StdioMCPTransport(config)
+                    }
+                    else -> throw IllegalArgumentException("Unknown transport type: $transport")
+                }
+
+                if (mcpClient == null) {
+                    result.error("MCP_ERROR", "MCP client not available", null)
+                    return@withContext
+                }
+
+                // Test connection with temporary name
+                val testName = "__test_${System.currentTimeMillis()}"
+                val connectResult = mcpClient.connect(testName, mcpTransport)
+
+                if (connectResult.isFailure) {
+                    val error = connectResult.exceptionOrNull()
+                    result.error("MCP_ERROR", error?.message ?: "Connection failed", null)
+                    return@withContext
+                }
+
+                // Get server info
+                val serverInfo = mcpClient.getServerInfo(testName)
+                val toolCount = serverInfo?.toolCount ?: 0
+
+                // Disconnect test connection
+                mcpClient.disconnect(testName)
+
+                result.success(mapOf(
+                    "success" to true,
+                    "message" to "Connection validated",
+                    "serverInfo" to mapOf(
+                        "name" to serverName,
+                        "version" to serverInfo?.serverVersion,
+                        "protocolVersion" to serverInfo?.protocolVersion
+                    ),
+                    "toolCount" to toolCount
+                ))
+
+                Log.d(TAG, "Validated MCP connection: $serverName")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to validate MCP connection", e)
+                result.error("MCP_ERROR", e.message, null)
+            }
+        }
+    }
+    
+    private suspend fun executeMCPTool(call: MethodCall, result: MethodChannel.Result) {
+        withContext(Dispatchers.IO) {
+            try {
+                val serverName = call.argument<String>("serverName") ?: throw IllegalArgumentException("serverName required")
+                val toolName = call.argument<String>("toolName") ?: throw IllegalArgumentException("toolName required")
+                val arguments = call.argument<Map<String, Any>>("arguments") ?: emptyMap()
+
+                if (mcpClient == null) {
+                    result.error("MCP_ERROR", "MCP client not available", null)
+                    return@withContext
+                }
+
+                // Get the tool and execute it
+                val fullToolName = "$serverName:$toolName"
+                val tool = mcpClient.getTool(fullToolName)
+
+                if (tool == null) {
+                    result.error("MCP_ERROR", "Tool not found: $fullToolName", null)
+                    return@withContext
+                }
+
+                val toolResult = tool.execute(arguments, emptyList())
+
                 result.success(mapOf(
                     "success" to toolResult.success,
                     "result" to (toolResult.data ?: toolResult.getDataAsString()),

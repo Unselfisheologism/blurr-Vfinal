@@ -482,13 +482,16 @@ class MainActivity : BaseNavigationActivity() {
             
             // Initialize WorkflowEditorHandler with dependencies
             val unifiedShellTool = com.blurr.voice.tools.UnifiedShellTool(this)
-            
+
+            // Create MCP client for workflow editor
+            val workflowMCPClient = com.blurr.voice.mcp.MCPClient(this)
+
             workflowEditorHandler = WorkflowEditorHandler(
                 context = this,
                 unifiedShellTool = unifiedShellTool,
                 composioClient = null, // TODO: Get from AgentService if available
                 composioManager = null, // TODO: Get from AgentService if available
-                mcpClient = null // TODO: Get from AgentService if available
+                mcpClient = workflowMCPClient
             )
             
             // Setup method channel

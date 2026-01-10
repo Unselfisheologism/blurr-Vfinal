@@ -13,6 +13,8 @@ import '../state/node_flow_controller.dart';
 import '../state/provider_mobx_adapter.dart';
 import '../models/node_definitions.dart';
 import '../models/workflow_node_data.dart';
+import '../services/mcp_server_manager.dart';
+import '../dialogs/mcp_server_dialog.dart';
 
 /// Main workflow canvas using vyuh_node_flow
 class WorkflowCanvas extends StatefulWidget {
@@ -986,6 +988,7 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
   /// Build control buttons
   Widget _buildControlButtons(BuildContext context) {
     final workflowState = context.watch<WorkflowState>();
+    final mcpManager = context.watch<MCPServerManager>();
 
     return Card(
       elevation: 4,
@@ -1019,6 +1022,40 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
             onPressed: () {
               workflowState.clearExecutionLogs();
             },
+          ),
+          const Divider(height: 1),
+          // MCP Servers button
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.cloud_queue),
+                tooltip: 'MCP Servers',
+                onPressed: () => _showMCPServerDialog(context),
+              ),
+              if (mcpManager.serverCount > 0)
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    constraints: BoxConstraints(minWidth: 18),
+                    child: Text(
+                      '${mcpManager.serverCount}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
           ),
           const Divider(height: 1),
           // Save button
@@ -1120,7 +1157,7 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
   /// Handle workflow import from file
   Future<void> _handleImport(BuildContext context) async {
     final workflowState = context.read<WorkflowState>();
-    
+
     try {
       // Pick file
       final result = await FilePicker.platform.pickFiles(
@@ -1128,25 +1165,25 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
         allowedExtensions: ['json'],
         allowMultiple: false,
       );
-      
+
       if (result == null || result.files.isEmpty) {
         return; // User cancelled
       }
-      
+
       // Read file
       final file = File(result.files.first.path!);
       final jsonString = await file.readAsString();
-      
+
       // Validate JSON
       try {
         jsonDecode(jsonString);
       } catch (e) {
         throw Exception('Invalid JSON file');
       }
-      
+
       // Import workflow
       await workflowState.importWorkflow(jsonString);
-      
+
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Workflow imported successfully')),
@@ -1158,6 +1195,21 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
           SnackBar(content: Text('Failed to import: $e')),
         );
       }
+    }
+  }
+
+  /// Show MCP Server dialog
+  Future<void> _showMCPServerDialog(BuildContext context) async {
+    final mcpManager = MCPServerManager.instance;
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => MCPServerDialog(),
+    );
+
+    if (result == true) {
+      // Server was added, refresh UI
+      mcpManager.notifyListeners();
     }
   }
 
