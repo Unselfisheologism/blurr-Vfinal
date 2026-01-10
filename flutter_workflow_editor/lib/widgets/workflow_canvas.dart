@@ -607,6 +607,324 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
           ),
         );
 
+      case 'ai_assist':
+        final task = node.data.parameters['task']?.toString() ?? '';
+        final model = node.data.parameters['model']?.toString() ?? 'default';
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.psychology, size: 14, color: Colors.purple.shade700),
+                  const SizedBox(width: 6),
+                  Text(
+                    model.toUpperCase(),
+                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Task',
+                style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+              ),
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.04),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  task.isEmpty ? 'No task' : task,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 9),
+                ),
+              ),
+            ],
+          ),
+        );
+
+      case 'llm_call':
+        final model = node.data.parameters['model']?.toString() ?? 'gpt-4';
+        final temperature = node.data.parameters['temperature']?.toString() ?? '0.7';
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.chat_bubble_outline, size: 14, color: Colors.deepPurple.shade700),
+                  const SizedBox(width: 6),
+                  Text(
+                    model.toUpperCase(),
+                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Temp: $temperature',
+                style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+              ),
+            ],
+          ),
+        );
+
+      case 'switch':
+        final expression = node.data.parameters['expression']?.toString() ?? '';
+        final cases = node.data.parameters['cases'] as List? ?? [];
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.alt_route, size: 14, color: Colors.pink.shade700),
+                  const SizedBox(width: 6),
+                  Text(
+                    'SWITCH',
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                expression.isEmpty ? 'No expression' : expression,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 9),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Cases: ${cases.length}',
+                style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+              ),
+            ],
+          ),
+        );
+
+      case 'merge':
+        final strategy = node.data.parameters['strategy']?.toString() ?? 'concat';
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.merge, size: 14, color: Colors.blueGrey.shade700),
+                  const SizedBox(width: 6),
+                  Text(
+                    'MERGE',
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Strategy: $strategy',
+                style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Combine 3 inputs',
+                style: TextStyle(fontSize: 9, color: Colors.grey.shade500),
+              ),
+            ],
+          ),
+        );
+
+      case 'retry':
+        final maxAttempts = node.data.parameters['maxAttempts']?.toString() ?? '3';
+        final backoff = node.data.parameters['backoff']?.toString() ?? 'linear';
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.refresh, size: 14, color: Colors.orange.shade700),
+                  const SizedBox(width: 6),
+                  Text(
+                    'RETRY',
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Max: $maxAttempts | $backoff',
+                style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+              ),
+            ],
+          ),
+        );
+
+      case 'notification':
+        final type = node.data.parameters['type']?.toString() ?? 'toast';
+        final title = node.data.parameters['title']?.toString() ?? '';
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.notifications, size: 14, color: Colors.lightBlue.shade700),
+                  const SizedBox(width: 6),
+                  Text(
+                    type.toUpperCase(),
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                title.isEmpty ? 'No title' : title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 10),
+              ),
+            ],
+          ),
+        );
+
+      case 'function':
+        final functionName = node.data.parameters['functionName']?.toString() ?? 'unnamed';
+        final language = node.data.parameters['language']?.toString() ?? 'js';
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.functions, size: 14, color: Colors.amber.shade700),
+                  const SizedBox(width: 6),
+                  Text(
+                    functionName,
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Language: $language',
+                style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '3 parameters',
+                style: TextStyle(fontSize: 9, color: Colors.grey.shade500),
+              ),
+            ],
+          ),
+        );
+
+      case 'transform_data':
+        final transformType = node.data.parameters['transformType']?.toString() ?? 'map';
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.transform, size: 14, color: Colors.amber.shade800),
+                  const SizedBox(width: 6),
+                  Text(
+                    'TRANSFORM',
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Type: $transformType',
+                style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+              ),
+            ],
+          ),
+        );
+
+      case 'composio_action':
+        final actionType = node.data.parameters['actionType']?.toString() ?? 'unknown';
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.extension, size: 14, color: Colors.deepPurple.shade700),
+                  const SizedBox(width: 6),
+                  Text(
+                    'COMPOSIO',
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                actionType.isEmpty ? 'No action' : actionType,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 10),
+              ),
+            ],
+          ),
+        );
+
+      case 'mcp_action':
+        final toolName = node.data.parameters['toolName']?.toString() ?? 'unknown';
+        final serverName = node.data.parameters['serverName']?.toString() ?? 'default';
+
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.integration_instructions, size: 14, color: Colors.indigo.shade700),
+                  const SizedBox(width: 6),
+                  Text(
+                    'MCP',
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                toolName.isEmpty ? 'No tool' : toolName,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 10),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Server: $serverName',
+                style: TextStyle(fontSize: 9, color: Colors.grey.shade600),
+              ),
+            ],
+          ),
+        );
+
       default:
         return Padding(
           padding: const EdgeInsets.all(8),

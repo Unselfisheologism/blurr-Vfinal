@@ -348,6 +348,59 @@ class WorkflowNodeFlowController {
       case 'error_handler':
         return [input('error', 'Error')];
 
+      case 'ai_assist':
+        return [
+          input('task', 'Task'),
+          input('context', 'Context'),
+        ];
+
+      case 'llm_call':
+        return [
+          input('prompt', 'Prompt'),
+          input('model', 'Model'),
+        ];
+
+      case 'switch':
+        return [input('value', 'Value')];
+
+      case 'merge':
+        return [
+          input('merge1', 'Merge 1'),
+          input('merge2', 'Merge 2'),
+          input('merge3', 'Merge 3'),
+        ];
+
+      case 'retry':
+        return [input('operation', 'Operation')];
+
+      case 'notification':
+        return [
+          input('title', 'Title'),
+          input('message', 'Message'),
+        ];
+
+      case 'function':
+        return [
+          input('param1', 'Param 1'),
+          input('param2', 'Param 2'),
+          input('param3', 'Param 3'),
+        ];
+
+      case 'transform_data':
+        return [input('data', 'Data')];
+
+      case 'composio_action':
+        return [
+          input('action_type', 'Action'),
+          input('parameters', 'Parameters'),
+        ];
+
+      case 'mcp_action':
+        return [
+          input('tool_name', 'Tool'),
+          input('arguments', 'Arguments'),
+        ];
+
       case 'output':
         return [input('in', 'Data')];
 
@@ -415,6 +468,59 @@ class WorkflowNodeFlowController {
         return [
           output('handle', 'Handle'),
           output('rethrow', 'Rethrow'),
+        ];
+
+      case 'ai_assist':
+        return [
+          output('result', 'Result'),
+          output('error', 'Error'),
+        ];
+
+      case 'llm_call':
+        return [
+          output('response', 'Response'),
+          output('tokens', 'Tokens'),
+        ];
+
+      case 'switch':
+        return [
+          output('case1', 'Case 1'),
+          output('case2', 'Case 2'),
+          output('case3', 'Case 3'),
+          output('default', 'Default'),
+        ];
+
+      case 'merge':
+        return [output('merged', 'Merged')];
+
+      case 'retry':
+        return [
+          output('success', 'Success'),
+          output('failed', 'Failed'),
+        ];
+
+      case 'notification':
+        return [output('sent', 'Sent')];
+
+      case 'function':
+        return [
+          output('result', 'Result'),
+          output('error', 'Error'),
+        ];
+
+      case 'transform_data':
+        return [output('transformed', 'Transformed')];
+
+      case 'composio_action':
+        return [
+          output('result', 'Result'),
+          output('error', 'Error'),
+        ];
+
+      case 'mcp_action':
+        return [
+          output('result', 'Result'),
+          output('error', 'Error'),
         ];
 
       case 'output':
