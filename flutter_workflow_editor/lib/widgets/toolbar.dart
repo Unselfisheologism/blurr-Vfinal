@@ -1,10 +1,13 @@
 /// Workflow toolbar with actions
 library;
 
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../state/workflow_state.dart';
-import '../services/workflow_execution_engine.dart';
 
 class WorkflowToolbar extends StatelessWidget {
   final VoidCallback onTogglePalette;
@@ -167,23 +170,98 @@ class WorkflowToolbar extends StatelessWidget {
   
   Future<void> _exportWorkflow(BuildContext context) async {
     final state = context.read<WorkflowState>();
-    await state.exportWorkflow();
-    
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Workflow exported')),
-      );
+
+    try {
+      final jsonString = await state.exportWorkflow();
+
+      final workflowName = state.currentWorkflow?.name ?? 'workflow';
+      final sanitizedName = workflowName.replaceAll(RegExp(r'[^\w\s-]'), '');
+      final timestamp = DateTime.now().toIso8601String().split('T')[0];
+      final filename = '${sanitizedName}_$timestamp.json';
+
+      if (Platform.isAndroid) {
+        final downloadsDir = Directory('/storage/emulated/0/Download');
+        if (!await downloadsDir.exists()) {
+          await downloadsDir.create(recursive: true);
+        }
+
+        final file = File('${downloadsDir.path}/$filename');
+        await file.writeAsString(jsonString);
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Workflow exported to Downloads/$filename')),
+          );
+        }
+      } else {
+        final outputFile = await FilePicker.platform.saveFile(
+          dialogTitle: 'Export Workflow',
+          fileName: filename,
+          type: FileType.custom,
+          allowedExtensions: ['json'],
+        );
+
+        if (outputFile == null) return;
+
+        final file = File(outputFile);
+        await file.writeAsString(jsonString);
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Workflow exported successfully')),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to export: $e')),
+        );
+      }
     }
   }
-  
+
   Future<void> _importWorkflow(BuildContext context) async {
     final state = context.read<WorkflowState>();
-    await state.importWorkflow();
-    
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Workflow imported')),
+
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+        allowMultiple: false,
       );
+
+      if (result == null || result.files.isEmpty) {
+        return;
+      }
+
+      final filePath = result.files.first.path;
+      if (filePath == null) {
+        throw Exception('Invalid file selection');
+      }
+
+      final file = File(filePath);
+      final jsonString = await file.readAsString();
+
+      try {
+        jsonDecode(jsonString);
+      } catch (_) {
+        throw Exception('Invalid JSON file');
+      }
+
+      await state.importWorkflow(jsonString);
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Workflow imported successfully')),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to import: $e')),
+        );
+      }
     }
   }
   
