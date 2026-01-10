@@ -1,6 +1,10 @@
-def flutterPluginVersion = "managed"
+plugins {
+    id "com.android.application"
+    id "org.jetbrains.kotlin.android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
 
-apply plugin: "com.android.application"
+def flutterPluginVersion = "managed"
 
 android {
     namespace = "com.blurr.voice.workflow.host"
@@ -9,6 +13,15 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/java'
+        main.java.srcDirs += 'src/main/kotlin'
     }
 
     defaultConfig {
@@ -20,6 +33,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.debug
+        }
         profile {
             initWith debug
         }
@@ -29,9 +45,10 @@ android {
             signingConfig = signingConfigs.debug
         }
     }
-
 }
+
 buildDir = new File(rootProject.projectDir, "../build/host")
+
 dependencies {
     implementation(project(":flutter"))
     implementation(fileTree(dir: "libs", include: ["*.jar"]))
