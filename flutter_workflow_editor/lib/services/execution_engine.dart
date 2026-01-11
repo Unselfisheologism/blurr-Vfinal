@@ -1,5 +1,5 @@
 /// Workflow execution engine
-/// Handles workflow execution with async support for Composio/MCP
+/// Handles workflow execution with async support
 library;
 
 import 'dart:async';
@@ -19,7 +19,7 @@ class ExecutionEngine {
   
   AppState? _appState;
   
-  /// Set app state for Composio/MCP execution
+  /// Set app state for execution
   void setAppState(AppState appState) {
     _appState = appState;
   }
@@ -99,9 +99,6 @@ class ExecutionEngine {
 
       case NodeType.composioAction:
         return await _executeComposioAction(node, context);
-
-      case NodeType.mcpAction:
-        return await _executeMcpAction(node, context);
 
       case NodeType.googleWorkspaceAction:
         return await _executeGoogleWorkspaceAction(node, context);
@@ -198,32 +195,6 @@ class ExecutionEngine {
       toolId: toolId,
       actionName: actionName,
       parameters: parameters,
-    );
-  }
-
-  /// Execute MCP action
-  Future<dynamic> _executeMcpAction(
-    WorkflowNode node,
-    ExecutionContext context,
-  ) async {
-    if (_appState == null) {
-      throw Exception('AppState not initialized');
-    }
-
-    final serverId = node.parameters['server'] as String?;
-    final method = node.parameters['method'] as String?;
-
-    if (serverId == null || method == null) {
-      throw Exception('MCP action requires server and method parameters');
-    }
-
-    // Resolve parameters with variables/expressions
-    final params = _resolveParameters(node.parameters['params'] ?? {}, context);
-
-    return await _appState!.executeMcpRequest(
-      serverId: serverId,
-      method: method,
-      params: params,
     );
   }
 

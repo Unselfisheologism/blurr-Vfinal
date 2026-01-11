@@ -6,8 +6,6 @@ import 'package:provider/provider.dart';
 import '../state/workflow_state.dart';
 import '../models/workflow_node.dart';
 import '../models/node_definitions.dart';
-import '../services/mcp_server_manager.dart';
-import '../models/mcp_server.dart';
 
 class NodeInspector extends StatelessWidget {
   const NodeInspector({super.key});
@@ -170,8 +168,6 @@ class NodeInspector extends StatelessWidget {
         return _buildNotificationProperties(context, node);
       case 'composio_action':
         return _buildComposioActionProperties(context, node);
-      case 'mcp_action':
-        return _buildMcpActionProperties(context, node);
       default:
         return [_buildGenericProperties(context, node)];
     }
@@ -503,19 +499,18 @@ class NodeInspector extends StatelessWidget {
             context.read<WorkflowState>().updateNodeData(node.id, {'task': value});
           },
         ),
-        _buildMultilineTextField(
-          label: 'Context',
-          value: node.data['context'] ?? '',
+        _buildTextField(
+          label: 'System Prompt',
+          value: node.data['systemPrompt'] ?? '',
           onChanged: (value) {
-            context.read<WorkflowState>().updateNodeData(node.id, {'context': value});
+            context.read<WorkflowState>().updateNodeData(node.id, {'systemPrompt': value});
           },
         ),
-        _buildDropdown(
-          label: 'Model Selection',
-          value: node.data['model'] ?? 'gpt-4',
-          items: ['gpt-4', 'gpt-3.5-turbo', 'claude-3-opus', 'claude-3-sonnet', 'llama-3'],
+        _buildMultilineTextField(
+          label: 'Context Data',
+          value: node.data['context']?.toString() ?? '',
           onChanged: (value) {
-            context.read<WorkflowState>().updateNodeData(node.id, {'model': value});
+            context.read<WorkflowState>().updateNodeData(node.id, {'context': value});
           },
         ),
       ]),
@@ -524,14 +519,7 @@ class NodeInspector extends StatelessWidget {
 
   List<Widget> _buildLlmCallProperties(BuildContext context, WorkflowNode node) {
     return [
-      _buildSection('LLM Configuration', [
-        _buildMultilineTextField(
-          label: 'Prompt',
-          value: node.data['prompt'] ?? '',
-          onChanged: (value) {
-            context.read<WorkflowState>().updateNodeData(node.id, {'prompt': value});
-          },
-        ),
+      _buildSection('LLM Call', [
         _buildDropdown(
           label: 'Model',
           value: node.data['model'] ?? 'gpt-4',
@@ -541,14 +529,10 @@ class NodeInspector extends StatelessWidget {
           },
         ),
         _buildTextField(
-          label: 'Temperature (0-2)',
-          value: (node.data['temperature'] ?? 0.7).toString(),
-          keyboardType: TextInputType.number,
+          label: 'Prompt',
+          value: node.data['prompt'] ?? '',
           onChanged: (value) {
-            context.read<WorkflowState>().updateNodeData(
-              node.id,
-              {'temperature': double.tryParse(value) ?? 0.7},
-            );
+            context.read<WorkflowState>().updateNodeData(node.id, {'prompt': value});
           },
         ),
         _buildTextField(
@@ -562,36 +546,36 @@ class NodeInspector extends StatelessWidget {
             );
           },
         ),
+        _buildTextField(
+          label: 'Temperature',
+          value: (node.data['temperature'] ?? 0.7).toString(),
+          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(
+              node.id,
+              {'temperature': double.tryParse(value) ?? 0.7},
+            );
+          },
+        ),
       ]),
     ];
   }
 
   List<Widget> _buildSwitchProperties(BuildContext context, WorkflowNode node) {
     return [
-      _buildSection('Switch Logic', [
+      _buildSection('Switch Configuration', [
         _buildTextField(
-          label: 'Expression',
-          value: node.data['expression'] ?? '',
+          label: 'Value to Evaluate',
+          value: node.data['value']?.toString() ?? '',
           onChanged: (value) {
-            context.read<WorkflowState>().updateNodeData(node.id, {'expression': value});
-          },
-        ),
-        _buildTextField(
-          label: 'Number of Cases',
-          value: (node.data['caseCount'] ?? 3).toString(),
-          keyboardType: TextInputType.number,
-          onChanged: (value) {
-            context.read<WorkflowState>().updateNodeData(
-              node.id,
-              {'caseCount': int.tryParse(value) ?? 3},
-            );
+            context.read<WorkflowState>().updateNodeData(node.id, {'value': value});
           },
         ),
         _buildMultilineTextField(
-          label: 'Case Values (JSON List)',
-          value: node.data['caseValues']?.toString() ?? '[]',
+          label: 'Cases (JSON)',
+          value: node.data['cases']?.toString() ?? '[]',
           onChanged: (value) {
-            context.read<WorkflowState>().updateNodeData(node.id, {'caseValues': value});
+            context.read<WorkflowState>().updateNodeData(node.id, {'cases': value});
           },
           maxLines: 5,
         ),
@@ -780,214 +764,6 @@ class NodeInspector extends StatelessWidget {
         ),
       ]),
     ];
-  }
-
-  List<Widget> _buildMcpActionProperties(BuildContext context, WorkflowNode node) {
-    final mcpManager = MCPServerManager.instance;
-    final servers = mcpManager.servers;
-
-    String selectedServer = node.data['serverName'] ?? '';
-    String selectedTool = node.data['toolName'] ?? '';
-    String argumentsJson = node.data['arguments']?.toString() ?? '{}';
-    int timeout = node.data['timeout'] ?? 30;
-
-    MCPServerConnection? getSelectedServer() {
-      if (selectedServer.isEmpty) return null;
-      return mcpManager.getServer(selectedServer);
-    }
-
-    List<String> getToolNames() {
-      final server = getSelectedServer();
-      if (server == null) return [];
-      return server.tools.map((t) => t.name).toList();
-    }
-
-    String? getToolDescription() {
-      final server = getSelectedServer();
-      if (server == null) return null;
-      final tool = server.tools.firstWhere(
-        (t) => t.name == selectedTool,
-        orElse: () => McpTool(name: '', inputSchema: {}),
-      );
-      return tool.description;
-    }
-
-    List<Widget> properties = [
-      _buildSection('MCP Action', [
-        // Server selector
-        DropdownButtonFormField<String>(
-          value: selectedServer.isEmpty ? null : selectedServer,
-          decoration: InputDecoration(
-            labelText: 'Server',
-            hintText: 'Select MCP Server',
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.cloud),
-          ),
-          items: servers.map((server) {
-            return DropdownMenuItem(
-              value: server.name,
-              child: Row(
-                children: [
-                  Icon(
-                    server.connected ? Icons.cloud_done : Icons.cloud_off,
-                    size: 16,
-                    color: server.connected ? Colors.green : Colors.grey,
-                  ),
-                  SizedBox(width: 8),
-                  Text(server.name),
-                  if (server.connected)
-                    Text(
-                      ' (${server.tools.length} tools)',
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
-                    ),
-                ],
-              ),
-            );
-          }).toList(),
-          onChanged: (value) {
-            if (value != null) {
-              context.read<WorkflowState>().updateNodeData(
-                node.id,
-                {'serverName': value, 'toolName': ''}, // Reset tool when server changes
-              );
-            }
-          },
-        ),
-        SizedBox(height: 12),
-
-        // Tool selector
-        DropdownButtonFormField<String>(
-          value: selectedTool.isEmpty ? null : selectedTool,
-          decoration: InputDecoration(
-            labelText: 'Tool',
-            hintText: 'Select Tool',
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.build),
-          ),
-          items: getToolNames().map((toolName) {
-            return DropdownMenuItem(
-              value: toolName,
-              child: Text(toolName),
-            );
-          }).toList(),
-          onChanged: (value) {
-            if (value != null) {
-              context.read<WorkflowState>().updateNodeData(
-                node.id,
-                {'toolName': value},
-              );
-            }
-          },
-          enabled: selectedServer.isNotEmpty,
-        ),
-        SizedBox(height: 8),
-
-        // Tool description
-        if (getToolDescription() != null)
-          Padding(
-            padding: EdgeInsets.only(bottom: 12),
-            child: Container(
-              padding: EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                border: Border.all(color: Colors.blue.shade200),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.info_outline, color: Colors.blue, size: 16),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      getToolDescription()!,
-                      style: TextStyle(fontSize: 12, color: Colors.blue.shade900),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-        // Arguments
-        _buildMultilineTextField(
-          label: 'Arguments (JSON)',
-          value: argumentsJson,
-          maxLines: 8,
-          onChanged: (value) {
-            context.read<WorkflowState>().updateNodeData(node.id, {'arguments': value});
-          },
-        ),
-
-        // Timeout
-        _buildTextField(
-          label: 'Timeout (seconds)',
-          value: timeout.toString(),
-          keyboardType: TextInputType.number,
-          onChanged: (value) {
-            context.read<WorkflowState>().updateNodeData(
-              node.id,
-              {'timeout': int.tryParse(value) ?? 30},
-            );
-          },
-        ),
-
-        // Test button
-        SizedBox(height: 8),
-        ElevatedButton.icon(
-          onPressed: selectedServer.isNotEmpty && selectedTool.isNotEmpty
-              ? () async {
-                  try {
-                    final result = await mcpManager.executeToolAction(
-                      serverName: selectedServer,
-                      toolName: selectedTool,
-                      arguments: _parseJson(argumentsJson),
-                    );
-
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            result['success'] == true
-                                ? 'Tool executed successfully'
-                                : 'Tool execution failed',
-                          ),
-                          backgroundColor:
-                              result['success'] == true ? Colors.green : Colors.red,
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Error: $e'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  }
-                }
-              : null,
-          icon: Icon(Icons.play_arrow),
-          label: Text('Test Tool'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue,
-          ),
-        ),
-      ]),
-    ];
-
-    return properties;
-  }
-
-  Map<String, dynamic> _parseJson(String jsonString) {
-    try {
-      return Map<String, dynamic>.from(jsonDecode(jsonString) as Map);
-    } catch (e) {
-      return {};
-    }
   }
 
   Widget _buildGenericProperties(BuildContext context, WorkflowNode node) {

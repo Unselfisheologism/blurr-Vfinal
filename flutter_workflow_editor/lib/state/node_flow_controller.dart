@@ -395,12 +395,6 @@ class WorkflowNodeFlowController {
           input('parameters', 'Parameters'),
         ];
 
-      case 'mcp_action':
-        return [
-          input('tool_name', 'Tool'),
-          input('arguments', 'Arguments'),
-        ];
-
       case 'output':
         return [input('in', 'Data')];
 
@@ -512,12 +506,6 @@ class WorkflowNodeFlowController {
         return [output('transformed', 'Transformed')];
 
       case 'composio_action':
-        return [
-          output('result', 'Result'),
-          output('error', 'Error'),
-        ];
-
-      case 'mcp_action':
         return [
           output('result', 'Result'),
           output('error', 'Error'),

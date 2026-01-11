@@ -106,16 +106,6 @@ class NodeDefinitions {
     tags: ['composio', 'integration', 'tools'],
   );
   
-  static const mcpActionNode = NodeDefinition(
-    id: 'mcp_action',
-    displayName: 'MCP Server',
-    description: 'Call MCP server tools',
-    category: NodeCategory.integration,
-    icon: Icons.integration_instructions,
-    color: Color(0xFF3F51B5),
-    tags: ['mcp', 'integration', 'server'],
-  );
-  
   // Logic nodes
   static const ifElseNode = NodeDefinition(
     id: 'if_else',
@@ -299,7 +289,6 @@ class NodeDefinitions {
     unifiedShellNode,
     httpRequestNode,
     composioActionNode,
-    mcpActionNode,
     ifElseNode,
     switchNode,
     loopNode,
