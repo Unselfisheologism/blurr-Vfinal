@@ -3,6 +3,7 @@ package com.blurr.voice.agents
 import android.content.Context
 import com.blurr.voice.core.providers.UniversalLLMService
 import com.blurr.voice.mcp.MCPClient
+import com.blurr.voice.mcp.sdk.MCPServerManager
 import com.blurr.voice.tools.ToolRegistry
 
 /**
@@ -43,6 +44,10 @@ object AgentFactory {
         val toolRegistry = ToolRegistry(context, confirmationHandler)
         
         val mcpClient = MCPClient(context)
+        
+        // Create MCPServerManager for managing MCP server connections
+        val mcpServerManager = MCPServerManager(context, mcpClient)
+        
         val conversationManager = ConversationManager(context)
         
         return UltraGeneralistAgent(
@@ -50,6 +55,7 @@ object AgentFactory {
             llmService = llmService,
             toolRegistry = toolRegistry,
             mcpClient = mcpClient,
+            mcpServerManager = mcpServerManager,
             conversationManager = conversationManager
         )
     }

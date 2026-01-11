@@ -8,11 +8,11 @@ import com.blurr.voice.core.providers.OpenRouterRequestOptions
 import com.blurr.voice.core.providers.ToolChoice
 import com.blurr.voice.core.providers.UniversalLLMService
 import com.blurr.voice.mcp.MCPClient
+import com.blurr.voice.mcp.sdk.MCPServerManager
 import com.blurr.voice.tools.Tool
 import com.blurr.voice.tools.ToolRegistry
 import com.blurr.voice.tools.ToolResult
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -32,12 +32,30 @@ class UltraGeneralistAgent(
     private val llmService: UniversalLLMService,
     private val toolRegistry: ToolRegistry,
     private val mcpClient: MCPClient,
+    private val mcpServerManager: MCPServerManager,
     private val conversationManager: ConversationManager
 ) {
     companion object {
         private const val TAG = "UltraGeneralistAgent"
         private const val MAX_TOOL_RETRIES = 2
         private const val MAX_PLAN_STEPS = 10
+    }
+    
+    /**
+     * Initialize the agent and load saved MCP servers
+     */
+    init {
+        // Load saved MCP servers and make them available to the agent
+        // This is done asynchronously to not block agent initialization
+        kotlinx.coroutines.GlobalScope.launch {
+            try {
+                Log.d(TAG, "Loading saved MCP servers...")
+                mcpServerManager.loadSavedServers()
+                Log.d(TAG, "MCP server manager initialized successfully")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to initialize MCP server manager", e)
+            }
+        }
     }
 
     /**
