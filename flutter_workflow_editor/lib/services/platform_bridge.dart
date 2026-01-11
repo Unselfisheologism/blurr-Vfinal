@@ -307,4 +307,128 @@ class PlatformBridge {
       return [];
     }
   }
+
+  /// Connect to MCP server
+  /// Returns: {success: bool, message: String, toolCount: int}
+  Future<Map<String, dynamic>> connectMCPServer({
+    required String serverName,
+    required String url,
+    required String transport, // 'http', 'sse', 'stdio'
+  }) async {
+    try {
+      final result = await _channel.invokeMethod('connectMCPServer', {
+        'serverName': serverName,
+        'url': url,
+        'transport': transport,
+      });
+      return Map<String, dynamic>.from(result as Map);
+    } on PlatformException catch (e) {
+      throw PlatformException(
+        code: e.code,
+        message: e.message,
+        details: e.details,
+      );
+    }
+  }
+
+  /// Disconnect from MCP server
+  /// Returns: {success: bool, message: String}
+  Future<Map<String, dynamic>> disconnectMCPServer(String serverName) async {
+    try {
+      final result = await _channel.invokeMethod('disconnectMCPServer', {
+        'serverName': serverName,
+      });
+      return Map<String, dynamic>.from(result as Map);
+    } on PlatformException catch (e) {
+      throw PlatformException(
+        code: e.code,
+        message: e.message,
+        details: e.details,
+      );
+    }
+  }
+
+  /// Get all connected MCP servers
+  /// Returns: List<{name, url, transport, connected, toolCount}>
+  Future<List<Map<String, dynamic>>> getMCPServersDetailed() async {
+    try {
+      final result = await _channel.invokeMethod('getMCPServers');
+      return List<Map<String, dynamic>>.from(
+        (result as List).map((e) => Map<String, dynamic>.from(e as Map))
+      );
+    } on PlatformException catch (e) {
+      throw PlatformException(
+        code: e.code,
+        message: e.message,
+        details: e.details,
+      );
+    }
+  }
+
+  /// Get MCP tools from server(s)
+  /// If serverName is provided, gets tools from that server only
+  /// Otherwise gets tools from all servers
+  /// Returns: List<{name, description, inputSchema, outputSchema, serverName}>
+  Future<List<Map<String, dynamic>>> getMCPTools({String? serverName}) async {
+    try {
+      final result = await _channel.invokeMethod('getMCPTools', {
+        'serverName': serverName,
+      });
+      return List<Map<String, dynamic>>.from(
+        (result as List).map((e) => Map<String, dynamic>.from(e as Map))
+      );
+    } on PlatformException catch (e) {
+      throw PlatformException(
+        code: e.code,
+        message: e.message,
+        details: e.details,
+      );
+    }
+  }
+
+  /// Execute MCP tool
+  /// Returns: {success: bool, result: dynamic, error: String?}
+  Future<Map<String, dynamic>> executeMCPTool({
+    required String serverName,
+    required String toolName,
+    required Map<String, dynamic> arguments,
+  }) async {
+    try {
+      final result = await _channel.invokeMethod('executeMCPTool', {
+        'serverName': serverName,
+        'toolName': toolName,
+        'arguments': arguments,
+      });
+      return Map<String, dynamic>.from(result as Map);
+    } on PlatformException catch (e) {
+      throw PlatformException(
+        code: e.code,
+        message: e.message,
+        details: e.details,
+      );
+    }
+  }
+
+  /// Validate MCP connection before saving
+  /// Returns: {success: bool, message: String, serverInfo: {name, version, protocolVersion}?}
+  Future<Map<String, dynamic>> validateMCPConnection({
+    required String serverName,
+    required String url,
+    required String transport,
+  }) async {
+    try {
+      final result = await _channel.invokeMethod('validateMCPConnection', {
+        'serverName': serverName,
+        'url': url,
+        'transport': transport,
+      });
+      return Map<String, dynamic>.from(result as Map);
+    } on PlatformException catch (e) {
+      throw PlatformException(
+        code: e.code,
+        message: e.message,
+        details: e.details,
+      );
+    }
+  }
 }
