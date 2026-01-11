@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.0"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.2.21"
 }
 
 val localProperties = Properties()
@@ -184,6 +184,17 @@ dependencies {
     // From: https://github.com/moizhassan/ffmpeg-kit-android-16kb
     implementation("com.moizhassan.ffmpeg:ffmpeg-kit-16kb:6.1.1")
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
+    
+    // MCP Kotlin SDK - Temporarily disabled due to Kotlin version compatibility
+    // Will be re-enabled once Kotlin version is upgraded to 2.2.x
+    // implementation("io.modelcontextprotocol:kotlin-sdk:0.8.1")
+    
+    // Ktor dependencies required for MCP SDK (when re-enabled)
+    // implementation(platform("io.ktor:ktor-bom:3.2.3"))
+    // implementation("io.ktor:ktor-client-core")
+    // implementation("io.ktor:ktor-client-cio")
+    // implementation("io.ktor:ktor-client-content-negotiation")
+    // implementation("io.ktor:ktor-serialization-kotlinx-json")
     
     // Flutter module integration
     // Use the real Flutter module when it's available/configured; otherwise fall back to stubs
