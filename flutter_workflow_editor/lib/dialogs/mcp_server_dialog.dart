@@ -213,7 +213,7 @@ class _MCPServerDialogState extends State<MCPServerDialog> {
                 decoration: InputDecoration(
                   labelText: 'Server Name',
                   hintText: 'e.g., My Filesystem Server',
-                  prefixIcon: Icon(Icons.storage),
+                  prefixIcon: Icon(Icons.server),
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
@@ -222,7 +222,7 @@ class _MCPServerDialogState extends State<MCPServerDialog> {
                   }
                   return null;
                 },
-                enabled: !_isConnecting && !_isValidating,
+                enabled: !isConnecting && !isValidating,
               ),
               SizedBox(height: 16),
 
@@ -257,7 +257,7 @@ class _MCPServerDialogState extends State<MCPServerDialog> {
                     ),
                   );
                 }).toList(),
-                onChanged: _isConnecting || _isValidating || isEditing
+                onChanged: _isConnecting || isValidating || isEditing
                     ? null
                     : (value) {
                         if (value != null) {
@@ -292,7 +292,7 @@ class _MCPServerDialogState extends State<MCPServerDialog> {
                     }
                     return null;
                   },
-                  enabled: !_isConnecting && !_isValidating,
+                  enabled: !isConnecting && !isValidating,
                 ),
               ] else ...[
                 Row(
@@ -312,13 +312,13 @@ class _MCPServerDialogState extends State<MCPServerDialog> {
                           }
                           return null;
                         },
-                        enabled: !_isConnecting && !_isValidating,
+                        enabled: !isConnecting && !isValidating,
                       ),
                     ),
                     SizedBox(width: 8),
                     IconButton(
                       icon: Icon(Icons.folder_open),
-                      onPressed: _isConnecting || _isValidating
+                      onPressed: _isConnecting || isValidating
                           ? null
                           : _pickStdioProcess,
                       tooltip: 'Browse for executable',

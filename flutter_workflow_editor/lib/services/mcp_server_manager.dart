@@ -13,7 +13,7 @@ class MCPServerConnection {
   final String url;
   final String transport; // 'http', 'sse', 'stdio'
   final bool connected;
-  final List<McpTool> tools;
+  final List<MCPTool> tools;
   final Map<String, dynamic>? serverInfo;
 
   MCPServerConnection({
@@ -30,7 +30,7 @@ class MCPServerConnection {
     String? url,
     String? transport,
     bool? connected,
-    List<McpTool>? tools,
+    List<MCPTool>? tools,
     Map<String, dynamic>? serverInfo,
   }) {
     return MCPServerConnection(
@@ -61,7 +61,7 @@ class MCPServerConnection {
       transport: json['transport'] as String,
       connected: json['connected'] as bool? ?? false,
       tools: (json['tools'] as List<dynamic>?)
-          ?.map((t) => McpTool.fromJson(t as Map<String, dynamic>))
+          ?.map((t) => MCPTool.fromJson(t as Map<String, dynamic>))
           .toList() ?? [],
       serverInfo: json['serverInfo'] as Map<String, dynamic>?,
     );
@@ -145,7 +145,7 @@ class MCPServerManager extends ChangeNotifier {
         // Fetch tools for this server
         final toolsData = await _platformBridge.getMCPTools(serverName: name);
 
-        final tools = toolsData.map((t) => McpTool(
+        final tools = toolsData.map((t) => MCPTool(
           name: t['name'] as String,
           description: t['description'] as String?,
           inputSchema: t['inputSchema'] as Map<String, dynamic>,
@@ -210,7 +210,7 @@ class MCPServerManager extends ChangeNotifier {
   }
 
   /// Get tools from a specific server
-  Future<List<McpTool>> getTools(String serverName) async {
+  Future<List<MCPTool>> getTools(String serverName) async {
     final server = _servers[serverName];
     if (server == null) {
       return [];
@@ -219,7 +219,7 @@ class MCPServerManager extends ChangeNotifier {
     // Refresh tools from platform
     try {
       final toolsData = await _platformBridge.getMCPTools(serverName: serverName);
-      final tools = toolsData.map((t) => McpTool(
+      final tools = toolsData.map((t) => MCPTool(
         name: t['name'] as String,
         description: t['description'] as String?,
         inputSchema: t['inputSchema'] as Map<String, dynamic>,
@@ -290,7 +290,7 @@ class MCPServerManager extends ChangeNotifier {
   }
 
   /// Get all tools from all connected servers
-  List<McpTool> getAllTools() {
+  List<MCPTool> getAllTools() {
     return _servers.values
         .where((s) => s.connected)
         .expand((s) => s.tools)
