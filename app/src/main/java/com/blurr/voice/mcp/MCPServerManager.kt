@@ -250,6 +250,50 @@ class MCPServerManager(
     fun getConnectedServerNames(): List<String> {
         return servers.filter { it.value.connected }.keys.toList()
     }
+
+    /**
+     * Validate connection without saving
+     */
+    suspend fun validateConnection(
+        name: String,
+        url: String,
+        transport: TransportType,
+        tempTransport: io.modelcontextprotocol.kotlin.sdk.shared.Transport
+    ): Result<MCPServerInfo> {
+        return withContext(Dispatchers.IO) {
+            try {
+                Log.d(TAG, "Validating MCP connection: $name via $transport")
+                
+                val client = Client(
+                    clientInfo = Implementation(
+                        name = "blurr-voice-app-test",
+                        version = "1.0.0"
+                    ),
+                    options = ClientOptions()
+                )
+                
+                client.connect(tempTransport)
+                val toolsResult = client.listTools()
+                val tools = toolsResult?.tools ?: emptyList()
+                
+                val serverInfo = MCPServerInfo(
+                    name = name,
+                    url = url,
+                    transport = transport,
+                    toolCount = tools.size,
+                    isConnected = true,
+                    protocolVersion = "2024-11-05"
+                )
+                
+                client.close()
+                Log.d(TAG, "Connection validated successfully for $name")
+                Result.success(serverInfo)
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to validate MCP connection: $name", e)
+                Result.failure(e)
+            }
+        }
+    }
 }
 
 /**
