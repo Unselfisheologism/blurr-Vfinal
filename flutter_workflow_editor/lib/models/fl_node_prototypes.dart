@@ -323,29 +323,6 @@ class FlNodePrototypeFactory {
           ),
         ]);
         break;
-      
-      case 'mcp_action':
-        ports.addAll([
-          DataInputPortPrototype(
-            idName: 'server',
-            displayName: 'Server',
-            dataType: String,
-            style: _dataInputPortStyle(Colors.indigo),
-          ),
-          DataInputPortPrototype(
-            idName: 'tool',
-            displayName: 'Tool',
-            dataType: String,
-            style: _dataInputPortStyle(Colors.indigo),
-          ),
-          DataInputPortPrototype(
-            idName: 'parameters',
-            displayName: 'Parameters',
-            dataType: Map,
-            style: _dataInputPortStyle(Colors.indigo),
-          ),
-        ]);
-        break;
     }
     
     return ports;

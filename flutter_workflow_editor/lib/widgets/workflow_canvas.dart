@@ -13,8 +13,6 @@ import '../state/node_flow_controller.dart';
 import '../state/provider_mobx_adapter.dart';
 import '../models/node_definitions.dart';
 import '../models/workflow_node_data.dart';
-import '../services/mcp_server_manager.dart';
-import '../dialogs/mcp_server_dialog.dart';
 
 /// Main workflow canvas using vyuh_node_flow
 class WorkflowCanvas extends StatefulWidget {
@@ -504,90 +502,18 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.file_download, size: 14, color: Colors.lime.shade700),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      varName,
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
-              ),
-              if (defaultValue.isNotEmpty) ...[
-                const SizedBox(height: 6),
-                Text(
-                  'Default: $defaultValue',
-                  style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
-                ),
-              ],
-            ],
-          ),
-        );
-
-      case 'ui_automation':
-        final selector = node.data.parameters['selector']?.toString() ?? '';
-        final action = node.data.parameters['action']?.toString() ?? 'click';
-
-        return Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.touch_app, size: 14, color: Colors.blue.shade700),
+                  Icon(Icons.input, size: 14, color: Colors.blue.shade700),
                   const SizedBox(width: 6),
                   Text(
-                    action.toUpperCase(),
-                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                    varName,
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
               const SizedBox(height: 6),
               Text(
-                'Selector',
+                defaultValue.isEmpty ? 'No default' : 'Default: $defaultValue',
                 style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
-              ),
-              Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.04),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  selector.isEmpty ? 'No selector' : selector,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 9, fontFamily: 'monospace'),
-                ),
-              ),
-            ],
-          ),
-        );
-
-      case 'phone_control':
-        final feature = node.data.parameters['feature']?.toString() ?? 'call';
-
-        return Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.phone_android, size: 14, color: Colors.cyan.shade700),
-                  const SizedBox(width: 6),
-                  Text(
-                    feature.toUpperCase(),
-                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'Control phone feature',
-                style: TextStyle(fontSize: 10, color: Colors.grey.shade700),
               ),
             ],
           ),
@@ -603,26 +529,25 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.error_outline, size: 14, color: Colors.red.shade700),
+                  Icon(Icons.error, size: 14, color: Colors.orange.shade700),
                   const SizedBox(width: 6),
                   Text(
-                    errorType.toUpperCase(),
+                    'ERROR',
                     style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
               const SizedBox(height: 6),
               Text(
-                'Handle or rethrow errors',
-                style: TextStyle(fontSize: 10, color: Colors.grey.shade700),
+                'Handles: $errorType',
+                style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
               ),
             ],
           ),
         );
 
       case 'ai_assist':
-        final task = node.data.parameters['task']?.toString() ?? '';
-        final model = node.data.parameters['model']?.toString() ?? 'default';
+        final task = node.data.parameters['task']?.toString() ?? 'No task';
 
         return Padding(
           padding: const EdgeInsets.all(8),
@@ -634,27 +559,18 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
                   Icon(Icons.psychology, size: 14, color: Colors.purple.shade700),
                   const SizedBox(width: 6),
                   Text(
-                    model.toUpperCase(),
-                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                    'AI',
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
               const SizedBox(height: 6),
-              Text(
-                'Task',
-                style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
-              ),
-              Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.04),
-                  borderRadius: BorderRadius.circular(4),
-                ),
+              Expanded(
                 child: Text(
-                  task.isEmpty ? 'No task' : task,
-                  maxLines: 3,
+                  task,
+                  maxLines: 4,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 9),
+                  style: const TextStyle(fontSize: 11),
                 ),
               ),
             ],
@@ -663,7 +579,6 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
 
       case 'llm_call':
         final model = node.data.parameters['model']?.toString() ?? 'gpt-4';
-        final temperature = node.data.parameters['temperature']?.toString() ?? '0.7';
 
         return Padding(
           padding: const EdgeInsets.all(8),
@@ -672,17 +587,17 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.chat_bubble_outline, size: 14, color: Colors.deepPurple.shade700),
+                  Icon(Icons.smart_toy, size: 14, color: Colors.teal.shade700),
                   const SizedBox(width: 6),
                   Text(
-                    model.toUpperCase(),
-                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                    'LLM',
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
               const SizedBox(height: 6),
               Text(
-                'Temp: $temperature',
+                model,
                 style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
               ),
             ],
@@ -690,7 +605,6 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
         );
 
       case 'switch':
-        final expression = node.data.parameters['expression']?.toString() ?? '';
         final cases = node.data.parameters['cases'] as List? ?? [];
 
         return Padding(
@@ -700,20 +614,13 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.alt_route, size: 14, color: Colors.pink.shade700),
+                  Icon(Icons.call_split, size: 14, color: Colors.amber.shade700),
                   const SizedBox(width: 6),
                   Text(
                     'SWITCH',
                     style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
                   ),
                 ],
-              ),
-              const SizedBox(height: 6),
-              Text(
-                expression.isEmpty ? 'No expression' : expression,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 9),
               ),
               const SizedBox(height: 4),
               Text(
@@ -903,41 +810,6 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
           ),
         );
 
-      case 'mcp_action':
-        final toolName = node.data.parameters['toolName']?.toString() ?? 'unknown';
-        final serverName = node.data.parameters['serverName']?.toString() ?? 'default';
-
-        return Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.integration_instructions, size: 14, color: Colors.indigo.shade700),
-                  const SizedBox(width: 6),
-                  Text(
-                    'MCP',
-                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 6),
-              Text(
-                toolName.isEmpty ? 'No tool' : toolName,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 10),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Server: $serverName',
-                style: TextStyle(fontSize: 9, color: Colors.grey.shade600),
-              ),
-            ],
-          ),
-        );
-
       default:
         return Padding(
           padding: const EdgeInsets.all(8),
@@ -988,7 +860,6 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
   /// Build control buttons
   Widget _buildControlButtons(BuildContext context) {
     final workflowState = context.watch<WorkflowState>();
-    final mcpManager = context.watch<MCPServerManager>();
 
     return Card(
       elevation: 4,
@@ -1022,40 +893,6 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
             onPressed: () {
               workflowState.clearExecutionLogs();
             },
-          ),
-          const Divider(height: 1),
-          // MCP Servers button
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.cloud_queue),
-                tooltip: 'MCP Servers',
-                onPressed: () => _showMCPServerDialog(context),
-              ),
-              if (mcpManager.serverCount > 0)
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    constraints: BoxConstraints(minWidth: 18),
-                    child: Text(
-                      '${mcpManager.serverCount}',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-            ],
           ),
           const Divider(height: 1),
           // Save button
@@ -1195,21 +1032,6 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
           SnackBar(content: Text('Failed to import: $e')),
         );
       }
-    }
-  }
-
-  /// Show MCP Server dialog
-  Future<void> _showMCPServerDialog(BuildContext context) async {
-    final mcpManager = MCPServerManager.instance;
-
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (context) => MCPServerDialog(),
-    );
-
-    if (result == true) {
-      // Server was added, refresh UI
-      mcpManager.notifyListeners();
     }
   }
 

@@ -17,7 +17,6 @@ enum NodeType {
   // Actions
   action,
   composioAction,
-  mcpAction,
   googleWorkspaceAction,
   httpRequest,
   code,

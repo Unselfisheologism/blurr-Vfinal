@@ -170,10 +170,6 @@ class Workflow {
         if (!node.data.containsKey('tool')) {
           errors.add('${node.name}: Composio action requires tool parameter');
         }
-      } else if (node.type == 'mcp_action') {
-        if (!node.data.containsKey('server')) {
-          errors.add('${node.name}: MCP action requires server parameter');
-        }
       }
     }
     

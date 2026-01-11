@@ -4,7 +4,6 @@ library;
 import 'package:flutter/foundation.dart';
 import '../services/platform_bridge.dart';
 import '../nodes/composio_node.dart';
-import '../nodes/mcp_node.dart';
 
 class AppState extends ChangeNotifier {
   final PlatformBridge _platformBridge = PlatformBridge();
@@ -12,14 +11,12 @@ class AppState extends ChangeNotifier {
   bool _initialized = false;
   bool _hasProSubscription = false;
   List<ComposioTool> _composioTools = [];
-  List<MCPServer> _mcpServers = [];
   List<Map<String, dynamic>> _workflowTemplates = [];
   
   // Getters
   bool get initialized => _initialized;
   bool get hasProSubscription => _hasProSubscription;
   List<ComposioTool> get composioTools => _composioTools;
-  List<MCPServer> get mcpServers => _mcpServers;
   List<Map<String, dynamic>> get workflowTemplates => _workflowTemplates;
   PlatformBridge get platformBridge => _platformBridge;
   
@@ -33,9 +30,6 @@ class AppState extends ChangeNotifier {
       
       // Load Composio tools
       await loadComposioTools();
-      
-      // Load MCP servers
-      await loadMCPServers();
       
       // Load workflow templates
       await loadWorkflowTemplates();
@@ -63,20 +57,6 @@ class AppState extends ChangeNotifier {
     }
   }
   
-  /// Load available MCP servers
-  Future<void> loadMCPServers() async {
-    try {
-      final serversData = await _platformBridge.getMCPServers();
-      _mcpServers = serversData
-          .map((data) => MCPServer.fromJson(data))
-          .toList();
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Failed to load MCP servers: $e');
-      _mcpServers = [];
-    }
-  }
-  
   /// Load workflow templates
   Future<void> loadWorkflowTemplates() async {
     try {
@@ -91,11 +71,6 @@ class AppState extends ChangeNotifier {
   /// Refresh Composio tools
   Future<void> refreshComposioTools() async {
     await loadComposioTools();
-  }
-  
-  /// Refresh MCP servers
-  Future<void> refreshMCPServers() async {
-    await loadMCPServers();
   }
   
   /// Check and update Pro subscription status

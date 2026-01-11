@@ -252,8 +252,6 @@ class NodeWidget extends StatelessWidget {
         return Colors.green;
       case NodeType.composioAction:
         return Colors.purple;
-      case NodeType.mcpAction:
-        return Colors.indigo;
       case NodeType.googleWorkspaceAction:
         return Colors.red;
       case NodeType.httpRequest:
@@ -288,8 +286,6 @@ class NodeWidget extends StatelessWidget {
         return Icons.webhook;
       case NodeType.composioAction:
         return Icons.extension;
-      case NodeType.mcpAction:
-        return Icons.computer;
       case NodeType.googleWorkspaceAction:
         return Icons.apps;
       case NodeType.httpRequest:
@@ -328,8 +324,6 @@ class NodeWidget extends StatelessWidget {
         return 'Manual';
       case NodeType.composioAction:
         return 'Composio';
-      case NodeType.mcpAction:
-        return 'MCP';
       case NodeType.googleWorkspaceAction:
         return 'Google Workspace';
       case NodeType.httpRequest:

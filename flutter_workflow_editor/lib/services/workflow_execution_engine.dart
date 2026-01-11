@@ -280,9 +280,6 @@ class WorkflowExecutionEngine extends ChangeNotifier {
       case 'composio_action':
         return await _executeComposioAction(node);
       
-      case 'mcp_action':
-        return await _executeMCPAction(node);
-      
       case 'http_request':
         return await _executeHttpRequest(node);
       
@@ -355,43 +352,6 @@ class WorkflowExecutionEngine extends ChangeNotifier {
       return NodeExecutionResult.success(result);
     } catch (e) {
       return NodeExecutionResult.failure('Composio action failed: $e');
-    }
-  }
-  
-  /// Execute MCP action node
-  Future<NodeExecutionResult> _executeMCPAction(WorkflowNode node) async {
-    final serverName = node.data['serverName'] as String?;
-    final toolName = node.data['toolName'] as String?;
-    final argumentsJson = node.data['arguments'] as String? ?? '{}';
-    final timeout = node.data['timeout'] as int? ?? 30;
-
-    if (serverName == null || serverName.isEmpty) {
-      return NodeExecutionResult.failure('MCP server not selected');
-    }
-
-    if (toolName == null || toolName.isEmpty) {
-      return NodeExecutionResult.failure('MCP tool not selected');
-    }
-
-    Map<String, dynamic> arguments;
-    try {
-      arguments = Map<String, dynamic>.from(
-        jsonDecode(argumentsJson) as Map
-      );
-    } catch (e) {
-      return NodeExecutionResult.failure('Invalid arguments JSON: $e');
-    }
-
-    try {
-      final result = await platformBridge.executeMCPTool(
-        serverName: serverName,
-        toolName: toolName,
-        arguments: arguments,
-      );
-
-      return NodeExecutionResult.success(result);
-    } catch (e) {
-      return NodeExecutionResult.failure('MCP action failed: $e');
     }
   }
   
