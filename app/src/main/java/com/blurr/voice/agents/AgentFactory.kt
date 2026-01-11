@@ -3,6 +3,7 @@ package com.blurr.voice.agents
 import android.content.Context
 import com.blurr.voice.core.providers.UniversalLLMService
 import com.blurr.voice.mcp.MCPClient
+import com.blurr.voice.mcp.MCPServerManager
 import com.blurr.voice.tools.ToolRegistry
 
 /**
@@ -14,6 +15,7 @@ object AgentFactory {
     
     private var cachedAgent: UltraGeneralistAgent? = null
     private var cachedConfirmationHandler: DefaultUserConfirmationHandler? = null
+    private var cachedMcpServerManager: MCPServerManager? = null
     
     /**
      * Create or get cached agent instance
@@ -32,6 +34,22 @@ object AgentFactory {
     }
     
     /**
+     * Get the MCP server manager (for UI to connect to)
+     */
+    fun getMcpServerManager(context: Context): MCPServerManager {
+        return cachedMcpServerManager ?: createMCPServerManager(context).also {
+            cachedMcpServerManager = it
+        }
+    }
+    
+    /**
+     * Create MCP Server Manager instance
+     */
+    private fun createMCPServerManager(context: Context): MCPServerManager {
+        return MCPServerManager(context)
+    }
+    
+    /**
      * Create new agent instance
      */
     fun createAgent(context: Context): UltraGeneralistAgent {
@@ -43,6 +61,7 @@ object AgentFactory {
         val toolRegistry = ToolRegistry(context, confirmationHandler)
         
         val mcpClient = MCPClient(context)
+        val mcpServerManager = getMcpServerManager(context)
         val conversationManager = ConversationManager(context)
         
         return UltraGeneralistAgent(
@@ -50,6 +69,7 @@ object AgentFactory {
             llmService = llmService,
             toolRegistry = toolRegistry,
             mcpClient = mcpClient,
+            mcpServerManager = mcpServerManager,
             conversationManager = conversationManager
         )
     }
@@ -60,5 +80,6 @@ object AgentFactory {
     fun clearCache() {
         cachedAgent = null
         cachedConfirmationHandler = null
+        cachedMcpServerManager = null
     }
 }
