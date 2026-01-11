@@ -47,8 +47,11 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.embedding.engine.dart.DartExecutor
 import io.flutter.plugin.common.MethodChannel
-import com.blurr.voice.workflow.WorkflowEditorHandler
+import io.flutter.plugin.common.MethodCall
+import com.blurr.voice.workflow.WorkflowEditorHandler as OldWorkflowEditorHandler
+import com.blurr.voice.flutter.WorkflowEditorHandler
 import io.flutter.embedding.android.FlutterActivity
+import com.blurr.voice.mcp.MCPServerManager
 import com.blurr.voice.apps.texteditor.TextEditorLauncher
 import com.blurr.voice.apps.spreadsheets.SpreadsheetEditorLauncher
 import com.blurr.voice.apps.learning.LearningPlatformLauncher
@@ -83,7 +86,9 @@ class MainActivity : BaseNavigationActivity() {
     
     // Flutter workflow editor integration
     private var flutterEngine: FlutterEngine? = null
-    private var workflowEditorHandler: WorkflowEditorHandler? = null
+    private var oldWorkflowEditorHandler: OldWorkflowEditorHandler? = null
+    private var newWorkflowEditorHandler: WorkflowEditorHandler? = null
+    private var mcpServerManager: MCPServerManager? = null
 
     private lateinit var root: View
     companion object {
@@ -469,41 +474,169 @@ class MainActivity : BaseNavigationActivity() {
         try {
             // Create and warm up Flutter engine
             flutterEngine = FlutterEngine(this)
-            
+
             // Start executing Dart code
             flutterEngine!!.dartExecutor.executeDartEntrypoint(
                 DartExecutor.DartEntrypoint.createDefault()
             )
-            
+
             // Cache the engine for reuse
             FlutterEngineCache
                 .getInstance()
                 .put("workflow_editor_engine", flutterEngine!!)
-            
-            // Initialize WorkflowEditorHandler with dependencies
-            val unifiedShellTool = com.blurr.voice.tools.UnifiedShellTool(this)
 
-            // Create MCP client for workflow editor
+            // Initialize MCPServerManager (Phase 1)
+            mcpServerManager = MCPServerManager(this)
+
+            // Initialize new WorkflowEditorHandler with MCPServerManager (Phase 2)
+            newWorkflowEditorHandler = WorkflowEditorHandler(
+                context = this,
+                mcpServerManager = mcpServerManager!!
+            )
+
+            // Initialize old WorkflowEditorHandler for non-MCP methods
+            val unifiedShellTool = com.blurr.voice.tools.UnifiedShellTool(this)
             val workflowMCPClient = com.blurr.voice.mcp.MCPClient(this)
 
-            workflowEditorHandler = WorkflowEditorHandler(
+            oldWorkflowEditorHandler = OldWorkflowEditorHandler(
                 context = this,
                 unifiedShellTool = unifiedShellTool,
                 composioClient = null, // TODO: Get from AgentService if available
                 composioManager = null, // TODO: Get from AgentService if available
                 mcpClient = workflowMCPClient
             )
-            
-            // Setup method channel
+
+            // Setup method channel with hybrid handler
             val channel = MethodChannel(
                 flutterEngine!!.dartExecutor.binaryMessenger,
                 "workflow_editor"
             )
-            channel.setMethodCallHandler(workflowEditorHandler)
-            
+
+            // Set up method call handler that routes MCP methods to new handler
+            channel.setMethodCallHandler { call, result ->
+                lifecycleScope.launch {
+                    try {
+                        when (call.method) {
+                            // MCP methods - route to new handler with MCPServerManager
+                            "connectMCPServer" -> handleConnectMCPServer(call, result)
+                            "disconnectMCPServer" -> handleDisconnectMCPServer(call, result)
+                            "getMCPServers" -> handleGetMCPServers(call, result)
+                            "getMCPTools" -> handleGetMCPTools(call, result)
+                            "executeMCPTool" -> handleExecuteMCPTool(call, result)
+                            "validateMCPConnection" -> handleValidateMCPConnection(call, result)
+
+                            // All other methods - route to old handler
+                            else -> {
+                                // Forward to old handler
+                                oldWorkflowEditorHandler?.onMethodCall(call, result)
+                                    ?: result.notImplemented()
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e("MainActivity", "Error in MethodChannel handler", e)
+                        result.error("HANDLER_ERROR", e.message, null)
+                    }
+                }
+            }
+
             Logger.d("MainActivity", "Flutter engine initialized successfully")
         } catch (e: Exception) {
             Logger.e("MainActivity", "Failed to initialize Flutter engine", e)
+        }
+    }
+
+    /**
+     * Handler wrappers for MCP methods
+     * These delegate to the new WorkflowEditorHandler that uses MCPServerManager
+     */
+    private suspend fun handleConnectMCPServer(call: MethodCall, result: MethodChannel.Result) {
+        val serverName = call.argument<String>("serverName")
+            ?: return result.error("INVALID_ARGS", "Missing serverName", null)
+        val url = call.argument<String>("url")
+            ?: return result.error("INVALID_ARGS", "Missing url", null)
+        val transport = call.argument<String>("transport")
+            ?: return result.error("INVALID_ARGS", "Missing transport", null)
+
+        try {
+            val response = newWorkflowEditorHandler?.connectMCPServer(serverName, url, transport)
+                ?: return result.error("HANDLER_ERROR", "WorkflowEditorHandler not initialized", null)
+            result.success(response)
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Error connecting MCP server", e)
+            result.error("CONNECT_ERROR", e.message, null)
+        }
+    }
+
+    private suspend fun handleDisconnectMCPServer(call: MethodCall, result: MethodChannel.Result) {
+        val serverName = call.argument<String>("serverName")
+            ?: return result.error("INVALID_ARGS", "Missing serverName", null)
+
+        try {
+            val response = newWorkflowEditorHandler?.disconnectMCPServer(serverName)
+                ?: return result.error("HANDLER_ERROR", "WorkflowEditorHandler not initialized", null)
+            result.success(response)
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Error disconnecting MCP server", e)
+            result.error("DISCONNECT_ERROR", e.message, null)
+        }
+    }
+
+    private fun handleGetMCPServers(call: MethodCall, result: MethodChannel.Result) {
+        try {
+            val servers = newWorkflowEditorHandler?.getMCPServers()
+                ?: return result.error("HANDLER_ERROR", "WorkflowEditorHandler not initialized", null)
+            result.success(servers)
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Error getting MCP servers", e)
+            result.error("GET_SERVERS_ERROR", e.message, null)
+        }
+    }
+
+    private fun handleGetMCPTools(call: MethodCall, result: MethodChannel.Result) {
+        val serverName = call.argument<String>("serverName")
+
+        try {
+            val tools = newWorkflowEditorHandler?.getMCPTools(serverName)
+                ?: return result.error("HANDLER_ERROR", "WorkflowEditorHandler not initialized", null)
+            result.success(tools)
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Error getting MCP tools", e)
+            result.error("GET_TOOLS_ERROR", e.message, null)
+        }
+    }
+
+    private suspend fun handleExecuteMCPTool(call: MethodCall, result: MethodChannel.Result) {
+        val serverName = call.argument<String>("serverName")
+            ?: return result.error("INVALID_ARGS", "Missing serverName", null)
+        val toolName = call.argument<String>("toolName")
+            ?: return result.error("INVALID_ARGS", "Missing toolName", null)
+        val arguments = call.argument<Map<String, Any>>("arguments") ?: emptyMap()
+
+        try {
+            val response = newWorkflowEditorHandler?.executeMCPTool(serverName, toolName, arguments)
+                ?: return result.error("HANDLER_ERROR", "WorkflowEditorHandler not initialized", null)
+            result.success(response)
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Error executing MCP tool", e)
+            result.error("EXECUTE_ERROR", e.message, null)
+        }
+    }
+
+    private suspend fun handleValidateMCPConnection(call: MethodCall, result: MethodChannel.Result) {
+        val serverName = call.argument<String>("serverName")
+            ?: return result.error("INVALID_ARGS", "Missing serverName", null)
+        val url = call.argument<String>("url")
+            ?: return result.error("INVALID_ARGS", "Missing url", null)
+        val transport = call.argument<String>("transport")
+            ?: return result.error("INVALID_ARGS", "Missing transport", null)
+
+        try {
+            val response = newWorkflowEditorHandler?.validateMCPConnection(serverName, url, transport)
+                ?: return result.error("HANDLER_ERROR", "WorkflowEditorHandler not initialized", null)
+            result.success(response)
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Error validating MCP connection", e)
+            result.error("VALIDATE_ERROR", e.message, null)
         }
     }
     
