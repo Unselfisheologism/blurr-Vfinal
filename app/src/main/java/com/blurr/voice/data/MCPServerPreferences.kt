@@ -52,6 +52,19 @@ class MCPServerPreferences(private val context: Context) {
 
         android.util.Log.d("MCPServerPreferences", "Saved server: ${config.name}")
     }
+    
+    /**
+     * Save server with simplified parameters (for MCPServerManager)
+     */
+    fun saveServer(name: String, url: String, transport: com.blurr.voice.mcp.TransportType, enabled: Boolean) {
+        saveServer(MCPServerConfig(
+            name = name,
+            url = url,
+            transport = transport.name.lowercase(),
+            enabled = enabled,
+            lastConnected = System.currentTimeMillis()
+        ))
+    }
 
     /**
      * Remove a server configuration
@@ -67,6 +80,28 @@ class MCPServerPreferences(private val context: Context) {
         }
 
         android.util.Log.d("MCPServerPreferences", "Removed server: $serverName")
+    }
+    
+    /**
+     * Delete a server configuration (alias for removeServer for consistency with MCPServerManager)
+     */
+    fun deleteServer(serverName: String) {
+        removeServer(serverName)
+    }
+    
+    /**
+     * Load saved servers (for MCPServerManager - returns SavedMCPServer objects)
+     */
+    fun loadServers(): List<SavedMCPServer> {
+        return getServers().map { config ->
+            SavedMCPServer(
+                name = config.name,
+                url = config.url,
+                transport = com.blurr.voice.mcp.TransportType.fromString(config.transport),
+                enabled = config.enabled,
+                lastConnected = config.lastConnected
+            )
+        }
     }
 
     /**
@@ -140,6 +175,17 @@ class MCPServerPreferences(private val context: Context) {
         return count() > 0
     }
 }
+
+/**
+ * Saved MCP server data class (for MCPServerManager API)
+ */
+data class SavedMCPServer(
+    val name: String,
+    val url: String,
+    val transport: com.blurr.voice.mcp.TransportType,
+    val enabled: Boolean,
+    val lastConnected: Long?
+)
 
 // Extension data class for server connection info (matching Flutter's MCPServerConnection)
 data class MCPServerConnection(

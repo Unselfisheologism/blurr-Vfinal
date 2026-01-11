@@ -185,6 +185,17 @@ dependencies {
     implementation("com.moizhassan.ffmpeg:ffmpeg-kit-16kb:6.1.1")
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
     
+    // Official MCP Kotlin SDK
+    // Reference: https://github.com/modelcontextprotocol/kotlin-sdk
+    implementation("io.modelcontextprotocol:kotlin-sdk:0.8.1")
+    
+    // Ktor client for MCP SDK (required dependency)
+    // Reference: https://ktor.io/docs/client-dependencies.html
+    implementation("io.ktor:ktor-client-cio:3.0.2")
+    implementation("io.ktor:ktor-client-core:3.0.2")
+    implementation("io.ktor:ktor-client-content-negotiation:3.0.2")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.2")
+    
     // Flutter module integration
     // Use the real Flutter module when it's available/configured; otherwise fall back to stubs
     // so Android-only builds can still compile without a Flutter SDK.
