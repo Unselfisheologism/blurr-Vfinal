@@ -10,9 +10,14 @@ import '../models/workflow_node.dart';
 import '../models/node_definitions.dart';
 import '../services/mcp_server_manager.dart';
 
-class NodeInspector extends StatelessWidget {
+class NodeInspector extends StatefulWidget {
   const NodeInspector({super.key});
-  
+
+  @override
+  State<NodeInspector> createState() => _NodeInspectorState();
+}
+
+class _NodeInspectorState extends State<NodeInspector> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -20,11 +25,11 @@ class NodeInspector extends StatelessWidget {
       child: Consumer<WorkflowState>(
         builder: (context, state, _) {
           final selectedNode = state.selectedNode;
-          
+
           if (selectedNode == null) {
             return _buildEmptyState();
           }
-          
+
           return Column(
             children: [
               _buildHeader(selectedNode),
