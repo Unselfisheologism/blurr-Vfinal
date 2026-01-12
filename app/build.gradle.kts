@@ -162,9 +162,9 @@ dependencies {
     implementation("com.android.billingclient:billing-ktx:6.2.0")
     
     // Room database dependencies
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    ksp("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-runtime:2.7.0-alpha11")
+    implementation("androidx.room:room-ktx:2.7.0-alpha11")
+    ksp("androidx.room:room-compiler:2.7.0-alpha11")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     
     // Lifecycle ViewModel Compose
@@ -191,10 +191,12 @@ dependencies {
     
     // Ktor client for MCP SDK (required dependency)
     // Reference: https://ktor.io/docs/client-dependencies.html
-    implementation("io.ktor:ktor-client-cio:3.0.2")
-    implementation("io.ktor:ktor-client-core:3.0.2")
-    implementation("io.ktor:ktor-client-content-negotiation:3.0.2")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.2")
+    implementation("io.ktor:ktor-client-cio:3.2.3")
+    implementation("io.ktor:ktor-client-core:3.2.3")
+    implementation("io.ktor:ktor-client-content-negotiation:3.2.3")
+    implementation("io.ktor:ktor-client-logging:3.2.3")
+    implementation("io.ktor:ktor-sse:3.2.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.2.3")
     
     // Flutter module integration
     // Use the real Flutter module when it's available/configured; otherwise fall back to stubs
