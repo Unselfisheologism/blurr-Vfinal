@@ -4,12 +4,8 @@ import android.content.Context
 import com.blurr.voice.tools.UnifiedShellTool
 import com.blurr.voice.integrations.ComposioClient
 import com.blurr.voice.integrations.ComposioIntegrationManager
-import com.blurr.voice.mcp.MCPClient
-import com.blurr.voice.mcp.MCPTransport
-import com.blurr.voice.mcp.HttpMCPTransport
-import com.blurr.voice.mcp.SSEMCPTransport
-import com.blurr.voice.mcp.StdioMCPTransport
-import com.blurr.voice.mcp.MCPTransportConfig
+import com.blurr.voice.mcp.MCPServerManager
+import com.blurr.voice.mcp.TransportType
 import com.blurr.voice.data.MCPServerPreferences
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -31,7 +27,7 @@ class WorkflowEditorHandler(
     private val unifiedShellTool: UnifiedShellTool,
     private val composioClient: ComposioClient?,
     private val composioManager: ComposioIntegrationManager?,
-    private val mcpClient: MCPClient?
+    private val mcpServerManager: MCPServerManager?
 ) : MethodChannel.MethodCallHandler {
 
     private val scope = CoroutineScope(Dispatchers.Main)

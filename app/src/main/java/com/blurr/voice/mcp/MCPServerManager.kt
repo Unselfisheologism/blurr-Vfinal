@@ -5,7 +5,9 @@ import android.util.Log
 import io.modelcontextprotocol.kotlin.sdk.Implementation
 import io.modelcontextprotocol.kotlin.sdk.client.Client
 import io.modelcontextprotocol.kotlin.sdk.client.ClientOptions
-import io.modelcontextprotocol.kotlin.sdk.shared.Tool
+import io.modelcontextprotocol.kotlin.sdk.types.Tool
+import io.modelcontextprotocol.kotlin.sdk.types.TextContent
+import io.modelcontextprotocol.kotlin.sdk.shared.Transport
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.blurr.voice.data.MCPServerPreferences
@@ -201,8 +203,8 @@ class MCPServerManager(
                 
                 // Extract text content from result
                 val textContent = result?.content?.joinToString("\n") { content ->
-                    when {
-                        content.type == "text" -> content.text ?: ""
+                    when (content) {
+                        is TextContent -> content.text
                         else -> content.toString()
                     }
                 } ?: ""
