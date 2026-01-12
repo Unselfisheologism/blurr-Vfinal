@@ -16,7 +16,7 @@ import org.json.JSONArray
  */
 class MemoryManager(private val context: Context) {
     
-    private val database = AppDatabase.getDatabase(context)
+    private val database = BlurrDatabase.getDatabase(context)
     private val memoryDao = database.memoryDao()
     private val ioScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     
