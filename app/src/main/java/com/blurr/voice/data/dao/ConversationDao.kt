@@ -73,19 +73,19 @@ interface ConversationDao {
      * Update conversation
      */
     @Update
-    suspend fun updateConversation(conversation: Conversation)
+    suspend fun updateConversation(conversation: Conversation): Unit
     
     /**
      * Delete conversation (cascade deletes messages)
      */
     @Delete
-    suspend fun deleteConversation(conversation: Conversation)
+    suspend fun deleteConversation(conversation: Conversation): Unit
     
     /**
      * Delete all conversations
      */
     @Query("DELETE FROM conversations")
-    suspend fun deleteAllConversations()
+    suspend fun deleteAllConversations(): Unit
     
     /**
      * Update conversation title
@@ -159,19 +159,19 @@ interface ConversationDao {
      * Update message
      */
     @Update
-    suspend fun updateMessage(message: Message)
+    suspend fun updateMessage(message: Message): Unit
     
     /**
      * Delete message
      */
     @Delete
-    suspend fun deleteMessage(message: Message)
+    suspend fun deleteMessage(message: Message): Unit
     
     /**
      * Delete all messages for conversation
      */
     @Query("DELETE FROM messages WHERE conversationId = :conversationId")
-    suspend fun deleteAllMessages(conversationId: String)
+    suspend fun deleteAllMessages(conversationId: String): Unit
     
     /**
      * Get message count for conversation
