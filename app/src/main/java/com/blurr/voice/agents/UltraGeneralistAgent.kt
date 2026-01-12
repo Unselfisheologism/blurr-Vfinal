@@ -7,7 +7,7 @@ import com.blurr.voice.core.providers.FunctionTool
 import com.blurr.voice.core.providers.OpenRouterRequestOptions
 import com.blurr.voice.core.providers.ToolChoice
 import com.blurr.voice.core.providers.UniversalLLMService
-import com.blurr.voice.mcp.MCPClient
+import com.blurr.voice.mcp.MCPServerManagerToolAdapter
 import com.blurr.voice.tools.Tool
 import com.blurr.voice.tools.ToolRegistry
 import com.blurr.voice.tools.ToolResult
@@ -31,7 +31,6 @@ class UltraGeneralistAgent(
     private val context: Context,
     private val llmService: UniversalLLMService,
     private val toolRegistry: ToolRegistry,
-    private val mcpClient: MCPClient,
     private val mcpServerManager: com.blurr.voice.mcp.MCPServerManager,
     private val conversationManager: ConversationManager
 ) {
@@ -40,7 +39,7 @@ class UltraGeneralistAgent(
         private const val MAX_TOOL_RETRIES = 2
         private const val MAX_PLAN_STEPS = 10
     }
-    
+
     init {
         // Load saved MCP servers on initialization
         kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
@@ -179,37 +178,61 @@ class UltraGeneralistAgent(
     private fun buildSystemPrompt(): String {
         return """
             You are an Ultra-Generalist AI Agent with access to multiple tools.
-            
+
             Your role is to:
             1. Understand the user's intent
             2. Select appropriate tools to accomplish the task
             3. Execute tools in the correct order
             4. Synthesize results into a helpful response
-            
+
             Available Tools:
             ${toolRegistry.describeTools()}
-            
-            ${mcpClient.describeTools()}
-            
+
+            ${describeMCPTools()}
+
             For complex tasks, break them down into steps and use multiple tools.
             Always explain what you're doing and why.
-            
+
             If no tools are needed, respond directly without calling any tools.
         """.trimIndent()
     }
-    
+
+    /**
+     * Describe all available MCP tools from MCPServerManager
+     * Returns a formatted string for LLM system prompts
+     */
+    private fun describeMCPTools(): String {
+        val tools = mcpServerManager.getTools()
+        if (tools.isEmpty()) {
+            return "No MCP tools available."
+        }
+
+        val serverGroups = tools.groupBy { it.serverName }
+        return buildString {
+            appendLine("MCP Tools:")
+            serverGroups.forEach { (serverName, serverTools) ->
+                appendLine("  Server: $serverName")
+                serverTools.forEach { tool ->
+                    appendLine("    - ${tool.name}: ${tool.description}")
+                }
+            }
+        }
+    }
+
     /**
      * Build list of available tools as FunctionTool objects
      */
     private fun buildAvailableTools(): List<FunctionTool> {
         val tools = mutableListOf<FunctionTool>()
-        
+
         // Add built-in tools
         tools.addAll(toolRegistry.toFunctionTools())
-        
-        // Add MCP tools
-        tools.addAll(mcpClient.getAllTools().map { it.toFunctionTool() })
-        
+
+        // Add MCP tools from MCPServerManager
+        tools.addAll(mcpServerManager.getTools().map { toolInfo ->
+            MCPServerManagerToolAdapter(mcpServerManager, toolInfo).toFunctionTool()
+        })
+
         return tools
     }
     
@@ -365,18 +388,29 @@ class UltraGeneralistAgent(
         // Try built-in tools first
         var tool = toolRegistry.getTool(toolName)
         if (tool != null) return tool
-        
-        // Try MCP tools
-        tool = mcpClient.getTool(toolName)
-        if (tool != null) return tool
-        
+
+        // Try MCP tools from MCPServerManager
+        val allMcpTools = mcpServerManager.getTools()
+
+        // Try exact match (server:tool)
+        val exactMatch = allMcpTools.firstOrNull { "${it.serverName}:${it.name}" == toolName }
+        if (exactMatch != null) {
+            return MCPServerManagerToolAdapter(mcpServerManager, exactMatch)
+        }
+
         // Try with server prefix removed (e.g., "server:tool" -> "tool")
         if (toolName.contains(":")) {
             val shortName = toolName.substringAfter(":")
             tool = toolRegistry.getTool(shortName)
             if (tool != null) return tool
         }
-        
+
+        // Try finding MCP tool by short name across all servers
+        val shortNameMatch = allMcpTools.firstOrNull { it.name == toolName }
+        if (shortNameMatch != null) {
+            return MCPServerManagerToolAdapter(mcpServerManager, shortNameMatch)
+        }
+
         return null
     }
     
