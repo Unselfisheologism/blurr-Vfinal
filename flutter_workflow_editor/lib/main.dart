@@ -9,6 +9,7 @@ import 'workflow_editor_screen.dart';
 import 'state/workflow_state.dart';
 import 'state/app_state.dart';
 import 'services/platform_bridge.dart';
+import 'services/mcp_server_manager.dart';
 import 'daw_editor/models/daw_project.dart';
 import 'text_editor/text_editor_screen.dart';
 import 'spreadsheet_editor/spreadsheet_editor_screen.dart';
@@ -35,6 +36,7 @@ class WorkflowEditorApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AppState()),
         ChangeNotifierProvider(create: (_) => WorkflowState(platformBridge: PlatformBridge())),
+        ChangeNotifierProvider(create: (_) => MCPServerManager(platformBridge: PlatformBridge())),
         ChangeNotifierProvider(create: (_) => SpreadsheetState()),
         ChangeNotifierProvider(create: (_) => CanvasState()),
         ChangeNotifierProvider(create: (_) => DawState.empty()),
