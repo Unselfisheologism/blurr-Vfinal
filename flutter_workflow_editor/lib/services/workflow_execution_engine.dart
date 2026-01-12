@@ -133,6 +133,21 @@ class WorkflowExecutionEngine extends ChangeNotifier {
   Stream<ExecutionLog> get logStream => _logController.stream;
   Stream<String> get nodeExecutionStream => _nodeExecutionController.stream;
    
+  /// Cancel the current workflow execution
+  void cancel() {
+    if (_state == ExecutionState.running) {
+      _state = ExecutionState.cancelled;
+      _context?.endTime = DateTime.now();
+      _log(
+        '',
+        'Workflow',
+        ExecutionLogLevel.info,
+        'Workflow cancelled by user',
+      );
+      notifyListeners();
+    }
+  }
+
   /// Execute a workflow
   Future<ExecutionContext> executeWorkflow(
     Workflow workflow, {
