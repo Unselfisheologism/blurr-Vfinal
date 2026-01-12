@@ -1,11 +1,14 @@
 /// Node inspector for editing node properties
 library;
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../state/workflow_state.dart';
 import '../models/workflow_node.dart';
 import '../models/node_definitions.dart';
+import '../services/mcp_server_manager.dart';
 
 class NodeInspector extends StatelessWidget {
   const NodeInspector({super.key});
@@ -168,6 +171,8 @@ class NodeInspector extends StatelessWidget {
         return _buildNotificationProperties(context, node);
       case 'composio_action':
         return _buildComposioActionProperties(context, node);
+      case 'mcp_action':
+        return _buildMCPActionProperties(context, node);
       default:
         return [_buildGenericProperties(context, node)];
     }
@@ -764,6 +769,247 @@ class NodeInspector extends StatelessWidget {
         ),
       ]),
     ];
+  }
+
+  List<Widget> _buildMCPActionProperties(BuildContext context, WorkflowNode node) {
+    final mcpManager = context.watch<MCPServerManager>();
+    final servers = mcpManager.serversList;
+    final connectedServers = servers.where((s) => s.connected).toList();
+
+    final selectedServer = node.data['server'] as String? ?? '';
+    final selectedTool = node.data['tool'] as String? ?? '';
+    final arguments = node.data['arguments'] as String? ?? '{}';
+    final timeout = node.data['timeout'] as int? ?? 30;
+
+    final currentServer = connectedServers.firstWhere(
+      (s) => s.name == selectedServer,
+      orElse: () => MCPServerConnection(
+        name: '',
+        url: '',
+        transport: 'http',
+        connected: false,
+        toolCount: 0,
+        tools: [],
+      ),
+    );
+
+    final availableTools = currentServer.tools.isNotEmpty
+        ? currentServer.tools.map((t) => t.name).toList()
+        : <String>[];
+
+    final selectedToolInfo = currentServer.tools.firstWhere(
+      (t) => t.name == selectedTool,
+      orElse: () => MCPToolInfo(
+        name: '',
+        description: null,
+        inputSchema: {},
+        outputSchema: null,
+        serverName: '',
+      ),
+    );
+
+    return [
+      _buildSection('MCP Action', [
+        connectedServers.isEmpty
+            ? Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.orange.withOpacity(0.3)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.warning_amber_rounded, color: Colors.orange),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'No MCP servers connected.\nAdd servers from the canvas toolbar.',
+                        style: TextStyle(color: Colors.orange[800], fontSize: 12),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : Column(
+                children: [
+                  _buildDropdown(
+                    label: 'Server',
+                    value: selectedServer,
+                    items: connectedServers.map((s) => s.name).toList(),
+                    onChanged: (value) {
+                      context.read<WorkflowState>().updateNodeData(
+                        node.id,
+                        {'server': value, 'tool': ''},
+                      );
+                    },
+                  ),
+                  if (selectedServer.isNotEmpty)
+                    _buildDropdown(
+                      label: 'Tool',
+                      value: selectedTool,
+                      items: availableTools.isNotEmpty ? availableTools : ['No tools available'],
+                      onChanged: (value) {
+                        if (value != null && value != 'No tools available') {
+                          context.read<WorkflowState>().updateNodeData(
+                            node.id,
+                            {'tool': value},
+                          );
+                        }
+                      },
+                    ),
+                ],
+              ),
+        const SizedBox(height: 12),
+        if (selectedToolInfo.description != null && selectedToolInfo.description!.isNotEmpty)
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.blue.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.blue.withOpacity(0.2)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.info_outline, size: 16, color: Colors.blue),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Tool Description',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue[800],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  selectedToolInfo.description!,
+                  style: TextStyle(fontSize: 12, color: Colors.blue[900]),
+                ),
+              ],
+            ),
+          ),
+        const SizedBox(height: 12),
+        _buildMultilineTextField(
+          label: 'Arguments (JSON)',
+          value: arguments,
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(node.id, {'arguments': value});
+          },
+          maxLines: 8,
+        ),
+        _buildTextField(
+          label: 'Timeout (seconds)',
+          value: timeout.toString(),
+          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            context.read<WorkflowState>().updateNodeData(
+              node.id,
+              {'timeout': int.tryParse(value) ?? 30},
+            );
+          },
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: selectedServer.isNotEmpty && selectedTool.isNotEmpty
+                ? () => _testMCPTool(context, selectedServer, selectedTool, arguments)
+                : null,
+            icon: const Icon(Icons.play_arrow, size: 18),
+            label: const Text('Test Tool'),
+          ),
+        ),
+      ]),
+    ];
+  }
+
+  Future<void> _testMCPTool(
+    BuildContext context,
+    String serverName,
+    String toolName,
+    String argumentsJson,
+  ) async {
+    final mcpManager = context.read<MCPServerManager>();
+
+    Map<String, dynamic> arguments = {};
+    try {
+      arguments = jsonDecode(argumentsJson) as Map<String, dynamic>;
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Invalid JSON arguments: $e')),
+        );
+      }
+      return;
+    }
+
+    try {
+      final result = await mcpManager.executeTool(
+        serverName: serverName,
+        toolName: toolName,
+        arguments: arguments,
+      );
+
+      if (mounted) {
+        if (result['success'] as bool) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Tool Test Successful'),
+              content: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('Server: $serverName'),
+                    Text('Tool: $toolName'),
+                    const SizedBox(height: 12),
+                    const Text('Result:', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        result['result']?.toString() ?? 'No result',
+                        style: const TextStyle(fontFamily: 'monospace'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Close'),
+                ),
+              ],
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Tool execution failed: ${result['error']}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
   }
 
   Widget _buildGenericProperties(BuildContext context, WorkflowNode node) {

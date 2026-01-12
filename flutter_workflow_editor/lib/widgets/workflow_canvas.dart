@@ -13,6 +13,8 @@ import '../state/node_flow_controller.dart';
 import '../state/provider_mobx_adapter.dart';
 import '../models/node_definitions.dart';
 import '../models/workflow_node_data.dart';
+import '../services/mcp_server_manager.dart';
+import '../dialogs/mcp_server_dialog.dart';
 
 /// Main workflow canvas using vyuh_node_flow
 class WorkflowCanvas extends StatefulWidget {
@@ -860,6 +862,7 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
   /// Build control buttons
   Widget _buildControlButtons(BuildContext context) {
     final workflowState = context.watch<WorkflowState>();
+    final mcpManager = context.watch<MCPServerManager>();
 
     return Card(
       elevation: 4,
@@ -894,6 +897,9 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
               workflowState.clearExecutionLogs();
             },
           ),
+          const Divider(height: 1),
+          // MCP Servers button with badge
+          _buildMCPServersButton(mcpManager),
           const Divider(height: 1),
           // Save button
           IconButton(
@@ -931,6 +937,52 @@ class _WorkflowCanvasState extends State<WorkflowCanvas> {
         ],
       ),
     );
+  }
+
+  /// Build MCP Servers button with badge
+  Widget _buildMCPServersButton(MCPServerManager mcpManager) {
+    final connectedCount = mcpManager.connectedServerCount;
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.cloud, color: Colors.blue),
+          tooltip: 'MCP Servers',
+          onPressed: () => _showMCPServerDialog(),
+        ),
+        if (connectedCount > 0)
+          Positioned(
+            top: 4,
+            right: 4,
+            child: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              constraints: const BoxConstraints(
+                minWidth: 14,
+                minHeight: 14,
+              ),
+              child: Text(
+                '$connectedCount',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  /// Show MCP Server dialog
+  Future<void> _showMCPServerDialog() async {
+    await showMCPServerDialog(context);
   }
 
   /// Handle workflow export to file
