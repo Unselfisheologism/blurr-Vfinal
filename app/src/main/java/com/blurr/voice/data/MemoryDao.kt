@@ -22,13 +22,13 @@ interface MemoryDao {
     suspend fun getMemoryById(id: Long): Memory?
     
     @Delete
-    suspend fun deleteMemory(memory: Memory): Unit
+    suspend fun deleteMemory(memory: Memory)
     
     @Query("DELETE FROM memories WHERE id = :id")
-    suspend fun deleteMemoryById(id: Long): Unit
+    suspend fun deleteMemoryById(id: Long)
     
     @Query("DELETE FROM memories")
-    suspend fun deleteAllMemories(): Unit
+    suspend fun deleteAllMemories()
     
     @Query("SELECT COUNT(*) FROM memories")
     suspend fun getMemoryCount(): Int
