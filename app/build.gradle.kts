@@ -191,10 +191,10 @@ dependencies {
     
     // Ktor client for MCP SDK (required dependency)
     // Reference: https://ktor.io/docs/client-dependencies.html
-    implementation("io.ktor:ktor-client-cio:3.0.2")
-    implementation("io.ktor:ktor-client-core:3.0.2")
-    implementation("io.ktor:ktor-client-content-negotiation:3.0.2")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.2")
+    implementation("io.ktor:ktor-client-cio:2.3.8")
+    implementation("io.ktor:ktor-client-core:2.3.8")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.8")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.8")
     
     // Flutter module integration
     // Use the real Flutter module when it's available/configured; otherwise fall back to stubs
