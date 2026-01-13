@@ -207,15 +207,3 @@ class MCPClient(
         return servers.keys.mapNotNull { getServerInfo(it) }
     }
 }
-
-/**
- * Server information data class
- */
-data class MCPServerInfo(
-    val name: String,
-    val protocolVersion: String,
-    val serverName: String,
-    val serverVersion: String,
-    val toolCount: Int,
-    val isConnected: Boolean
-)

@@ -13,8 +13,8 @@ import com.blurr.voice.tools.ToolResult
  * by the Ultra-Generalist Agent.
  */
 class MCPToolAdapter(
-    private val mcpTool: MCPTool,
-    private val server: MCPServer
+    internal val mcpTool: MCPTool,
+    internal val mcpServer: MCPServer
 ) : Tool {
     
     companion object {
@@ -22,7 +22,7 @@ class MCPToolAdapter(
     }
     
     override val name: String
-        get() = "${server.name}:${mcpTool.name}"
+        get() = "${mcpServer.name}:${mcpTool.name}"
     
     override val description: String
         get() = mcpTool.description
@@ -64,7 +64,7 @@ class MCPToolAdapter(
             }
             
             // Call MCP server tool
-            val result = server.callTool(mcpTool.name, params)
+            val result = mcpServer.callTool(mcpTool.name, params)
             
             // Parse result
             val content = result.optJSONArray("content")
@@ -84,7 +84,7 @@ class MCPToolAdapter(
                 data = data,
                 error = null,
                 metadata = mapOf(
-                    "server" to server.name,
+                    "server" to mcpServer.name,
                     "mcp_tool" to mcpTool.name
                 )
             )

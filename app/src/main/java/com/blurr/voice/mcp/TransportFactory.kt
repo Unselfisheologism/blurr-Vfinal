@@ -1,7 +1,7 @@
 package com.blurr.voice.mcp
 
 import android.content.Context
-import io.modelcontextprotocol.kotlin.sdk.shared.Transport
+import io.modelcontextprotocol.kotlin.sdk.client.ClientTransport
 
 /**
  * Factory for creating MCP transport instances using official SDK
@@ -21,7 +21,7 @@ object TransportFactory {
         type: TransportType,
         url: String,
         context: Context
-    ): Transport {
+    ): ClientTransport {
         return when (type) {
             TransportType.HTTP -> {
                 // Create HTTP transport using official SDK

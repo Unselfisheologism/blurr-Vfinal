@@ -2,7 +2,7 @@ package com.blurr.voice.mcp
 
 import android.content.Context
 import android.util.Log
-import io.modelcontextprotocol.kotlin.sdk.ClientTransport
+import io.modelcontextprotocol.kotlin.sdk.client.ClientTransport
 import io.modelcontextprotocol.kotlin.sdk.client.StdioClientTransport
 import kotlinx.io.asSource
 import kotlinx.io.asSink
