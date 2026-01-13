@@ -3,6 +3,7 @@ buildscript {
     repositories {
         // Prioritize Google's Maven for Kotlin and Android dependencies
         google()
+        gradlePluginPortal()
         maven { url = uri("https://storage.googleapis.com/download.flutter.io") }
         maven { url = uri("https://chaquo.com/maven") }
         // Maven Central as fallback - repository order ensures Google's Maven is checked first
