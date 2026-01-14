@@ -6,6 +6,7 @@ import io.modelcontextprotocol.kotlin.sdk.client.StdioClientTransport
 import kotlinx.io.asSource
 import kotlinx.io.asSink
 import kotlinx.io.buffered
+import kotlinx.coroutines.runBlocking
 
 /**
  * Stdio Transport Implementation using Official MCP Kotlin SDK
@@ -93,7 +94,11 @@ class StdioTransport(
      */
     fun close() {
         Log.d(TAG, "Closing Stdio transport")
-        transport?.close()
+        
+        // SDK transports implement Closeable with suspend close()
+        runBlocking {
+            transport?.close()
+        }
         process?.destroy()
         process = null
         transport = null

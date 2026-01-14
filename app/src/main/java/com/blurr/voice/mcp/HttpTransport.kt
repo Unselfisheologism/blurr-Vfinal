@@ -11,6 +11,7 @@ import io.ktor.client.plugins.sse.SSE
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import io.modelcontextprotocol.kotlin.sdk.client.StreamableHttpClientTransport
+import kotlinx.coroutines.runBlocking
 
 /**
  * HTTP Transport Implementation using Official MCP Kotlin SDK
@@ -77,8 +78,11 @@ class HttpTransport(
      */
     fun close() {
         Log.d(TAG, "Closing HTTP transport")
-        // SDK transports implement Closeable
-        transport?.close()
+        
+        // SDK transports implement Closeable with suspend close()
+        runBlocking {
+            transport?.close()
+        }
         httpClient?.close()
         transport = null
         httpClient = null

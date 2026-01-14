@@ -20,7 +20,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.blurr.voice.data.ToolPreferences
-import com.blurr.voice.mcp.MCPClient
+import com.blurr.voice.mcp.MCPServerManager
 import com.blurr.voice.tools.ToolRegistry
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -43,7 +43,7 @@ class ToolSelectionActivity : ComponentActivity() {
         
         val toolPreferences = ToolPreferences(this)
         val toolRegistry = ToolRegistry(this)
-        val mcpClient = MCPClient(this)
+        val mcpServerManager = MCPServerManager(this)
         
         setContent {
             MaterialTheme {
@@ -52,7 +52,7 @@ class ToolSelectionActivity : ComponentActivity() {
                         factory = ToolSelectionViewModelFactory(
                             toolPreferences,
                             toolRegistry,
-                            mcpClient
+                            mcpServerManager
                         )
                     ),
                     onBackPressed = { finish() }
@@ -245,7 +245,7 @@ fun ToolToggleItem(
 class ToolSelectionViewModel(
     private val toolPreferences: ToolPreferences,
     private val toolRegistry: ToolRegistry,
-    private val mcpClient: MCPClient
+    private val mcpServerManager: MCPServerManager
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(ToolSelectionUiState())
@@ -269,14 +269,14 @@ class ToolSelectionViewModel(
                 )
             }
             
-            // Load MCP tools (use raw to get all, regardless of enabled state)
-            val mcpTools = mcpClient.getAllToolsRaw().map { tool ->
+            // Load MCP tools from all connected servers
+            val mcpTools = mcpServerManager.getTools().map { toolInfo ->
                 ToolItem(
-                    name = tool.name,
-                    displayName = tool.name.replace("_", " ").capitalize(),
-                    description = tool.description,
+                    name = toolInfo.name,
+                    displayName = toolInfo.name.replace("_", " ").capitalize(),
+                    description = toolInfo.description ?: "",
                     category = "MCP",
-                    isEnabled = toolPreferences.isToolEnabled(tool.name),
+                    isEnabled = toolPreferences.isToolEnabled(toolInfo.name),
                     isMCP = true
                 )
             }
@@ -350,12 +350,12 @@ data class ToolItem(
 class ToolSelectionViewModelFactory(
     private val toolPreferences: ToolPreferences,
     private val toolRegistry: ToolRegistry,
-    private val mcpClient: MCPClient
+    private val mcpServerManager: MCPServerManager
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ToolSelectionViewModel::class.java)) {
-            return ToolSelectionViewModel(toolPreferences, toolRegistry, mcpClient) as T
+            return ToolSelectionViewModel(toolPreferences, toolRegistry, mcpServerManager) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

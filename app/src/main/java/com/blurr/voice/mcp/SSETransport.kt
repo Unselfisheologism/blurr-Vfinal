@@ -11,6 +11,7 @@ import io.ktor.client.plugins.sse.SSE
 import io.ktor.serialization.kotlinx.json.json
 import io.modelcontextprotocol.kotlin.sdk.client.SseClientTransport
 import kotlinx.serialization.json.Json
+import kotlinx.coroutines.runBlocking
 
 /**
  * SSE Transport Implementation using Official MCP Kotlin SDK
@@ -77,7 +78,11 @@ class SSETransport(
      */
     fun close() {
         Log.d(TAG, "Closing SSE transport")
-        transport?.close()
+        
+        // SDK transports implement Closeable with suspend close()
+        runBlocking {
+            transport?.close()
+        }
         httpClient?.close()
         transport = null
         httpClient = null
