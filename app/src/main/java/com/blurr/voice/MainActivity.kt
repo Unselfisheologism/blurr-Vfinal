@@ -480,11 +480,6 @@ class MainActivity : BaseNavigationActivity() {
                 DartExecutor.DartEntrypoint.createDefault()
             )
 
-            // Cache the engine for reuse
-            FlutterEngineCache
-                .getInstance()
-                .put("workflow_editor_engine", flutterEngine!!)
-
             // Initialize MCPServerManager (Phase 1)
             mcpServerManager = MCPServerManager(this)
 
@@ -538,6 +533,12 @@ class MainActivity : BaseNavigationActivity() {
                     }
                 }
             }
+
+            // Cache the engine for reuse AFTER handlers are set up
+            // This ensures the engine is fully initialized before being cached
+            FlutterEngineCache
+                .getInstance()
+                .put("workflow_editor_engine", flutterEngine!!)
 
             Logger.d("MainActivity", "Flutter engine initialized successfully")
         } catch (e: Exception) {

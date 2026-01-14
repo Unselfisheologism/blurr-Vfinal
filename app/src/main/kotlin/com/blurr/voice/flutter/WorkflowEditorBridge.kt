@@ -19,6 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.Result
 
 /**
  * Complete Kotlin bridge for Flutter workflow editor
@@ -438,15 +439,11 @@ class WorkflowEditorBridge(
 
                 // Create temporary test connection with timeout
                 val testResult = kotlinx.coroutines.withTimeoutOrNull(5000L) {
-                    try {
-                        mcpServerManager.connectServer(
-                            name = testServerName,
-                            url = url,
-                            transport = transportType
-                        )
-                    } catch (e: Exception) {
-                        kotlinx.coroutines.Result.failure<com.blurr.voice.mcp.MCPServerInfo>(e)
-                    }
+                    mcpServerManager.connectServer(
+                        name = testServerName,
+                        url = url,
+                        transport = transportType
+                    )
                 }
 
                 if (testResult == null) {
@@ -473,8 +470,8 @@ class WorkflowEditorBridge(
                         "message" to "Connection successful",
                         "serverInfo" to mapOf(
                             "name" to (serverInfo?.name ?: serverName),
-                            "version" to (serverInfo?.protocolVersion ?: "2024-11-05"),
-                            "protocolVersion" to (serverInfo?.protocolVersion ?: "2024-11-05"),
+                            "version" to "2024-11-05",
+                            "protocolVersion" to "2024-11-05",
                             "toolCount" to toolCount
                         )
                     ))
