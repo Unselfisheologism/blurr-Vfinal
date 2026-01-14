@@ -40,17 +40,18 @@ class UltraGeneralistAgent(
         private const val MAX_PLAN_STEPS = 10
     }
 
-    init {
-        // Load saved MCP servers on initialization
-        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
-            try {
-                Log.d(TAG, "Loading saved MCP servers...")
-                mcpServerManager.loadSavedServers()
-                val connectedServers = mcpServerManager.getConnectedServerNames()
-                Log.d(TAG, "Connected to ${connectedServers.size} MCP servers: $connectedServers")
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to load saved MCP servers", e)
-            }
+    /**
+     * Initialize agent and load saved MCP servers
+     * This should be called when the app starts to auto-connect to saved servers
+     */
+    suspend fun initialize() {
+        try {
+            Log.d(TAG, "Loading saved MCP servers...")
+            mcpServerManager.loadSavedServers()
+            val connectedServers = mcpServerManager.getConnectedServerNames()
+            Log.d(TAG, "Connected to ${connectedServers.size} MCP servers: $connectedServers")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to load saved MCP servers", e)
         }
     }
 

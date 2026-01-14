@@ -24,14 +24,22 @@ object AgentFactory {
             cachedAgent = it
         }
     }
-    
+
+    /**
+     * Initialize the cached agent (load saved MCP servers)
+     * This should be called from a proper lifecycle context (e.g., Application.onCreate)
+     */
+    suspend fun initializeAgent() {
+        cachedAgent?.initialize()
+    }
+
     /**
      * Get the confirmation handler (for UI to connect to)
      */
     fun getConfirmationHandler(): DefaultUserConfirmationHandler? {
         return cachedConfirmationHandler
     }
-    
+
     /**
      * Get the MCP server manager (for UI to connect to)
      */
