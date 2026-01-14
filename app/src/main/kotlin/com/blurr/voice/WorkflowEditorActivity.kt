@@ -9,6 +9,7 @@ import io.flutter.embedding.android.FlutterFragment
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.embedding.engine.dart.DartExecutor
+import io.flutter.plugin.common.MethodChannel
 
 /**
  * Activity for hosting the Flutter workflow editor
@@ -20,7 +21,7 @@ class WorkflowEditorActivity : AppCompatActivity() {
         private const val ENGINE_ID = "workflow_editor_engine"
         private const val TAG = "WorkflowEditorActivity"
     }
-    
+
     private var bridge: WorkflowEditorBridge? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,10 +40,14 @@ class WorkflowEditorActivity : AppCompatActivity() {
 
         // Get or create Flutter engine
         val flutterEngine = FlutterEngineCache.getInstance().get(ENGINE_ID)
-            ?: createFlutterEngine()
+        val isNewEngine = flutterEngine == null
+        val engine = flutterEngine ?: createFlutterEngine()
 
-        // Create bridge for platform communication
-        bridge = WorkflowEditorBridge(this, flutterEngine)
+        // Create bridge for platform communication only if we created a new engine
+        // If engine is from cache, MainActivity already set up the handlers
+        if (isNewEngine) {
+            bridge = WorkflowEditorBridge(this, engine)
+        }
 
         // Handle intent extras (workflow_json and auto_execute from AI agent)
         handleIntentExtras()

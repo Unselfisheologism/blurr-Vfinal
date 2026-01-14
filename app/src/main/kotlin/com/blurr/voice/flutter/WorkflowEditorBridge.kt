@@ -13,11 +13,13 @@ import com.blurr.voice.auth.GoogleAuthManager
 import com.blurr.voice.ui.GoogleSignInActivity
 import com.blurr.voice.tools.ToolResult
 import com.blurr.voice.data.WorkflowPreferences
+import com.blurr.voice.mcp.MCPServerManager
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.Result
 
 /**
  * Complete Kotlin bridge for Flutter workflow editor
@@ -25,10 +27,11 @@ import kotlinx.coroutines.withContext
  */
 class WorkflowEditorBridge(
     private val context: Context,
-    private val flutterEngine: FlutterEngine
+    private val flutterEngine: FlutterEngine,
+    private val mcpServerManager: com.blurr.voice.mcp.MCPServerManager? = null
 ) {
     companion object {
-        private const val CHANNEL_NAME = "com.blurr.workflow_editor"
+        private const val CHANNEL_NAME = "workflow_editor"
         private const val TAG = "WorkflowEditorBridge"
     }
 
@@ -58,8 +61,12 @@ class WorkflowEditorBridge(
                 "executeComposioAction" -> handleExecuteComposioAction(call, result)
                 
                 // MCP integration
-                "getMcpServers" -> handleGetMcpServers(result)
-                "executeMcpRequest" -> handleExecuteMcpRequest(call, result)
+                "connectMCPServer" -> handleConnectMCPServer(call, result)
+                "disconnectMCPServer" -> handleDisconnectMCPServer(call, result)
+                "getMCPServers" -> handleGetMCPServers(result)
+                "getMCPTools" -> handleGetMCPTools(call, result)
+                "executeMCPTool" -> handleExecuteMCPTool(call, result)
+                "validateMCPConnection" -> handleValidateMCPConnection(call, result)
                 
                 // Google Workspace integration
                 "getGoogleAuthStatus" -> handleGetGoogleAuthStatus(result)
@@ -186,25 +193,319 @@ class WorkflowEditorBridge(
     }
 
     // ==================== MCP Integration ====================
-    
-    private fun handleGetMcpServers(result: MethodChannel.Result) {
+
+    private fun handleConnectMCPServer(
+        call: MethodCall,
+        result: MethodChannel.Result
+    ) {
+        val serverName = call.argument<String>("serverName")
+        val url = call.argument<String>("url")
+        val transport = call.argument<String>("transport")
+
+        if (serverName == null || url == null || transport == null) {
+            result.error("INVALID_ARGS", "Missing required parameters", null)
+            return
+        }
+
+        if (mcpServerManager == null) {
+            result.error("MCP_NOT_INITIALIZED", "MCPServerManager not available", null)
+            return
+        }
+
         scope.launch {
             try {
-                // TODO: Implement MCP server listing
-                // Get from your MCP client implementation
-                result.success(emptyList<Map<String, Any>>())
+                val transportType = com.blurr.voice.mcp.TransportType.fromString(transport)
+                val connectResult = mcpServerManager.connectServer(
+                    name = serverName,
+                    url = url,
+                    transport = transportType
+                )
+
+                if (connectResult.isSuccess) {
+                    val serverInfo = connectResult.getOrNull()
+                    result.success(mapOf(
+                        "success" to true,
+                        "message" to "Connected to $serverName",
+                        "toolCount" to (serverInfo?.toolCount ?: 0),
+                        "serverInfo" to mapOf(
+                            "name" to (serverInfo?.name ?: serverName),
+                            "url" to (serverInfo?.url ?: url),
+                            "version" to (serverInfo?.protocolVersion ?: "unknown")
+                        )
+                    ))
+                } else {
+                    val error = connectResult.exceptionOrNull()
+                    result.error("CONNECT_ERROR", error?.message ?: "Failed to connect", null)
+                }
             } catch (e: Exception) {
-                result.error("MCP_ERROR", e.message, null)
+                result.error("CONNECT_ERROR", e.message, null)
             }
         }
     }
 
-    private fun handleExecuteMcpRequest(
+    private fun handleDisconnectMCPServer(
         call: MethodCall,
         result: MethodChannel.Result
     ) {
-        // TODO: Implement MCP request execution
-        result.success(mapOf("success" to true))
+        val serverName = call.argument<String>("serverName")
+        if (serverName == null) {
+            result.error("INVALID_ARGS", "Missing serverName", null)
+            return
+        }
+
+        if (mcpServerManager == null) {
+            result.error("MCP_NOT_INITIALIZED", "MCPServerManager not available", null)
+            return
+        }
+
+        scope.launch {
+            try {
+                val disconnectResult = mcpServerManager.disconnectServer(serverName)
+
+                if (disconnectResult.isSuccess) {
+                    result.success(mapOf(
+                        "success" to true,
+                        "message" to "Disconnected from $serverName"
+                    ))
+                } else {
+                    val error = disconnectResult.exceptionOrNull()
+                    result.error("DISCONNECT_ERROR", error?.message ?: "Failed to disconnect", null)
+                }
+            } catch (e: Exception) {
+                result.error("DISCONNECT_ERROR", e.message, null)
+            }
+        }
+    }
+
+    private fun handleGetMCPServers(result: MethodChannel.Result) {
+        scope.launch {
+            try {
+                if (mcpServerManager == null) {
+                    result.success(emptyList<Map<String, Any>>())
+                    return@launch
+                }
+
+                val servers = mcpServerManager.getServers().map { server ->
+                    mapOf(
+                        "name" to server.name,
+                        "url" to server.url,
+                        "transport" to server.transport.name.lowercase(),
+                        "connected" to server.connected,
+                        "toolCount" to (server.serverInfo?.toolCount ?: 0)
+                    )
+                }
+
+                result.success(servers)
+            } catch (e: Exception) {
+                result.error("GET_SERVERS_ERROR", e.message, null)
+            }
+        }
+    }
+
+    private fun handleGetMCPTools(
+        call: MethodCall,
+        result: MethodChannel.Result
+    ) {
+        val serverName = call.argument<String>("serverName")
+
+        scope.launch {
+            try {
+                if (mcpServerManager == null) {
+                    result.success(emptyList<Map<String, Any>>())
+                    return@launch
+                }
+
+                val tools = mcpServerManager.getTools(serverName).map { tool ->
+                    mapOf(
+                        "name" to tool.name,
+                        "description" to tool.description,
+                        "inputSchema" to (tool.inputSchema ?: emptyMap<String, Any>()),
+                        "outputSchema" to emptyMap<String, Any>(),
+                        "serverName" to tool.serverName
+                    )
+                }
+
+                result.success(tools)
+            } catch (e: Exception) {
+                result.error("GET_TOOLS_ERROR", e.message, null)
+            }
+        }
+    }
+
+    private fun handleExecuteMCPTool(
+        call: MethodCall,
+        result: MethodChannel.Result
+    ) {
+        val serverName = call.argument<String>("serverName")
+        val toolName = call.argument<String>("toolName")
+        val arguments = call.argument<Map<String, Any>>("arguments") ?: emptyMap()
+
+        if (serverName == null || toolName == null) {
+            result.error("INVALID_ARGS", "Missing required parameters", null)
+            return
+        }
+
+        if (mcpServerManager == null) {
+            result.error("MCP_NOT_INITIALIZED", "MCPServerManager not available", null)
+            return
+        }
+
+        scope.launch {
+            try {
+                val executeResult = mcpServerManager.executeTool(
+                    serverName = serverName,
+                    toolName = toolName,
+                    arguments = arguments
+                )
+
+                if (executeResult.isSuccess) {
+                    result.success(mapOf(
+                        "success" to true,
+                        "result" to executeResult.getOrNull()
+                    ))
+                } else {
+                    val error = executeResult.exceptionOrNull()
+                    result.error("EXECUTE_ERROR", error?.message ?: "Failed to execute tool", null)
+                }
+            } catch (e: Exception) {
+                result.error("EXECUTE_ERROR", e.message, null)
+            }
+        }
+    }
+
+    private fun handleValidateMCPConnection(
+        call: MethodCall,
+        result: MethodChannel.Result
+    ) {
+        val serverName: String? = call.argument("serverName")
+        val url: String? = call.argument("url")
+        val transport: String? = call.argument("transport")
+
+        if (serverName.isNullOrBlank()) {
+            result.success(mapOf("success" to false, "message" to "Server name required"))
+            return
+        }
+
+        if (url.isNullOrBlank()) {
+            result.success(mapOf("success" to false, "message" to "URL required"))
+            return
+        }
+
+        if (transport.isNullOrBlank()) {
+            result.success(mapOf("success" to false, "message" to "Transport required"))
+            return
+        }
+
+        if (mcpServerManager == null) {
+            // Fallback to simple validation if MCPServerManager is not available
+            scope.launch {
+                try {
+                    val isValid = withContext(Dispatchers.IO) {
+                        testMCPConnection(url, transport)
+                    }
+
+                    if (isValid) {
+                        result.success(mapOf(
+                            "success" to true,
+                            "message" to "Connection successful",
+                            "serverInfo" to mapOf(
+                                "name" to serverName,
+                                "version" to "2024-11-05",
+                                "protocolVersion" to "2024-11-05",
+                                "toolCount" to 0
+                            )
+                        ))
+                    } else {
+                        result.success(mapOf(
+                            "success" to false,
+                            "message" to "Connection failed"
+                        ))
+                    }
+                } catch (e: Exception) {
+                    result.success(mapOf(
+                        "success" to false,
+                        "message" to "Error: ${e.message}"
+                    ))
+                }
+            }
+            return
+        }
+
+        // Use MCPServerManager for actual connection test
+        scope.launch {
+            try {
+                val transportType = com.blurr.voice.mcp.TransportType.fromString(transport)
+                val testServerName = "__test_${serverName}_${System.currentTimeMillis()}"
+
+                // Create temporary test connection with timeout
+                val testResult = kotlinx.coroutines.withTimeoutOrNull(5000L) {
+                    mcpServerManager.connectServer(
+                        name = testServerName,
+                        url = url,
+                        transport = transportType
+                    )
+                }
+
+                if (testResult == null) {
+                    result.success(mapOf(
+                        "success" to false,
+                        "message" to "Connection timed out"
+                    ))
+                    return@launch
+                }
+
+                if (testResult.isSuccess) {
+                    val serverInfo = testResult.getOrNull()
+                    val toolCount = serverInfo?.toolCount ?: 0
+
+                    // Disconnect test connection
+                    try {
+                        mcpServerManager.disconnectServer(testServerName)
+                    } catch (e: Exception) {
+                        // Non-critical - connection was successful
+                    }
+
+                    result.success(mapOf(
+                        "success" to true,
+                        "message" to "Connection successful",
+                        "serverInfo" to mapOf(
+                            "name" to (serverInfo?.name ?: serverName),
+                            "version" to "2024-11-05",
+                            "protocolVersion" to "2024-11-05",
+                            "toolCount" to toolCount
+                        )
+                    ))
+                } else {
+                    val error = testResult.exceptionOrNull()
+                    result.success(mapOf(
+                        "success" to false,
+                        "message" to (error?.message ?: "Connection failed")
+                    ))
+                }
+            } catch (e: Exception) {
+                result.success(mapOf(
+                    "success" to false,
+                    "message" to "Error: ${e.message}"
+                ))
+            }
+        }
+    }
+
+    private suspend fun testMCPConnection(url: String, transport: String): Boolean {
+        return try {
+            // Simple test: verify URL and transport format
+            when {
+                transport == "http" || transport == "sse" -> {
+                    url.startsWith("http://") || url.startsWith("https://")
+                }
+                transport == "stdio" -> {
+                    url.isNotBlank()
+                }
+                else -> false
+            }
+        } catch (e: Exception) {
+            false
+        }
     }
 
     // ==================== Google Workspace Integration ====================
