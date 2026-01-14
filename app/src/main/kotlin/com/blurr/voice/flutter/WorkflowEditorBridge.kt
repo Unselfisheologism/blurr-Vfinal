@@ -28,7 +28,7 @@ class WorkflowEditorBridge(
     private val flutterEngine: FlutterEngine
 ) {
     companion object {
-        private const val CHANNEL_NAME = "com.blurr.workflow_editor"
+        private const val CHANNEL_NAME = "workflow_editor"
         private const val TAG = "WorkflowEditorBridge"
     }
 
@@ -50,8 +50,12 @@ class WorkflowEditorBridge(
     private fun setupMethodCallHandler() {
         methodChannel.setMethodCallHandler { call, result ->
             when (call.method) {
+                // Platform info
+                "getPlatformVersion" -> handleGetPlatformVersion(result)
+                
                 // Pro status
                 "getProStatus" -> handleGetProStatus(result)
+                "hasProSubscription" -> handleHasProSubscription(result)
                 
                 // Composio integration
                 "getComposioTools" -> handleGetComposioTools(result)
@@ -60,6 +64,12 @@ class WorkflowEditorBridge(
                 // MCP integration
                 "getMcpServers" -> handleGetMcpServers(result)
                 "executeMcpRequest" -> handleExecuteMcpRequest(call, result)
+                "connectMCPServer" -> handleConnectMCPServer(call, result)
+                "disconnectMCPServer" -> handleDisconnectMCPServer(call, result)
+                "getMCPServers" -> handleGetMCPServersDetailed(result)
+                "getMCPTools" -> handleGetMCPTools(call, result)
+                "executeMCPTool" -> handleExecuteMCPTool(call, result)
+                "validateMCPConnection" -> handleValidateMCPConnection(call, result)
                 
                 // Google Workspace integration
                 "getGoogleAuthStatus" -> handleGetGoogleAuthStatus(result)
@@ -74,10 +84,22 @@ class WorkflowEditorBridge(
                 "requestAccessibilityPermission" -> handleRequestAccessibilityPermission(result)
                 "requestNotificationListenerPermission" -> handleRequestNotificationListenerPermission(result)
                 
+                // Legacy methods (from old handler)
+                "executeUnifiedShell" -> handleExecuteUnifiedShell(call, result)
+                "executeHttpRequest" -> handleExecuteHttpRequest(call, result)
+                "executePhoneControl" -> handleExecutePhoneControl(call, result)
+                "sendNotification" -> handleSendNotification(call, result)
+                "callAIAssistant" -> handleCallAIAssistant(call, result)
+                
                 // Workflow storage
                 "saveWorkflow" -> handleSaveWorkflow(call, result)
                 "loadWorkflow" -> handleLoadWorkflow(call, result)
                 "getWorkflows" -> handleGetWorkflows(result)
+                "listWorkflows" -> handleListWorkflows(result)
+                "scheduleWorkflow" -> handleScheduleWorkflow(call, result)
+                "exportWorkflow" -> handleExportWorkflow(call, result)
+                "importWorkflow" -> handleImportWorkflow(call, result)
+                "getWorkflowTemplates" -> handleGetWorkflowTemplates(result)
                 
                 // UI
                 "showProUpgradeDialog" -> handleShowProUpgradeDialog(call, result)
@@ -87,9 +109,34 @@ class WorkflowEditorBridge(
         }
     }
 
+    // ==================== Platform Info ====================
+    
+    private fun handleGetPlatformVersion(result: MethodChannel.Result) {
+        scope.launch {
+            try {
+                result.success("Android ${android.os.Build.VERSION.RELEASE}")
+            } catch (e: Exception) {
+                result.error("ERROR", e.message, null)
+            }
+        }
+    }
+
     // ==================== Pro Status ====================
     
     private fun handleGetProStatus(result: MethodChannel.Result) {
+        scope.launch {
+            try {
+                val isPro = withContext(Dispatchers.IO) {
+                    freemiumManager.hasComposioAccess()
+                }
+                result.success(isPro)
+            } catch (e: Exception) {
+                result.error("PRO_STATUS_ERROR", e.message, null)
+            }
+        }
+    }
+
+    private fun handleHasProSubscription(result: MethodChannel.Result) {
         scope.launch {
             try {
                 val isPro = withContext(Dispatchers.IO) {
@@ -205,6 +252,283 @@ class WorkflowEditorBridge(
     ) {
         // TODO: Implement MCP request execution
         result.success(mapOf("success" to true))
+    }
+
+    // ==================== MCP Server Management ====================
+
+    private fun handleConnectMCPServer(call: MethodCall, result: MethodChannel.Result) {
+        val serverName = call.argument<String>("serverName")
+            ?: return result.error("INVALID_ARGS", "Missing serverName", null)
+        val url = call.argument<String>("url")
+            ?: return result.error("INVALID_ARGS", "Missing url", null)
+        val transport = call.argument<String>("transport")
+            ?: return result.error("INVALID_ARGS", "Missing transport", null)
+
+        scope.launch {
+            try {
+                val mcpManager = com.blurr.voice.mcp.MCPServerManager(context)
+                val transportType = com.blurr.voice.mcp.TransportType.fromString(transport)
+                val connectResult = mcpManager.connectServer(
+                    name = serverName,
+                    url = url,
+                    transport = transportType
+                )
+
+                when {
+                    connectResult.isSuccess -> {
+                        val serverInfo = connectResult.getOrNull()
+                        result.success(mapOf(
+                            "success" to true,
+                            "message" to "Connected to $serverName",
+                            "toolCount" to (serverInfo?.toolCount ?: 0),
+                            "serverInfo" to mapOf(
+                                "name" to (serverInfo?.name ?: serverName),
+                                "url" to (serverInfo?.url ?: url),
+                                "version" to (serverInfo?.protocolVersion ?: "unknown")
+                            )
+                        ))
+                    }
+                    else -> {
+                        val error = connectResult.exceptionOrNull()
+                        result.success(mapOf(
+                            "success" to false,
+                            "message" to (error?.message ?: "Unknown error connecting to server")
+                        ))
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error connecting MCP server", e)
+                result.success(mapOf(
+                    "success" to false,
+                    "message" to e.message.orEmpty()
+                ))
+            }
+        }
+    }
+
+    private fun handleDisconnectMCPServer(call: MethodCall, result: MethodChannel.Result) {
+        val serverName = call.argument<String>("serverName")
+            ?: return result.error("INVALID_ARGS", "Missing serverName", null)
+
+        scope.launch {
+            try {
+                val mcpManager = com.blurr.voice.mcp.MCPServerManager(context)
+                val disconnectResult = mcpManager.disconnectServer(serverName)
+
+                when {
+                    disconnectResult.isSuccess -> {
+                        result.success(mapOf(
+                            "success" to true,
+                            "message" to "Disconnected from $serverName"
+                        ))
+                    }
+                    else -> {
+                        val error = disconnectResult.exceptionOrNull()
+                        result.success(mapOf(
+                            "success" to false,
+                            "message" to (error?.message ?: "Error disconnecting from server")
+                        ))
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error disconnecting MCP server", e)
+                result.success(mapOf(
+                    "success" to false,
+                    "message" to e.message.orEmpty()
+                ))
+            }
+        }
+    }
+
+    private fun handleGetMCPServersDetailed(result: MethodChannel.Result) {
+        scope.launch {
+            try {
+                val mcpManager = com.blurr.voice.mcp.MCPServerManager(context)
+                val servers = mcpManager.getServers().map { server ->
+                    mapOf(
+                        "name" to server.name,
+                        "url" to server.url,
+                        "transport" to server.transport.name.lowercase(),
+                        "connected" to server.connected,
+                        "toolCount" to (server.serverInfo?.toolCount ?: 0)
+                    )
+                }
+                result.success(servers)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error getting MCP servers", e)
+                result.success(emptyList())
+            }
+        }
+    }
+
+    private fun handleGetMCPTools(call: MethodCall, result: MethodChannel.Result) {
+        val serverName = call.argument<String>("serverName")
+
+        scope.launch {
+            try {
+                val mcpManager = com.blurr.voice.mcp.MCPServerManager(context)
+                val tools = mcpManager.getTools(serverName).map { tool ->
+                    mapOf(
+                        "name" to tool.name,
+                        "description" to tool.description,
+                        "inputSchema" to (tool.inputSchema ?: emptyMap<String, Any>()),
+                        "outputSchema" to emptyMap<String, Any>(),
+                        "serverName" to tool.serverName
+                    )
+                }
+                result.success(tools)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error getting MCP tools", e)
+                result.success(emptyList())
+            }
+        }
+    }
+
+    private fun handleExecuteMCPTool(call: MethodCall, result: MethodChannel.Result) {
+        val serverName = call.argument<String>("serverName")
+        if (serverName == null) {
+            result.error("INVALID_ARGS", "Missing serverName", null)
+            return
+        }
+        val toolName = call.argument<String>("toolName")
+        if (toolName == null) {
+            result.error("INVALID_ARGS", "Missing toolName", null)
+            return
+        }
+        val arguments = call.argument<Map<String, Any>>("arguments") ?: emptyMap()
+
+        scope.launch {
+            try {
+                val mcpManager = com.blurr.voice.mcp.MCPServerManager(context)
+                val executeResult = mcpManager.executeTool(
+                    serverName = serverName,
+                    toolName = toolName,
+                    arguments = arguments
+                )
+
+                when {
+                    executeResult.isSuccess -> {
+                        result.success(mapOf(
+                            "success" to true,
+                            "result" to (executeResult.getOrNull() ?: "")
+                        ))
+                    }
+                    else -> {
+                        val error = executeResult.exceptionOrNull()
+                        result.success(mapOf(
+                            "success" to false,
+                            "error" to (error?.message ?: "Unknown error executing tool")
+                        ))
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error executing MCP tool", e)
+                result.success(mapOf(
+                    "success" to false,
+                    "error" to e.message.orEmpty()
+                ))
+            }
+        }
+    }
+
+    private fun handleValidateMCPConnection(call: MethodCall, result: MethodChannel.Result) {
+        val serverName = call.argument<String>("serverName")
+        if (serverName == null) {
+            result.error("INVALID_ARGS", "Missing serverName", null)
+            return
+        }
+        val url = call.argument<String>("url")
+        if (url == null) {
+            result.error("INVALID_ARGS", "Missing url", null)
+            return
+        }
+        val transport = call.argument<String>("transport")
+        if (transport == null) {
+            result.error("INVALID_ARGS", "Missing transport", null)
+            return
+        }
+        val timeout = call.argument<Long>("timeout") ?: 5000L
+
+        scope.launch {
+            try {
+                Log.d(TAG, "=== Validating MCP Connection ===")
+                Log.d(TAG, "Server: $serverName, URL: $url, Transport: $transport, Timeout: $timeout")
+
+                val mcpManager = com.blurr.voice.mcp.MCPServerManager(context)
+                val transportType = com.blurr.voice.mcp.TransportType.fromString(transport)
+
+                // Create temporary test connection with timeout
+                val testServerName = "__test_${serverName}_${System.currentTimeMillis()}"
+                Log.d(TAG, "Creating temporary test connection: $testServerName")
+
+                val connectResult = kotlinx.coroutines.withTimeoutOrNull(timeout) {
+                    try {
+                        mcpManager.connectServer(
+                            name = testServerName,
+                            url = url,
+                            transport = transportType
+                        )
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Exception during connection attempt", e)
+                        kotlinx.coroutines.Result.failure<com.blurr.voice.mcp.MCPServerInfo>(e)
+                    }
+                }
+
+                // Handle timeout
+                if (connectResult == null) {
+                    Log.w(TAG, "Connection test timed out after ${timeout}ms")
+                    result.success(mapOf(
+                        "success" to false,
+                        "message" to "Connection timed out after ${timeout}ms"
+                    ))
+                    return@launch
+                }
+
+                // Process connection result
+                when {
+                    connectResult.isSuccess -> {
+                        Log.d(TAG, "Connection successful!")
+                        val serverInfo = connectResult.getOrNull()
+                        val toolCount = serverInfo?.toolCount ?: 0
+
+                        // Disconnect test connection
+                        try {
+                            mcpManager.disconnectServer(testServerName)
+                            Log.d(TAG, "Test connection closed successfully")
+                        } catch (e: Exception) {
+                            Log.w(TAG, "Failed to disconnect test connection (non-critical)", e)
+                        }
+
+                        Log.d(TAG, "=== Validation Successful ===")
+                        result.success(mapOf(
+                            "success" to true,
+                            "message" to "Connection valid",
+                            "toolCount" to toolCount,
+                            "serverInfo" to mapOf(
+                                "name" to (serverInfo?.name ?: serverName),
+                                "version" to (serverInfo?.protocolVersion ?: "unknown"),
+                                "protocolVersion" to (serverInfo?.protocolVersion ?: "2024-11-05")
+                            )
+                        ))
+                    }
+                    else -> {
+                        val error = connectResult.exceptionOrNull()
+                        Log.e(TAG, "Connection failed", error)
+                        Log.d(TAG, "=== Validation Failed ===")
+                        result.success(mapOf(
+                            "success" to false,
+                            "message" to (error?.message ?: "Connection validation failed")
+                        ))
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Unexpected error in validateMCPConnection", e)
+                result.success(mapOf(
+                    "success" to false,
+                    "message" to "Validation error: ${e.message ?: "Unknown error"}"
+                ))
+            }
+        }
     }
 
     // ==================== Google Workspace Integration ====================
@@ -596,6 +920,161 @@ class WorkflowEditorBridge(
             result.success(true)
         } catch (e: Exception) {
             result.error("NOTIFICATION_REQUEST_ERROR", e.message, null)
+        }
+    }
+
+    // ==================== Legacy Methods ====================
+
+    private fun handleExecuteUnifiedShell(call: MethodCall, result: MethodChannel.Result) {
+        scope.launch {
+            try {
+                val code = call.argument<String>("code")
+                if (code == null) {
+                    result.error("INVALID_ARGS", "code required", null)
+                    return@launch
+                }
+                val language = call.argument<String>("language") ?: "auto"
+                val timeout = call.argument<Int>("timeout") ?: 30
+                val inputs = call.argument<Map<String, Any>>("inputs") ?: emptyMap()
+                
+                val unifiedShellTool = com.blurr.voice.tools.UnifiedShellTool(context)
+                val toolResult = withContext(Dispatchers.IO) {
+                    val params = mapOf(
+                        "code" to code,
+                        "language" to language,
+                        "timeout" to timeout,
+                        "inputs" to inputs
+                    )
+                    unifiedShellTool.execute(params, emptyList())
+                }
+                
+                val response = mapOf(
+                    "success" to toolResult.success,
+                    "output" to toolResult.getDataAsString(),
+                    "error" to toolResult.error
+                )
+                result.success(response)
+            } catch (e: Exception) {
+                result.error("SHELL_ERROR", e.message, null)
+            }
+        }
+    }
+
+    private fun handleExecuteHttpRequest(call: MethodCall, result: MethodChannel.Result) {
+        scope.launch {
+            try {
+                result.success(mapOf("success" to true))
+            } catch (e: Exception) {
+                result.error("HTTP_ERROR", e.message, null)
+            }
+        }
+    }
+
+    private fun handleExecutePhoneControl(call: MethodCall, result: MethodChannel.Result) {
+        val action = call.argument<String>("action")
+        if (action == null) {
+            result.error("INVALID_ARGS", "action required", null)
+            return
+        }
+        val parameters = call.argument<Map<String, Any>>("parameters") ?: emptyMap()
+
+        scope.launch {
+            try {
+                val phoneControlTool = com.blurr.voice.tools.PhoneControlTool(context)
+                val toolResult = withContext(Dispatchers.IO) {
+                    val params = mutableMapOf<String, Any>("action" to action)
+                    parameters.forEach { (k, v) -> params[k] = v }
+                    phoneControlTool.execute(params, emptyList())
+                }
+                result.success(mapOf(
+                    "success" to toolResult.success,
+                    "data" to toolResult.data,
+                    "error" to toolResult.error
+                ))
+            } catch (e: Exception) {
+                result.error("PHONE_CONTROL_ERROR", e.message, null)
+            }
+        }
+    }
+
+    private fun handleSendNotification(call: MethodCall, result: MethodChannel.Result) {
+        scope.launch {
+            try {
+                val title = call.argument<String>("title") ?: ""
+                val message = call.argument<String>("message") ?: ""
+                val channelId = call.argument<String>("channelId") ?: "workflow_notifications"
+                
+                // TODO: Implement actual notification sending
+                result.success(true)
+            } catch (e: Exception) {
+                result.error("NOTIFICATION_ERROR", e.message, null)
+            }
+        }
+    }
+
+    private fun handleCallAIAssistant(call: MethodCall, result: MethodChannel.Result) {
+        scope.launch {
+            try {
+                result.success(mapOf("success" to true))
+            } catch (e: Exception) {
+                result.error("AI_ASSISTANT_ERROR", e.message, null)
+            }
+        }
+    }
+
+    private fun handleListWorkflows(result: MethodChannel.Result) {
+        // Alias for getWorkflows
+        handleGetWorkflows(result)
+    }
+
+    private fun handleScheduleWorkflow(call: MethodCall, result: MethodChannel.Result) {
+        scope.launch {
+            try {
+                result.success(true)
+            } catch (e: Exception) {
+                result.error("SCHEDULE_ERROR", e.message, null)
+            }
+        }
+    }
+
+    private fun handleExportWorkflow(call: MethodCall, result: MethodChannel.Result) {
+        scope.launch {
+            try {
+                val workflowId = call.argument<String>("workflowId") ?: return@launch result.error("INVALID_ARGS", "workflowId required", null)
+                val json = withContext(Dispatchers.IO) {
+                    workflowPrefs.getWorkflow(workflowId)
+                }
+                result.success(json ?: "")
+            } catch (e: Exception) {
+                result.error("EXPORT_ERROR", e.message, null)
+            }
+        }
+    }
+
+    private fun handleImportWorkflow(call: MethodCall, result: MethodChannel.Result) {
+        scope.launch {
+            try {
+                val workflowJson = call.argument<String>("workflowJson") ?: return@launch result.error("INVALID_ARGS", "workflowJson required", null)
+                val workflow = gson.fromJson(workflowJson, Map::class.java)
+                val workflowId = workflow["id"] as? String ?: "imported_${System.currentTimeMillis()}"
+                
+                withContext(Dispatchers.IO) {
+                    workflowPrefs.saveWorkflow(workflowId, workflowJson)
+                }
+                result.success(workflowId)
+            } catch (e: Exception) {
+                result.error("IMPORT_ERROR", e.message, null)
+            }
+        }
+    }
+
+    private fun handleGetWorkflowTemplates(result: MethodChannel.Result) {
+        scope.launch {
+            try {
+                result.success(emptyList<Map<String, Any>>())
+            } catch (e: Exception) {
+                result.error("TEMPLATES_ERROR", e.message, null)
+            }
         }
     }
 
