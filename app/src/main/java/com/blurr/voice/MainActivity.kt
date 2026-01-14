@@ -623,21 +623,104 @@ class MainActivity : BaseNavigationActivity() {
     }
 
     private suspend fun handleValidateMCPConnection(call: MethodCall, result: MethodChannel.Result) {
-        val serverName = call.argument<String>("serverName")
-            ?: return result.error("INVALID_ARGS", "Missing serverName", null)
-        val url = call.argument<String>("url")
-            ?: return result.error("INVALID_ARGS", "Missing url", null)
-        val transport = call.argument<String>("transport")
-            ?: return result.error("INVALID_ARGS", "Missing transport", null)
-        val timeout = call.argument<Long>("timeout") ?: 5000L
-
         try {
-            val response = newWorkflowEditorHandler?.validateMCPConnection(serverName, url, transport, timeout)
-                ?: return result.error("HANDLER_ERROR", "WorkflowEditorHandler not initialized", null)
-            result.success(response)
+            Log.d("MainActivity", "=== handleValidateMCPConnection called ===")
+            
+            val serverName = call.argument<String>("serverName")
+            val url = call.argument<String>("url")
+            val transport = call.argument<String>("transport")
+            val timeout = call.argument<Long>("timeout") ?: 5000L
+
+            Log.d("MainActivity", "Arguments: serverName=$serverName, url=$url, transport=$transport, timeout=$timeout")
+
+            // Validate arguments
+            if (serverName.isNullOrBlank()) {
+                Log.w("MainActivity", "Missing serverName argument")
+                try {
+                    result.success(mapOf(
+                        "success" to false,
+                        "message" to "Missing serverName argument"
+                    ))
+                } catch (resultError: Exception) {
+                    Log.e("MainActivity", "Failed to send error result", resultError)
+                }
+                return
+            }
+
+            if (url.isNullOrBlank()) {
+                Log.w("MainActivity", "Missing url argument")
+                try {
+                    result.success(mapOf(
+                        "success" to false,
+                        "message" to "Missing url argument"
+                    ))
+                } catch (resultError: Exception) {
+                    Log.e("MainActivity", "Failed to send error result", resultError)
+                }
+                return
+            }
+
+            if (transport.isNullOrBlank()) {
+                Log.w("MainActivity", "Missing transport argument")
+                try {
+                    result.success(mapOf(
+                        "success" to false,
+                        "message" to "Missing transport argument"
+                    ))
+                } catch (resultError: Exception) {
+                    Log.e("MainActivity", "Failed to send error result", resultError)
+                }
+                return
+            }
+
+            // Check handler initialization
+            if (newWorkflowEditorHandler == null) {
+                Log.e("MainActivity", "WorkflowEditorHandler not initialized")
+                try {
+                    result.success(mapOf(
+                        "success" to false,
+                        "message" to "WorkflowEditorHandler not initialized"
+                    ))
+                } catch (resultError: Exception) {
+                    Log.e("MainActivity", "Failed to send error result", resultError)
+                }
+                return
+            }
+
+            // Call handler
+            try {
+                Log.d("MainActivity", "Calling validateMCPConnection on handler...")
+                val response = newWorkflowEditorHandler!!.validateMCPConnection(serverName, url, transport, timeout)
+                Log.d("MainActivity", "Handler returned response: $response")
+                
+                try {
+                    result.success(response)
+                    Log.d("MainActivity", "Successfully sent response to Flutter")
+                } catch (resultError: Exception) {
+                    Log.e("MainActivity", "Failed to send success result to Flutter", resultError)
+                }
+            } catch (handlerError: Exception) {
+                Log.e("MainActivity", "Error in handler.validateMCPConnection", handlerError)
+                try {
+                    result.success(mapOf(
+                        "success" to false,
+                        "message" to "Handler error: ${handlerError.message ?: "Unknown error"}"
+                    ))
+                } catch (resultError: Exception) {
+                    Log.e("MainActivity", "Failed to send error result", resultError)
+                }
+            }
         } catch (e: Exception) {
-            Log.e("MainActivity", "Error validating MCP connection", e)
-            result.error("VALIDATE_ERROR", e.message, null)
+            // Top-level catch-all
+            Log.e("MainActivity", "Unexpected error in handleValidateMCPConnection", e)
+            try {
+                result.success(mapOf(
+                    "success" to false,
+                    "message" to "Unexpected error: ${e.message ?: "Unknown error"}"
+                ))
+            } catch (resultError: Exception) {
+                Log.e("MainActivity", "Failed to send final error result", resultError)
+            }
         }
     }
     
