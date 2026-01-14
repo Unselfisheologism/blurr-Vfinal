@@ -1,9 +1,12 @@
 package com.blurr.voice.mcp
 
 import android.util.Log
+import io.ktor.server.sse.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.sse.EventSource
 import okhttp3.sse.EventSourceListener
 import okhttp3.sse.EventSources
@@ -260,9 +263,3 @@ class SSEMCPTransport(
 
     override fun isConnected(): Boolean = isConnected
 }
-
-/**
- * Helper extension for MediaType
- */
-private fun String.toMediaType(mediaType: String) = MediaType.parse(mediaType) ?:
-    throw IllegalArgumentException("Invalid media type: $mediaType")

@@ -334,13 +334,13 @@ class WorkflowEditorHandler(
                     val serverTools = mcpClient.getAllToolsRaw()
                         .filter { it is com.blurr.voice.mcp.MCPToolAdapter }
                         .map { it as com.blurr.voice.mcp.MCPToolAdapter }
-                        .filter { it.mcpServer.server.name == serverName }
+                        .filter { it.mcpServer.name == serverName }
                     serverTools.map { toolAdapter ->
                         mapOf(
                             "name" to toolAdapter.mcpTool.name,
                             "description" to (toolAdapter.mcpTool.description ?: ""),
                             "inputSchema" to toolAdapter.mcpTool.inputSchema,
-                            "outputSchema" to (toolAdapter.mcpTool.outputSchema ?: emptyMap<String, Any>())
+                            "outputSchema" to emptyMap<String, Any>()
                         )
                     }
                 } else {
@@ -353,7 +353,7 @@ class WorkflowEditorHandler(
                             "name" to toolAdapter.mcpTool.name,
                             "description" to (toolAdapter.mcpTool.description ?: ""),
                             "inputSchema" to toolAdapter.mcpTool.inputSchema,
-                            "outputSchema" to (toolAdapter.mcpTool.outputSchema ?: emptyMap<String, Any>())
+                            "outputSchema" to emptyMap<String, Any>()
                         )
                     }
                 }

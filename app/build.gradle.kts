@@ -196,6 +196,12 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:2.3.8")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.8")
     
+    // Ktor logging plugin for MCP transports
+    implementation("io.ktor:ktor-client-logging:2.3.8")
+    
+    // Ktor SSE support for MCP transports
+    implementation("io.ktor:ktor-server-sse:2.3.8")
+    
     // Flutter module integration
     // Use the real Flutter module when it's available/configured; otherwise fall back to stubs
     // so Android-only builds can still compile without a Flutter SDK.

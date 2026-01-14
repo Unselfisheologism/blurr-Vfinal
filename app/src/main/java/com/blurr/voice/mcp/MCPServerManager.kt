@@ -3,9 +3,10 @@ package com.blurr.voice.mcp
 import android.content.Context
 import android.util.Log
 import io.modelcontextprotocol.kotlin.sdk.Implementation
+import io.modelcontextprotocol.kotlin.sdk.Tool
+import io.modelcontextprotocol.kotlin.sdk.Content
 import io.modelcontextprotocol.kotlin.sdk.client.Client
 import io.modelcontextprotocol.kotlin.sdk.client.ClientOptions
-import io.modelcontextprotocol.kotlin.sdk.shared.Tool
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.blurr.voice.data.MCPServerPreferences
@@ -200,12 +201,12 @@ class MCPServerManager(
                 )
                 
                 // Extract text content from result
-                val textContent = result?.content?.joinToString("\n") { content ->
-                    when {
-                        content.type == "text" -> content.text ?: ""
+                val textContent = result.content.joinToString("\n") { content ->
+                    when (content) {
+                        is Content.Text -> content.text
                         else -> content.toString()
                     }
-                } ?: ""
+                }
                 
                 Log.d(TAG, "Tool execution successful: $textContent")
                 Result.success(textContent)
