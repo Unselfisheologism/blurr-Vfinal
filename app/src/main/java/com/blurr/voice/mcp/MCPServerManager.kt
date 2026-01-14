@@ -3,10 +3,8 @@ package com.blurr.voice.mcp
 import android.content.Context
 import android.util.Log
 import io.modelcontextprotocol.kotlin.sdk.Implementation
-import io.modelcontextprotocol.kotlin.sdk.Tool
-import io.modelcontextprotocol.kotlin.sdk.Content
+import io.modelcontextprotocol.kotlin.sdk.types.Tool
 import io.modelcontextprotocol.kotlin.sdk.client.Client
-import io.modelcontextprotocol.kotlin.sdk.client.ClientOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.blurr.voice.data.MCPServerPreferences
@@ -52,19 +50,18 @@ class MCPServerManager(
                     clientInfo = Implementation(
                         name = "blurr-voice-app",
                         version = "1.0.0"
-                    ),
-                    options = ClientOptions()
+                    )
                 )
-                
+
                 // Create transport using factory
                 val mcpTransport = TransportFactory.create(transport, url, context)
-                
+
                 // Connect to server
-                client.connect(mcpTransport)
-                
+                TransportFactory.connectClient(client, mcpTransport)
+
                 // List tools from server
                 val toolsResult = client.listTools()
-                val tools = toolsResult?.tools ?: emptyList()
+                val tools = toolsResult.tools ?: emptyList()
                 
                 Log.d(TAG, "Discovered ${tools.size} tools from $name")
                 
@@ -203,7 +200,7 @@ class MCPServerManager(
                 // Extract text content from result
                 val textContent = result.content.joinToString("\n") { content ->
                     when (content) {
-                        is Content.Text -> content.text
+                        is io.modelcontextprotocol.kotlin.sdk.types.TextContent -> content.text
                         else -> content.toString()
                     }
                 }
@@ -293,7 +290,9 @@ data class MCPServerInfo(
     val transport: TransportType,
     val toolCount: Int,
     val isConnected: Boolean,
-    val protocolVersion: String
+    val protocolVersion: String,
+    val serverName: String = name,  // Display name from server
+    val serverVersion: String = "unknown"  // Version from server
 )
 
 /**

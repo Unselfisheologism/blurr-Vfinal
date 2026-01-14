@@ -9,33 +9,31 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.sse.SSE
 import io.ktor.serialization.kotlinx.json.json
-import io.modelcontextprotocol.kotlin.sdk.client.ClientTransport
-import io.modelcontextprotocol.kotlin.sdk.client.StreamableHttpClientTransport
 import kotlinx.serialization.json.Json
+import io.modelcontextprotocol.kotlin.sdk.client.StreamableHttpClientTransport
 
 /**
  * HTTP Transport Implementation using Official MCP Kotlin SDK
- * 
+ *
  * Uses Streamable HTTP transport for MCP communication.
  * Reference: https://github.com/modelcontextprotocol/kotlin-sdk
  */
 class HttpTransport(
     private val url: String
-) : ClientTransport {
-    
+) {
     companion object {
         private const val TAG = "HttpTransport"
     }
-    
+
     private var transport: StreamableHttpClientTransport? = null
     private var httpClient: HttpClient? = null
-    
+
     /**
      * Create the HTTP transport
      */
     fun createTransport(): StreamableHttpClientTransport {
         Log.d(TAG, "Creating HTTP transport for: $url")
-        
+
         // Create Ktor HTTP client
         val client = HttpClient(CIO) {
             install(SSE) // Required for potential SSE responses
@@ -55,30 +53,31 @@ class HttpTransport(
                 level = LogLevel.INFO
             }
         }
-        
+
         httpClient = client
-        
+
         // Create Streamable HTTP transport
         transport = StreamableHttpClientTransport(
             client = client,
             url = url
         )
-        
+
         return transport!!
     }
-    
+
     /**
      * Get the underlying SDK transport
      */
     fun getTransport(): StreamableHttpClientTransport {
         return transport ?: createTransport()
     }
-    
+
     /**
      * Close the transport
      */
-    suspend fun close() {
+    fun close() {
         Log.d(TAG, "Closing HTTP transport")
+        // SDK transports implement Closeable
         transport?.close()
         httpClient?.close()
         transport = null

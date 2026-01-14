@@ -9,33 +9,31 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.sse.SSE
 import io.ktor.serialization.kotlinx.json.json
-import io.modelcontextprotocol.kotlin.sdk.client.ClientTransport
 import io.modelcontextprotocol.kotlin.sdk.client.SseClientTransport
 import kotlinx.serialization.json.Json
 
 /**
  * SSE Transport Implementation using Official MCP Kotlin SDK
- * 
+ *
  * Uses Server-Sent Events for streaming communication.
  * Reference: https://github.com/modelcontextprotocol/kotlin-sdk
  */
 class SSETransport(
     private val url: String
-) : ClientTransport {
-    
+) {
     companion object {
         private const val TAG = "SSETransport"
     }
-    
+
     private var transport: SseClientTransport? = null
     private var httpClient: HttpClient? = null
-    
+
     /**
      * Create the SSE transport
      */
     fun createTransport(): SseClientTransport {
         Log.d(TAG, "Creating SSE transport for: $url")
-        
+
         // Create Ktor HTTP client with SSE support
         val client = HttpClient(CIO) {
             install(SSE)
@@ -55,29 +53,29 @@ class SSETransport(
                 level = LogLevel.INFO
             }
         }
-        
+
         httpClient = client
-        
+
         // Create SSE transport
         transport = SseClientTransport(
             client = client,
             urlString = url
         )
-        
+
         return transport!!
     }
-    
+
     /**
      * Get the underlying SDK transport
      */
     fun getTransport(): SseClientTransport {
         return transport ?: createTransport()
     }
-    
+
     /**
      * Close the transport
      */
-    suspend fun close() {
+    fun close() {
         Log.d(TAG, "Closing SSE transport")
         transport?.close()
         httpClient?.close()

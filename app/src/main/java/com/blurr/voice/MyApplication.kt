@@ -10,6 +10,7 @@ import com.blurr.voice.intents.impl.DialIntent
 import com.blurr.voice.intents.impl.EmailComposeIntent
 import com.blurr.voice.intents.impl.ShareTextIntent
 import com.blurr.voice.intents.impl.ViewUrlIntent
+import com.blurr.voice.agents.AgentFactory
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,12 +38,21 @@ class MyApplication : Application(), PurchasesUpdatedListener {
     override fun onCreate() {
         super.onCreate()
         appContext = applicationContext
-        
+
         // Initialize Appwrite
         com.blurr.voice.auth.AppwriteManager.init(this)
 
         // Initialize GoogleTts wrapper
         com.blurr.voice.api.GoogleTts.initialize(this)
+
+        // Initialize MCP agent and load saved servers
+        applicationScope.launch {
+            try {
+                AgentFactory.initializeAgent()
+            } catch (e: Exception) {
+                Logger.e("MyApplication", "Failed to initialize MCP agent", e)
+            }
+        }
 
         billingClient = BillingClient.newBuilder(this)
             .setListener(this)
