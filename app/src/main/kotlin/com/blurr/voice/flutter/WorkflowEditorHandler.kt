@@ -5,6 +5,8 @@ import android.util.Log
 import com.blurr.voice.mcp.MCPServerManager
 import com.blurr.voice.mcp.TransportType
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.Dispatchers
 
 /**
  * Central handler for all MCP MethodChannel calls from Flutter.
@@ -203,6 +205,12 @@ class WorkflowEditorHandler(
      *
      * Note: MCPServerManager doesn't have a validateConnection method, so we implement
      * it by creating a temporary connection and disconnecting immediately.
+     *
+     * This method has comprehensive error handling to prevent crashes:
+     * - Multi-level try-catch blocks
+     * - Timeout protection using withTimeoutOrNull
+     * - Detailed logging at each step
+     * - Always returns a valid response (never throws)
      */
     suspend fun validateMCPConnection(
         serverName: String,
@@ -210,52 +218,119 @@ class WorkflowEditorHandler(
         transport: String,
         timeout: Long? = 5000L
     ): Map<String, Any> {
-        return try {
-            Log.d(TAG, "Validating connection: $serverName at $url (transport: $transport, timeout: $timeout)")
+        return withContext(Dispatchers.IO) {
+            try {
+                Log.d(TAG, "=== Starting MCP Connection Validation ===")
+                Log.d(TAG, "Server: $serverName")
+                Log.d(TAG, "URL: $url")
+                Log.d(TAG, "Transport: $transport")
+                Log.d(TAG, "Timeout: ${timeout}ms")
 
-            // Create temporary test connection
-            val transportType = TransportType.fromString(transport)
-            val testServerName = "__test_${serverName}_${System.currentTimeMillis()}"
-
-            val result = mcpServerManager.connectServer(
-                name = testServerName,
-                url = url,
-                transport = transportType
-            )
-
-            when {
-                result.isSuccess -> {
-                    val serverInfo = result.getOrNull()
-                    val toolCount = serverInfo?.toolCount ?: 0
-
-                    // Disconnect test connection
-                    mcpServerManager.disconnectServer(testServerName)
-
-                    mapOf(
-                        "success" to true,
-                        "message" to "Connection valid",
-                        "toolCount" to toolCount,
-                        "serverInfo" to mapOf(
-                            "name" to (serverInfo?.name ?: serverName),
-                            "version" to (serverInfo?.protocolVersion ?: "unknown"),
-                            "protocolVersion" to (serverInfo?.protocolVersion ?: "2024-11-05")
-                        )
-                    )
-                }
-                else -> {
-                    val error = result.exceptionOrNull()
-                    mapOf(
+                // Validate input parameters
+                if (url.isBlank()) {
+                    Log.w(TAG, "Validation failed: URL is blank")
+                    return@withContext mapOf(
                         "success" to false,
-                        "message" to (error?.message ?: "Connection validation failed")
+                        "message" to "Server URL cannot be empty"
                     )
                 }
+
+                if (serverName.isBlank()) {
+                    Log.w(TAG, "Validation failed: Server name is blank")
+                    return@withContext mapOf(
+                        "success" to false,
+                        "message" to "Server name cannot be empty"
+                    )
+                }
+
+                // Parse transport type
+                val transportType = try {
+                    Log.d(TAG, "Parsing transport type: $transport")
+                    TransportType.fromString(transport)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Invalid transport type: $transport", e)
+                    return@withContext mapOf(
+                        "success" to false,
+                        "message" to "Invalid transport type: $transport"
+                    )
+                }
+
+                // Create temporary test connection with timeout
+                val testServerName = "__test_${serverName}_${System.currentTimeMillis()}"
+                Log.d(TAG, "Creating temporary test connection: $testServerName")
+
+                val result = withTimeoutOrNull(timeout ?: 5000L) {
+                    try {
+                        Log.d(TAG, "Attempting to connect to server...")
+                        mcpServerManager.connectServer(
+                            name = testServerName,
+                            url = url,
+                            transport = transportType
+                        )
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Exception during connection attempt", e)
+                        Result.failure<com.blurr.voice.mcp.MCPServerInfo>(e)
+                    }
+                }
+
+                // Handle timeout
+                if (result == null) {
+                    Log.w(TAG, "Connection test timed out after ${timeout}ms")
+                    return@withContext mapOf(
+                        "success" to false,
+                        "message" to "Connection timed out after ${timeout}ms"
+                    )
+                }
+
+                // Process connection result
+                return@withContext when {
+                    result.isSuccess -> {
+                        Log.d(TAG, "Connection successful!")
+                        val serverInfo = result.getOrNull()
+                        val toolCount = serverInfo?.toolCount ?: 0
+                        Log.d(TAG, "Server info: ${serverInfo?.name}, tools: $toolCount")
+
+                        // Disconnect test connection
+                        try {
+                            Log.d(TAG, "Disconnecting test connection...")
+                            mcpServerManager.disconnectServer(testServerName)
+                            Log.d(TAG, "Test connection closed successfully")
+                        } catch (e: Exception) {
+                            Log.w(TAG, "Failed to disconnect test connection (non-critical)", e)
+                            // Non-critical - connection was successful
+                        }
+
+                        Log.d(TAG, "=== Validation Successful ===")
+                        mapOf(
+                            "success" to true,
+                            "message" to "Connection valid",
+                            "toolCount" to toolCount,
+                            "serverInfo" to mapOf(
+                                "name" to (serverInfo?.name ?: serverName),
+                                "version" to (serverInfo?.protocolVersion ?: "unknown"),
+                                "protocolVersion" to (serverInfo?.protocolVersion ?: "2024-11-05")
+                            )
+                        )
+                    }
+                    else -> {
+                        val error = result.exceptionOrNull()
+                        Log.e(TAG, "Connection failed", error)
+                        Log.d(TAG, "=== Validation Failed ===")
+                        mapOf(
+                            "success" to false,
+                            "message" to (error?.message ?: "Connection validation failed")
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                // Catch-all for any unexpected exceptions
+                Log.e(TAG, "Unexpected error in validateMCPConnection", e)
+                Log.d(TAG, "=== Validation Error ===")
+                mapOf(
+                    "success" to false,
+                    "message" to "Validation error: ${e.message ?: "Unknown error"}"
+                )
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error validating MCP connection", e)
-            mapOf(
-                "success" to false,
-                "message" to e.message.orEmpty()
-            )
         }
     }
 }
