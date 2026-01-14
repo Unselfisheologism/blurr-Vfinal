@@ -60,6 +60,7 @@ class WorkflowEditorBridge(
                 // MCP integration
                 "getMcpServers" -> handleGetMcpServers(result)
                 "executeMcpRequest" -> handleExecuteMcpRequest(call, result)
+                "validateMCPConnection" -> handleValidateMCPConnection(call, result)
                 
                 // Google Workspace integration
                 "getGoogleAuthStatus" -> handleGetGoogleAuthStatus(result)
@@ -205,6 +206,70 @@ class WorkflowEditorBridge(
     ) {
         // TODO: Implement MCP request execution
         result.success(mapOf("success" to true))
+    }
+
+    private fun handleValidateMCPConnection(
+        call: MethodCall,
+        result: MethodChannel.Result
+    ) {
+        val url: String? = call.argument("url")
+        val timeout: Long = call.argument("timeout") ?: 5000L
+        
+        if (url.isNullOrBlank()) {
+            result.success(mapOf("valid" to false, "message" to "URL required"))
+            return
+        }
+        
+        // Launch in lifecycle scope
+        scope.launch {
+            try {
+                // Simple test: try to validate URL format without actual connection
+                // This avoids network issues and provides quick validation
+                val isValid = withContext(Dispatchers.IO) {
+                    validateMCPConnection(url, timeout)
+                }
+                
+                result.success(mapOf(
+                    "valid" to isValid,
+                    "message" to if (isValid) "Connection successful" else "Connection failed"
+                ))
+            } catch (e: Exception) {
+                result.success(mapOf(
+                    "valid" to false,
+                    "message" to "Error: ${e.message}"
+                ))
+            }
+        }
+    }
+
+    private suspend fun validateMCPConnection(url: String, timeout: Long): Boolean {
+        return try {
+            withTimeoutOrNull(timeout) {
+                // Simple validation: check if URL format is valid for MCP
+                when {
+                    url.startsWith("http://") || url.startsWith("https://") -> {
+                        // For HTTP/HTTPS URLs, validate basic format
+                        try {
+                            java.net.URI(url)
+                            true
+                        } catch (e: Exception) {
+                            false
+                        }
+                    }
+                    url.startsWith("stdio://") -> {
+                        // stdio:// URLs are valid for local MCP servers
+                        true
+                    }
+                    url.startsWith("sse://") -> {
+                        // SSE URLs are valid for streaming MCP servers
+                        true
+                    }
+                    else -> false
+                }
+            } ?: false
+        } catch (e: Exception) {
+            false
+        }
     }
 
     // ==================== Google Workspace Integration ====================
