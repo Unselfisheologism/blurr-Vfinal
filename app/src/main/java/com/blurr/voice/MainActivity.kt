@@ -629,9 +629,10 @@ class MainActivity : BaseNavigationActivity() {
             ?: return result.error("INVALID_ARGS", "Missing url", null)
         val transport = call.argument<String>("transport")
             ?: return result.error("INVALID_ARGS", "Missing transport", null)
+        val timeout = call.argument<Long>("timeout") ?: 5000L
 
         try {
-            val response = newWorkflowEditorHandler?.validateMCPConnection(serverName, url, transport)
+            val response = newWorkflowEditorHandler?.validateMCPConnection(serverName, url, transport, timeout)
                 ?: return result.error("HANDLER_ERROR", "WorkflowEditorHandler not initialized", null)
             result.success(response)
         } catch (e: Exception) {

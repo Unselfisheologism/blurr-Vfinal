@@ -207,10 +207,11 @@ class WorkflowEditorHandler(
     suspend fun validateMCPConnection(
         serverName: String,
         url: String,
-        transport: String
+        transport: String,
+        timeout: Long? = 5000L
     ): Map<String, Any> {
         return try {
-            Log.d(TAG, "Validating connection: $serverName at $url (transport: $transport)")
+            Log.d(TAG, "Validating connection: $serverName at $url (transport: $transport, timeout: $timeout)")
 
             // Create temporary test connection
             val transportType = TransportType.fromString(transport)
