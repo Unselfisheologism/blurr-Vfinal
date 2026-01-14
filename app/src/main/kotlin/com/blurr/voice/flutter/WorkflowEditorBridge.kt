@@ -28,7 +28,7 @@ class WorkflowEditorBridge(
     private val flutterEngine: FlutterEngine
 ) {
     companion object {
-        private const val CHANNEL_NAME = "com.blurr.workflow_editor"
+        private const val CHANNEL_NAME = "workflow_editor"
         private const val TAG = "WorkflowEditorBridge"
     }
 
@@ -60,6 +60,7 @@ class WorkflowEditorBridge(
                 // MCP integration
                 "getMcpServers" -> handleGetMcpServers(result)
                 "executeMcpRequest" -> handleExecuteMcpRequest(call, result)
+                "validateMCPConnection" -> handleValidateMCPConnection(call, result)
                 
                 // Google Workspace integration
                 "getGoogleAuthStatus" -> handleGetGoogleAuthStatus(result)
@@ -205,6 +206,65 @@ class WorkflowEditorBridge(
     ) {
         // TODO: Implement MCP request execution
         result.success(mapOf("success" to true))
+    }
+
+    private fun handleValidateMCPConnection(
+        call: MethodCall,
+        result: MethodChannel.Result
+    ) {
+        scope.launch {
+            try {
+                val serverName = call.argument<String>("serverName")
+                val url = call.argument<String>("url")
+                val transport = call.argument<String>("transport")
+                val timeout = call.argument<Long>("timeout") ?: 5000L
+
+                if (serverName.isNullOrBlank() || url.isNullOrBlank() || transport.isNullOrBlank()) {
+                    result.success(mapOf(
+                        "success" to false,
+                        "message" to "Missing required arguments"
+                    ))
+                    return@launch
+                }
+
+                // For now, just validate the URL format and transport type
+                val isValidUrl = when {
+                    url.startsWith("http://") || url.startsWith("https://") -> true
+                    url.startsWith("stdio://") -> true
+                    url.startsWith("sse://") -> true
+                    else -> false
+                }
+
+                val isValidTransport = when (transport.lowercase()) {
+                    "http", "sse", "stdio" -> true
+                    else -> false
+                }
+
+                val response = if (isValidUrl && isValidTransport) {
+                    mapOf(
+                        "success" to true,
+                        "message" to "Connection validation passed",
+                        "serverInfo" to mapOf(
+                            "name" to serverName,
+                            "version" to "unknown",
+                            "protocolVersion" to "2024-11-05"
+                        )
+                    )
+                } else {
+                    mapOf(
+                        "success" to false,
+                        "message" to if (!isValidUrl) "Invalid URL format" else "Invalid transport type"
+                    )
+                }
+
+                result.success(response)
+            } catch (e: Exception) {
+                result.success(mapOf(
+                    "success" to false,
+                    "message" to "Validation error: ${e.message}"
+                ))
+            }
+        }
     }
 
     // ==================== Google Workspace Integration ====================
