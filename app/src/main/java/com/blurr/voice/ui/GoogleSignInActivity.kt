@@ -25,6 +25,7 @@ class GoogleSignInActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "GoogleSignInActivity"
         const val EXTRA_AUTO_SIGN_IN = "auto_sign_in"
+        const val EXTRA_REQUESTED_SCOPES = "requested_scopes"
     }
     
     private lateinit var authManager: GoogleAuthManager
@@ -44,28 +45,44 @@ class GoogleSignInActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_google_sign_in)
-        
+
         authManager = GoogleAuthManager(this)
-        
-        // Check if already signed in
+
+        val requestedScopes = intent.getStringArrayListExtra(EXTRA_REQUESTED_SCOPES)?.toList().orEmpty()
+
+        findViewById<com.google.android.gms.common.SignInButton>(R.id.sign_in_button)
+            .setOnClickListener {
+                initiateSignIn(requestedScopes)
+            }
+
+        // If already signed in, only finish early if all requested scopes are already granted.
         if (authManager.isSignedIn()) {
             val email = authManager.getUserEmail()
-            Log.d(TAG, "Already signed in: $email")
-            Toast.makeText(this, "Already signed in as $email", Toast.LENGTH_SHORT).show()
-            setResult(Activity.RESULT_OK)
-            finish()
-            return
+            val hasRequestedScopes = requestedScopes.isEmpty() || requestedScopes.all { authManager.hasScope(it) }
+
+            Log.d(TAG, "Already signed in: $email (hasRequestedScopes=$hasRequestedScopes)")
+
+            if (hasRequestedScopes) {
+                Toast.makeText(this, "Already signed in as $email", Toast.LENGTH_SHORT).show()
+                setResult(Activity.RESULT_OK)
+                finish()
+                return
+            }
         }
-        
+
         // Auto sign-in if requested
         if (intent.getBooleanExtra(EXTRA_AUTO_SIGN_IN, false)) {
-            initiateSignIn()
+            initiateSignIn(requestedScopes)
         }
     }
     
-    private fun initiateSignIn() {
-        Log.d(TAG, "Initiating Google Sign-In")
-        val signInIntent = authManager.getSignInIntent()
+    private fun initiateSignIn(requestedScopes: List<String>) {
+        Log.d(TAG, "Initiating Google Sign-In (requestedScopes=${requestedScopes.size})")
+        val signInIntent = if (requestedScopes.isEmpty()) {
+            authManager.getSignInIntent()
+        } else {
+            authManager.getSignInIntent(requestedScopes)
+        }
         signInLauncher.launch(signInIntent)
     }
     

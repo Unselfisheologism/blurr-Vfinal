@@ -2,11 +2,15 @@
 package com.blurr.voice.flutter
 
 import android.content.Context
+import android.content.Intent
 import android.media.MediaMetadataRetriever
 import android.util.Log
 import com.arthenica.ffmpegkit.FFmpegKit
 import com.arthenica.ffmpegkit.ReturnCode
 import com.blurr.voice.agents.AgentFactory
+import com.blurr.voice.auth.GoogleAuthManager
+import com.blurr.voice.tools.google.GoogleDriveVideoImportManager
+import com.blurr.voice.ui.GoogleSignInActivity
 import com.blurr.voice.utilities.FreemiumManager
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -50,6 +54,7 @@ class VideoEditorBridge(
     )
 
     private val scope = CoroutineScope(Dispatchers.Main)
+    private val googleAuthManager = GoogleAuthManager(context)
 
     init {
         setupMethodCallHandler()
@@ -123,6 +128,29 @@ class VideoEditorBridge(
                         result.error("INVALID_ARGS", "timelineJson is required", null)
                     } else {
                         handleExportTimeline(timelineJson, outputFileName, result)
+                    }
+                }
+
+                // Google Drive import (direct OAuth)
+                "authenticateGoogleDrive" -> handleAuthenticateGoogleDrive(result)
+
+                "listGoogleDriveVideoFiles" -> handleListGoogleDriveVideoFiles(result)
+
+                "startGoogleDriveImport" -> {
+                    val fileId = call.argument<String>("fileId")
+                    if (fileId.isNullOrBlank()) {
+                        result.error("INVALID_ARGS", "fileId is required", null)
+                    } else {
+                        handleStartGoogleDriveImport(fileId, result)
+                    }
+                }
+
+                "getGoogleDriveImportStatus" -> {
+                    val fileId = call.argument<String>("fileId")
+                    if (fileId.isNullOrBlank()) {
+                        result.error("INVALID_ARGS", "fileId is required", null)
+                    } else {
+                        handleGetGoogleDriveImportStatus(fileId, result)
                     }
                 }
 
@@ -276,6 +304,116 @@ class VideoEditorBridge(
             } catch (e: Exception) {
                 Log.e(TAG, "Export failed", e)
                 result.success(mapOf("success" to false, "error" to (e.message ?: "Unknown error")))
+            }
+        }
+    }
+
+    private fun handleAuthenticateGoogleDrive(result: MethodChannel.Result) {
+        scope.launch {
+            try {
+                val intent = Intent(context, GoogleSignInActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    putStringArrayListExtra(
+                        GoogleSignInActivity.EXTRA_REQUESTED_SCOPES,
+                        arrayListOf(
+                            "https://www.googleapis.com/auth/drive.readonly",
+                            "https://www.googleapis.com/auth/drive.metadata.readonly",
+                        )
+                    )
+                }
+
+                context.startActivity(intent)
+                result.success(mapOf("success" to true))
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to launch Google auth", e)
+                result.success(mapOf("success" to false, "error" to (e.message ?: "Unknown error")))
+            }
+        }
+    }
+
+    private fun handleListGoogleDriveVideoFiles(result: MethodChannel.Result) {
+        scope.launch {
+            try {
+                val isSignedIn = withContext(Dispatchers.IO) { googleAuthManager.isSignedIn() }
+                if (!isSignedIn) {
+                    result.success(
+                        mapOf(
+                            "success" to false,
+                            "requiresAuth" to true,
+                            "error" to "Not authenticated to Google",
+                        )
+                    )
+                    return@launch
+                }
+
+                val listResult = withContext(Dispatchers.IO) {
+                    GoogleDriveVideoImportManager.listVideoFiles(googleAuthManager)
+                }
+
+                if (listResult.isFailure) {
+                    val err = listResult.exceptionOrNull()
+                    result.success(mapOf("success" to false, "error" to (err?.message ?: "Failed to list Drive files")))
+                    return@launch
+                }
+
+                val files = listResult.getOrThrow().map { it.toMap() }
+                result.success(mapOf("success" to true, "files" to files))
+            } catch (e: Exception) {
+                Log.e(TAG, "Drive list failed", e)
+                result.success(mapOf("success" to false, "error" to (e.message ?: "Drive list failed")))
+            }
+        }
+    }
+
+    private fun handleStartGoogleDriveImport(fileId: String, result: MethodChannel.Result) {
+        scope.launch {
+            try {
+                val isSignedIn = withContext(Dispatchers.IO) { googleAuthManager.isSignedIn() }
+                if (!isSignedIn) {
+                    result.success(
+                        mapOf(
+                            "success" to false,
+                            "requiresAuth" to true,
+                            "error" to "Not authenticated to Google",
+                        )
+                    )
+                    return@launch
+                }
+
+                val startResult = withContext(Dispatchers.IO) {
+                    GoogleDriveVideoImportManager.startImport(context, googleAuthManager, fileId)
+                }
+
+                if (startResult.isFailure) {
+                    val err = startResult.exceptionOrNull()
+                    result.success(mapOf("success" to false, "error" to (err?.message ?: "Import failed")))
+                    return@launch
+                }
+
+                result.success(mapOf("success" to true, "import" to startResult.getOrThrow().toMap()))
+            } catch (e: Exception) {
+                Log.e(TAG, "Drive import start failed", e)
+                result.success(mapOf("success" to false, "error" to (e.message ?: "Import failed")))
+            }
+        }
+    }
+
+    private fun handleGetGoogleDriveImportStatus(fileId: String, result: MethodChannel.Result) {
+        scope.launch {
+            try {
+                val status = withContext(Dispatchers.IO) {
+                    GoogleDriveVideoImportManager.getImportStatus(fileId)
+                }
+
+                if (status == null) {
+                    result.success(mapOf("success" to false, "error" to "Unknown import"))
+                    return@launch
+                }
+
+                result.success(mapOf("success" to true, "import" to status.toMap()))
+            } catch (e: Exception) {
+                Log.e(TAG, "Drive import status failed", e)
+                result.success(mapOf("success" to false, "error" to (e.message ?: "Status failed")))
             }
         }
     }

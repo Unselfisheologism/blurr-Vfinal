@@ -31,46 +31,64 @@ class GoogleAuthManager(private val context: Context) {
     companion object {
         private const val TAG = "GoogleAuthManager"
         const val RC_SIGN_IN = 9001
-        
+
         // OAuth scopes for Google Workspace
-        private val SCOPES = listOf(
+        //
+        // NOTE: Some features (e.g., Drive import) may request additional scopes on-demand.
+        // Keeping these grouped makes it easy to generate least-privilege scope sets.
+        val GMAIL_SCOPES = listOf(
             "https://www.googleapis.com/auth/gmail.readonly",
             "https://www.googleapis.com/auth/gmail.compose",
             "https://www.googleapis.com/auth/gmail.send",
+        )
+
+        val CALENDAR_SCOPES = listOf(
             "https://www.googleapis.com/auth/calendar",
             "https://www.googleapis.com/auth/calendar.events",
-            "https://www.googleapis.com/auth/drive.file",
-            "https://www.googleapis.com/auth/drive.readonly"
         )
+
+        // Drive scopes:
+        // - drive.readonly: read file contents
+        // - drive.metadata.readonly: read metadata without requesting broader access
+        // - drive.file: upload/manage files created or opened by this app (used by some tools)
+        val DRIVE_SCOPES = listOf(
+            "https://www.googleapis.com/auth/drive.readonly",
+            "https://www.googleapis.com/auth/drive.metadata.readonly",
+            "https://www.googleapis.com/auth/drive.file",
+        )
+
+        private val SCOPES = (GMAIL_SCOPES + CALENDAR_SCOPES + DRIVE_SCOPES).distinct()
     }
     
     private val sharedPrefs = context.getSharedPreferences("google_auth", Context.MODE_PRIVATE)
     
     /**
-     * Build Google Sign-In options with required scopes
+     * Build Google Sign-In options with required scopes.
      */
-    private fun buildSignInOptions(): GoogleSignInOptions {
+    private fun buildSignInOptions(scopes: List<String>): GoogleSignInOptions {
+        require(scopes.isNotEmpty()) { "At least one scope is required" }
+
         return GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
             .requestScopes(
-                Scope(SCOPES[0]),
-                *SCOPES.drop(1).map { Scope(it) }.toTypedArray()
+                Scope(scopes[0]),
+                *scopes.drop(1).map { Scope(it) }.toTypedArray()
             )
             .build()
     }
-    
+
     /**
-     * Get Google Sign-In client
+     * Get Google Sign-In client.
      */
-    fun getSignInClient(): GoogleSignInClient {
-        return GoogleSignIn.getClient(context, buildSignInOptions())
+    fun getSignInClient(scopes: List<String> = SCOPES): GoogleSignInClient {
+        return GoogleSignIn.getClient(context, buildSignInOptions(scopes))
     }
-    
+
     /**
-     * Get sign-in intent for activity
+     * Get sign-in intent for activity.
      */
-    fun getSignInIntent(): Intent {
-        return getSignInClient().signInIntent
+    fun getSignInIntent(scopes: List<String> = SCOPES): Intent {
+        return getSignInClient(scopes).signInIntent
     }
     
     /**
@@ -132,23 +150,28 @@ class GoogleAuthManager(private val context: Context) {
         }
     }
     
+    private fun oauthScopeString(scopes: List<String>): String {
+        require(scopes.isNotEmpty()) { "At least one scope is required" }
+        return "oauth2:${scopes.joinToString(" ")}"
+    }
+
     /**
-     * Get OAuth access token for API calls
-     * 
+     * Get OAuth access token for API calls.
+     *
      * This token is automatically refreshed by Google Play Services.
      * Uses user's quota (not project quota) - FREE!
      */
-    suspend fun getAccessToken(): Result<String> = withContext(Dispatchers.IO) {
+    suspend fun getAccessToken(scopes: List<String> = SCOPES): Result<String> = withContext(Dispatchers.IO) {
         try {
             val account = getSignedInAccount()
                 ?: return@withContext Result.failure(Exception("Not signed in"))
-            
+
             val token = GoogleAuthUtil.getToken(
                 context,
                 account.email!!,
-                "oauth2:${SCOPES.joinToString(" ")}"
+                oauthScopeString(scopes)
             )
-            
+
             Log.d(TAG, "Access token retrieved successfully")
             Result.success(token)
         } catch (e: Exception) {
@@ -156,7 +179,7 @@ class GoogleAuthManager(private val context: Context) {
             Result.failure(e)
         }
     }
-    
+
     /**
      * Get Account object for Google API client
      */
@@ -165,31 +188,31 @@ class GoogleAuthManager(private val context: Context) {
     }
     
     /**
-     * Refresh access token if needed
-     * 
+     * Refresh access token if needed.
+     *
      * Google Play Services handles this automatically,
      * but you can call this to force a refresh.
      */
-    suspend fun refreshToken(): Result<String> = withContext(Dispatchers.IO) {
+    suspend fun refreshToken(scopes: List<String> = SCOPES): Result<String> = withContext(Dispatchers.IO) {
         try {
             val account = getSignedInAccount()
                 ?: return@withContext Result.failure(Exception("Not signed in"))
-            
+
             // Invalidate old token
             val oldToken = GoogleAuthUtil.getToken(
                 context,
                 account.email!!,
-                "oauth2:${SCOPES.joinToString(" ")}"
+                oauthScopeString(scopes)
             )
             GoogleAuthUtil.invalidateToken(context, oldToken)
-            
+
             // Get new token
             val newToken = GoogleAuthUtil.getToken(
                 context,
                 account.email!!,
-                "oauth2:${SCOPES.joinToString(" ")}"
+                oauthScopeString(scopes)
             )
-            
+
             Log.d(TAG, "Token refreshed successfully")
             Result.success(newToken)
         } catch (e: Exception) {
@@ -197,7 +220,7 @@ class GoogleAuthManager(private val context: Context) {
             Result.failure(e)
         }
     }
-    
+
     /**
      * Sign out user
      */

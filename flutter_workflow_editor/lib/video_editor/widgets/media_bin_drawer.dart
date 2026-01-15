@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../models/media_asset.dart';
 import '../state/video_editor_state.dart';
+import 'google_drive_import_dialog.dart';
 
 class MediaBinDrawer extends StatelessWidget {
   const MediaBinDrawer({super.key});
@@ -27,9 +28,19 @@ class MediaBinDrawer extends StatelessWidget {
                       ),
                       const Spacer(),
                       IconButton(
-                        tooltip: 'Import',
+                        tooltip: 'Import from device',
                         icon: const Icon(Icons.add),
                         onPressed: state.isLoading ? null : () => state.importMediaFromDevice(),
+                      ),
+                      IconButton(
+                        tooltip: 'Import from Google Drive',
+                        icon: const Icon(Icons.cloud_download_outlined),
+                        onPressed: () async {
+                          await showDialog<void>(
+                            context: context,
+                            builder: (_) => const GoogleDriveImportDialog(),
+                          );
+                        },
                       ),
                     ],
                   ),

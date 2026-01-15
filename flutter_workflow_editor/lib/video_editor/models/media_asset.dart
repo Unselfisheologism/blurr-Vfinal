@@ -39,12 +39,20 @@ class MediaAsset {
   /// Duration in milliseconds if known.
   final int? durationMs;
 
+  /// If imported from Google Drive, this is the original file ID.
+  final String? googleDriveId;
+
+  /// If imported from Google Drive, this links back to the original file.
+  final String? googleDriveUrl;
+
   const MediaAsset({
     required this.id,
     required this.name,
     required this.type,
     required this.uri,
     this.durationMs,
+    this.googleDriveId,
+    this.googleDriveUrl,
   });
 
   bool get isNetwork => uri.startsWith('http://') || uri.startsWith('https://');
@@ -55,6 +63,8 @@ class MediaAsset {
     MediaAssetType? type,
     String? uri,
     int? durationMs,
+    String? googleDriveId,
+    String? googleDriveUrl,
   }) {
     return MediaAsset(
       id: id ?? this.id,
@@ -62,6 +72,8 @@ class MediaAsset {
       type: type ?? this.type,
       uri: uri ?? this.uri,
       durationMs: durationMs ?? this.durationMs,
+      googleDriveId: googleDriveId ?? this.googleDriveId,
+      googleDriveUrl: googleDriveUrl ?? this.googleDriveUrl,
     );
   }
 
@@ -72,6 +84,8 @@ class MediaAsset {
       'type': mediaAssetTypeToString(type),
       'uri': uri,
       'durationMs': durationMs,
+      'googleDriveId': googleDriveId,
+      'googleDriveUrl': googleDriveUrl,
     };
   }
 
@@ -82,6 +96,8 @@ class MediaAsset {
       type: mediaAssetTypeFromString(json['type'] as String),
       uri: json['uri'] as String,
       durationMs: json['durationMs'] as int?,
+      googleDriveId: json['googleDriveId'] as String?,
+      googleDriveUrl: json['googleDriveUrl'] as String?,
     );
   }
 }

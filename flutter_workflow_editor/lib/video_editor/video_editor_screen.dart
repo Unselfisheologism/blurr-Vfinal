@@ -6,6 +6,7 @@ import 'package:cross_file/cross_file.dart';
 import 'state/video_editor_state.dart';
 import 'models/video_track.dart';
 import 'widgets/media_bin_drawer.dart';
+import 'widgets/google_drive_import_dialog.dart';
 import 'widgets/preview/video_preview_panel.dart';
 import 'widgets/timeline/timeline_view.dart';
 import 'widgets/video_ai_toolbar.dart';
@@ -54,9 +55,14 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
                     onPressed: state.canRedo ? state.redo : null,
                   ),
                   IconButton(
-                    tooltip: 'Import media',
+                    tooltip: 'Import from device',
                     icon: const Icon(Icons.video_library),
                     onPressed: state.isLoading ? null : state.importMediaFromDevice,
+                  ),
+                  IconButton(
+                    tooltip: 'Import from Google Drive',
+                    icon: const Icon(Icons.cloud_download_outlined),
+                    onPressed: () => _showGoogleDriveImport(context),
                   ),
                   IconButton(
                     tooltip: 'Add track',
@@ -141,6 +147,13 @@ class _VideoEditorScreenState extends State<VideoEditorScreen> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
       state.clearError();
     });
+  }
+
+  Future<void> _showGoogleDriveImport(BuildContext context) async {
+    await showDialog<void>(
+      context: context,
+      builder: (_) => const GoogleDriveImportDialog(),
+    );
   }
 
   Future<void> _handleGenerateClip(BuildContext context) async {

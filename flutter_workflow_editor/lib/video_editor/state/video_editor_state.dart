@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:video_player/video_player.dart';
 
 import '../models/media_asset.dart';
+import '../models/google_drive_file.dart';
+import '../models/google_drive_import_status.dart';
 import '../models/video_clip.dart';
 import '../models/video_project.dart';
 import '../models/video_track.dart';
@@ -38,10 +40,15 @@ class VideoEditorState extends ChangeNotifier {
   final VideoExportService _exportService = VideoExportService();
   final VideoProjectStorageService _storageService = VideoProjectStorageService();
 
+  final Map<String, GoogleDriveImportStatus> _driveImports = {};
+  Timer? _driveImportPoller;
+
   VideoProject? get project => _project;
   List<MediaAsset> get mediaBin => List.unmodifiable(_mediaBin);
+  Map<String, GoogleDriveImportStatus> get driveImports => Map.unmodifiable(_driveImports);
 
   bool get isLoading => _isLoading;
+  bool get isDriveImporting => _driveImports.values.any((s) => s.isActive);
   bool get isExporting => _isExporting;
   String? get error => _error;
   String? get lastExportPath => _lastExportPath;
@@ -145,6 +152,117 @@ class VideoEditorState extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<({List<GoogleDriveFile> files, bool requiresAuth, String? error})> listGoogleDriveVideoFiles() async {
+    try {
+      final result = await _bridge.listGoogleDriveVideoFiles();
+
+      if (result['success'] == true) {
+        final raw = result['files'];
+        if (raw is List) {
+          final files = raw.whereType<Map>().map((m) => GoogleDriveFile.fromMap(Map<String, dynamic>.from(m))).toList();
+          return (files: files, requiresAuth: false, error: null);
+        }
+        return (files: const [], requiresAuth: false, error: null);
+      }
+
+      final requiresAuth = result['requiresAuth'] == true;
+      return (
+        files: const [],
+        requiresAuth: requiresAuth,
+        error: result['error'] as String? ?? (requiresAuth ? 'Google authentication required.' : 'Failed to list Drive files.'),
+      );
+    } catch (e) {
+      return (files: const [], requiresAuth: false, error: e.toString());
+    }
+  }
+
+  Future<void> authenticateGoogleDrive() async {
+    try {
+      await _bridge.authenticateGoogleDrive();
+    } catch (_) {
+      // Best-effort: auth happens in native UI.
+    }
+  }
+
+  Future<void> startGoogleDriveImports(List<GoogleDriveFile> files) async {
+    if (files.isEmpty) return;
+
+    for (final f in files) {
+      _driveImports[f.id] = GoogleDriveImportStatus.initial(f);
+    }
+    notifyListeners();
+
+    for (final f in files) {
+      try {
+        await _bridge.startGoogleDriveImport(fileId: f.id);
+      } catch (e) {
+        _driveImports[f.id] = _driveImports[f.id]!.copyWith(status: 'error', error: e.toString());
+      }
+    }
+
+    _startDriveImportPolling();
+  }
+
+  void _startDriveImportPolling() {
+    _driveImportPoller ??= Timer.periodic(const Duration(milliseconds: 750), (_) {
+      unawaited(_pollDriveImports());
+    });
+  }
+
+  Future<void> _pollDriveImports() async {
+    if (_driveImports.isEmpty) return;
+
+    bool anyActive = false;
+
+    for (final entry in _driveImports.entries.toList()) {
+      final current = entry.value;
+      if (!current.isActive) continue;
+      anyActive = true;
+
+      final result = await _bridge.getGoogleDriveImportStatus(fileId: current.file.id);
+      if (result['success'] != true) {
+        continue;
+      }
+
+      final importMap = result['import'];
+      if (importMap is! Map) continue;
+
+      final updated = GoogleDriveImportStatus.fromNative(
+        file: current.file,
+        map: Map<String, dynamic>.from(importMap),
+      );
+
+      _driveImports[entry.key] = updated;
+
+      if (updated.isCompleted && updated.localPath != null) {
+        final alreadyInBin = _mediaBin.any((a) => a.googleDriveId == updated.file.id);
+        if (!alreadyInBin) {
+          final durationMs = await _tryGetDurationMs(updated.localPath!, MediaAssetType.video);
+
+          _mediaBin.add(
+            MediaAsset(
+              id: DateTime.now().microsecondsSinceEpoch.toString(),
+              name: updated.file.name,
+              type: MediaAssetType.video,
+              uri: updated.localPath!,
+              durationMs: durationMs,
+              googleDriveId: updated.file.id,
+              googleDriveUrl: updated.file.webViewLink,
+            ),
+          );
+          unawaited(_autoSave());
+        }
+      }
+    }
+
+    if (!anyActive) {
+      _driveImportPoller?.cancel();
+      _driveImportPoller = null;
+    }
+
+    notifyListeners();
   }
 
   MediaAssetType _guessTypeFromPath(String path) {
@@ -581,6 +699,13 @@ class VideoEditorState extends ChangeNotifier {
       _history.removeAt(0);
       _historyIndex--;
     }
+  }
+
+  @override
+  void dispose() {
+    _driveImportPoller?.cancel();
+    _driveImportPoller = null;
+    super.dispose();
   }
 }
 

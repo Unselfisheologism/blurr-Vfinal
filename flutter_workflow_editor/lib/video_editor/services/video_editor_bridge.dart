@@ -89,4 +89,28 @@ class VideoEditorBridge {
     });
     return Map<String, dynamic>.from(result as Map);
   }
+
+  Future<Map<String, dynamic>> authenticateGoogleDrive() async {
+    final result = await _channel.invokeMethod('authenticateGoogleDrive');
+    return Map<String, dynamic>.from(result as Map);
+  }
+
+  Future<Map<String, dynamic>> listGoogleDriveVideoFiles() async {
+    final result = await _channel.invokeMethod('listGoogleDriveVideoFiles');
+    return Map<String, dynamic>.from(result as Map);
+  }
+
+  Future<Map<String, dynamic>> startGoogleDriveImport({required String fileId}) async {
+    final result = await _channel.invokeMethod('startGoogleDriveImport', {
+      'fileId': fileId,
+    });
+    return Map<String, dynamic>.from(result as Map);
+  }
+
+  Future<Map<String, dynamic>> getGoogleDriveImportStatus({required String fileId}) async {
+    final result = await _channel.invokeMethod('getGoogleDriveImportStatus', {
+      'fileId': fileId,
+    });
+    return Map<String, dynamic>.from(result as Map);
+  }
 }
