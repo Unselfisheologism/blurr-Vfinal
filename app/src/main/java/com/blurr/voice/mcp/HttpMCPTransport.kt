@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicLong
 // This file is kept for reference but should not be used
 @Deprecated("Use official SDK's StreamableHttpClientTransport via HttpTransport.kt instead")
 class HttpMCPTransport(
-    private val config: MCPTransportConfig.Http
+    private val config: MCPTransportConfig.HttpConfig
 ) : MCPTransport {
 
     private val client: OkHttpClient
