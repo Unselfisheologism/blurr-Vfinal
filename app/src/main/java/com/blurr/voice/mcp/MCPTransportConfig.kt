@@ -16,7 +16,8 @@ sealed class MCPTransportConfig {
     data class StdioConfig(
         override val serverName: String,
         val command: String,
-        val args: List<String> = emptyList()
+        val args: List<String> = emptyList(),
+        val timeoutMs: Long = 30000L
     ) : MCPTransportConfig()
 
     /**
@@ -27,7 +28,8 @@ sealed class MCPTransportConfig {
         override val serverName: String,
         val url: String,
         val authentication: AuthType = AuthType.NONE,
-        val headers: Map<String, String> = emptyMap()
+        val headers: Map<String, String> = emptyMap(),
+        val timeoutMs: Long = 30000L
     ) : MCPTransportConfig()
 
     /**
@@ -38,7 +40,8 @@ sealed class MCPTransportConfig {
         override val serverName: String,
         val url: String,
         val authentication: AuthType = AuthType.NONE,
-        val headers: Map<String, String> = emptyMap()
+        val headers: Map<String, String> = emptyMap(),
+        val timeoutMs: Long = 30000L
     ) : MCPTransportConfig()
 }
 
