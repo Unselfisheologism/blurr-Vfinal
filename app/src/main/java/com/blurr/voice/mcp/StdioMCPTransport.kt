@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicLong
  */
 @Deprecated("Use official SDK's StdioClientTransport via StdioTransport.kt instead")
 class StdioMCPTransport(
-    private val config: MCPTransportConfig.Stdio
+    private val config: MCPTransportConfig.StdioConfig
 ) : MCPTransport {
 
     private var process: Process? = null
