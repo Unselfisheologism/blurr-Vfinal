@@ -91,11 +91,8 @@ dependencies:
   # Image handling
   image: ^4.1.3
   
-  # Syncfusion packages for Spreadsheets (Epic 3) - Using compatible versions
-  syncfusion_flutter_datagrid: ^24.2.8
-  syncfusion_flutter_core: ^24.2.8
-  syncfusion_flutter_charts: ^24.2.8
-  syncfusion_flutter_xlsio: ^24.2.8
+  # PlutoGrid replacement for Syncfusion DataGrid
+  pluto_grid: ^8.1.0
   
   # Excel file operations
   open_file: ^3.3.2
