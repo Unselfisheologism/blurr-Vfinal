@@ -356,7 +356,7 @@ class WorkflowEditorBridge(
                 result.success(servers)
             } catch (e: Exception) {
                 Log.e(TAG, "Error getting MCP servers", e)
-                result.success(emptyList())
+                result.success(emptyList<Map<String, Any>>())
             }
         }
     }
@@ -379,7 +379,7 @@ class WorkflowEditorBridge(
                 result.success(tools)
             } catch (e: Exception) {
                 Log.e(TAG, "Error getting MCP tools", e)
-                result.success(emptyList())
+                result.success(emptyList<Map<String, Any>>())
             }
         }
     }
@@ -470,7 +470,7 @@ class WorkflowEditorBridge(
                         )
                     } catch (e: Exception) {
                         Log.e(TAG, "Exception during connection attempt", e)
-                        kotlinx.coroutines.Result.failure<com.blurr.voice.mcp.MCPServerInfo>(e)
+                        kotlin.Result.failure<com.blurr.voice.mcp.MCPServerInfo>(e)
                     }
                 }
 
