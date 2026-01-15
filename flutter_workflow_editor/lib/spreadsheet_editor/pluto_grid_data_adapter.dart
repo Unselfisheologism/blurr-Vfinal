@@ -35,7 +35,6 @@ class PlutoGridDataAdapter {
         enableFilterMenuItem: true,
         enableSetColumnsMenuItem: true,
         enableHideColumnMenuItem: true,
-        enableFreezeColumnMenuItem: true,
         applyFormatterInEditing: false,
         enableAutoEditingOnDoubleTap: true,
       );
@@ -136,9 +135,9 @@ class PlutoGridDataAdapter {
   List<String> handleSelectionChange(PlutoGridOnSelectedEvent event) {
     final selectedCellIds = <String>[];
     
-    for (final cell in event.cellList ?? []) {
-      final colIndex = _getColumnIndex(cell.column.field);
-      final cellId = _getCellId(cell.rowIdx, colIndex);
+    if (event.cell != null && event.rowIdx != null) {
+      final colIndex = _getColumnIndex(event.cell!.column.field);
+      final cellId = _getCellId(event.rowIdx!, colIndex);
       selectedCellIds.add(cellId);
     }
     

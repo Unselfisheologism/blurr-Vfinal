@@ -17,6 +17,7 @@
         "dio",
         "dotted_border",
         "equatable",
+        "excel",
         "expressions",
         "file_picker",
         "flutter",
@@ -44,16 +45,13 @@
         "path_provider",
         "pdf",
         "permission_handler",
+        "pluto_grid",
         "printing",
         "provider",
         "riverpod",
         "rxdart",
         "share_plus",
         "shared_preferences",
-        "syncfusion_flutter_charts",
-        "syncfusion_flutter_core",
-        "syncfusion_flutter_datagrid",
-        "syncfusion_flutter_xlsio",
         "uuid",
         "video_player",
         "vsc_quill_delta_to_html",
@@ -115,8 +113,28 @@
       ]
     },
     {
+      "name": "excel",
+      "version": "4.0.6",
+      "dependencies": [
+        "archive",
+        "collection",
+        "equatable",
+        "xml"
+      ]
+    },
+    {
+      "name": "pluto_grid",
+      "version": "8.1.0",
+      "dependencies": [
+        "collection",
+        "flutter",
+        "intl",
+        "rxdart"
+      ]
+    },
+    {
       "name": "rxdart",
-      "version": "0.27.7",
+      "version": "0.28.0",
       "dependencies": []
     },
     {
@@ -347,6 +365,14 @@
       ]
     },
     {
+      "name": "archive",
+      "version": "3.6.1",
+      "dependencies": [
+        "crypto",
+        "path"
+      ]
+    },
+    {
       "name": "octo_image",
       "version": "2.1.0",
       "dependencies": [
@@ -430,69 +456,6 @@
       "dependencies": [
         "collection",
         "meta"
-      ]
-    },
-    {
-      "name": "vyuh_node_flow",
-      "version": "0.23.4",
-      "dependencies": [
-        "collection",
-        "equatable",
-        "flutter",
-        "flutter_mobx",
-        "http",
-        "json_annotation",
-        "mobx",
-        "vector_math"
-      ]
-    },
-    {
-      "name": "syncfusion_flutter_xlsio",
-      "version": "24.2.9",
-      "dependencies": [
-        "archive",
-        "crypto",
-        "flutter",
-        "image",
-        "intl",
-        "jiffy",
-        "syncfusion_officecore",
-        "xml"
-      ]
-    },
-    {
-      "name": "syncfusion_flutter_core",
-      "version": "24.2.9",
-      "dependencies": [
-        "flutter",
-        "vector_math"
-      ]
-    },
-    {
-      "name": "syncfusion_officecore",
-      "version": "24.2.9",
-      "dependencies": [
-        "flutter",
-        "syncfusion_flutter_core"
-      ]
-    },
-    {
-      "name": "syncfusion_flutter_charts",
-      "version": "24.2.9",
-      "dependencies": [
-        "flutter",
-        "intl",
-        "syncfusion_flutter_core",
-        "vector_math"
-      ]
-    },
-    {
-      "name": "syncfusion_flutter_datagrid",
-      "version": "24.2.9",
-      "dependencies": [
-        "collection",
-        "flutter",
-        "syncfusion_flutter_core"
       ]
     },
     {
@@ -809,6 +772,13 @@
       ]
     },
     {
+      "name": "crypto",
+      "version": "3.0.7",
+      "dependencies": [
+        "typed_data"
+      ]
+    },
+    {
       "name": "pdf",
       "version": "3.11.3",
       "dependencies": [
@@ -1003,6 +973,20 @@
       ]
     },
     {
+      "name": "vyuh_node_flow",
+      "version": "0.23.9",
+      "dependencies": [
+        "collection",
+        "equatable",
+        "flutter",
+        "flutter_mobx",
+        "http",
+        "json_annotation",
+        "mobx",
+        "vector_math"
+      ]
+    },
+    {
       "name": "image_picker",
       "version": "1.2.1",
       "dependencies": [
@@ -1125,14 +1109,6 @@
       ]
     },
     {
-      "name": "path_provider_foundation",
-      "version": "2.5.1",
-      "dependencies": [
-        "flutter",
-        "path_provider_platform_interface"
-      ]
-    },
-    {
       "name": "xml",
       "version": "6.6.1",
       "dependencies": [
@@ -1205,16 +1181,80 @@
       ]
     },
     {
-      "name": "crypto",
-      "version": "3.0.7",
+      "name": "path_provider_foundation",
+      "version": "2.6.0",
       "dependencies": [
-        "typed_data"
+        "ffi",
+        "flutter",
+        "objective_c",
+        "path_provider_platform_interface"
+      ]
+    },
+    {
+      "name": "pub_semver",
+      "version": "2.2.0",
+      "dependencies": [
+        "collection"
+      ]
+    },
+    {
+      "name": "native_toolchain_c",
+      "version": "0.17.2",
+      "dependencies": [
+        "code_assets",
+        "glob",
+        "hooks",
+        "logging",
+        "meta",
+        "pub_semver"
+      ]
+    },
+    {
+      "name": "hooks",
+      "version": "0.20.5",
+      "dependencies": [
+        "collection",
+        "crypto",
+        "logging",
+        "meta",
+        "pub_semver",
+        "yaml"
+      ]
+    },
+    {
+      "name": "yaml",
+      "version": "3.1.3",
+      "dependencies": [
+        "collection",
+        "source_span",
+        "string_scanner"
       ]
     },
     {
       "name": "ffi",
       "version": "2.1.5",
       "dependencies": []
+    },
+    {
+      "name": "objective_c",
+      "version": "9.2.2",
+      "dependencies": [
+        "code_assets",
+        "collection",
+        "ffi",
+        "hooks",
+        "logging",
+        "native_toolchain_c",
+        "pub_semver"
+      ]
+    },
+    {
+      "name": "code_assets",
+      "version": "0.19.10",
+      "dependencies": [
+        "collection",
+        "hooks"
+      ]
     },
     {
       "name": "file_selector_linux",
@@ -1246,22 +1286,6 @@
         "mobx",
         "path",
         "source_gen"
-      ]
-    },
-    {
-      "name": "pub_semver",
-      "version": "2.2.0",
-      "dependencies": [
-        "collection"
-      ]
-    },
-    {
-      "name": "yaml",
-      "version": "3.1.3",
-      "dependencies": [
-        "collection",
-        "source_span",
-        "string_scanner"
       ]
     },
     {
@@ -1508,16 +1532,6 @@
       ]
     },
     {
-      "name": "built_value",
-      "version": "8.12.1",
-      "dependencies": [
-        "built_collection",
-        "collection",
-        "fixnum",
-        "meta"
-      ]
-    },
-    {
       "name": "dart_style",
       "version": "3.1.1",
       "dependencies": [
@@ -1569,6 +1583,16 @@
       "dependencies": [
         "flutter",
         "url_launcher_platform_interface"
+      ]
+    },
+    {
+      "name": "built_value",
+      "version": "8.12.3",
+      "dependencies": [
+        "built_collection",
+        "collection",
+        "fixnum",
+        "meta"
       ]
     },
     {
@@ -1747,14 +1771,6 @@
       ]
     },
     {
-      "name": "jiffy",
-      "version": "6.4.4",
-      "dependencies": [
-        "intl",
-        "quiver"
-      ]
-    },
-    {
       "name": "flutter_plugin_android_lifecycle",
       "version": "2.0.33",
       "dependencies": [
@@ -1834,44 +1850,9 @@
       ]
     },
     {
-      "name": "archive",
-      "version": "3.6.1",
-      "dependencies": [
-        "crypto",
-        "path"
-      ]
-    },
-    {
       "name": "args",
       "version": "2.7.0",
       "dependencies": []
-    },
-    {
-      "name": "json_serializable",
-      "version": "6.9.5",
-      "dependencies": [
-        "analyzer",
-        "async",
-        "build",
-        "build_config",
-        "collection",
-        "dart_style",
-        "json_annotation",
-        "meta",
-        "path",
-        "pub_semver",
-        "pubspec_parse",
-        "source_gen",
-        "source_helper"
-      ]
-    },
-    {
-      "name": "source_helper",
-      "version": "1.3.7",
-      "dependencies": [
-        "analyzer",
-        "source_gen"
-      ]
     },
     {
       "name": "shared_preferences",
@@ -1946,11 +1927,30 @@
       ]
     },
     {
-      "name": "video_player_avfoundation",
-      "version": "2.8.9",
+      "name": "json_serializable",
+      "version": "6.9.5",
       "dependencies": [
-        "flutter",
-        "video_player_platform_interface"
+        "analyzer",
+        "async",
+        "build",
+        "build_config",
+        "collection",
+        "dart_style",
+        "json_annotation",
+        "meta",
+        "path",
+        "pub_semver",
+        "pubspec_parse",
+        "source_gen",
+        "source_helper"
+      ]
+    },
+    {
+      "name": "source_helper",
+      "version": "1.3.7",
+      "dependencies": [
+        "analyzer",
+        "source_gen"
       ]
     },
     {
@@ -2062,6 +2062,14 @@
         "flutter",
         "http",
         "vector_graphics_codec"
+      ]
+    },
+    {
+      "name": "video_player_avfoundation",
+      "version": "2.8.10",
+      "dependencies": [
+        "flutter",
+        "video_player_platform_interface"
       ]
     },
     {
