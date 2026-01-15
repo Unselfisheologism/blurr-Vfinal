@@ -56,13 +56,12 @@ include(":flutter_stubs")
 // Only include the real Flutter module if a Flutter SDK is configured for this build.
 // This keeps local/CI builds without Flutter working via :flutter_stubs.
 //
-// We point Gradle at the Flutter module's Android library project (".android/app").
-// The ".android/Flutter" directory is an artifact of AAR generation and can contain a
-// GeneratedPluginRegistrant.java that references plugins not on the classpath when used as
-// a standalone Gradle project. We exclude it and let the Flutter Gradle plugin handle
-// plugin registration internally through the :flutter_workflow_editor project.
+// We include the Flutter module's Android library project (".android/Flutter").
+// The sibling ".android/app" project is just a generated host app used by the Flutter tool
+// and is not suitable to be depended on by our Android app module.
 val flutterProjectDir = file("flutter_workflow_editor")
-val flutterAndroidProjectDir = File(flutterProjectDir, ".android/app")
+val flutterAndroidProjectDir = File(flutterProjectDir, ".android/Flutter")
+val flutterPluginsDependenciesFile = File(flutterProjectDir, ".flutter-plugins-dependencies")
 
 val flutterSdkPathForModule = System.getenv("FLUTTER_ROOT")
     ?: System.getenv("FLUTTER_HOME")
@@ -77,25 +76,20 @@ val flutterSdkPathForModule = System.getenv("FLUTTER_ROOT")
 
 val flutterGradlePluginDir = flutterSdkPathForModule?.let { File(it, "packages/flutter_tools/gradle") }
 
-// Include only the Android wrapper project (.android/app). The Flutter Gradle plugin
-// handles all Flutter integration internally without needing to compile the
-// .android/Flutter subproject separately.
-//
-// If the Android wrapper project is missing,
-// skip including the real module and fall back to :flutter_stubs.
-// This ensures the build doesn't fail if "flutter pub get" hasn't been run yet.
+// Include the Flutter module only when Flutter SDK is available and the Flutter module
+// has been prepared (at minimum: `flutter pub get`, which generates .flutter-plugins-dependencies).
+// Otherwise fall back to :flutter_stubs so Android-only builds can still compile.
 if (flutterGradlePluginDir != null
     && flutterGradlePluginDir.exists()
     && flutterAndroidProjectDir.exists()
+    && flutterPluginsDependenciesFile.exists()
 ) {
     include(":flutter_workflow_editor")
     project(":flutter_workflow_editor").projectDir = flutterAndroidProjectDir
 
     // Enforce Gradle 8+ evaluation order: ensure :flutter_workflow_editor is evaluated
-    // before :app. The Flutter Gradle plugin registers afterEvaluate callbacks that need
-    // to execute in a specific order. Without this enforcement, :app can be evaluated
-    // before :flutter_workflow_editor, causing the Flutter plugin to fail with
-    // "Project with path ':flutter' could not be found in project ':flutter_workflow_editor'"
+    // before :app. The Flutter Gradle plugin wires projects together using afterEvaluate
+    // callbacks and will fail if the host app finishes evaluation too early.
     gradle.beforeProject {
         if (project.name == "app") {
             evaluationDependsOn(":flutter_workflow_editor")
