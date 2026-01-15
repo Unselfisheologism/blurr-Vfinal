@@ -336,7 +336,7 @@ object MCPTransportValidator {
 
                 val response = withTimeoutOrNull(timeout) {
                     client.post(config.url) {
-                        contentType(ContentType.Application.Json)
+                        io.ktor.http.contentType(ContentType.Application.Json)
 
                         // Apply authentication headers
                         when (config.authentication) {

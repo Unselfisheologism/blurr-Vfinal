@@ -82,36 +82,3 @@ class MCPException(
         return "MCPException(code=$errorCode, message=$message, data=$errorData)"
     }
 }
-
-/**
- * Transport configuration
- */
-sealed class MCPTransportConfig {
-    /**
-     * HTTP transport configuration
-     */
-    data class Http(
-        val url: String,
-        val apiKey: String? = null,
-        val headers: Map<String, String> = emptyMap(),
-        val timeoutMs: Long = 30000
-    ) : MCPTransportConfig()
-    
-    /**
-     * WebSocket transport configuration (future)
-     */
-    data class WebSocket(
-        val url: String,
-        val apiKey: String? = null,
-        val headers: Map<String, String> = emptyMap()
-    ) : MCPTransportConfig()
-    
-    /**
-     * Standard I/O transport configuration (future)
-     */
-    data class Stdio(
-        val command: String,
-        val args: List<String> = emptyList(),
-        val env: Map<String, String> = emptyMap()
-    ) : MCPTransportConfig()
-}
