@@ -257,24 +257,24 @@ class _SpreadsheetEditorScreenState extends State<SpreadsheetEditorScreen> {
         );
       },
       configuration: PlutoGridConfiguration(
-        columnHeight: 40,
-        rowHeight: 36,
-        borderColor: Colors.grey,
-        gridBorderColor: Colors.grey,
-        enableColumnBorder: true,
-        enableMoveDownAfterSelecting: true,
-        enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveDown,
-        enableMoveHorizontalInEditing: true,
-        columnFilter: PlutoGridColumnFilterConfig(
-          filters: const [],
-        ),
         style: PlutoGridStyleConfig(
+          rowHeight: 36,
+          columnHeight: 36,
+          borderColor: Colors.grey,
+          gridBorderColor: Colors.grey,
+          enableColumnBorder: true,
           activatedBorderColor: Colors.blue,
           activatedColor: Colors.blue.shade50,
           gridBackgroundColor: Colors.white,
           rowColor: Colors.white,
           oddRowColor: Colors.grey.shade50,
           evenRowColor: Colors.white,
+        ),
+        enableMoveDownAfterSelecting: true,
+        enterKeyAction: PlutoGridEnterKeyAction.editingAndMoveDown,
+        enableMoveHorizontalInEditing: true,
+        columnFilter: PlutoGridColumnFilterConfig(
+          filters: const [],
         ),
         scrollbar: const PlutoGridScrollbarConfig(
           isAlwaysShown: false,
@@ -287,7 +287,6 @@ class _SpreadsheetEditorScreenState extends State<SpreadsheetEditorScreen> {
         ),
       ),
       mode: PlutoGridMode.normal,
-      rowGroupDelegate: null,
     );
   }
 

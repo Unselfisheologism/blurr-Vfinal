@@ -1,7 +1,7 @@
-/// Excel import/export service using Syncfusion XLSIO
+/// Excel import/export service using excel package (4.0.0+)
 import 'dart:io';
 import 'package:flutter/painting.dart';
-import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xlsio;
+import 'package:excel/excel.dart' as excel;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import '../models/spreadsheet_document.dart';
@@ -11,118 +11,244 @@ class ExcelService {
   /// Export spreadsheet to Excel file
   Future<String> exportToExcel(SpreadsheetDocument document) async {
     // Create a new Excel document
-    final xlsio.Workbook workbook = xlsio.Workbook();
+    final excel.Excel excelFile = excel.Excel.createExcel();
     
     // Add sheets
     for (int i = 0; i < document.sheets.length; i++) {
       final sheet = document.sheets[i];
-      xlsio.Worksheet worksheet;
       
-      if (i == 0 && workbook.worksheets.count > 0) {
-        // Use the default first worksheet
-        worksheet = workbook.worksheets[0];
-        worksheet.name = sheet.name;
+      if (i == 0 && excelFile.sheets.isNotEmpty) {
+        // Use the default first sheet
+        final excelSheet = excelFile[sheet.name]!;
+        _populateSheet(excelSheet, sheet);
       } else {
-        // Add new worksheet
-        worksheet = workbook.worksheets.addWithName(sheet.name);
+        // Add new sheet
+        final excelSheet = excelFile['${sheet.name}_$i'];
+        _populateSheet(excelSheet, sheet);
       }
-      
-      // Add cell data
-      sheet.cells.forEach((cellId, cell) {
-        final (row, col) = _parseCellId(cellId);
-        final xlsio.Range range = worksheet.getRangeByIndex(row + 1, col + 1);
-        
-        // Set value based on type
-        if (cell.dataType == CellDataType.formula && cell.formula != null) {
-          range.formula = cell.formula;
-        } else if (cell.value is num) {
-          range.number = (cell.value as num).toDouble();
-        } else if (cell.value is bool) {
-          range.value = cell.value as bool;
-        } else if (cell.value is DateTime) {
-          range.dateTime = cell.value as DateTime;
-        } else {
-          range.text = cell.displayValue;
-        }
-        
-        // Apply formatting
-        _applyFormatting(range, cell.format);
-      });
     }
     
     // Save the document
-    final List<int> bytes = workbook.saveAsStream();
-    workbook.dispose();
+    final List<int>? bytes = excelFile.save();
+    
+    if (bytes == null) {
+      throw Exception('Failed to save Excel file');
+    }
     
     // Write to file
     final directory = await getApplicationDocumentsDirectory();
     final path = '${directory.path}/${document.name}.xlsx';
     final file = File(path);
-    await file.writeAsBytes(bytes);
+    await file.writeAsBytes(bytes!);
     
     return path;
   }
-
+  
+  void _populateSheet(excel.Sheet excelSheet, SpreadsheetSheet sheet) {
+    // Clear default row
+    excelSheet.removeRow(0);
+    
+    // Find max dimensions
+    int maxRow = 0;
+    int maxCol = 0;
+    sheet.cells.forEach((cellId, cell) {
+      final (row, col) = _parseCellId(cellId);
+      maxRow = maxRow > row ? maxRow : row;
+      maxCol = maxCol > col ? maxCol : col;
+    });
+    
+    // Add data row by row
+    for (int row = 0; row <= maxRow; row++) {
+      final List<excel.CellValue> rowData = [];
+      
+      for (int col = 0; col <= maxCol; col++) {
+        final cellId = _getCellId(row, col);
+        final cell = sheet.cells[cellId];
+        
+        // Set value based on type
+        if (cell == null) {
+          rowData.add(excel.TextCellValue(''));
+        } else if (cell.dataType == CellDataType.formula && cell.formula != null) {
+          rowData.add(excel.TextCellValue(cell.formula!));
+        } else if (cell.value is num) {
+          final numValue = cell.value as num;
+          if (numValue is int) {
+            rowData.add(excel.IntCellValue(numValue.toInt()));
+          } else {
+            rowData.add(excel.DoubleCellValue(numValue.toDouble()));
+          }
+        } else if (cell.value is bool) {
+          rowData.add(excel.BoolCellValue(cell.value as bool));
+        } else if (cell.value is DateTime) {
+          final dateTime = cell.value as DateTime;
+          rowData.add(excel.DateCellValue(
+            year: dateTime.year,
+            month: dateTime.month,
+            day: dateTime.day,
+            hour: dateTime.hour,
+            minute: dateTime.minute,
+            second: dateTime.second,
+            millisecond: dateTime.millisecond,
+          ));
+        } else {
+          rowData.add(excel.TextCellValue(cell.displayValue));
+        }
+        
+        // Apply formatting
+        if (cell != null && cell.format != null) {
+          _applyFormatting(excelSheet.cell(excel.CellIndex.indexByColumnRow(columnIndex: col, rowIndex: row)), cell.format!);
+        }
+      }
+      
+      excelSheet.appendRow(rowData);
+    }
+  }
+  
   /// Import Excel file to SpreadsheetDocument
   Future<SpreadsheetDocument> importFromExcel(String filePath) async {
-    // Note: syncfusion_flutter_xlsio currently has limited support for reading existing files.
-    // This is a placeholder implementation or requires a different package like 'excel'.
-    
     final File file = File(filePath);
-    // ignore: unused_local_variable
     final bytes = await file.readAsBytes();
+    final excelFile = excel.Excel.decodeBytes(bytes);
     
-    // Fallback to empty document if reading is not supported by this version of xlsio
-    // In a real scenario, we'd use the 'excel' package here for reading.
+    if (excelFile.tables.isEmpty) {
+      final now = DateTime.now();
+      return SpreadsheetDocument(
+        id: now.millisecondsSinceEpoch.toString(),
+        name: file.path.split('/').last.replaceAll('.xlsx', ''),
+        sheets: [SpreadsheetSheet.empty('Sheet1')],
+        createdAt: now,
+        updatedAt: now,
+      );
+    }
+    
+    final sheets = <SpreadsheetSheet>[];
+    
+    excelFile.tables.forEach((sheetName, table) {
+      final rows = <Map<String, SpreadsheetCell>>{};
+      
+      table.rows.forEach((excelRow) {
+        for (var cellData in excelRow) {
+          final colIndex = cellData.columnIndex;
+          final rowIndex = cellData.rowIndex;
+          final cellId = _getCellId(rowIndex, colIndex);
+          final value = _convertCellValue(cellData.value);
+          
+          rows[cellId] = SpreadsheetCell(
+            value: value,
+            dataType: _inferDataType(cellData.value),
+          );
+        }
+      });
+      
+      sheets.add(SpreadsheetSheet(
+        name: sheetName,
+        cells: rows,
+        rowCount: table.maxRows,
+        columnCount: table.maxCols,
+      ));
+    });
+    
     final now = DateTime.now();
     return SpreadsheetDocument(
       id: now.millisecondsSinceEpoch.toString(),
       name: file.path.split('/').last.replaceAll('.xlsx', ''),
-      sheets: [SpreadsheetSheet.empty('Sheet1')],
+      sheets: sheets,
       createdAt: now,
       updatedAt: now,
     );
   }
-
+  
+  dynamic _convertCellValue(excel.CellValue? value) {
+    if (value == null) return '';
+    
+    switch (value) {
+      case excel.TextCellValue():
+        return (value as excel.TextCellValue).value;
+      case excel.IntCellValue():
+        return (value as excel.IntCellValue).value;
+      case excel.DoubleCellValue():
+        return (value as excel.DoubleCellValue).value;
+      case excel.BoolCellValue():
+        return (value as excel.BoolCellValue).value;
+      case excel.DateCellValue():
+        return (value as excel.DateCellValue).asDateTimeLocal();
+      case excel.DateTimeCellValue():
+        return (value as excel.DateTimeCellValue).asDateTimeLocal();
+      case excel.TimeCellValue():
+        return (value as excel.TimeCellValue).asDuration();
+      default:
+        return '';
+    }
+  }
+  
+  CellDataType _inferDataType(excel.CellValue? value) {
+    if (value == null) return CellDataType.text;
+    
+    switch (value) {
+      case excel.IntCellValue():
+      case excel.DoubleCellValue():
+        return CellDataType.number;
+      case excel.BoolCellValue():
+        return CellDataType.boolean;
+      case excel.DateCellValue():
+      case excel.DateTimeCellValue():
+        return CellDataType.date;
+      default:
+        return CellDataType.text;
+    }
+  }
+  
   /// Open exported file
   Future<void> openFile(String filePath) async {
     await OpenFile.open(filePath);
   }
-
-  void _applyFormatting(xlsio.Range range, CellFormat format) {
-    if (format.bold) range.cellStyle.bold = true;
-    if (format.italic) range.cellStyle.italic = true;
+  
+  void _applyFormatting(excel.Cell cell, CellFormat format) {
+    final cellStyle = (cell.cellStyle ?? const excel.CellStyle()).copyWith(
+      bold: format.bold,
+      italic: format.italic,
+      underline: format.underline ? excel.Underline.Single : excel.Underline.None,
+      fontColorHex: format.textColorValue != null 
+          ? _colorToHex(format.textColorValue!) 
+          : '#000000',
+      backgroundColorHex: format.backgroundColorValue != null 
+          ? _colorToHex(format.backgroundColorValue!) 
+          : null,
+      fontSize: format.fontSize,
+      horizontalAlign: _convertAlignment(format.alignment),
+    );
     
-    if (format.textColorValue != null) {
-      // Convert Flutter color to Hex string for Syncfusion
-      final color = format.textColorValue!;
-      range.cellStyle.fontColor = '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
-    }
-    
-    if (format.backgroundColorValue != null) {
-      final color = format.backgroundColorValue!;
-      range.cellStyle.backColor = '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
-    }
-    
-    if (format.fontSize != null) {
-      range.cellStyle.fontSize = format.fontSize!;
-    }
-    
-    if (format.alignment != null) {
-      range.cellStyle.hAlign = _getHorizontalAlignment(format.alignment!);
-    }
+    cell.cellStyle = cellStyle;
   }
-
+  
+  String _colorToHex(Color color) {
+    return '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
+  }
+  
+  excel.HorizontalAlign _convertAlignment(Alignment? alignment) {
+    if (alignment == null) return excel.HorizontalAlign.Left;
+    
+    if (alignment == Alignment.centerLeft) return excel.HorizontalAlign.Left;
+    if (alignment == Alignment.center) return excel.HorizontalAlign.Center;
+    if (alignment == Alignment.centerRight) return excel.HorizontalAlign.Right;
+    
+    return excel.HorizontalAlign.Left;
+  }
+  
   String _getCellId(int row, int col) {
+    return '${_getColumnLabel(col)}${row + 1}';
+  }
+  
+  String _getColumnLabel(int col) {
     String label = '';
     int tempCol = col;
     while (tempCol >= 0) {
       label = String.fromCharCode(65 + (tempCol % 26)) + label;
       tempCol = (tempCol ~/ 26) - 1;
     }
-    return '$label${row + 1}';
+    return label;
   }
-
+  
   (int, int) _parseCellId(String cellId) {
     final colMatch = RegExp(r'^[A-Z]+').firstMatch(cellId);
     final rowMatch = RegExp(r'\d+$').firstMatch(cellId);
@@ -141,26 +267,5 @@ class ExcelService {
     col -= 1;
     
     return (row, col);
-  }
-
-  xlsio.HAlignType _getHorizontalAlignment(Alignment alignment) {
-    if (alignment == Alignment.centerLeft) return xlsio.HAlignType.left;
-    if (alignment == Alignment.center) return xlsio.HAlignType.center;
-    if (alignment == Alignment.centerRight) return xlsio.HAlignType.right;
-    return xlsio.HAlignType.left;
-  }
-
-  // ignore: unused_element
-  Alignment? _getAlignment(xlsio.HAlignType hAlign) {
-    switch (hAlign) {
-      case xlsio.HAlignType.left:
-        return Alignment.centerLeft;
-      case xlsio.HAlignType.center:
-        return Alignment.center;
-      case xlsio.HAlignType.right:
-        return Alignment.centerRight;
-      default:
-        return Alignment.centerLeft;
-    }
   }
 }
