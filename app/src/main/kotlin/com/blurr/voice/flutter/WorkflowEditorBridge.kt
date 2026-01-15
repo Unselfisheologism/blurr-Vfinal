@@ -432,95 +432,118 @@ class WorkflowEditorBridge(
     }
 
     private fun handleValidateMCPConnection(call: MethodCall, result: MethodChannel.Result) {
+        // Parse protocol first - this determines what parameters we need
+        val protocol = call.argument<String>("protocol")
+        if (protocol == null) {
+            // Fallback to old 'transport' parameter for backward compatibility
+            result.error("INVALID_ARGS", "Missing protocol parameter", null)
+            return
+        }
+
         val serverName = call.argument<String>("serverName")
         if (serverName == null) {
             result.error("INVALID_ARGS", "Missing serverName", null)
             return
         }
-        val url = call.argument<String>("url")
-        if (url == null) {
-            result.error("INVALID_ARGS", "Missing url", null)
-            return
-        }
-        val transport = call.argument<String>("transport")
-        if (transport == null) {
-            result.error("INVALID_ARGS", "Missing transport", null)
-            return
-        }
+
         val timeout = call.argument<Long>("timeout") ?: 5000L
 
         scope.launch {
             try {
-                Log.d(TAG, "=== Validating MCP Connection ===")
-                Log.d(TAG, "Server: $serverName, URL: $url, Transport: $transport, Timeout: $timeout")
+                Log.d(TAG, "=== Validating MCP Connection (Protocol-Specific) ===")
+                Log.d(TAG, "Protocol: $protocol")
+                Log.d(TAG, "Server: $serverName")
+                Log.d(TAG, "Timeout: ${timeout}ms")
 
-                val mcpManager = com.blurr.voice.mcp.MCPServerManager(context)
-                val transportType = com.blurr.voice.mcp.TransportType.fromString(transport)
+                // Parse protocol-specific configuration
+                val config = when (protocol.lowercase()) {
+                    "stdio" -> {
+                        val command = call.argument<String>("command")
+                        val args = call.argument<List<String>>("args")
 
-                // Create temporary test connection with timeout
-                val testServerName = "__test_${serverName}_${System.currentTimeMillis()}"
-                Log.d(TAG, "Creating temporary test connection: $testServerName")
-
-                val connectResult = kotlinx.coroutines.withTimeoutOrNull(timeout) {
-                    try {
-                        mcpManager.connectServer(
-                            name = testServerName,
-                            url = url,
-                            transport = transportType
-                        )
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Exception during connection attempt", e)
-                        kotlin.Result.failure<com.blurr.voice.mcp.MCPServerInfo>(e)
-                    }
-                }
-
-                // Handle timeout
-                if (connectResult == null) {
-                    Log.w(TAG, "Connection test timed out after ${timeout}ms")
-                    result.success(mapOf(
-                        "success" to false,
-                        "message" to "Connection timed out after ${timeout}ms"
-                    ))
-                    return@launch
-                }
-
-                // Process connection result
-                when {
-                    connectResult.isSuccess -> {
-                        Log.d(TAG, "Connection successful!")
-                        val serverInfo = connectResult.getOrNull()
-                        val toolCount = serverInfo?.toolCount ?: 0
-
-                        // Disconnect test connection
-                        try {
-                            mcpManager.disconnectServer(testServerName)
-                            Log.d(TAG, "Test connection closed successfully")
-                        } catch (e: Exception) {
-                            Log.w(TAG, "Failed to disconnect test connection (non-critical)", e)
+                        if (command == null) {
+                            Log.w(TAG, "STDIO validation failed: Missing command")
+                            result.success(mapOf(
+                                "success" to false,
+                                "message" to "Command is required for STDIO transport"
+                            ))
+                            return@launch
                         }
 
-                        Log.d(TAG, "=== Validation Successful ===")
-                        result.success(mapOf(
-                            "success" to true,
-                            "message" to "Connection valid",
-                            "toolCount" to toolCount,
-                            "serverInfo" to mapOf(
-                                "name" to (serverInfo?.name ?: serverName),
-                                "version" to (serverInfo?.protocolVersion ?: "unknown"),
-                                "protocolVersion" to (serverInfo?.protocolVersion ?: "2024-11-05")
-                            )
-                        ))
+                        Log.d(TAG, "STDIO config: command=$command, args=${args?.size ?: 0}")
+
+                        com.blurr.voice.mcp.MCPTransportConfig.StdioConfig(
+                            serverName = serverName,
+                            command = command,
+                            args = args ?: emptyList()
+                        )
                     }
+
+                    "sse" -> {
+                        val url = call.argument<String>("url")
+                        if (url == null) {
+                            Log.w(TAG, "SSE validation failed: Missing url")
+                            result.success(mapOf(
+                                "success" to false,
+                                "message" to "URL is required for SSE transport"
+                            ))
+                            return@launch
+                        }
+
+                        val authType = call.argument<String>("authentication") ?: "NONE"
+                        val headers = call.argument<Map<String, String>>("headers") ?: emptyMap()
+
+                        Log.d(TAG, "SSE config: url=$url, auth=$authType, headers=${headers.size}")
+
+                        com.blurr.voice.mcp.MCPTransportConfig.SSEConfig(
+                            serverName = serverName,
+                            url = url,
+                            authentication = com.blurr.voice.mcp.AuthType.valueOf(authType.uppercase()),
+                            headers = headers
+                        )
+                    }
+
+                    "http" -> {
+                        val url = call.argument<String>("url")
+                        if (url == null) {
+                            Log.w(TAG, "HTTP validation failed: Missing url")
+                            result.success(mapOf(
+                                "success" to false,
+                                "message" to "URL is required for HTTP transport"
+                            ))
+                            return@launch
+                        }
+
+                        val authType = call.argument<String>("authentication") ?: "NONE"
+                        val headers = call.argument<Map<String, String>>("headers") ?: emptyMap()
+
+                        Log.d(TAG, "HTTP config: url=$url, auth=$authType, headers=${headers.size}")
+
+                        com.blurr.voice.mcp.MCPTransportConfig.HttpConfig(
+                            serverName = serverName,
+                            url = url,
+                            authentication = com.blurr.voice.mcp.AuthType.valueOf(authType.uppercase()),
+                            headers = headers
+                        )
+                    }
+
                     else -> {
-                        val error = connectResult.exceptionOrNull()
-                        Log.e(TAG, "Connection failed", error)
-                        Log.d(TAG, "=== Validation Failed ===")
+                        Log.w(TAG, "Unknown protocol: $protocol")
                         result.success(mapOf(
                             "success" to false,
-                            "message" to (error?.message ?: "Connection validation failed")
+                            "message" to "Unknown protocol: $protocol. Must be 'stdio', 'sse', or 'http'"
                         ))
+                        return@launch
                     }
                 }
+
+                // Perform protocol-specific validation
+                val validationResult = com.blurr.voice.mcp.MCPTransportValidator.validate(config, timeout)
+
+                Log.d(TAG, "Validation result: success=${validationResult.success}, message=${validationResult.message}")
+
+                // Return result to Flutter
+                result.success(validationResult.toMap())
             } catch (e: Exception) {
                 Log.e(TAG, "Unexpected error in validateMCPConnection", e)
                 result.success(mapOf(

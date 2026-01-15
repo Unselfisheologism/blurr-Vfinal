@@ -203,8 +203,10 @@ class WorkflowEditorHandler(
      * Called from Flutter: platformBridge.validateMCPConnection(serverName, url, transport)
      * Does NOT save to preferences - temporary test only
      *
-     * Note: MCPServerManager doesn't have a validateConnection method, so we implement
-     * it by creating a temporary connection and disconnecting immediately.
+     * Uses protocol-specific validation for each transport type:
+     * - STDIO: Validates command is executable and process can be started
+     * - SSE: Validates HTTP endpoint is reachable via GET request
+     * - HTTP: Validates HTTP endpoint accepts MCP initialize request via POST
      *
      * This method has comprehensive error handling to prevent crashes:
      * - Multi-level try-catch blocks
@@ -216,25 +218,21 @@ class WorkflowEditorHandler(
         serverName: String,
         url: String,
         transport: String,
-        timeout: Long? = 5000L
+        timeout: Long? = 5000L,
+        command: String? = null,
+        args: List<String>? = null,
+        authentication: String? = null,
+        headers: Map<String, String>? = null
     ): Map<String, Any> {
         return withContext(Dispatchers.IO) {
             try {
-                Log.d(TAG, "=== Starting MCP Connection Validation ===")
+                Log.d(TAG, "=== Starting MCP Connection Validation (Protocol-Specific) ===")
                 Log.d(TAG, "Server: $serverName")
                 Log.d(TAG, "URL: $url")
                 Log.d(TAG, "Transport: $transport")
                 Log.d(TAG, "Timeout: ${timeout}ms")
 
                 // Validate input parameters
-                if (url.isBlank()) {
-                    Log.w(TAG, "Validation failed: URL is blank")
-                    return@withContext mapOf(
-                        "success" to false,
-                        "message" to "Server URL cannot be empty"
-                    )
-                }
-
                 if (serverName.isBlank()) {
                     Log.w(TAG, "Validation failed: Server name is blank")
                     return@withContext mapOf(
@@ -243,85 +241,84 @@ class WorkflowEditorHandler(
                     )
                 }
 
-                // Parse transport type
-                val transportType = try {
-                    Log.d(TAG, "Parsing transport type: $transport")
-                    TransportType.fromString(transport)
-                } catch (e: Exception) {
-                    Log.e(TAG, "Invalid transport type: $transport", e)
-                    return@withContext mapOf(
-                        "success" to false,
-                        "message" to "Invalid transport type: $transport"
-                    )
-                }
-
-                // Create temporary test connection with timeout
-                val testServerName = "__test_${serverName}_${System.currentTimeMillis()}"
-                Log.d(TAG, "Creating temporary test connection: $testServerName")
-
-                val result = withTimeoutOrNull(timeout ?: 5000L) {
-                    try {
-                        Log.d(TAG, "Attempting to connect to server...")
-                        mcpServerManager.connectServer(
-                            name = testServerName,
-                            url = url,
-                            transport = transportType
-                        )
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Exception during connection attempt", e)
-                        Result.failure<com.blurr.voice.mcp.MCPServerInfo>(e)
-                    }
-                }
-
-                // Handle timeout
-                if (result == null) {
-                    Log.w(TAG, "Connection test timed out after ${timeout}ms")
-                    return@withContext mapOf(
-                        "success" to false,
-                        "message" to "Connection timed out after ${timeout}ms"
-                    )
-                }
-
-                // Process connection result
-                return@withContext when {
-                    result.isSuccess -> {
-                        Log.d(TAG, "Connection successful!")
-                        val serverInfo = result.getOrNull()
-                        val toolCount = serverInfo?.toolCount ?: 0
-                        Log.d(TAG, "Server info: ${serverInfo?.name}, tools: $toolCount")
-
-                        // Disconnect test connection
-                        try {
-                            Log.d(TAG, "Disconnecting test connection...")
-                            mcpServerManager.disconnectServer(testServerName)
-                            Log.d(TAG, "Test connection closed successfully")
-                        } catch (e: Exception) {
-                            Log.w(TAG, "Failed to disconnect test connection (non-critical)", e)
-                            // Non-critical - connection was successful
-                        }
-
-                        Log.d(TAG, "=== Validation Successful ===")
-                        mapOf(
-                            "success" to true,
-                            "message" to "Connection valid",
-                            "toolCount" to toolCount,
-                            "serverInfo" to mapOf(
-                                "name" to (serverInfo?.name ?: serverName),
-                                "version" to (serverInfo?.protocolVersion ?: "unknown"),
-                                "protocolVersion" to (serverInfo?.protocolVersion ?: "2024-11-05")
+                // Parse protocol and create appropriate config
+                val config: com.blurr.voice.mcp.MCPTransportConfig? = when (transport.lowercase()) {
+                    "stdio" -> {
+                        if (command.isNullOrBlank()) {
+                            Log.w(TAG, "Validation failed: Command is blank for STDIO")
+                            return@withContext mapOf(
+                                "success" to false,
+                                "message" to "Command cannot be empty for STDIO transport"
                             )
+                        }
+                        Log.d(TAG, "STDIO config: command=$command, args=${args?.size ?: 0}")
+                        com.blurr.voice.mcp.MCPTransportConfig.StdioConfig(
+                            serverName = serverName,
+                            command = command,
+                            args = args ?: emptyList()
+                        )
+                    }
+                    "sse" -> {
+                        if (url.isBlank()) {
+                            Log.w(TAG, "Validation failed: URL is blank for SSE")
+                            return@withContext mapOf(
+                                "success" to false,
+                                "message" to "URL cannot be empty for SSE transport"
+                            )
+                        }
+                        val authType = try {
+                            com.blurr.voice.mcp.AuthType.valueOf((authentication ?: "NONE").uppercase())
+                        } catch (e: IllegalArgumentException) {
+                            com.blurr.voice.mcp.AuthType.NONE
+                        }
+                        Log.d(TAG, "SSE config: url=$url, auth=$authType, headers=${headers?.size ?: 0}")
+                        com.blurr.voice.mcp.MCPTransportConfig.SSEConfig(
+                            serverName = serverName,
+                            url = url,
+                            authentication = authType,
+                            headers = headers ?: emptyMap()
+                        )
+                    }
+                    "http" -> {
+                        if (url.isBlank()) {
+                            Log.w(TAG, "Validation failed: URL is blank for HTTP")
+                            return@withContext mapOf(
+                                "success" to false,
+                                "message" to "URL cannot be empty for HTTP transport"
+                            )
+                        }
+                        val authType = try {
+                            com.blurr.voice.mcp.AuthType.valueOf((authentication ?: "NONE").uppercase())
+                        } catch (e: IllegalArgumentException) {
+                            com.blurr.voice.mcp.AuthType.NONE
+                        }
+                        Log.d(TAG, "HTTP config: url=$url, auth=$authType, headers=${headers?.size ?: 0}")
+                        com.blurr.voice.mcp.MCPTransportConfig.HttpConfig(
+                            serverName = serverName,
+                            url = url,
+                            authentication = authType,
+                            headers = headers ?: emptyMap()
                         )
                     }
                     else -> {
-                        val error = result.exceptionOrNull()
-                        Log.e(TAG, "Connection failed", error)
-                        Log.d(TAG, "=== Validation Failed ===")
-                        mapOf(
+                        Log.e(TAG, "Invalid transport type: $transport")
+                        return@withContext mapOf(
                             "success" to false,
-                            "message" to (error?.message ?: "Connection validation failed")
+                            "message" to "Invalid transport type: $transport. Must be 'stdio', 'sse', or 'http'"
                         )
                     }
                 }
+
+                // Perform protocol-specific validation
+                val validationResult = com.blurr.voice.mcp.MCPTransportValidator.validate(
+                    config!!,
+                    timeout ?: 5000L
+                )
+
+                Log.d(TAG, "Validation result: success=${validationResult.success}, message=${validationResult.message}")
+
+                // Return result
+                validationResult.toMap()
             } catch (e: Exception) {
                 // Catch-all for any unexpected exceptions
                 Log.e(TAG, "Unexpected error in validateMCPConnection", e)
