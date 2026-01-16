@@ -81,15 +81,7 @@ class ExcelService {
           rowData.add(excel.BoolCellValue(cell.value as bool));
         } else if (cell.value is DateTime) {
           final dateTime = cell.value as DateTime;
-          rowData.add(excel.DateCellValue(
-            year: dateTime.year,
-            month: dateTime.month,
-            day: dateTime.day,
-            hour: dateTime.hour,
-            minute: dateTime.minute,
-            second: dateTime.second,
-            millisecond: dateTime.millisecond,
-          ));
+          rowData.add(excel.DateTimeCellValue.fromDateTime(dateTime));
         } else {
           rowData.add(excel.TextCellValue(cell.displayValue));
         }
@@ -124,21 +116,22 @@ class ExcelService {
     final sheets = <SpreadsheetSheet>[];
     
     excelFile.tables.forEach((sheetName, table) {
-      final rows = <Map<String, SpreadsheetCell>>{};
+      final rows = <String, SpreadsheetCell>{};
       
-      table.rows.forEach((excelRow) {
-        for (var cellData in excelRow) {
-          final colIndex = cellData.columnIndex;
-          final rowIndex = cellData.rowIndex;
-          final cellId = _getCellId(rowIndex, colIndex);
-          final value = _convertCellValue(cellData.value);
+      for (var rowIdx = 0; rowIdx < table.rows.length; rowIdx++) {
+        final excelRow = table.rows[rowIdx];
+        for (var colIdx = 0; colIdx < excelRow.length; colIdx++) {
+          final cellData = excelRow[colIdx];
+          final cellId = _getCellId(rowIdx, colIdx);
+          final value = _convertCellValue(cellData?.value);
           
           rows[cellId] = SpreadsheetCell(
+            id: cellId,
             value: value,
-            dataType: _inferDataType(cellData.value),
+            dataType: _inferDataType(cellData?.value),
           );
         }
-      });
+      }
       
       sheets.add(SpreadsheetSheet(
         name: sheetName,
@@ -204,7 +197,19 @@ class ExcelService {
   }
   
   void _applyFormatting(excel.Cell cell, CellFormat format) {
-    final cellStyle = (cell.cellStyle ?? const excel.CellStyle()).copyWith(
+    final cellStyle = cell.cellStyle?.copyWith(
+      bold: format.bold,
+      italic: format.italic,
+      underline: format.underline ? excel.Underline.Single : excel.Underline.None,
+      fontColorHex: format.textColorValue != null 
+          ? _colorToHex(format.textColorValue!) 
+          : '#000000',
+      backgroundColorHex: format.backgroundColorValue != null 
+          ? _colorToHex(format.backgroundColorValue!) 
+          : null,
+      fontSize: format.fontSize,
+      horizontalAlign: _convertAlignment(format.alignment),
+    ) ?? excel.CellStyle(
       bold: format.bold,
       italic: format.italic,
       underline: format.underline ? excel.Underline.Single : excel.Underline.None,
