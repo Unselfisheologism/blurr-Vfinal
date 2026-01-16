@@ -36,7 +36,6 @@ class PlutoGridDataAdapter {
         enableSetColumnsMenuItem: true,
         enableHideColumnMenuItem: true,
         applyFormatterInEditing: false,
-        enableAutoEditingOnDoubleTap: true,
       );
     });
   }
