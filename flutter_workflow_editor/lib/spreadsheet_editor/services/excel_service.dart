@@ -206,24 +206,16 @@ class ExcelService {
       bold: format.bold,
       italic: format.italic,
       underline: format.underline ? excel.Underline.Single : excel.Underline.None,
-      fontColorHexVal: format.textColorValue != null
-          ? _colorToHex(format.textColorValue!)
-          : '#000000',
-      backgroundColorHexVal: format.backgroundColorValue != null
-          ? _colorToHex(format.backgroundColorValue!)
-          : '#00000000',
+      fontColorHexVal: format.textColor ?? '#000000',
+      backgroundColorHexVal: format.backgroundColor ?? '#00000000',
       fontSizeVal: format.fontSize?.toInt(),
       horizontalAlignVal: _convertAlignment(format.alignment),
     ) ?? excel.CellStyle(
       bold: format.bold,
       italic: format.italic,
       underline: format.underline ? excel.Underline.Single : excel.Underline.None,
-      fontColorHex: format.textColorValue != null
-          ? _colorToHex(format.textColorValue!)
-          : '#000000',
-      backgroundColorHex: format.backgroundColorValue != null
-          ? _colorToHex(format.backgroundColorValue!)
-          : '#00000000',
+      fontColorHex: format.textColor ?? '#000000',
+      backgroundColorHex: format.backgroundColor ?? '#00000000',
       fontSize: format.fontSize?.toInt(),
       horizontalAlign: _convertAlignment(format.alignment),
     );
@@ -231,10 +223,6 @@ class ExcelService {
     cell.cellStyle = cellStyle;
   }
   
-  String _colorToHex(Color color) {
-    return '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
-  }
-
   excel.HorizontalAlign _convertAlignment(Alignment? alignment) {
     if (alignment == null) return excel.HorizontalAlign.Left;
     
