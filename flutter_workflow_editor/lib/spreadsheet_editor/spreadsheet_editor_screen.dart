@@ -787,3 +787,4 @@ class _SpreadsheetEditorScreenState extends State<SpreadsheetEditorScreen> {
       SnackBar(content: Text(message)),
     );
   }
+}
