@@ -142,7 +142,7 @@ class ExcelService {
         name: sheetName,
         cells: rows,
         rowCount: table.maxRows,
-        columnCount: table.maxCols,
+        columnCount: table.maxColumns,
       ));
     });
     
@@ -206,24 +206,24 @@ class ExcelService {
       bold: format.bold,
       italic: format.italic,
       underline: format.underline ? excel.Underline.Single : excel.Underline.None,
-      fontColorHex: format.textColorValue != null
-          ? _colorToHex(format.textColorValue!)
-          : '#000000',
-      backgroundColorHex: format.backgroundColorValue != null
-          ? _colorToHex(format.backgroundColorValue!)
-          : null,
-      fontSize: format.fontSize?.toInt(),
-      horizontalAlign: _convertAlignment(format.alignment),
+      fontColorHexVal: format.textColorValue != null
+          ? excel.ExcelColor.fromHex(_colorToHex(format.textColorValue!))
+          : excel.ExcelColor.black,
+      backgroundColorHexVal: format.backgroundColorValue != null
+          ? excel.ExcelColor.fromHex(_colorToHex(format.backgroundColorValue!))
+          : excel.ExcelColor.none,
+      fontSizeVal: format.fontSize?.toInt(),
+      horizontalAlignVal: _convertAlignment(format.alignment),
     ) ?? excel.CellStyle(
       bold: format.bold,
       italic: format.italic,
       underline: format.underline ? excel.Underline.Single : excel.Underline.None,
       fontColorHex: format.textColorValue != null
-          ? _colorToHex(format.textColorValue!)
-          : '#000000',
+          ? excel.ExcelColor.fromHex(_colorToHex(format.textColorValue!))
+          : excel.ExcelColor.black,
       backgroundColorHex: format.backgroundColorValue != null
-          ? _colorToHex(format.backgroundColorValue!)
-          : null,
+          ? excel.ExcelColor.fromHex(_colorToHex(format.backgroundColorValue!))
+          : excel.ExcelColor.none,
       fontSize: format.fontSize?.toInt(),
       horizontalAlign: _convertAlignment(format.alignment),
     );
