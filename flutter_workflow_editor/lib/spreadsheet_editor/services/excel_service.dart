@@ -219,11 +219,11 @@ class ExcelService {
       italic: format.italic,
       underline: format.underline ? excel.Underline.Single : excel.Underline.None,
       fontColorHex: format.textColorValue != null
-          ? _hexToExcelColor(_colorToHex(format.textColorValue!))
-          : _hexToExcelColor('#000000'),
+          ? _colorToHex(format.textColorValue!)
+          : '#000000',
       backgroundColorHex: format.backgroundColorValue != null
-          ? _hexToExcelColor(_colorToHex(format.backgroundColorValue!))
-          : _hexToExcelColor('#00000000'),
+          ? _colorToHex(format.backgroundColorValue!)
+          : '#00000000',
       fontSize: format.fontSize?.toInt(),
       horizontalAlign: _convertAlignment(format.alignment),
     );
@@ -234,31 +234,7 @@ class ExcelService {
   String _colorToHex(Color color) {
     return '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
   }
-  
-  excel.ExcelColor _hexToExcelColor(String hex) {
-    // Remove # if present
-    final hexString = hex.replaceFirst('#', '');
 
-    // Parse hex values
-    if (hexString.length == 6) {
-      // RGB format: RRGGBB
-      final r = int.parse(hexString.substring(0, 2), radix: 16);
-      final g = int.parse(hexString.substring(2, 4), radix: 16);
-      final b = int.parse(hexString.substring(4, 6), radix: 16);
-      return excel.ExcelColor.fromARGB(255, r, g, b);
-    } else if (hexString.length == 8) {
-      // ARGB format: AARRGGBB
-      final a = int.parse(hexString.substring(0, 2), radix: 16);
-      final r = int.parse(hexString.substring(2, 4), radix: 16);
-      final g = int.parse(hexString.substring(4, 6), radix: 16);
-      final b = int.parse(hexString.substring(6, 8), radix: 16);
-      return excel.ExcelColor.fromARGB(a, r, g, b);
-    }
-
-    // Fallback to black
-    return excel.ExcelColor.fromARGB(255, 0, 0, 0);
-  }
-  
   excel.HorizontalAlign _convertAlignment(Alignment? alignment) {
     if (alignment == null) return excel.HorizontalAlign.Left;
     
