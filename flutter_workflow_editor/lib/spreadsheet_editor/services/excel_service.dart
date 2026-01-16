@@ -47,7 +47,7 @@ class ExcelService {
   void _populateSheet(excel.Sheet excelSheet, SpreadsheetSheet sheet) {
     // Clear default row
     excelSheet.removeRow(0);
-    
+
     // Find max dimensions
     int maxRow = 0;
     int maxCol = 0;
@@ -56,15 +56,15 @@ class ExcelService {
       maxRow = maxRow > row ? maxRow : row;
       maxCol = maxCol > col ? maxCol : col;
     });
-    
+
     // Add data row by row
     for (int row = 0; row <= maxRow; row++) {
       final List<excel.CellValue> rowData = [];
-      
+
       for (int col = 0; col <= maxCol; col++) {
         final cellId = _getCellId(row, col);
         final cell = sheet.cells[cellId];
-        
+
         // Set value based on type
         if (cell == null) {
           rowData.add(excel.TextCellValue(''));
@@ -85,14 +85,18 @@ class ExcelService {
         } else {
           rowData.add(excel.TextCellValue(cell.displayValue));
         }
-        
-        // Apply formatting
+      }
+
+      excelSheet.appendRow(rowData);
+
+      // Apply formatting after appending
+      for (int col = 0; col <= maxCol; col++) {
+        final cellId = _getCellId(row, col);
+        final cell = sheet.cells[cellId];
         if (cell != null && cell.format != null) {
           _applyFormatting(excelSheet.cell(excel.CellIndex.indexByColumnRow(columnIndex: col, rowIndex: row)), cell.format!);
         }
       }
-      
-      excelSheet.appendRow(rowData);
     }
   }
   
@@ -134,6 +138,7 @@ class ExcelService {
       }
       
       sheets.add(SpreadsheetSheet(
+        id: DateTime.now().millisecondsSinceEpoch.toString() + '_' + sheets.length.toString(),
         name: sheetName,
         cells: rows,
         rowCount: table.maxRows,
@@ -196,33 +201,33 @@ class ExcelService {
     await OpenFile.open(filePath);
   }
   
-  void _applyFormatting(excel.Cell cell, CellFormat format) {
+  void _applyFormatting(dynamic cell, CellFormat format) {
     final cellStyle = cell.cellStyle?.copyWith(
       bold: format.bold,
       italic: format.italic,
       underline: format.underline ? excel.Underline.Single : excel.Underline.None,
-      fontColorHex: format.textColorValue != null 
-          ? _colorToHex(format.textColorValue!) 
+      fontColorHex: format.textColorValue != null
+          ? _colorToHex(format.textColorValue!)
           : '#000000',
-      backgroundColorHex: format.backgroundColorValue != null 
-          ? _colorToHex(format.backgroundColorValue!) 
+      backgroundColorHex: format.backgroundColorValue != null
+          ? _colorToHex(format.backgroundColorValue!)
           : null,
-      fontSize: format.fontSize,
+      fontSize: format.fontSize?.toInt(),
       horizontalAlign: _convertAlignment(format.alignment),
     ) ?? excel.CellStyle(
       bold: format.bold,
       italic: format.italic,
       underline: format.underline ? excel.Underline.Single : excel.Underline.None,
-      fontColorHex: format.textColorValue != null 
-          ? _colorToHex(format.textColorValue!) 
+      fontColorHex: format.textColorValue != null
+          ? _colorToHex(format.textColorValue!)
           : '#000000',
-      backgroundColorHex: format.backgroundColorValue != null 
-          ? _colorToHex(format.backgroundColorValue!) 
+      backgroundColorHex: format.backgroundColorValue != null
+          ? _colorToHex(format.backgroundColorValue!)
           : null,
-      fontSize: format.fontSize,
+      fontSize: format.fontSize?.toInt(),
       horizontalAlign: _convertAlignment(format.alignment),
     );
-    
+
     cell.cellStyle = cellStyle;
   }
   
