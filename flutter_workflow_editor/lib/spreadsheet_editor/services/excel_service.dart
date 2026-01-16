@@ -207,11 +207,11 @@ class ExcelService {
       italic: format.italic,
       underline: format.underline ? excel.Underline.Single : excel.Underline.None,
       fontColorHexVal: format.textColorValue != null
-          ? excel.ExcelColor.fromHex(_colorToHex(format.textColorValue!))
-          : excel.ExcelColor.black,
+          ? _colorToHex(format.textColorValue!)
+          : '#000000',
       backgroundColorHexVal: format.backgroundColorValue != null
-          ? excel.ExcelColor.fromHex(_colorToHex(format.backgroundColorValue!))
-          : excel.ExcelColor.none,
+          ? _colorToHex(format.backgroundColorValue!)
+          : '#00000000',
       fontSizeVal: format.fontSize?.toInt(),
       horizontalAlignVal: _convertAlignment(format.alignment),
     ) ?? excel.CellStyle(
@@ -219,11 +219,11 @@ class ExcelService {
       italic: format.italic,
       underline: format.underline ? excel.Underline.Single : excel.Underline.None,
       fontColorHex: format.textColorValue != null
-          ? excel.ExcelColor.fromHex(_colorToHex(format.textColorValue!))
-          : excel.ExcelColor.black,
+          ? _colorToHex(format.textColorValue!)
+          : '#000000',
       backgroundColorHex: format.backgroundColorValue != null
-          ? excel.ExcelColor.fromHex(_colorToHex(format.backgroundColorValue!))
-          : excel.ExcelColor.none,
+          ? _colorToHex(format.backgroundColorValue!)
+          : '#00000000',
       fontSize: format.fontSize?.toInt(),
       horizontalAlign: _convertAlignment(format.alignment),
     );
