@@ -332,8 +332,9 @@ object MCPTransportValidator {
             }
 
             try {
-                // Send MCP initialize request to verify server accepts MCP messages
-                val mcpInitRequest = """{"jsonrpc":"2.0","method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{}},"id":1}"""
+                // For HTTP, we only verify server is reachable and accepts POST requests
+                // Do NOT send MCP protocol-level initialization here
+                // The SDK's Client class will handle protocol negotiation during connect()
 
                 val response = withTimeoutOrNull(timeout) {
                     client.post(config.url) {
@@ -357,7 +358,10 @@ object MCPTransportValidator {
                             }
                         }
 
-                        setBody(mcpInitRequest)
+                        // Simple connectivity check - send minimal JSON test request
+                        // This verifies the server accepts JSON and responds to POST
+                        val testRequest = """{"test": true}"""
+                        setBody(testRequest)
                     }
                 }
 
