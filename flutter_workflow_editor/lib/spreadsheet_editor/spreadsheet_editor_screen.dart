@@ -665,41 +665,6 @@ class _SpreadsheetEditorScreenState extends State<SpreadsheetEditorScreen> {
     }
   }
 
-  // Helper methods
-  String _getColumnLabel(int col) {
-    String label = '';
-    int tempCol = col;
-    while (tempCol >= 0) {
-      label = String.fromCharCode(65 + (tempCol % 26)) + label;
-      tempCol = (tempCol ~/ 26) - 1;
-    }
-    return label;
-  }
-
-  String _getCellId(int row, int col) {
-    return '${_getColumnLabel(col)}${row + 1}';
-  }
-
-  (int, int) _parseCellId(String cellId) {
-    final colMatch = RegExp(r'^[A-Z]+').firstMatch(cellId);
-    final rowMatch = RegExp(r'\d+$').firstMatch(cellId);
-    
-    if (colMatch == null || rowMatch == null) {
-      return (0, 0);
-    }
-
-    final colLabel = colMatch.group(0)!;
-    final row = int.parse(rowMatch.group(0)!) - 1;
-    
-    int col = 0;
-    for (int i = 0; i < colLabel.length; i++) {
-      col = col * 26 + (colLabel.codeUnitAt(i) - 64);
-    }
-    col -= 1;
-    
-    return (row, col);
-  }
-
   // Dialog helpers
   Future<String?> _showNameDialog(String title, String defaultValue) async {
     final controller = TextEditingController(text: defaultValue);
