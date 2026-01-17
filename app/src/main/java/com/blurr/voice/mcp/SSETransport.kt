@@ -30,7 +30,7 @@ class SSETransport(
     private var httpClient: HttpClient? = null
 
     /**
-     * Create the SSE transport
+     * Create the SSE transport with proper error handling callbacks
      */
     fun createTransport(): SseClientTransport {
         Log.d(TAG, "Creating SSE transport for: $url")
@@ -63,6 +63,22 @@ class SSETransport(
             urlString = url
         )
 
+        // Set up error handling callbacks (as per Kotlin SDK documentation)
+        transport!!.onError = { error ->
+            Log.e(TAG, "SseClientTransport error: ${error.message}", error)
+            Log.e(TAG, "Error occurred on SSE transport: $url")
+            
+            // SSE transports support automatic reconnection
+            // The SDK handles reconnection internally, we just log here
+            Log.d(TAG, "SSE transport may attempt automatic reconnection")
+        }
+
+        transport!!.onClose = {
+            Log.d(TAG, "SseClientTransport closed for: $url")
+            Log.d(TAG, "SSE connection terminated")
+        }
+
+        Log.d(TAG, "SSE transport created successfully with error handlers")
         return transport!!
     }
 

@@ -26,7 +26,7 @@ class StdioTransport(
     private var process: Process? = null
 
     /**
-     * Create the transport and start the process
+     * Create the transport and start the process with proper error handling callbacks
      */
     fun createTransport(): StdioClientTransport {
         Log.d(TAG, "Creating Stdio transport for: $processPath")
@@ -79,6 +79,31 @@ class StdioTransport(
             }
         }
 
+        // Set up error handling callbacks (as per Kotlin SDK documentation)
+        transport!!.onError = { error ->
+            Log.e(TAG, "StdioClientTransport error: ${error.message}", error)
+            Log.e(TAG, "Error occurred on stdio transport for process: $processPath")
+            
+            // Check if process is still alive
+            if (process?.isAlive == false) {
+                val exitCode = process?.exitValue()
+                Log.e(TAG, "Process terminated with exit code: $exitCode")
+            }
+        }
+
+        transport!!.onClose = {
+            Log.d(TAG, "StdioClientTransport closed for: $processPath")
+            
+            // Clean up process
+            if (process?.isAlive == true) {
+                Log.d(TAG, "Process still alive, destroying...")
+                process?.destroy()
+            }
+            
+            Log.d(TAG, "Stdio transport connection terminated")
+        }
+
+        Log.d(TAG, "Stdio transport created successfully with error handlers")
         return transport!!
     }
 

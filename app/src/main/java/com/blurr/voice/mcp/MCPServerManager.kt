@@ -29,7 +29,12 @@ class MCPServerManager(
     private val preferences = MCPServerPreferences(context)
     
     /**
-     * Connect to an MCP server
+     * Connect to an MCP server using official Kotlin SDK
+     * 
+     * The SDK's Client.connect() method automatically handles:
+     * - Sending InitializeRequest with protocol version and capabilities
+     * - Receiving InitializeResult from server
+     * - Sending InitializedNotification to complete handshake
      * 
      * @param name Unique name for this server connection
      * @param url URL or path (depending on transport type)
@@ -43,36 +48,57 @@ class MCPServerManager(
     ): Result<MCPServerInfo> {
         return withContext(Dispatchers.IO) {
             try {
-                Log.d(TAG, "Connecting to MCP server: $name via $transport")
+                Log.d(TAG, "=== Connecting to MCP Server ===")
+                Log.d(TAG, "Name: $name")
+                Log.d(TAG, "URL: $url")
+                Log.d(TAG, "Transport: $transport")
                 
-                // Create official SDK client
+                // Create official SDK client with app info
                 val client = Client(
                     clientInfo = Implementation(
                         name = "blurr-voice-app",
                         version = "1.0.0"
                     )
                 )
+                Log.d(TAG, "Created SDK Client instance")
 
                 // Create transport using factory
+                Log.d(TAG, "Creating transport via TransportFactory...")
                 val mcpTransport = TransportFactory.create(transport, url, context)
+                Log.d(TAG, "Transport created: ${mcpTransport::class.simpleName}")
 
-                // Connect to server
+                // Connect to server - SDK handles protocol negotiation automatically
+                Log.d(TAG, "Calling client.connect()... (SDK will handle InitializeRequest/Result)")
                 TransportFactory.connectClient(client, mcpTransport)
+                Log.d(TAG, "Client connected successfully!")
+
+                // Access server information from client (populated after connect)
+                val serverCaps = client.serverCapabilities
+                val serverVer = client.serverVersion
+                
+                Log.d(TAG, "Server capabilities: $serverCaps")
+                Log.d(TAG, "Server version: ${serverVer?.name} v${serverVer?.version}")
 
                 // List tools from server
+                Log.d(TAG, "Fetching available tools from server...")
                 val toolsResult = client.listTools()
                 val tools = toolsResult.tools ?: emptyList()
                 
                 Log.d(TAG, "Discovered ${tools.size} tools from $name")
+                tools.forEach { tool ->
+                    Log.d(TAG, "  - ${tool.name}: ${tool.description}")
+                }
                 
-                // Get server info
+                // Create server info with data from SDK client
                 val serverInfo = MCPServerInfo(
                     name = name,
                     url = url,
                     transport = transport,
                     toolCount = tools.size,
                     isConnected = true,
-                    protocolVersion = "2024-11-05"
+                    protocolVersion = "2024-11-05",  // MCP protocol version
+                    serverName = serverVer?.name ?: name,
+                    serverVersion = serverVer?.version ?: "unknown"
                 )
                 
                 // Store connection
@@ -91,10 +117,18 @@ class MCPServerManager(
                 // Save to preferences
                 preferences.saveServer(name, url, transport, enabled = true)
                 
-                Log.d(TAG, "Successfully connected to $name")
+                Log.d(TAG, "=== Successfully Connected to $name ===")
+                Log.d(TAG, "Server: ${serverInfo.serverName} v${serverInfo.serverVersion}")
+                Log.d(TAG, "Tools: ${serverInfo.toolCount}")
+                Log.d(TAG, "Protocol: ${serverInfo.protocolVersion}")
+                
                 Result.success(serverInfo)
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to connect to MCP server: $name", e)
+                Log.e(TAG, "=== Failed to Connect to MCP Server: $name ===", e)
+                Log.e(TAG, "Transport: $transport")
+                Log.e(TAG, "URL: $url")
+                Log.e(TAG, "Error: ${e.message}")
+                Log.e(TAG, "Stack trace:", e)
                 Result.failure(e)
             }
         }
@@ -103,25 +137,45 @@ class MCPServerManager(
     /**
      * Disconnect from a specific server
      * 
+     * Properly closes the SDK client which will:
+     * - Close the underlying transport
+     * - Trigger onClose callbacks
+     * - Clean up resources
+     * 
      * @param name Server name to disconnect
      * @return Result indicating success or failure
      */
     suspend fun disconnectServer(name: String): Result<Unit> {
         return withContext(Dispatchers.IO) {
             try {
-                Log.d(TAG, "Disconnecting from MCP server: $name")
+                Log.d(TAG, "=== Disconnecting from MCP Server ===")
+                Log.d(TAG, "Server: $name")
                 
                 val connection = servers[name]
                 if (connection != null) {
+                    Log.d(TAG, "Found connection, closing client...")
+                    
+                    // Close the SDK client (triggers transport.onClose callbacks)
                     connection.client.close()
+                    
+                    Log.d(TAG, "Client closed successfully")
+                    
+                    // Remove from active servers
                     servers.remove(name)
+                    
+                    // Remove from preferences
                     preferences.deleteServer(name)
-                    Log.d(TAG, "Disconnected from: $name")
+                    
+                    Log.d(TAG, "=== Successfully Disconnected from $name ===")
+                } else {
+                    Log.w(TAG, "Server $name not found in active connections")
                 }
                 
                 Result.success(Unit)
             } catch (e: Exception) {
-                Log.e(TAG, "Error disconnecting from $name", e)
+                Log.e(TAG, "=== Error Disconnecting from $name ===", e)
+                Log.e(TAG, "Error: ${e.message}")
+                Log.e(TAG, "Stack trace:", e)
                 Result.failure(e)
             }
         }
@@ -175,6 +229,11 @@ class MCPServerManager(
     /**
      * Execute a tool on a specific server
      * 
+     * Uses the SDK's Client.callTool() method which handles:
+     * - JSON-RPC request formatting
+     * - Response parsing
+     * - Error handling
+     * 
      * @param serverName Server name
      * @param toolName Tool name
      * @param arguments Tool arguments
@@ -187,28 +246,53 @@ class MCPServerManager(
     ): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
+                Log.d(TAG, "=== Executing MCP Tool ===")
+                Log.d(TAG, "Server: $serverName")
+                Log.d(TAG, "Tool: $toolName")
+                Log.d(TAG, "Arguments: $arguments")
+                
                 val connection = servers[serverName]
-                    ?: return@withContext Result.failure(Exception("Server not connected: $serverName"))
+                if (connection == null) {
+                    Log.e(TAG, "Server not connected: $serverName")
+                    return@withContext Result.failure(Exception("Server not connected: $serverName"))
+                }
                 
-                Log.d(TAG, "Executing tool $toolName on $serverName with args: $arguments")
+                if (!connection.connected) {
+                    Log.e(TAG, "Server connection is not active: $serverName")
+                    return@withContext Result.failure(Exception("Server connection is not active: $serverName"))
+                }
                 
+                Log.d(TAG, "Calling SDK client.callTool()...")
                 val result = connection.client.callTool(
                     name = toolName,
                     arguments = arguments
                 )
                 
+                Log.d(TAG, "Received tool response with ${result.content.size} content items")
+                
                 // Extract text content from result
                 val textContent = result.content.joinToString("\n") { content ->
                     when (content) {
-                        is io.modelcontextprotocol.kotlin.sdk.types.TextContent -> content.text
-                        else -> content.toString()
+                        is io.modelcontextprotocol.kotlin.sdk.types.TextContent -> {
+                            Log.d(TAG, "Text content: ${content.text}")
+                            content.text
+                        }
+                        else -> {
+                            Log.d(TAG, "Other content type: ${content::class.simpleName}")
+                            content.toString()
+                        }
                     }
                 }
                 
-                Log.d(TAG, "Tool execution successful: $textContent")
+                Log.d(TAG, "=== Tool Execution Successful ===")
+                Log.d(TAG, "Result length: ${textContent.length} chars")
                 Result.success(textContent)
             } catch (e: Exception) {
-                Log.e(TAG, "Tool execution failed: $serverName:$toolName", e)
+                Log.e(TAG, "=== Tool Execution Failed ===", e)
+                Log.e(TAG, "Server: $serverName")
+                Log.e(TAG, "Tool: $toolName")
+                Log.e(TAG, "Error: ${e.message}")
+                Log.e(TAG, "Stack trace:", e)
                 Result.failure(e)
             }
         }
