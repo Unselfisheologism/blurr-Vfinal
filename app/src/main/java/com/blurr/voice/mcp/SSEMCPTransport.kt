@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicLong
 // This file is kept for reference but should not be used
 @Deprecated("Use official SDK's SseClientTransport via SSETransport.kt instead")
 class SSEMCPTransport(
-    private val config: MCPTransportConfig.SSEConfig
+    private val config: MCPTransportConfig.Http
 ) : MCPTransport {
 
     private val client: okhttp3.OkHttpClient
