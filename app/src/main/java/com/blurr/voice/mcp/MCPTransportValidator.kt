@@ -23,10 +23,21 @@ import kotlinx.serialization.json.Json
 /**
  * Protocol-specific validation for MCP transport connections.
  *
+ * This validator performs ONLY connectivity testing - it does NOT handle MCP protocol initialization.
+ * Protocol negotiation is automatically managed by the Kotlin MCP SDK's Client class.
+ *
  * Each transport protocol (STDIO, SSE, HTTP) has different validation requirements:
  * - STDIO: Verify command is executable and process can be started
  * - SSE: Make HTTP GET request to verify server is reachable
- * - HTTP: Make HTTP POST request to verify server accepts MCP messages
+ * - HTTP: Make HTTP GET request to verify server accepts connections
+ * 
+ * NOTE: The SDK's Client.connect() method automatically handles:
+ * - Protocol version negotiation
+ * - InitializeRequest/InitializeResult handshake
+ * - Capability exchange
+ * - Client information transmission
+ *
+ * This validator only checks that the transport endpoint is reachable and can accept connections.
  */
 object MCPTransportValidator {
     private const val TAG = "MCPTransportValidator"
@@ -149,8 +160,11 @@ object MCPTransportValidator {
      *
      * For SSE, we verify:
      * 1. URL is valid
-     * 2. Server responds to HTTP GET request
+     * 2. Server responds to HTTP GET request (connectivity test)
      * 3. Optional: Authentication headers are valid
+     * 
+     * NOTE: We do NOT send MCP initialize requests during validation.
+     * Protocol initialization is handled automatically by the SDK's Client class.
      */
     private suspend fun validateSSE(
         config: MCPTransportConfig.SSEConfig,
@@ -200,6 +214,7 @@ object MCPTransportValidator {
 
             try {
                 // Make GET request to verify server is reachable
+                // We don't send MCP initialize requests during validation
                 val response = withTimeoutOrNull(timeout) {
                     client.get(config.url) {
                         // Apply authentication headers
@@ -240,11 +255,12 @@ object MCPTransportValidator {
                     if (isSuccess) {
                         ValidationResult(
                             success = true,
-                            message = "SSE endpoint reachable (status: $statusCode)",
+                            message = "SSE endpoint reachable (status: $statusCode). MCP protocol initialization will be handled by SDK.",
                             protocol = "sse",
                             details = mapOf(
                                 "url" to config.url,
-                                "statusCode" to statusCode
+                                "statusCode" to statusCode,
+                                "note" to "Connectivity validated. Protocol handshake will be handled by MCP SDK."
                             )
                         )
                     } else {
@@ -275,9 +291,11 @@ object MCPTransportValidator {
      *
      * For HTTP, we verify:
      * 1. URL is valid
-     * 2. Server responds to HTTP POST request
+     * 2. Server responds to HTTP GET request (connectivity test)
      * 3. Optional: Authentication headers are valid
-     * 4. Can send MCP initialize request
+     * 
+     * NOTE: We do NOT send MCP initialize requests during validation.
+     * Protocol initialization is handled automatically by the SDK's Client class.
      */
     private suspend fun validateHttp(
         config: MCPTransportConfig.HttpConfig,
@@ -332,13 +350,10 @@ object MCPTransportValidator {
             }
 
             try {
-                // Send MCP initialize request to verify server accepts MCP messages
-                val mcpInitRequest = """{"jsonrpc":"2.0","method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{}},"id":1}"""
-
+                // Make a simple GET request to verify server connectivity
+                // We don't send MCP initialize requests during validation
                 val response = withTimeoutOrNull(timeout) {
-                    client.post(config.url) {
-                        contentType(ContentType.Application.Json)
-
+                    client.get(config.url) {
                         // Apply authentication headers
                         when (config.authentication) {
                             AuthType.AUTH_HEADER -> {
@@ -356,8 +371,6 @@ object MCPTransportValidator {
                                 // No additional headers
                             }
                         }
-
-                        setBody(mcpInitRequest)
                     }
                 }
 
@@ -373,28 +386,19 @@ object MCPTransportValidator {
                     val statusCode = response.status.value
                     Log.d(TAG, "HTTP response status: $statusCode")
 
-                    // For HTTP MCP, 2xx responses indicate success
-                    val isSuccess = response.status.value in 200..299
+                    // For HTTP MCP, any 2xx, 3xx, or 405 (Method Not Allowed) response indicates server is reachable
+                    // 405 is common for HTTP MCP servers that only accept POST requests
+                    val isSuccess = response.status.value in 200..399 || response.status.value == 405
 
                     if (isSuccess) {
                         ValidationResult(
                             success = true,
-                            message = "HTTP endpoint accepts MCP messages (status: $statusCode)",
+                            message = "HTTP endpoint reachable (status: $statusCode). MCP protocol initialization will be handled by SDK.",
                             protocol = "http",
                             details = mapOf(
                                 "url" to config.url,
-                                "statusCode" to statusCode
-                            )
-                        )
-                    } else if (response.status.value == HttpStatusCode.MethodNotAllowed.value) {
-                        // 405 means server exists but doesn't accept POST - still a valid endpoint
-                        ValidationResult(
-                            success = true,
-                            message = "HTTP endpoint reachable (status: $statusCode - method not allowed is acceptable for validation)",
-                            protocol = "http",
-                            details = mapOf(
-                                "url" to config.url,
-                                "statusCode" to statusCode
+                                "statusCode" to statusCode,
+                                "note" to "Connectivity validated. Protocol handshake will be handled by MCP SDK."
                             )
                         )
                     } else {

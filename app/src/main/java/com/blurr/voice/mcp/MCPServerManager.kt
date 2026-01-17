@@ -13,6 +13,9 @@ import com.blurr.voice.data.MCPServerPreferences
  * MCP Server Manager using Official Kotlin SDK
  * 
  * Manages MCP server connections using the official Model Context Protocol Kotlin SDK.
+ * This manager properly uses the SDK's Client class for automatic protocol initialization
+ * and delegates transport handling to the TransportFactory.
+ * 
  * Reference: https://github.com/modelcontextprotocol/kotlin-sdk
  */
 class MCPServerManager(
@@ -31,6 +34,12 @@ class MCPServerManager(
     /**
      * Connect to an MCP server
      * 
+     * Uses the official SDK's Client class which automatically handles:
+     * - Protocol version negotiation
+     * - InitializeRequest/InitializeResult handshake  
+     * - Capability exchange
+     * - Client information transmission
+     * 
      * @param name Unique name for this server connection
      * @param url URL or path (depending on transport type)
      * @param transport Transport type (HTTP, SSE, STDIO)
@@ -43,9 +52,12 @@ class MCPServerManager(
     ): Result<MCPServerInfo> {
         return withContext(Dispatchers.IO) {
             try {
-                Log.d(TAG, "Connecting to MCP server: $name via $transport")
+                Log.d(TAG, "=== Connecting to MCP server: $name ===")
+                Log.d(TAG, "Transport: $transport")
+                Log.d(TAG, "Endpoint: $url")
                 
-                // Create official SDK client
+                // Create official SDK client with client info
+                // The SDK automatically handles protocol initialization
                 val client = Client(
                     clientInfo = Implementation(
                         name = "blurr-voice-app",
@@ -54,47 +66,66 @@ class MCPServerManager(
                 )
 
                 // Create transport using factory
-                val mcpTransport = TransportFactory.create(transport, url, context)
+                val transportInstance = TransportFactory.create(transport, url, context)
 
-                // Connect to server
-                TransportFactory.connectClient(client, mcpTransport)
+                // Connect to server - SDK handles all protocol-level initialization
+                val connectionResult = TransportFactory.connectClient(client, transportInstance)
+                
+                if (connectionResult.isFailure) {
+                    throw connectionResult.exceptionOrNull() 
+                        ?: Exception("Unknown connection error")
+                }
+                
+                val connection = connectionResult.getOrNull()!!
+                val serverInfo = connection.serverInfo
+                
+                Log.d(TAG, "Protocol handshake successful with: ${serverInfo.name}")
+                Log.d(TAG, "Server version: ${serverInfo.version}")
+                Log.d(TAG, "Protocol version: ${serverInfo.protocolVersion}")
 
                 // List tools from server
                 val toolsResult = client.listTools()
                 val tools = toolsResult.tools ?: emptyList()
                 
                 Log.d(TAG, "Discovered ${tools.size} tools from $name")
+                tools.forEach { tool ->
+                    Log.d(TAG, "  - ${tool.name}: ${tool.description}")
+                }
                 
-                // Get server info
-                val serverInfo = MCPServerInfo(
+                // Create our MCPServerInfo from SDK server info
+                val mcpServerInfo = MCPServerInfo(
                     name = name,
                     url = url,
                     transport = transport,
                     toolCount = tools.size,
                     isConnected = true,
-                    protocolVersion = "2024-11-05"
+                    protocolVersion = serverInfo.protocolVersion ?: "unknown",
+                    serverName = serverInfo.name,
+                    serverVersion = serverInfo.version ?: "unknown"
                 )
                 
-                // Store connection
-                val connection = MCPServerConnection(
+                // Store connection with transport instance for cleanup
+                val serverConnection = MCPServerConnection(
                     name = name,
                     url = url,
                     transport = transport,
                     connected = true,
-                    serverInfo = serverInfo,
+                    serverInfo = mcpServerInfo,
                     client = client,
-                    tools = tools
+                    tools = tools,
+                    transportInstance = transportInstance
                 )
                 
-                servers[name] = connection
+                servers[name] = serverConnection
                 
                 // Save to preferences
                 preferences.saveServer(name, url, transport, enabled = true)
                 
-                Log.d(TAG, "Successfully connected to $name")
-                Result.success(serverInfo)
+                Log.d(TAG, "Successfully connected to $name and stored connection")
+                Result.success(mcpServerInfo)
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to connect to MCP server: $name", e)
+                Log.e(TAG, "Error details: ${e.message}")
                 Result.failure(e)
             }
         }
@@ -113,10 +144,18 @@ class MCPServerManager(
                 
                 val connection = servers[name]
                 if (connection != null) {
+                    // Close transport properly
+                    connection.transportInstance?.let { transportInstance ->
+                        TransportFactory.closeTransport(transportInstance)
+                    }
+                    
+                    // Close client connection
                     connection.client.close()
                     servers.remove(name)
                     preferences.deleteServer(name)
-                    Log.d(TAG, "Disconnected from: $name")
+                    Log.d(TAG, "Successfully disconnected from: $name")
+                } else {
+                    Log.w(TAG, "Server $name was not connected")
                 }
                 
                 Result.success(Unit)
@@ -260,7 +299,8 @@ data class MCPServerConnection(
     val connected: Boolean,
     val serverInfo: MCPServerInfo?,
     val client: Client,
-    val tools: List<Tool>
+    val tools: List<Tool>,
+    val transportInstance: MCPTransportInstance? = null
 )
 
 /**
