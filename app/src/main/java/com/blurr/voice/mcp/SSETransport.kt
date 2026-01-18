@@ -64,7 +64,7 @@ class SSETransport(
         )
 
         // Set up error handling callbacks (as per Kotlin SDK documentation)
-        transport!!.onError = { error ->
+        transport!!.onError { error ->
             Log.e(TAG, "SseClientTransport error: ${error.message}", error)
             Log.e(TAG, "Error occurred on SSE transport: $url")
             
@@ -73,7 +73,7 @@ class SSETransport(
             Log.d(TAG, "SSE transport may attempt automatic reconnection")
         }
 
-        transport!!.onClose = {
+        transport!!.onClose {
             Log.d(TAG, "SseClientTransport closed for: $url")
             Log.d(TAG, "SSE connection terminated")
         }

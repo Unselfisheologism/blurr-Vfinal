@@ -64,7 +64,7 @@ class HttpTransport(
         )
 
         // Set up error handling callbacks (as per Kotlin SDK documentation)
-        transport!!.onError = { error ->
+        transport!!.onError { error ->
             Log.e(TAG, "StreamableHttpClientTransport error: ${error.message}", error)
             
             // Check for StreamableHttpError
@@ -76,7 +76,7 @@ class HttpTransport(
             Log.e(TAG, "Error occurred on transport: $url")
         }
 
-        transport!!.onClose = {
+        transport!!.onClose {
             Log.d(TAG, "StreamableHttpClientTransport closed for: $url")
             Log.d(TAG, "Transport connection terminated gracefully")
         }
