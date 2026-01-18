@@ -80,7 +80,7 @@ class StdioTransport(
         }
 
         // Set up error handling callbacks (as per Kotlin SDK documentation)
-        transport!!.onError = { error ->
+        transport!!.onError { error ->
             Log.e(TAG, "StdioClientTransport error: ${error.message}", error)
             Log.e(TAG, "Error occurred on stdio transport for process: $processPath")
             
@@ -91,7 +91,7 @@ class StdioTransport(
             }
         }
 
-        transport!!.onClose = {
+        transport!!.onClose {
             Log.d(TAG, "StdioClientTransport closed for: $processPath")
             
             // Clean up process
