@@ -123,7 +123,9 @@ class StdioTransport(
             
             // Clean up any partially created resources
             try {
-                createdTransport?.close()
+                runBlocking {
+                    createdTransport?.close()
+                }
             } catch (cleanupException: Exception) {
                 Log.w(TAG, "Error closing transport during cleanup", cleanupException)
             }
