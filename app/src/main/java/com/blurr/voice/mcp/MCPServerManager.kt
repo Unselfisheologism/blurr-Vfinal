@@ -64,7 +64,14 @@ class MCPServerManager(
 
                 // Create transport using factory
                 Log.d(TAG, "Creating transport via TransportFactory...")
-                val mcpTransport = TransportFactory.create(transport, url, context)
+                val transportResult = TransportFactory.create(transport, url, context)
+                if (transportResult.isFailure) {
+                    val error = transportResult.exceptionOrNull()
+                    Log.e(TAG, "Failed to create transport: ${error?.message}", error)
+                    return@withContext Result.failure(Exception("Failed to create transport: ${error?.message}", error))
+                }
+                
+                val mcpTransport = transportResult.getOrThrow()
                 Log.d(TAG, "Transport created: ${mcpTransport::class.simpleName}")
 
                 // Connect to server - SDK handles protocol negotiation automatically

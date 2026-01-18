@@ -18,27 +18,33 @@ object TransportFactory {
      * @param type Transport type (HTTP, SSE, STDIO)
      * @param url URL or path (depending on transport type)
      * @param context Android context
-     * @return Transport instance from official SDK
+     * @return Result containing either the transport instance or an error
      */
     fun create(
         type: TransportType,
         url: String,
         context: Context
-    ): Any {
-        return when (type) {
-            TransportType.HTTP -> {
-                // Create HTTP transport using official SDK
-                HttpTransport(url).createTransport()
+    ): Result<Any> {
+        return try {
+            val transport = when (type) {
+                TransportType.HTTP -> {
+                    // Create HTTP transport using official SDK
+                    HttpTransport(url).createTransport()
+                }
+                TransportType.SSE -> {
+                    // Create SSE transport using official SDK
+                    SSETransport(url).createTransport()
+                }
+                TransportType.STDIO -> {
+                    // Create Stdio transport using official SDK
+                    // url is the process path for stdio
+                    StdioTransport(url, context).createTransport()
+                }
             }
-            TransportType.SSE -> {
-                // Create SSE transport using official SDK
-                SSETransport(url).createTransport()
-            }
-            TransportType.STDIO -> {
-                // Create Stdio transport using official SDK
-                // url is the process path for stdio
-                StdioTransport(url, context).createTransport()
-            }
+            Result.success(transport)
+        } catch (e: Exception) {
+            android.util.Log.e("TransportFactory", "Failed to create transport for type: $type, url: $url", e)
+            Result.failure(e)
         }
     }
 

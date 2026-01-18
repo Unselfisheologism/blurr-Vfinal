@@ -35,51 +35,86 @@ class SSETransport(
     fun createTransport(): SseClientTransport {
         Log.d(TAG, "Creating SSE transport for: $url")
 
-        // Create Ktor HTTP client with SSE support
-        val client = HttpClient(CIO) {
-            install(SSE)
-            install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                    prettyPrint = true
-                    isLenient = true
-                })
-            }
-            install(Logging) {
-                logger = object : Logger {
-                    override fun log(message: String) {
-                        Log.d(TAG, message)
+        var createdClient: HttpClient? = null
+        var createdTransport: SseClientTransport? = null
+
+        try {
+            // Create Ktor HTTP client with SSE support
+            createdClient = try {
+                HttpClient(CIO) {
+                    install(SSE)
+                    install(ContentNegotiation) {
+                        json(Json {
+                            ignoreUnknownKeys = true
+                            prettyPrint = true
+                            isLenient = true
+                        })
+                    }
+                    install(Logging) {
+                        logger = object : Logger {
+                            override fun log(message: String) {
+                                Log.d(TAG, message)
+                            }
+                        }
+                        level = LogLevel.INFO
                     }
                 }
-                level = LogLevel.INFO
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to create HTTP client for SSE transport", e)
+                throw IllegalStateException("Failed to create HTTP client: ${e.message}", e)
             }
-        }
 
-        httpClient = client
+            httpClient = createdClient
 
-        // Create SSE transport
-        transport = SseClientTransport(
-            client = client,
-            urlString = url
-        )
+            // Create SSE transport
+            createdTransport = try {
+                SseClientTransport(
+                    client = createdClient,
+                    urlString = url
+                )
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to create SseClientTransport for: $url", e)
+                throw IllegalStateException("Failed to create SSE transport: ${e.message}", e)
+            }
 
-        // Set up error handling callbacks (as per Kotlin SDK documentation)
-        transport!!.onError { error ->
-            Log.e(TAG, "SseClientTransport error: ${error.message}", error)
-            Log.e(TAG, "Error occurred on SSE transport: $url")
+            // Set up error handling callbacks (as per Kotlin SDK documentation)
+            createdTransport.onError { error ->
+                Log.e(TAG, "SseClientTransport error: ${error.message}", error)
+                Log.e(TAG, "Error occurred on SSE transport: $url")
+                
+                // SSE transports support automatic reconnection
+                // The SDK handles reconnection internally, we just log here
+                Log.d(TAG, "SSE transport may attempt automatic reconnection")
+            }
+
+            createdTransport.onClose {
+                Log.d(TAG, "SseClientTransport closed for: $url")
+                Log.d(TAG, "SSE connection terminated")
+            }
+
+            // Update instance variables only after successful creation
+            transport = createdTransport
+
+            Log.d(TAG, "SSE transport created successfully with error handlers")
+            return createdTransport
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to create SSE transport for: $url", e)
             
-            // SSE transports support automatic reconnection
-            // The SDK handles reconnection internally, we just log here
-            Log.d(TAG, "SSE transport may attempt automatic reconnection")
+            // Clean up any partially created resources
+            try {
+                createdTransport?.close()
+            } catch (cleanupException: Exception) {
+                Log.w(TAG, "Error closing transport during cleanup", cleanupException)
+            }
+            
+            try {
+                createdClient?.close()
+            } catch (cleanupException: Exception) {
+                Log.w(TAG, "Error closing HTTP client during cleanup", cleanupException)
+            }
+            
+            throw e
         }
-
-        transport!!.onClose {
-            Log.d(TAG, "SseClientTransport closed for: $url")
-            Log.d(TAG, "SSE connection terminated")
-        }
-
-        Log.d(TAG, "SSE transport created successfully with error handlers")
-        return transport!!
     }
 
     /**
