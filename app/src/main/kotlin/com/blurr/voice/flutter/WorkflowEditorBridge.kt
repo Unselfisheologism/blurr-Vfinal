@@ -432,30 +432,66 @@ class WorkflowEditorBridge(
     }
 
     private fun handleValidateMCPConnection(call: MethodCall, result: MethodChannel.Result) {
-        // Parse protocol first - this determines what parameters we need
-        // Accept both `protocol` (new) and `transport` (legacy) for backward compatibility
-        val protocol = call.argument<String>("protocol")
-            ?: call.argument<String>("transport")
+        // DEFENSIVE: Wrap entire handler in try-catch to prevent crashes
+        try {
+            Log.d(TAG, "=== handleValidateMCPConnection STARTED ===")
+            
+            // Parse protocol first - this determines what parameters we need
+            // Accept both `protocol` (new) and `transport` (legacy) for backward compatibility
+            val protocol = try {
+                call.argument<String>("protocol") ?: call.argument<String>("transport")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error getting protocol argument", e)
+                result.success(mapOf(
+                    "success" to false,
+                    "message" to "Error reading protocol parameter: ${e.message}"
+                ))
+                return
+            }
 
-        if (protocol == null) {
-            result.error("INVALID_ARGS", "Missing protocol parameter", null)
-            return
-        }
+            if (protocol == null) {
+                Log.w(TAG, "Missing protocol parameter")
+                result.success(mapOf(
+                    "success" to false,
+                    "message" to "Missing protocol parameter"
+                ))
+                return
+            }
 
-        val serverName = call.argument<String>("serverName")
-        if (serverName == null) {
-            result.error("INVALID_ARGS", "Missing serverName", null)
-            return
-        }
+            val serverName = try {
+                call.argument<String>("serverName")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error getting serverName argument", e)
+                result.success(mapOf(
+                    "success" to false,
+                    "message" to "Error reading serverName parameter: ${e.message}"
+                ))
+                return
+            }
+            
+            if (serverName == null) {
+                Log.w(TAG, "Missing serverName parameter")
+                result.success(mapOf(
+                    "success" to false,
+                    "message" to "Missing serverName parameter"
+                ))
+                return
+            }
 
-        val timeout = call.argument<Long>("timeout") ?: 5000L
+            val timeout = try {
+                call.argument<Long>("timeout") ?: 5000L
+            } catch (e: Exception) {
+                Log.w(TAG, "Error getting timeout, using default", e)
+                5000L
+            }
 
-        scope.launch {
-            try {
-                Log.d(TAG, "=== Validating MCP Connection (Protocol-Specific) ===")
-                Log.d(TAG, "Protocol: $protocol")
-                Log.d(TAG, "Server: $serverName")
-                Log.d(TAG, "Timeout: ${timeout}ms")
+            // Launch coroutine with comprehensive error handling
+            scope.launch {
+                try {
+                    Log.d(TAG, "=== Validating MCP Connection (Protocol-Specific) ===")
+                    Log.d(TAG, "Protocol: $protocol")
+                    Log.d(TAG, "Server: $serverName")
+                    Log.d(TAG, "Timeout: ${timeout}ms")
 
                 // Parse protocol-specific configuration
                 val config = when (protocol.lowercase()) {
@@ -545,13 +581,34 @@ class WorkflowEditorBridge(
                 Log.d(TAG, "Validation result: success=${validationResult.success}, message=${validationResult.message}")
 
                 // Return result to Flutter
-                result.success(validationResult.toMap())
-            } catch (e: Exception) {
-                Log.e(TAG, "Unexpected error in validateMCPConnection", e)
+                    try {
+                        result.success(validationResult.toMap())
+                        Log.d(TAG, "Result sent to Flutter successfully")
+                    } catch (e: Exception) {
+                        Log.e(TAG, "FATAL: Failed to send result to Flutter", e)
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Unexpected error in validateMCPConnection coroutine", e)
+                    try {
+                        result.success(mapOf(
+                            "success" to false,
+                            "message" to "Validation error: ${e.message ?: "Unknown error"}"
+                        ))
+                    } catch (resultError: Exception) {
+                        Log.e(TAG, "FATAL: Failed to send error result to Flutter", resultError)
+                    }
+                }
+            }
+            Log.d(TAG, "=== handleValidateMCPConnection ENDED ===")
+        } catch (e: Exception) {
+            Log.e(TAG, "FATAL: Top-level exception in handleValidateMCPConnection", e)
+            try {
                 result.success(mapOf(
                     "success" to false,
-                    "message" to "Validation error: ${e.message ?: "Unknown error"}"
+                    "message" to "Handler error: ${e.message ?: "Unknown error"}"
                 ))
+            } catch (resultError: Exception) {
+                Log.e(TAG, "FATAL: Cannot send any result to Flutter", resultError)
             }
         }
     }
