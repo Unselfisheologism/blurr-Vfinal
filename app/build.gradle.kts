@@ -202,6 +202,10 @@ dependencies {
     // Ktor SSE support for MCP transports
     implementation("io.ktor:ktor-server-sse:2.3.8")
     
+    // Kotlin Logging for comprehensive logging
+    implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
+    implementation("org.slf4j:slf4j-android:1.7.36")
+    
     // Flutter module integration
     // Use the real Flutter module when it's available/configured; otherwise fall back to stubs
     // so Android-only builds can still compile without a Flutter SDK.
