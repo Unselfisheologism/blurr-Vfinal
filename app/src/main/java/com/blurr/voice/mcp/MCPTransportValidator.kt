@@ -275,9 +275,12 @@ object MCPTransportValidator {
      *
      * For HTTP, we verify:
      * 1. URL is valid
-     * 2. Server responds to HTTP POST request
+     * 2. Server is reachable via HTTP
      * 3. Optional: Authentication headers are valid
-     * 4. Can send MCP initialize request
+     *
+     * NOTE: This validator ONLY checks connectivity, NOT MCP protocol-level initialization.
+     * The MCP SDK's Client.connect() method handles protocol initialization automatically,
+     * including sending InitializeRequest with protocol version and capabilities.
      */
     private suspend fun validateHttp(
         config: MCPTransportConfig.HttpConfig,
@@ -332,13 +335,12 @@ object MCPTransportValidator {
             }
 
             try {
-                // Send MCP initialize request to verify server accepts MCP messages
-                val mcpInitRequest = """{"jsonrpc":"2.0","method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{}},"id":1}"""
-
+                // CONNECTIVITY CHECK ONLY: Simple GET request to verify server is reachable
+                // We do NOT send MCP protocol messages here - that's handled by Client.connect()
+                Log.d(TAG, "Checking HTTP endpoint connectivity (GET request)")
+                
                 val response = withTimeoutOrNull(timeout) {
-                    client.post(config.url) {
-                        contentType(ContentType.Application.Json)
-
+                    client.get(config.url) {
                         // Apply authentication headers
                         when (config.authentication) {
                             AuthType.AUTH_HEADER -> {
@@ -356,8 +358,6 @@ object MCPTransportValidator {
                                 // No additional headers
                             }
                         }
-
-                        setBody(mcpInitRequest)
                     }
                 }
 
@@ -373,24 +373,14 @@ object MCPTransportValidator {
                     val statusCode = response.status.value
                     Log.d(TAG, "HTTP response status: $statusCode")
 
-                    // For HTTP MCP, 2xx responses indicate success
-                    val isSuccess = response.status.value in 200..299
+                    // For connectivity validation, accept any response that indicates the server exists
+                    // 2xx, 3xx, 4xx (except timeout) all mean server is reachable
+                    val isReachable = response.status.value in 200..499
 
-                    if (isSuccess) {
+                    if (isReachable) {
                         ValidationResult(
                             success = true,
-                            message = "HTTP endpoint accepts MCP messages (status: $statusCode)",
-                            protocol = "http",
-                            details = mapOf(
-                                "url" to config.url,
-                                "statusCode" to statusCode
-                            )
-                        )
-                    } else if (response.status.value == HttpStatusCode.MethodNotAllowed.value) {
-                        // 405 means server exists but doesn't accept POST - still a valid endpoint
-                        ValidationResult(
-                            success = true,
-                            message = "HTTP endpoint reachable (status: $statusCode - method not allowed is acceptable for validation)",
+                            message = "HTTP endpoint reachable (status: $statusCode). MCP protocol initialization will be handled by SDK.",
                             protocol = "http",
                             details = mapOf(
                                 "url" to config.url,

@@ -433,9 +433,11 @@ class WorkflowEditorBridge(
 
     private fun handleValidateMCPConnection(call: MethodCall, result: MethodChannel.Result) {
         // Parse protocol first - this determines what parameters we need
+        // Accept both `protocol` (new) and `transport` (legacy) for backward compatibility
         val protocol = call.argument<String>("protocol")
+            ?: call.argument<String>("transport")
+
         if (protocol == null) {
-            // Fallback to old 'transport' parameter for backward compatibility
             result.error("INVALID_ARGS", "Missing protocol parameter", null)
             return
         }

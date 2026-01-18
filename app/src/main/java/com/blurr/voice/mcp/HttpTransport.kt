@@ -30,7 +30,7 @@ class HttpTransport(
     private var httpClient: HttpClient? = null
 
     /**
-     * Create the HTTP transport
+     * Create the HTTP transport with proper error handling callbacks
      */
     fun createTransport(): StreamableHttpClientTransport {
         Log.d(TAG, "Creating HTTP transport for: $url")
@@ -63,6 +63,25 @@ class HttpTransport(
             url = url
         )
 
+        // Set up error handling callbacks (as per Kotlin SDK documentation)
+        transport!!.onError = { error ->
+            Log.e(TAG, "StreamableHttpClientTransport error: ${error.message}", error)
+            
+            // Check for StreamableHttpError
+            if (error is io.modelcontextprotocol.kotlin.sdk.client.StreamableHttpError) {
+                Log.e(TAG, "Streamable HTTP Error Code: ${error.code}")
+            }
+            
+            // Log additional context
+            Log.e(TAG, "Error occurred on transport: $url")
+        }
+
+        transport!!.onClose = {
+            Log.d(TAG, "StreamableHttpClientTransport closed for: $url")
+            Log.d(TAG, "Transport connection terminated gracefully")
+        }
+
+        Log.d(TAG, "HTTP transport created successfully with error handlers")
         return transport!!
     }
 
