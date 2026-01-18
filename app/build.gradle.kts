@@ -185,9 +185,11 @@ dependencies {
     implementation("com.moizhassan.ffmpeg:ffmpeg-kit-16kb:6.1.1")
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
     
-    // Official MCP Kotlin SDK
+    // Official MCP Kotlin SDK - exclude kotlin-logging to use consistent version
     // Reference: https://github.com/modelcontextprotocol/kotlin-sdk
-    implementation("io.modelcontextprotocol:kotlin-sdk:0.8.1")
+    implementation("io.modelcontextprotocol:kotlin-sdk:0.8.1") {
+        exclude(group = "io.github.oshai", module = "kotlin-logging")
+    }
     
     // Ktor client for MCP SDK (required dependency)
     // Reference: https://ktor.io/docs/client-dependencies.html
@@ -196,14 +198,20 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:2.3.8")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.8")
     
-    // Ktor logging plugin for MCP transports
-    implementation("io.ktor:ktor-client-logging:2.3.8")
+    // Ktor logging plugin for MCP transports - exclude kotlin-logging to prevent duplicates
+    implementation("io.ktor:ktor-client-logging:2.3.8") {
+        exclude(group = "io.github.oshai", module = "kotlin-logging")
+    }
     
-    // Ktor SSE support for MCP transports
-    implementation("io.ktor:ktor-server-sse:2.3.8")
+    // Ktor SSE support for MCP transports - exclude kotlin-logging to prevent duplicates
+    implementation("io.ktor:ktor-server-sse:2.3.8") {
+        exclude(group = "io.github.oshai", module = "kotlin-logging")
+    }
     
-    // Kotlin Logging for comprehensive logging
-    implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
+    // Kotlin Logging for comprehensive logging - use unified artifact that works for all platforms
+    // version 7.x uses a single artifact for all platforms (JVM, Android, etc.)
+    // This avoids conflicts between kotlin-logging-jvm and kotlin-logging-android
+    implementation("io.github.oshai:kotlin-logging:7.0.3")
     implementation("org.slf4j:slf4j-android:1.7.36")
     
     // Flutter module integration
