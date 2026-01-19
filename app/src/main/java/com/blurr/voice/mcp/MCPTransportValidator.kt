@@ -66,20 +66,31 @@ object MCPTransportValidator {
             }
 
             val result = try {
-                when (config) {
-                    is MCPTransportConfig.StdioConfig -> {
-                        logger.debug { "Routing to STDIO validator" }
-                        validateStdio(config, timeout)
-                    }
-                    is MCPTransportConfig.SSEConfig -> {
-                        logger.debug { "Routing to SSE validator" }
-                        validateSSE(config, timeout)
-                    }
-                    is MCPTransportConfig.HttpConfig -> {
-                        logger.debug { "Routing to HTTP validator" }
-                        validateHttp(config, timeout)
+                // Wrap protocol-specific validator in timeout to prevent hangs
+                val validatorResult = withTimeoutOrNull(timeout) {
+                    when (config) {
+                        is MCPTransportConfig.StdioConfig -> {
+                            logger.debug { "Routing to STDIO validator" }
+                            validateStdio(config, timeout)
+                        }
+                        is MCPTransportConfig.SSEConfig -> {
+                            logger.debug { "Routing to SSE validator" }
+                            validateSSE(config, timeout)
+                        }
+                        is MCPTransportConfig.HttpConfig -> {
+                            logger.debug { "Routing to HTTP validator" }
+                            validateHttp(config, timeout)
+                        }
                     }
                 }
+
+                // If validator timed out, return timeout error
+                validatorResult ?: ValidationResult(
+                    success = false,
+                    message = "Validation timed out after ${timeout}ms",
+                    protocol = config.protocolName(),
+                    error = java.util.concurrent.TimeoutException("Validation timeout")
+                )
             } catch (e: Exception) {
                 logger.error(e) { "FATAL: Exception in protocol-specific validator routing" }
                 ValidationResult(
@@ -288,7 +299,7 @@ object MCPTransportValidator {
         return try {
             logger.info { "=== Validating SSE transport ===" }
             Log.d(TAG, "Validating SSE transport")
-            
+
             try {
                 logger.debug { "URL: ${config.url}" }
                 logger.debug { "Auth: ${config.authentication}" }
@@ -325,15 +336,24 @@ object MCPTransportValidator {
 
             // Create HTTP client with comprehensive error handling
             logger.debug { "Creating HTTP client for SSE..." }
+            Log.d(TAG, "Creating HTTP client with timeout=${timeout}ms")
+
             val client = try {
                 HttpClient(CIO) {
                     try {
                         install(HttpTimeout) {
-                            requestTimeoutMillis = timeout
+                            // Socket-level timeout for data read operations
+                            socketTimeoutMillis = timeout / 2
+                            // Connection establishment timeout
                             connectTimeoutMillis = timeout / 2
+                            // Overall request timeout
+                            requestTimeoutMillis = timeout
                         }
+                        logger.debug { "HttpTimeout configured: socket=${timeout / 2}ms, connect=${timeout / 2}ms, request=${timeout}ms" }
+                        Log.d(TAG, "HttpTimeout configured: socket=${timeout / 2}ms, connect=${timeout / 2}ms, request=${timeout}ms")
                     } catch (e: Exception) {
                         logger.warn(e) { "Failed to install HttpTimeout" }
+                        Log.w(TAG, "Failed to install HttpTimeout", e)
                     }
                     try {
                         install(Logging) {
@@ -361,17 +381,27 @@ object MCPTransportValidator {
             try {
                 // Make GET request to verify server is reachable
                 logger.debug { "Making GET request to ${config.url}..." }
+                Log.d(TAG, "Making GET request to ${config.url}")
+
                 val response = try {
+                    logger.debug { "Starting HTTP request with ${timeout}ms timeout..." }
+                    Log.d(TAG, "Starting HTTP request with ${timeout}ms timeout...")
+
                     withTimeoutOrNull(timeout) {
                         try {
+                            logger.debug { "Executing GET request to ${config.url}" }
+                            Log.d(TAG, "Executing GET request to ${config.url}")
+
                             client.get(config.url) {
                                 // Apply authentication headers
                                 try {
+                                    logger.debug { "Applying authentication headers..." }
                                     when (config.authentication) {
                                         AuthType.AUTH_HEADER -> {
                                             config.headers.forEach { (key, value) ->
                                                 try {
                                                     header(key, value)
+                                                    logger.debug { "Set header: $key" }
                                                 } catch (e: Exception) {
                                                     logger.warn(e) { "Failed to set header: $key" }
                                                 }
@@ -382,21 +412,26 @@ object MCPTransportValidator {
                                             config.headers.forEach { (key, value) ->
                                                 try {
                                                     header(key, value)
+                                                    logger.debug { "Set OAuth header: $key" }
                                                 } catch (e: Exception) {
                                                     logger.warn(e) { "Failed to set OAuth header: $key" }
                                                 }
                                             }
                                         }
                                         AuthType.NONE -> {
-                                            // No additional headers
+                                            logger.debug { "No authentication headers to apply" }
                                         }
                                     }
                                 } catch (e: Exception) {
                                     logger.warn(e) { "Error applying authentication" }
                                 }
+                            }.also { response ->
+                                logger.debug { "Received response: ${response.status.value}" }
+                                Log.d(TAG, "Received HTTP response: ${response.status.value}")
                             }
                         } catch (e: Exception) {
                             logger.error(e) { "Error making GET request" }
+                            Log.e(TAG, "Error making GET request", e)
                             null
                         }
                     }
@@ -548,15 +583,24 @@ object MCPTransportValidator {
 
             // Create HTTP client with comprehensive error handling
             logger.debug { "Creating HTTP client..." }
+            Log.d(TAG, "Creating HTTP client with timeout=${timeout}ms")
+
             val client = try {
                 HttpClient(CIO) {
                     try {
                         install(HttpTimeout) {
-                            requestTimeoutMillis = timeout
+                            // Socket-level timeout for data read operations
+                            socketTimeoutMillis = timeout / 2
+                            // Connection establishment timeout
                             connectTimeoutMillis = timeout / 2
+                            // Overall request timeout
+                            requestTimeoutMillis = timeout
                         }
+                        logger.debug { "HttpTimeout configured: socket=${timeout / 2}ms, connect=${timeout / 2}ms, request=${timeout}ms" }
+                        Log.d(TAG, "HttpTimeout configured: socket=${timeout / 2}ms, connect=${timeout / 2}ms, request=${timeout}ms")
                     } catch (e: Exception) {
                         logger.warn(e) { "Failed to install HttpTimeout" }
+                        Log.w(TAG, "Failed to install HttpTimeout", e)
                     }
                     try {
                         install(ContentNegotiation) {
@@ -595,19 +639,27 @@ object MCPTransportValidator {
                 // CONNECTIVITY CHECK ONLY: Simple GET request to verify server is reachable
                 // We do NOT send MCP protocol messages here - that's handled by Client.connect()
                 logger.debug { "Checking HTTP endpoint connectivity (GET request)" }
-                Log.d(TAG, "Checking HTTP endpoint connectivity (GET request)")
-                
+                Log.d(TAG, "Checking HTTP endpoint connectivity (GET request) to ${config.url}")
+
                 val response = try {
+                    logger.debug { "Starting HTTP request with ${timeout}ms timeout..." }
+                    Log.d(TAG, "Starting HTTP request with ${timeout}ms timeout...")
+
                     withTimeoutOrNull(timeout) {
                         try {
+                            logger.debug { "Executing GET request to ${config.url}" }
+                            Log.d(TAG, "Executing GET request to ${config.url}")
+
                             client.get(config.url) {
                                 // Apply authentication headers
                                 try {
+                                    logger.debug { "Applying authentication headers..." }
                                     when (config.authentication) {
                                         AuthType.AUTH_HEADER -> {
                                             config.headers.forEach { (key, value) ->
                                                 try {
                                                     header(key, value)
+                                                    logger.debug { "Set header: $key" }
                                                 } catch (e: Exception) {
                                                     logger.warn(e) { "Failed to set header: $key" }
                                                 }
@@ -618,21 +670,26 @@ object MCPTransportValidator {
                                             config.headers.forEach { (key, value) ->
                                                 try {
                                                     header(key, value)
+                                                    logger.debug { "Set OAuth header: $key" }
                                                 } catch (e: Exception) {
                                                     logger.warn(e) { "Failed to set OAuth header: $key" }
                                                 }
                                             }
                                         }
                                         AuthType.NONE -> {
-                                            // No additional headers
+                                            logger.debug { "No authentication headers to apply" }
                                         }
                                     }
                                 } catch (e: Exception) {
                                     logger.warn(e) { "Error applying authentication" }
                                 }
+                            }.also { response ->
+                                logger.debug { "Received response: ${response.status.value}" }
+                                Log.d(TAG, "Received HTTP response: ${response.status.value}")
                             }
                         } catch (e: Exception) {
                             logger.error(e) { "Error making GET request" }
+                            Log.e(TAG, "Error making GET request", e)
                             null
                         }
                     }
