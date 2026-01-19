@@ -310,29 +310,19 @@ class WorkflowEditorHandler(
                 }
 
                 // Perform protocol-specific validation
-                Log.d(TAG, "Calling MCPTransportValidator.validate()...")
                 val validationResult = com.blurr.voice.mcp.MCPTransportValidator.validate(
                     config!!,
                     timeout ?: 5000L
                 )
 
-                Log.d(TAG, "=== Validation Result ===")
-                Log.d(TAG, "Success: ${validationResult.success}")
-                Log.d(TAG, "Message: ${validationResult.message}")
-                Log.d(TAG, "Protocol: ${validationResult.protocol}")
-                Log.d(TAG, "Details: ${validationResult.details}")
+                Log.d(TAG, "Validation result: success=${validationResult.success}, message=${validationResult.message}")
 
                 // Return result
-                val resultMap = validationResult.toMap()
-                Log.d(TAG, "Returning result map: $resultMap")
-                resultMap
+                validationResult.toMap()
             } catch (e: Exception) {
                 // Catch-all for any unexpected exceptions
                 Log.e(TAG, "Unexpected error in validateMCPConnection", e)
                 Log.d(TAG, "=== Validation Error ===")
-                Log.e(TAG, "Exception type: ${e.javaClass.simpleName}")
-                Log.e(TAG, "Exception message: ${e.message}")
-                Log.e(TAG, "Exception stack trace:", e)
                 mapOf(
                     "success" to false,
                     "message" to "Validation error: ${e.message ?: "Unknown error"}"
