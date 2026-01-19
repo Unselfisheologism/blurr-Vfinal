@@ -580,12 +580,51 @@ class WorkflowEditorBridge(
 
                 Log.d(TAG, "Validation result: success=${validationResult.success}, message=${validationResult.message}")
 
-                // Return result to Flutter
+                // Return result to Flutter - MANUALLY BUILD MAP to ensure serializability
                     try {
-                        result.success(validationResult.toMap())
-                        Log.d(TAG, "Result sent to Flutter successfully")
+                        // Manually build the map to ensure all data is serializable
+                        // CRITICAL: Do NOT use validationResult.toMap() as details may contain non-serializable objects
+                        val resultMap = mutableMapOf<String, Any>()
+                        resultMap["success"] = validationResult.success
+                        resultMap["message"] = validationResult.message
+                        resultMap["protocol"] = validationResult.protocol
+                        
+                        // Extract safe fields from details if present, but don't include the entire details map
+                        // as it might contain non-serializable objects
+                        try {
+                            if (validationResult.details.isNotEmpty()) {
+                                // Only include known-safe string and primitive values from details
+                                validationResult.details.forEach { (key, value) ->
+                                    when (value) {
+                                        is String, is Boolean, is Int, is Long, is Double, is Float -> {
+                                            resultMap[key] = value
+                                        }
+                                        // Skip non-serializable types like custom objects
+                                        else -> {
+                                            Log.w(TAG, "Skipping non-serializable detail: $key = ${value?.javaClass?.simpleName}")
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (e: Exception) {
+                            Log.w(TAG, "Error processing details map", e)
+                        }
+                        
+                        result.success(resultMap)
+                        Log.d(TAG, "Result sent to Flutter successfully: $resultMap")
                     } catch (e: Exception) {
                         Log.e(TAG, "FATAL: Failed to send result to Flutter", e)
+                        // Send a basic error result as fallback
+                        try {
+                            result.success(mapOf(
+                                "success" to false,
+                                "message" to "Validation error: ${e.message ?: "Unknown error"}",
+                                "protocol" to "unknown"
+                            ))
+                            Log.d(TAG, "Fallback result sent to Flutter")
+                        } catch (fallbackError: Exception) {
+                            Log.e(TAG, "FATAL: Failed to send fallback result to Flutter", fallbackError)
+                        }
                     }
                 } catch (e: Exception) {
                     Log.e(TAG, "Unexpected error in validateMCPConnection coroutine", e)
