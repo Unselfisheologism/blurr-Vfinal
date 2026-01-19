@@ -10,11 +10,6 @@ sealed class MCPTransportConfig {
     abstract val serverName: String
 
     /**
-     * Get the protocol name for this config.
-     */
-    abstract fun protocolName(): String
-
-    /**
      * STDIO transport configuration for subprocess execution.
      * Communicates with server via stdin/stdout (subprocess execution).
      */
@@ -23,9 +18,7 @@ sealed class MCPTransportConfig {
         val command: String,
         val args: List<String> = emptyList(),
         val timeoutMs: Long = 30000L
-    ) : MCPTransportConfig() {
-        override fun protocolName() = "stdio"
-    }
+    ) : MCPTransportConfig()
 
     /**
      * SSE (Server-Sent Events) transport configuration.
@@ -37,9 +30,7 @@ sealed class MCPTransportConfig {
         val authentication: AuthType = AuthType.NONE,
         val headers: Map<String, String> = emptyMap(),
         val timeoutMs: Long = 30000L
-    ) : MCPTransportConfig() {
-        override fun protocolName() = "sse"
-    }
+    ) : MCPTransportConfig()
 
     /**
      * HTTP (Streamable HTTP) transport configuration.
@@ -51,9 +42,7 @@ sealed class MCPTransportConfig {
         val authentication: AuthType = AuthType.NONE,
         val headers: Map<String, String> = emptyMap(),
         val timeoutMs: Long = 30000L
-    ) : MCPTransportConfig() {
-        override fun protocolName() = "http"
-    }
+    ) : MCPTransportConfig()
 }
 
 /**

@@ -3,7 +3,6 @@ package com.blurr.voice.mcp
 import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
@@ -44,14 +43,6 @@ class SSETransport(
             createdClient = try {
                 HttpClient(CIO) {
                     install(SSE)
-                    install(HttpTimeout) {
-                        // Socket-level timeout for data read operations (5 seconds)
-                        socketTimeoutMillis = 5000
-                        // Connection establishment timeout (2 seconds)
-                        connectTimeoutMillis = 2000
-                        // Overall request timeout (10 seconds)
-                        requestTimeoutMillis = 10000
-                    }
                     install(ContentNegotiation) {
                         json(Json {
                             ignoreUnknownKeys = true
