@@ -322,8 +322,34 @@ class WorkflowEditorHandler(
                 Log.d(TAG, "Protocol: ${validationResult.protocol}")
                 Log.d(TAG, "Details: ${validationResult.details}")
 
-                // Return result
-                val resultMap = validationResult.toMap()
+                // Return result - MANUALLY BUILD MAP to ensure serializability
+                // CRITICAL: Do NOT use validationResult.toMap() as details may contain non-serializable objects
+                val resultMap = mutableMapOf<String, Any>()
+                resultMap["success"] = validationResult.success
+                resultMap["message"] = validationResult.message
+                resultMap["protocol"] = validationResult.protocol
+
+                // Extract safe fields from details if present, but don't include entire details map
+                // as it might contain non-serializable objects
+                try {
+                    if (validationResult.details.isNotEmpty()) {
+                        // Only include known-safe string and primitive values from details
+                        validationResult.details.forEach { (key, value) ->
+                            when (value) {
+                                is String, is Boolean, is Int, is Long, is Double, is Float -> {
+                                    resultMap[key] = value
+                                }
+                                // Skip non-serializable types like custom objects
+                                else -> {
+                                    Log.w(TAG, "Skipping non-serializable detail: $key = ${value?.javaClass?.simpleName}")
+                                }
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.w(TAG, "Error processing details map", e)
+                }
+
                 Log.d(TAG, "Returning result map: $resultMap")
                 resultMap
             } catch (e: Exception) {
