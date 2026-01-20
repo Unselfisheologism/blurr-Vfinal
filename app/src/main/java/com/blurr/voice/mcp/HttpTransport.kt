@@ -2,7 +2,7 @@ package com.blurr.voice.mcp
 
 import android.util.Log
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
@@ -42,7 +42,7 @@ class HttpTransport(
         try {
             // Create Ktor HTTP client
             createdClient = try {
-                HttpClient(CIO) {
+                HttpClient(OkHttp) {
                     install(SSE) // Required for potential SSE responses
                     install(HttpTimeout) {
                         // Socket-level timeout for data read operations (5 seconds)

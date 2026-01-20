@@ -193,7 +193,7 @@ dependencies {
     
     // Ktor client for MCP SDK (required dependency)
     // Reference: https://ktor.io/docs/client-dependencies.html
-    implementation("io.ktor:ktor-client-cio:2.3.8")
+    implementation("io.ktor:ktor-client-okhttp:2.3.8")
     implementation("io.ktor:ktor-client-core:2.3.8")
     implementation("io.ktor:ktor-client-content-negotiation:2.3.8")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.8")

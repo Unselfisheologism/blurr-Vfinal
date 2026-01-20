@@ -14,8 +14,10 @@ import com.blurr.voice.ui.GoogleSignInActivity
 import com.blurr.voice.tools.ToolResult
 import com.blurr.voice.data.WorkflowPreferences
 import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -38,7 +40,11 @@ class WorkflowEditorBridge(
     )
     
     private val gson = Gson()
-    private val scope = CoroutineScope(Dispatchers.Main)
+    private val scope = CoroutineScope(
+        SupervisorJob() + Dispatchers.Main + CoroutineExceptionHandler { _, throwable ->
+            Log.e(TAG, "Uncaught coroutine exception in WorkflowEditorBridge", throwable)
+        }
+    )
     private val freemiumManager = FreemiumManager()
     private val googleAuthManager = GoogleAuthManager(context)
     private val workflowPrefs = WorkflowPreferences(context)
