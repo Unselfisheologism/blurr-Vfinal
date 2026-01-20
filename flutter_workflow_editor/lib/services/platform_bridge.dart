@@ -421,6 +421,7 @@ class PlatformBridge {
         'serverName': serverName,
         'url': url,
         'transport': transport,
+        'protocol': transport, // Kotlin side prefers 'protocol' parameter
       });
       return Map<String, dynamic>.from(result as Map);
     } on PlatformException catch (e) {

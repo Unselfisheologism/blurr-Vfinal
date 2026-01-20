@@ -528,7 +528,12 @@ class WorkflowEditorBridge(
                             return@launch
                         }
 
-                        val authType = call.argument<String>("authentication") ?: "NONE"
+                        val authType = try {
+                            com.blurr.voice.mcp.AuthType.valueOf((call.argument<String>("authentication") ?: "NONE").uppercase())
+                        } catch (e: IllegalArgumentException) {
+                            Log.w(TAG, "Invalid SSE authentication type, defaulting to NONE", e)
+                            com.blurr.voice.mcp.AuthType.NONE
+                        }
                         val headers = call.argument<Map<String, String>>("headers") ?: emptyMap()
 
                         Log.d(TAG, "SSE config: url=$url, auth=$authType, headers=${headers.size}")
@@ -536,7 +541,7 @@ class WorkflowEditorBridge(
                         com.blurr.voice.mcp.MCPTransportConfig.SSEConfig(
                             serverName = serverName,
                             url = url,
-                            authentication = com.blurr.voice.mcp.AuthType.valueOf(authType.uppercase()),
+                            authentication = authType,
                             headers = headers
                         )
                     }
@@ -552,7 +557,12 @@ class WorkflowEditorBridge(
                             return@launch
                         }
 
-                        val authType = call.argument<String>("authentication") ?: "NONE"
+                        val authType = try {
+                            com.blurr.voice.mcp.AuthType.valueOf((call.argument<String>("authentication") ?: "NONE").uppercase())
+                        } catch (e: IllegalArgumentException) {
+                            Log.w(TAG, "Invalid HTTP authentication type, defaulting to NONE", e)
+                            com.blurr.voice.mcp.AuthType.NONE
+                        }
                         val headers = call.argument<Map<String, String>>("headers") ?: emptyMap()
 
                         Log.d(TAG, "HTTP config: url=$url, auth=$authType, headers=${headers.size}")
@@ -560,7 +570,7 @@ class WorkflowEditorBridge(
                         com.blurr.voice.mcp.MCPTransportConfig.HttpConfig(
                             serverName = serverName,
                             url = url,
-                            authentication = com.blurr.voice.mcp.AuthType.valueOf(authType.uppercase()),
+                            authentication = authType,
                             headers = headers
                         )
                     }
