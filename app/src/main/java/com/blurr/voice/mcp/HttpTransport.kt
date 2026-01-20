@@ -43,6 +43,14 @@ class HttpTransport(
             // Create Ktor HTTP client
             createdClient = try {
                 HttpClient(OkHttp) {
+                    engine {
+                        config {
+                            connectTimeout(2, java.util.concurrent.TimeUnit.SECONDS)
+                            readTimeout(5, java.util.concurrent.TimeUnit.SECONDS)
+                            writeTimeout(5, java.util.concurrent.TimeUnit.SECONDS)
+                            callTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
+                        }
+                    }
                     install(SSE) // Required for potential SSE responses
                     install(HttpTimeout) {
                         // Socket-level timeout for data read operations (5 seconds)

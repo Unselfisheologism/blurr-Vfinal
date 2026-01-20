@@ -340,6 +340,14 @@ object MCPTransportValidator {
 
             val client = try {
                 HttpClient(OkHttp) {
+                    engine {
+                        config {
+                            connectTimeout(timeout / 2, java.util.concurrent.TimeUnit.MILLISECONDS)
+                            readTimeout(timeout / 2, java.util.concurrent.TimeUnit.MILLISECONDS)
+                            writeTimeout(timeout / 2, java.util.concurrent.TimeUnit.MILLISECONDS)
+                            callTimeout(timeout, java.util.concurrent.TimeUnit.MILLISECONDS)
+                        }
+                    }
                     try {
                         install(HttpTimeout) {
                             // Socket-level timeout for data read operations
@@ -587,6 +595,14 @@ object MCPTransportValidator {
 
             val client = try {
                 HttpClient(OkHttp) {
+                    engine {
+                        config {
+                            connectTimeout(timeout / 2, java.util.concurrent.TimeUnit.MILLISECONDS)
+                            readTimeout(timeout / 2, java.util.concurrent.TimeUnit.MILLISECONDS)
+                            writeTimeout(timeout / 2, java.util.concurrent.TimeUnit.MILLISECONDS)
+                            callTimeout(timeout, java.util.concurrent.TimeUnit.MILLISECONDS)
+                        }
+                    }
                     try {
                         install(HttpTimeout) {
                             // Socket-level timeout for data read operations
